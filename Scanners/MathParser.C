@@ -217,7 +217,6 @@ void MathParser::parse_symbol(int input) {
 	input_token = intern("<symbol>");
 	input_value = intern(matchtext.str().c_str());
 }
-
 /* returns the PREVIOUS value */
 AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 	AST::Node* previous_value;
@@ -227,7 +226,6 @@ AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 	parse_token();
 	return(previous_value);
 }
-
 using namespace AST;
 static int nonargument_precedence_level = 3; /* keep in sync with below */
 static Symbol* operator_precedence[][7] = {
@@ -241,28 +239,37 @@ static Symbol* operator_precedence[][7] = {
 	//{intern("^")}
 	{intern("|")},
 };
-
 static bool matching_operator_P(int precedence_level, AST::Node* input_token) {
 	for(int i = 0; operator_precedence[precedence_level][i]; ++i)
 		if(operator_precedence[precedence_level][i] == input_token)
 			return(true);
 	return(false);
 }
-
 static bool any_operator_P(AST::Node* input_token, int frontier_precedence_level) {
 	for(int i = 0; i < frontier_precedence_level; ++i)
 		if(matching_operator_P(i, input_token))
 			return(true);
 	return(false);
 }
-
 static bool argument_end_mark_P(AST::Node* input_token) {
 	if(input_token == NULL || input_token == intern(")"))
 		return(true);
 	// will only match operators +,-,=,<,... in actual use because of greediness.
 	return(any_operator_P(input_token, sizeof(operator_precedence)/sizeof(operator_precedence[0])));
 }
-
+static AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
+	assert(operator_);
+	return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
+}
+AST::Node* MathParser::parse_arguments(AST::Node* original) {
+	while(!argument_end_mark_P(input_token)) {
+		AST::Node* argument = parse_binary_operation(nonargument_precedence_level - 1);
+		//std::cout << "argument " << (argument ? argument->str() : "") << std::endl;
+		original = cons(original, cons(argument, NULL));
+		// TODO maybe collect multiple arguments into one list?
+	}
+	return(original);
+}
 AST::Node* MathParser::parse_value(void) {
 	if(input_token == intern("(")) {
 		AST::Node* opening_brace = input_value;
@@ -283,23 +290,12 @@ AST::Node* MathParser::parse_value(void) {
 		// TODO unary +
 		// TODO unary -
 		// TODO ~ (not)
-		while(!argument_end_mark_P(input_token)) {
-			AST::Node* argument = parse_binary_operation(nonargument_precedence_level - 1);
-			//std::cout << "argument " << (argument ? argument->str() : "") << std::endl;
-			result = cons(result, cons(argument, NULL));
-			// TODO maybe collect multiple arguments into one list?
-		}
-		return(result);
+		if(!argument_end_mark_P(input_token))
+			return(parse_arguments(result));
+		else
+			return(result);
 	}
 }
-
-
-
-static AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
-	assert(operator_);
-	return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
-}
-
 AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 	if(precedence_level < 0)
 		return(parse_value());
