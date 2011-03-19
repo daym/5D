@@ -1,19 +1,27 @@
 #ifndef __AST_H
 #define __AST_H
+#include <string>
 
 namespace AST {
 
 struct Node {
 };
 
+std::string str(const Node& a);
+
 struct Cons : Node {
 	Node* head;
 	Cons* tail;
 };
 
+std::string str(const Cons& a);
+
 struct Literal : Node {
 	const char* text;
 };
+
+
+std::string str(const Literal& a);
 
 Cons* cons(Node* head, Cons* tail);
 Literal* literal(const char* text);

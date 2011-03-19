@@ -8,6 +8,7 @@ struct Symbol : Node {
 	const char* name;
 };
 Symbol* intern(const char* name);
+std::string str(const Symbol& a);
 
 };
 #endif /* ndef __AST_SYMBOL_H */

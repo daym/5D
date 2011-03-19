@@ -32,7 +32,7 @@ void MathParser::parse_operator(int input) {
 		input_value = input_token = intern("-");
 		break;
 	case '*':
-		input = ++position, fgetc(input_file);
+		++position, input = fgetc(input_file);
 		if(input == '*')
 			input_value = input_token = intern("**");
 		else {
@@ -50,7 +50,7 @@ void MathParser::parse_operator(int input) {
 		input_value = input_token = intern("=");
 		break;
 	case '<':
-		input = ++position, fgetc(input_file);
+		++position, input = fgetc(input_file);
 		if(input == '=')
 			input_value = input_token = intern("<=");
 		else {
@@ -59,7 +59,7 @@ void MathParser::parse_operator(int input) {
 		}
 		break;
 	case '>':
-		input = ++position, fgetc(input_file);
+		++position, input = fgetc(input_file);
 		if(input == '=')
 			input_value = input_token = intern(">=");
 		else {
@@ -90,7 +90,7 @@ void MathParser::parse_number(int input) {
 	std::stringstream matchtext;
 	while((input >= '0' && input <= '9') || input == '.') {
 		matchtext << ((char) input);
-		input = ++position, fgetc(input_file);
+		++position, input = fgetc(input_file);
 	}
 	ungetc(input, input_file);
 	input_token = intern("<number>");
@@ -102,17 +102,17 @@ void MathParser::parse_unicode(int input) {
 		raise_error("<expression>", input);
 		return;
 	}
-	input = ++position, fgetc(input_file);
+	++position, input = fgetc(input_file);
 	if(input != 0x89) {
 		if(input == 0x8B) {
-			input = ++position, fgetc(input_file);
+			++position, input = fgetc(input_file);
 			switch(input) {
 			case 0x85: /* dot */
 				input_value = input_token = intern("*");
 				return;
 			}
 		} else if(input == 0xA8) {
-			input = ++position, fgetc(input_file);
+			++position, input = fgetc(input_file);
 			switch(input) {
 			case 0xAF: /* ⨯ */
 				input_value = input_token = intern("⨯");
@@ -142,12 +142,21 @@ void MathParser::parse_unicode(int input) {
 }
 void MathParser::parse_token(void) {
 	int input;
-	input = ++position, fgetc(input_file);
+	++position, input = fgetc(input_file);
 	switch(input) {
 	case 0xE2: /* part of "≠" */
 		parse_unicode(input);
 		break;
 	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
 		parse_number(input);
 		break;
 	case '*':
@@ -176,7 +185,7 @@ void MathParser::parse_token(void) {
 		break;
 	}
 	// skip whitespace...
-	while(input = ++position, fgetc(input_file), input == ' ' || input == '\t' || input == '\n') {
+	while(++position, input = fgetc(input_file), input == ' ' || input == '\t' || input == '\n') {
 		if(input == '\n')
 			++line_number;
 	}
@@ -201,7 +210,7 @@ void MathParser::parse_symbol(int input) {
 	}
 	while(symbol_char_P(input)) {
 		matchtext << (char) input;
-		input = ++position, fgetc(input_file);
+		++position, input = fgetc(input_file);
 	}
 	input_token = intern("<symbol>");
 	input_value = intern(matchtext.str().c_str());
