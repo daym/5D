@@ -6,10 +6,19 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <string.h>
+#include <gdk/gdkkeysyms.h>
 #include "GUI/GTKREPL"
 #include "Scanners/MathParser"
 
 namespace GUI {
+
+static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer user_data) {
+	if(((event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK)) == GDK_CONTROL_MASK) && event->keyval == GDK_Return) {
+		gtk_dialog_response(GTK_DIALOG(user_data), GTK_RESPONSE_OK);
+		return(TRUE);
+	}
+	return(FALSE);
+}
 
 GTKREPL::GTKREPL(GtkWindow* parent) {
 	fWidget = (GtkWindow*) gtk_dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_OK, GTK_RESPONSE_OK, NULL);
@@ -28,6 +37,7 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	gtk_scrolled_window_set_policy(fOutputScroller, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	// TODO set wrap mode
 	gtk_text_view_set_accepts_tab(fOutputArea, FALSE);
+	g_signal_connect(G_OBJECT(fOutputArea), "key-press-event", G_CALLBACK(handle_key_press), fWidget);
 	gtk_widget_show(GTK_WIDGET(fOutputArea));
 	gtk_container_add(GTK_CONTAINER(fOutputScroller), GTK_WIDGET(fOutputArea));
 	gtk_widget_show(GTK_WIDGET(fOutputScroller));
@@ -48,7 +58,7 @@ void GTKREPL::execute(const char* command, GtkTextIter* destination) {
 			try {
 				AST::Node* result = parser.parse(input_file);
 				std::string v = result ? result->str() : "OK";
-				v = " => " + v;
+				v = " => " + v + "\n";
 				gtk_text_buffer_insert(fOutputBuffer, destination, v.c_str(), -1);
 			} catch(...) {
 				fclose(input_file);
@@ -56,7 +66,7 @@ void GTKREPL::execute(const char* command, GtkTextIter* destination) {
 			}
 		} catch(Scanners::ParseException e) {
 			std::string v = e.what() ? e.what() : "error";
-			v = " => " + v;
+			v = " => " + v + "\n";
 			gtk_text_buffer_insert(fOutputBuffer, destination, v.c_str(), -1);
 		}
 	}
