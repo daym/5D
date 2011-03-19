@@ -147,6 +147,15 @@ void MathParser::parse_unicode(int input) {
 		return;
 	}
 }
+void MathParser::parse_optional_whitespace(void) {
+	int input;
+	// skip whitespace...
+	while(++position, input = fgetc(input_file), input == ' ' || input == '\t' || input == '\n') {
+		if(input == '\n')
+			++line_number;
+	}
+	ungetc(input, input_file);
+}
 void MathParser::parse_token(void) {
 	int input;
 	++position, input = fgetc(input_file);
@@ -194,12 +203,7 @@ void MathParser::parse_token(void) {
 		parse_symbol(input);
 		break;
 	}
-	// skip whitespace...
-	while(++position, input = fgetc(input_file), input == ' ' || input == '\t' || input == '\n') {
-		if(input == '\n')
-			++line_number;
-	}
-	ungetc(input, input_file);
+	parse_optional_whitespace();
 }
 static bool symbol1_char_P(int input) {
 	return (input >= '@' && input <= 'Z')

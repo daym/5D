@@ -54,7 +54,7 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 	./Scanners/test-Scanner
 	./Scanners/test-MathParser
 
-REPL/REPL: REPL/main.o
+REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanner.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 clean:

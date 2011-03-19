@@ -5,6 +5,7 @@
 #include <sys/errno.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "Scanners/MathParser"
 
 const char* commands[] = {
 	"if",
@@ -43,10 +44,23 @@ static void initialize_readline(void) {
 }
 int main() {
 	const char* line;
+	Scanners::MathParser parser;
 	initialize_readline();
 	while((line = readline("λ> "))) {
 		if(!line)
 			break;
+		FILE* input_file = fmemopen((void*) line, strlen(line), "r");
+		try {
+			try {
+				AST::Node* result = parser.parse(input_file);
+				if(result)
+					printf("%s\n", result->str().c_str());
+			} catch(...) {
+				fclose(input_file);
+			}
+		} catch(Scanners::ParseException e) {
+			fprintf(stderr, "error: %s\n", e.what());
+		}
 	}
 	return(0);
 }
