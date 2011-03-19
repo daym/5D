@@ -23,5 +23,6 @@ int main() {
 	test_expression("(2+3)⋅5", "(* (+ 2 3) 5)");
 	test_expression("(sin 2+3)⋅5", "(* (+ (apply sin 2) 3) 5)");
 	test_expression("(div 2 4 5+3)⋅5", "(* (+ (apply (apply (apply div 2) 4) 5) 3) 5)");
+	test_expression("\\x x", "(\\ x x)");
 	return(0);
 }

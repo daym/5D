@@ -5,7 +5,6 @@
 #include "AST/Symbol"
 #include "AST/AST"
 
-
 namespace Scanners {
 using namespace AST;
 
@@ -174,6 +173,9 @@ void MathParser::parse_token(void) {
 	case '=':
 		parse_operator(input);
 		break;
+	case '\\':
+		input_value = input_token = intern("\\");
+		break;
 	case '(':
 	case ')':
 		parse_structural(input);
@@ -263,6 +265,16 @@ static AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1) {
 	assert(operator_);
 	return(cons(operator_, cons(operand_1, NULL)));
 }
+AST::Node* MathParser::parse_abstraction(void) {
+	if(input_token != intern("<symbol>")) {
+		raise_error("<symbol>", input_token ? input_token->str() : "nothing");
+		return(NULL);
+	} else {
+		AST::Node* parameter = consume();
+		// ? apply_precedence_level not really, it is annoying.
+		return(cons(intern("\\"), cons(parameter, cons(parse_expression(), NULL))));
+	}
+}
 AST::Node* MathParser::parse_value(void) {
 	if(input_token == intern("(")) {
 		AST::Node* opening_brace = input_value;
@@ -275,6 +287,9 @@ AST::Node* MathParser::parse_value(void) {
 		}
 		consume(intern(")"));
 		return(result);
+	} else if(input_token == intern("\\")) { // function abstraction
+		consume();
+		return(parse_abstraction());
 	} else {
 		return(consume());
 		/* handle all the unary things manually */
