@@ -32,7 +32,7 @@ static char* command_generator(const char* text, int state) {
 }
 static char** complete(const char* text, int start, int end) {
 	char** matches = NULL;
-	if(start == 0)
+	//if(start == 0) // or after a brace.
 		matches = completion_matches(text, command_generator);
 	return(matches);
 }
