@@ -228,6 +228,41 @@ AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 	return(previous_value);
 }
 
+using namespace AST;
+static int nonargument_precedence_level = 3; /* keep in sync with below */
+static Symbol* operator_precedence[][7] = {
+	{intern("**")},
+	{intern("*"), intern("%"), intern("/")},
+	{intern("⨯")},
+	{intern("+"), intern("-")},
+	{intern("="), intern("≠")},
+	{intern("<"), intern("<="), intern(">"), intern(">=") /*, intern("≤"), intern("≥")*/},
+	{intern("&")},
+	//{intern("^")}
+	{intern("|")},
+};
+
+static bool matching_operator_P(int precedence_level, AST::Node* input_token) {
+	for(int i = 0; operator_precedence[precedence_level][i]; ++i)
+		if(operator_precedence[precedence_level][i] == input_token)
+			return(true);
+	return(false);
+}
+
+static bool any_operator_P(AST::Node* input_token, int frontier_precedence_level) {
+	for(int i = 0; i < frontier_precedence_level; ++i)
+		if(matching_operator_P(i, input_token))
+			return(true);
+	return(false);
+}
+
+static bool argument_end_mark_P(AST::Node* input_token) {
+	if(input_token == NULL || input_token == intern(")"))
+		return(true);
+	// will only match operators +,-,=,<,... in actual use because of greediness.
+	return(any_operator_P(input_token, sizeof(operator_precedence)/sizeof(operator_precedence[0])));
+}
+
 AST::Node* MathParser::parse_value(void) {
 	if(input_token == intern("(")) {
 		AST::Node* opening_brace = input_value;
@@ -242,36 +277,23 @@ AST::Node* MathParser::parse_value(void) {
 		return(result);
 	} else {
 		AST::Node* result = consume();
-		//while(input_token && input_token != EOF)
 		/* handle all the unary things manually */
 		// TODO []
 		// TODO .
 		// TODO unary +
 		// TODO unary -
 		// TODO ~ (not)
+		while(!argument_end_mark_P(input_token)) {
+			AST::Node* argument = parse_binary_operation(nonargument_precedence_level - 1);
+			//std::cout << "argument " << (argument ? argument->str() : "") << std::endl;
+			result = cons(result, cons(argument, NULL));
+			// TODO maybe collect multiple arguments into one list?
+		}
 		return(result);
 	}
 }
 
-using namespace AST;
-static Symbol* operator_precedence[][7] = {
-	{intern("**")},
-	{intern("*"), intern("%"), intern("/")},
-	{intern("⨯")},
-	{intern("+"), intern("-")},
-	{intern("="), intern("≠")},
-	{intern("<"), intern("<="), intern(">"), intern(">=") /*, intern("≤"), intern("≥")*/},
-	{intern("&")},
-	//{intern("^")}
-	{intern("|")},
-};
 
-static bool matching_operator_P(int precedence_level, AST::Symbol* input_token) {
-	for(int i = 0; operator_precedence[precedence_level][i]; ++i)
-		if(operator_precedence[precedence_level][i] == input_token)
-			return(true);
-	return(false);
-}
 
 static AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
 	assert(operator_);
