@@ -60,10 +60,13 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanner.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
-GUI/GTKGUI.o: GUI/GTKGUI.C
+GUI/GTKGUI.o: GUI/GTKGUI.C GUI/GTKREPL
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKGUI: GUI/GTKGUI.o
+GUI/GTKREPL.o: GUI/GTKREPL.C
+	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
+
+GUI/GTKGUI: GUI/GTKGUI.o GUI/GTKREPL.o
 	g++ -o $@ $^ $(GUI_LDFLAGS)
 
 clean:
