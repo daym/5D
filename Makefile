@@ -37,6 +37,7 @@ test-AST: test-AST.o
 Linear_Algebra/test-Vector.o: Linear_Algebra/test-Vector.C Linear_Algebra/Vector
 Linear_Algebra/test-Matrix.o: Linear_Algebra/test-Matrix.C Linear_Algebra/Matrix
 Linear_Algebra/test-Tensor.o: Linear_Algebra/test-Tensor.C Linear_Algebra/Tensor
+Formatters/LATEX.o: Formatters/LATEX.C Formatters/LATEX AST/AST AST/Symbol
 AST/AST.o: AST/AST.C AST/AST
 AST/test-AST.o: AST/test-AST.C AST/AST
 AST/test-Symbol.o: AST/test-Symbol.C AST/Symbol AST/AST
