@@ -27,8 +27,8 @@ Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/MathParser.o Scann
 AST/test-AST: AST/test-AST.o
 	g++ -o AST/test-AST AST/test-AST.o
 
-AST/test-Symbol: AST/test-Symbol.o AST/Symbol.o
-	g++ -o AST/test-Symbol AST/test-Symbol.o AST/Symbol.o
+AST/test-Symbol: AST/test-Symbol.o AST/Symbol.o AST/AST.o
+	g++ -o AST/test-Symbol AST/test-Symbol.o AST/Symbol.o AST/AST.o
 
 test-AST: test-AST.o
 	g++ -o test-AST test-AST.o
