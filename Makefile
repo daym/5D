@@ -63,10 +63,10 @@ REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Sca
 GUI/GTKGUI.o: GUI/GTKGUI.C GUI/GTKREPL
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKREPL.o: GUI/GTKREPL.C
+GUI/GTKREPL.o: GUI/GTKREPL.C Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKGUI: GUI/GTKGUI.o GUI/GTKREPL.o
+GUI/GTKGUI: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o
 	g++ -o $@ $^ $(GUI_LDFLAGS)
 
 clean:

@@ -19,6 +19,9 @@ private:
 	GtkEntry* fCommandEntry;
 	//GtkButton* fExecuteButton;
 	//GtkBox* fShortcutBox;
+protected:
+	void handle_response(gint response_id, GtkDialog* dialog);
+	void execute(const char* command, GtkTextIter* destination);
 public:
 	GTKREPL(GtkWindow* parent);
 	GtkWidget* widget(void) const;

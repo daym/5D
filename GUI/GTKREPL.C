@@ -5,7 +5,9 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <string.h>
 #include "GUI/GTKREPL"
+#include "Scanners/MathParser"
 
 namespace GUI {
 
@@ -24,6 +26,8 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	fOutputArea = (GtkTextView*) gtk_text_view_new();
 	fOutputScroller = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
 	gtk_scrolled_window_set_policy(fOutputScroller, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	// TODO set wrap mode
+	gtk_text_view_set_accepts_tab(fOutputArea, FALSE);
 	gtk_widget_show(GTK_WIDGET(fOutputArea));
 	gtk_container_add(GTK_CONTAINER(fOutputScroller), GTK_WIDGET(fOutputArea));
 	gtk_widget_show(GTK_WIDGET(fOutputScroller));
@@ -31,9 +35,45 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	//gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fShortcutBox), FALSE, FALSE, 7); 
 	gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fOutputScroller), TRUE, TRUE, 7); 
 	//gtk_box_pack_start(GTK_BOX(fWidget), GTK_WIDGET(fCommandEntry), FALSE, FALSE, 7); 
+	g_signal_connect_swapped(GTK_DIALOG(fWidget), "response", G_CALLBACK(&GTKREPL::handle_response), this);
 }
 GtkWidget* GTKREPL::widget(void) const {
 	return(GTK_WIDGET(fWidget));
+}
+void GTKREPL::execute(const char* command, GtkTextIter* destination) {
+	Scanners::MathParser parser;
+	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
+	if(input_file) {
+		try {
+			try {
+				AST::Node* result = parser.parse(input_file);
+				std::string v = result ? result->str() : "OK";
+				v = " => " + v;
+				gtk_text_buffer_insert(fOutputBuffer, destination, v.c_str(), -1);
+			} catch(...) {
+				fclose(input_file);
+				throw;
+			}
+		} catch(Scanners::ParseException e) {
+			std::string v = e.what() ? e.what() : "error";
+			v = " => " + v;
+			gtk_text_buffer_insert(fOutputBuffer, destination, v.c_str(), -1);
+		}
+	}
+}
+void GTKREPL::handle_response(gint response_id, GtkDialog* dialog) {
+	GtkTextIter beginning;
+	GtkTextIter end;
+	gchar* text;
+	if(!gtk_text_buffer_get_selection_bounds(fOutputBuffer, &beginning, &end)) {
+		gtk_text_buffer_get_start_iter(fOutputBuffer, &beginning);
+		gtk_text_buffer_get_end_iter(fOutputBuffer, &end);
+	}
+	text = gtk_text_buffer_get_text(fOutputBuffer, &beginning, &end, FALSE);
+	if(text && text[0]) {
+		execute(text, &end);
+	}
+	g_free(text);
 }
 
 };
