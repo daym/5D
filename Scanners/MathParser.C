@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <iostream>
 #include <string.h>
 #include "Scanners/MathParser"
@@ -258,6 +259,7 @@ static bool matching_operator_P(int precedence_level, AST::Symbol* input_token) 
 }
 
 static AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
+	assert(operator_);
 	return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
 }
 
@@ -266,8 +268,9 @@ AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 		return(parse_value());
 	AST::Node* result = parse_binary_operation(precedence_level - 1);
 	while(matching_operator_P(precedence_level, input_token)) {
+		AST::Symbol* operator_ = input_token;
 		consume(); /* operator */
-		result = operation(input_token, result, parse_binary_operation(precedence_level - 1));
+		result = operation(operator_, result, parse_binary_operation(precedence_level - 1));
 	}
 	return(result);
 }

@@ -6,9 +6,10 @@ namespace AST {
 
 struct Symbol : Node {
 	const char* name;
+public:
+	virtual std::string str(void) const;
 };
 Symbol* intern(const char* name);
-std::string str(const Symbol& a);
 
 };
 #endif /* ndef __AST_SYMBOL_H */

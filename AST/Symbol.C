@@ -19,8 +19,8 @@ Symbol* intern(const char* name) {
 	}
 }
 
-std::string str(const Symbol& a) {
-	return(a.name);
+std::string Symbol::str(void) const {
+	return(name);
 }
 
 }; /* end namespace AST */
