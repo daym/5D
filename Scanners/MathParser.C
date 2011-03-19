@@ -229,14 +229,28 @@ AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 }
 
 AST::Node* MathParser::parse_value(void) {
-	/* handle all the unary things manually */
-	// TODO function_call
-	// TODO []
-	// TODO .
-	// TODO unary +
-	// TODO unary -
-	// TODO ~ (not)
-	return(consume());
+	if(input_token == intern("(")) {
+		AST::Node* opening_brace = input_value;
+		AST::Node* result;
+		consume();
+		result = parse_expression();
+		if(opening_brace != intern("(") || input_value != intern(")")) {
+			raise_error(")", input_value ? input_value->str() : "<nothing>");
+			return(NULL);
+		}
+		consume(intern(")"));
+		return(result);
+	} else {
+		AST::Node* result = consume();
+		//while(input_token && input_token != EOF)
+		/* handle all the unary things manually */
+		// TODO []
+		// TODO .
+		// TODO unary +
+		// TODO unary -
+		// TODO ~ (not)
+		return(result);
+	}
 }
 
 using namespace AST;
