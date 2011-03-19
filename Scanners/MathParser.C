@@ -134,9 +134,11 @@ void MathParser::parse_unicode(int input) {
 				input_value = input_token = intern("⨯");
 				return;
 			}
+		} else { // E2 88 AB integral.
+			parse_symbol(input, 0xE2);
+			//raise_error("<expression>", input);
+			return;
 		}
-		raise_error("<expression>", input);
-		return;
 	}
 	switch(input) {
 	case 0xA0:
@@ -229,8 +231,11 @@ static bool symbol_char_P(int input) {
 	    || input == '_'
 	    || input == '^';
 }
-void MathParser::parse_symbol(int input) {
+void MathParser::parse_symbol(int input, int special_prefix) {
 	std::stringstream matchtext;
+	if(special_prefix) {
+		matchtext << (char) special_prefix;
+	}
 	if(!symbol1_char_P(input)) {
 		raise_error("<expression>", input);
 		return;
