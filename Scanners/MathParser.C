@@ -222,7 +222,7 @@ void MathParser::parse_symbol(int input) {
 			matchtext << (char) 0xE2 << (char) 0x83 << (char) input; // usually 0x97
 		} else {
 			ungetc(input, input_file);
-			ungetc(0xE2, input_file); // it is actually unsupported to unget more than 1 character :-(
+			ungetc(0xE2, input_file); // FIXME it is actually unsupported to unget more than 1 character :-(
 			//raise_error("<unicode_operator>", "<unknown>");
 		}
 	} else
