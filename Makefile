@@ -58,6 +58,8 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanner.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
+GUI/GTKGUI.o: GUI/GTKGUI.C GUI/GTKGUI
+
 clean:
 	rm -f Linear_Algebra/*.o
 	rm -f AST/*.o
