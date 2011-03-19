@@ -26,5 +26,6 @@ int main() {
 	test_expression("\\x x", "(\\ x x)");
 	test_expression("(\\x x) 1", "(apply (\\ x x) 1)");
 	test_expression("a⨯b", "(⨯ a b)");
+	test_expression("a⃗⨯b⃗", "(⨯ a⃗ b⃗)");
 	return(0);
 }

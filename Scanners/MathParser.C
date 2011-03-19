@@ -215,7 +215,18 @@ void MathParser::parse_symbol(int input) {
 		matchtext << (char) input;
 		++position, input = fgetc(input_file);
 	}
-	ungetc(input, input_file);
+	if(input == 0xE2) {
+		++position, input = fgetc(input_file);
+		if(input == 0x83) { // vector arrow etc.
+			++position, input = fgetc(input_file);
+			matchtext << (char) 0xE2 << (char) 0x83 << (char) input; // usually 0x97
+		} else {
+			ungetc(input, input_file);
+			ungetc(0xE2, input_file); // it is actually unsupported to unget more than 1 character :-(
+			//raise_error("<unicode_operator>", "<unknown>");
+		}
+	} else
+		ungetc(input, input_file);
 	input_token = intern("<symbol>");
 	input_value = intern(matchtext.str().c_str());
 }
