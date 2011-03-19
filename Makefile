@@ -1,5 +1,6 @@
 
 CXXFLAGS += -Wall -I. -g3
+LDFLAGS += -lreadline
 
 .SUFFIXES:            # Delete the default suffixes
 %.o: %.C
@@ -7,7 +8,7 @@ CXXFLAGS += -Wall -I. -g3
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 
-all: 
+all: REPL/REPL
 
 Linear_Algebra/test-Vector: Linear_Algebra/test-Vector.o
 	g++ -o Linear_Algebra/test-Vector Linear_Algebra/test-Vector.o
@@ -52,6 +53,9 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 	./AST/test-AST
 	./Scanners/test-Scanner
 	./Scanners/test-MathParser
+
+REPL/REPL: REPL/main.o
+	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 clean:
 	rm -f Linear_Algebra/*.o
