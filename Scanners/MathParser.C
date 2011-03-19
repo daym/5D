@@ -34,9 +34,10 @@ void MathParser::parse_operator(int input) {
 		break;
 	case '*':
 		++position, input = fgetc(input_file);
-		if(input == '*')
+		if(input == '*') {
+			// FIXME exponentiation is right-associative.
 			input_value = input_token = intern("**");
-		else {
+		} else {
 			ungetc(input, input_file);
 			input_value = input_token = intern("*");
 		}
@@ -80,7 +81,6 @@ void MathParser::parse_operator(int input) {
 }
 
 void MathParser::parse_star(int input) {
-	// TODO exponentiation.
 	parse_operator('*');
 }
 void MathParser::parse_anglebracket(int input) {
@@ -213,6 +213,7 @@ void MathParser::parse_symbol(int input) {
 		matchtext << (char) input;
 		++position, input = fgetc(input_file);
 	}
+	ungetc(input, input_file);
 	input_token = intern("<symbol>");
 	input_value = intern(matchtext.str().c_str());
 }
