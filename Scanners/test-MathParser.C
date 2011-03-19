@@ -25,5 +25,6 @@ int main() {
 	test_expression("(div 2 4 5+3)⋅5", "(* (+ (apply (apply (apply div 2) 4) 5) 3) 5)");
 	test_expression("\\x x", "(\\ x x)");
 	test_expression("(\\x x) 1", "(apply (\\ x x) 1)");
+	test_expression("a⨯b", "(⨯ a b)");
 	return(0);
 }
