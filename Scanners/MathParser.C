@@ -202,6 +202,8 @@ void MathParser::parse_token(void) {
 	case '/':
 	case '%':
 	case '=':
+	case '&':
+	case '|':
 		parse_operator(input);
 		break;
 	case '\\':
