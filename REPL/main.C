@@ -50,6 +50,8 @@ int main() {
 	while((line = readline("λ> "))) {
 		if(!line)
 			break;
+		if(!line[0])
+			continue;
 		FILE* input_file = fmemopen((void*) line, strlen(line), "r");
 		try {
 			try {
