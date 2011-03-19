@@ -105,6 +105,15 @@ void MathParser::parse_number(int input) {
 }
 void MathParser::parse_unicode(int input) {
 	using namespace AST;
+	if(input == 0xC2) {
+		++position, input = fgetc(input_file);
+		if(input == 0xAC) { // ¬
+			input_token = intern("~");
+			input_value = intern("¬");
+		} else
+			raise_error("¬", input);
+		return;
+	}
 	if(input != 0xE2) {
 		raise_error("<expression>", input);
 		return;
@@ -161,6 +170,7 @@ void MathParser::parse_token(void) {
 	++position, input = fgetc(input_file);
 	switch(input) {
 	case 0xE2: /* part of "≠" */
+	case 0xC2:
 		parse_unicode(input);
 		break;
 	case '0':
@@ -181,6 +191,9 @@ void MathParser::parse_token(void) {
 	case '<':
 	case '>':
 		parse_anglebracket(input);
+		break;
+	case '~':
+		input_value = input_token = intern("~");
 		break;
 	case '+':
 	case '-':
@@ -315,13 +328,15 @@ AST::Node* MathParser::parse_value(void) {
 	} else if(input_token == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());
+	} else if(input_token == intern("-") || input_token == intern("+") || input_token == intern("~")) {
+		AST::Node* operator_ = consume();
+		return((operator_ == intern("+")) ? parse_value() :
+		       (operator_ == intern("-")) ? cons(intern("0-"), cons(parse_value(), NULL)) :
+		       cons(operator_, cons(parse_value(), NULL)));
 	} else {
 		return(consume());
-		/* handle all the unary things manually */
 		// TODO []
 		// TODO .
-		// TODO unary +
-		// TODO unary -
 		// TODO ~ (not)
 	}
 }
@@ -329,6 +344,9 @@ AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 	if(precedence_level < 0)
 		return(parse_value());
 	AST::Node* result = parse_binary_operation(precedence_level - 1);
+	if(result == intern(")") || any_operator_P(result, apply_precedence_level + 1, sizeof(operator_precedence)/sizeof(operator_precedence[0]))) {
+		raise_error("<operand>", result ? result->str() : "<nothing>");
+	}
 	while(AST::Node* actual_token = match_operator(precedence_level, input_token)) {
 		AST::Node* operator_ = actual_token;
 		if(actual_token != intern("apply"))
