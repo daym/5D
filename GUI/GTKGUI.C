@@ -9,13 +9,16 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/GTKREPL"
 using namespace GUI;
 
-static GtkWindow* make_REPL_window(void) {
+static GtkWindow* make_view_window(void) {
 	GtkWindow* window;
 	window = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	GTKREPL* REPL = new GTKREPL;
-	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(REPL->widget()));
 	gtk_widget_show(GTK_WIDGET(window));
 	return(window);
+}
+static GtkWindow* make_REPL_window(GtkWindow* parent) {
+	GTKREPL* REPL = new GTKREPL(parent);
+	gtk_widget_show(GTK_WIDGET(REPL->widget()));
+	return(GTK_WINDOW(REPL->widget()));
 }
 
 /* TODO popup command dialog with TextView, TextArea and completion, history. */
@@ -23,7 +26,7 @@ static GtkWindow* make_REPL_window(void) {
 /* TODO LATEX display worker that displays the actual equation in the text view once it's done */
 int main(int argc, char* argv[]) {
 	gtk_init(&argc, &argv);
-	g_signal_connect(G_OBJECT(make_REPL_window()), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
+	g_signal_connect(G_OBJECT(make_REPL_window(NULL)), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 	gtk_main();
 	return(0);
 }
