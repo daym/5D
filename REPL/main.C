@@ -12,6 +12,8 @@ const char* commands[] = {
 	"if",
 	"cond",
 	"define",
+	"display",
+	"newline",
 	NULL,
 };
 static char** completion_matches(const char* text, rl_compentry_func_t* callback) {
