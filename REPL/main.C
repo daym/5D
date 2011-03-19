@@ -45,6 +45,8 @@ int main() {
 	const char* line;
 	initialize_readline();
 	while((line = readline("λ> "))) {
+		if(!line)
+			break;
 	}
 	return(0);
 }
