@@ -279,9 +279,12 @@ static bool any_operator_P(AST::Node* input_token, int first_precedence_level, i
 			return(true);
 	return(false);
 }
-static AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
-	assert(operator_);
-	return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
+AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
+	if(operator_ == NULL || operand_1 == NULL || operand_2 == NULL) {
+		raise_error("<second_operand>", "<nothing>");
+		return(NULL);
+	} else
+		return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
 }
 static AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1) {
 	assert(operator_);

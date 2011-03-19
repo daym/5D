@@ -33,8 +33,8 @@ void Scanner::pop(void) {
 
 void Scanner::raise_error(const std::string& expected_text, std::string got_text) {
 	std::stringstream s;
-	s << "error: expected " << expected_text << " near position " << position << " in line " << line_number + 1 << std::endl;
-	std::cerr << s.str() << std::endl;
+	s << "expected " << expected_text << " near position " << position << " in line " << line_number + 1;
+	//std::cerr << s.str() << std::endl;
 	throw ParseException(s.str().c_str());
 }
 

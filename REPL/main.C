@@ -57,6 +57,7 @@ int main() {
 					printf("%s\n", result->str().c_str());
 			} catch(...) {
 				fclose(input_file);
+				throw;
 			}
 		} catch(Scanners::ParseException e) {
 			fprintf(stderr, "error: %s\n", e.what());
