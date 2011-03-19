@@ -32,6 +32,8 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	//gtk_box_pack_start(fShortcutBox, GTK_WIDGET(fExecuteButton), TRUE, TRUE, 7);
 	//gtk_widget_show(GTK_WIDGET(fShortcutBox));
 	fCommandEntry = (GtkEntry*) gtk_entry_new();
+	gtk_entry_set_activates_default(fCommandEntry, TRUE);
+	gtk_widget_show(GTK_WIDGET(fCommandEntry));
 	fOutputArea = (GtkTextView*) gtk_text_view_new();
 	fOutputScroller = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
 	gtk_scrolled_window_set_policy(fOutputScroller, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -44,8 +46,9 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	fOutputBuffer = gtk_text_view_get_buffer(fOutputArea);
 	//gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fShortcutBox), FALSE, FALSE, 7); 
 	gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fOutputScroller), TRUE, TRUE, 7); 
-	//gtk_box_pack_start(GTK_BOX(fWidget), GTK_WIDGET(fCommandEntry), FALSE, FALSE, 7); 
+	gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fCommandEntry), FALSE, FALSE, 7); 
 	g_signal_connect_swapped(GTK_DIALOG(fWidget), "response", G_CALLBACK(&GTKREPL::handle_response), this);
+	gtk_window_set_focus(GTK_WINDOW(fWidget), GTK_WIDGET(fCommandEntry));
 }
 GtkWidget* GTKREPL::widget(void) const {
 	return(GTK_WIDGET(fWidget));
@@ -78,8 +81,13 @@ void GTKREPL::handle_response(gint response_id, GtkDialog* dialog) {
 	if(!gtk_text_buffer_get_selection_bounds(fOutputBuffer, &beginning, &end)) {
 		gtk_text_buffer_get_start_iter(fOutputBuffer, &beginning);
 		gtk_text_buffer_get_end_iter(fOutputBuffer, &end);
+		text = strdup(gtk_entry_get_text(fCommandEntry));
+		std::string v = text;
+		v += "\n";
+		gtk_text_buffer_insert(fOutputBuffer, &end, v.c_str(), -1);
+	} else {
+		text = gtk_text_buffer_get_text(fOutputBuffer, &beginning, &end, FALSE);
 	}
-	text = gtk_text_buffer_get_text(fOutputBuffer, &beginning, &end, FALSE);
 	if(text && text[0]) {
 		execute(text, &end);
 	}
