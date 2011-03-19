@@ -8,6 +8,7 @@
 #include "Scanners/MathParser"
 
 const char* commands[] = {
+	"\\",
 	"if",
 	"cond",
 	"define",
