@@ -330,9 +330,12 @@ AST::Node* MathParser::parse_value(void) {
 		return(parse_abstraction());
 	} else if(input_token == intern("-") || input_token == intern("+") || input_token == intern("~")) {
 		AST::Node* operator_ = consume();
-		return((operator_ == intern("+")) ? parse_value() :
-		       (operator_ == intern("-")) ? cons(intern("0-"), cons(parse_value(), NULL)) :
-		       cons(operator_, cons(parse_value(), NULL)));
+		AST::Node* argument = parse_value();
+		if(argument == NULL)
+			raise_error("<operand>", "<nothing>");
+		return((operator_ == intern("+")) ? argument :
+		       (operator_ == intern("-")) ? cons(intern("0-"), cons(argument, NULL)) :
+		       cons(operator_, cons(argument, NULL)));
 	} else {
 		return(consume());
 		// TODO []

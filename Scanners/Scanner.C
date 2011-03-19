@@ -33,14 +33,17 @@ void Scanner::pop(void) {
 
 void Scanner::raise_error(const std::string& expected_text, std::string got_text) {
 	std::stringstream s;
-	s << "expected " << expected_text << " near position " << position << " in line " << line_number + 1;
+	s << "expected " << expected_text << " but got " << got_text << " near position " << position << " in line " << line_number + 1;
 	//std::cerr << s.str() << std::endl;
 	throw ParseException(s.str().c_str());
 }
 
 void Scanner::raise_error(const std::string& expected_text, int got_text) {
 	std::string s;
-	s = (char) got_text;
+	if(got_text > 127)
+		s = "<junk>";
+	else
+		s = (char) got_text;
 	raise_error(expected_text, s);
 }
 
