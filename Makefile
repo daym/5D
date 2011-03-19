@@ -1,6 +1,8 @@
 
 CXXFLAGS += -Wall -I. -g3
 LDFLAGS += -lreadline
+GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
+GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
 
 .SUFFIXES:            # Delete the default suffixes
 %.o: %.C
@@ -8,7 +10,7 @@ LDFLAGS += -lreadline
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 
-all: REPL/REPL
+all: REPL/REPL GUI/GTKGUI
 
 Linear_Algebra/test-Vector: Linear_Algebra/test-Vector.o
 	g++ -o Linear_Algebra/test-Vector Linear_Algebra/test-Vector.o
@@ -58,7 +60,11 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanner.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
-GUI/GTKGUI.o: GUI/GTKGUI.C GUI/GTKGUI
+GUI/GTKGUI.o: GUI/GTKGUI.C
+	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
+
+GUI/GTKGUI: GUI/GTKGUI.o
+	g++ -o $@ $^ $(GUI_LDFLAGS)
 
 clean:
 	rm -f Linear_Algebra/*.o
