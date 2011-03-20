@@ -38,6 +38,7 @@ protected:
 	void set_current_environment_name(const char* absolute_name);
 	void set_file_modified(bool value);
 public:
+	bool confirm_close(void);
 	bool get_file_modified(void) const;
 	bool save(void);
 	void load(void);

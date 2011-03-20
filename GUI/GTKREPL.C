@@ -23,6 +23,9 @@ static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer
 	}
 	return(FALSE);
 }
+static gboolean g_confirm_close(GtkDialog* dialog, GdkEvent* event, GTKREPL* REPL) {
+	return(!REPL->confirm_close());
+}
 static gboolean accept_prefix(GtkEntryCompletion* completion, gchar* prefix, GtkEntry* entry) {
 	return(FALSE);
 }
@@ -118,6 +121,7 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 		if(environment_name && environment_name[0])
 			load_contents_from(environment_name);
 	}
+	g_signal_connect(G_OBJECT(fWidget), "delete-event", G_CALLBACK(g_confirm_close), this);
 }
 GtkWidget* GTKREPL::widget(void) const {
 	return(GTK_WIDGET(fWidget));
@@ -207,7 +211,7 @@ bool GTKREPL::load_contents_from(const char* name) {
 	GtkTextIter text_start;
 	GtkTextIter text_end;
 	if(get_file_modified())
-		if(!save())
+		if(!confirm_close())
 			return(false);
 	gtk_text_buffer_get_start_iter(fOutputBuffer, &text_start);
 	gtk_text_buffer_get_end_iter(fOutputBuffer, &text_end);
@@ -279,7 +283,7 @@ bool GTKREPL::save(void) {
 		g_free(file_name);
 	} else {
 		gtk_widget_hide(GTK_WIDGET(fSaveDialog));
-		return(true); // his own fault.
+		return(false);
 	}
 	gtk_widget_hide(GTK_WIDGET(fSaveDialog));
 	if(!B_OK) {
@@ -354,6 +358,22 @@ void GTKREPL::set_file_modified(bool value) {
 		gtk_window_set_title(fWidget, new_title);
 		g_free(new_title);
 	}
+}
+bool GTKREPL::confirm_close(void) {
+	if(get_file_modified()) {
+		GtkDialog* dialog;
+		dialog = (GtkDialog*) gtk_message_dialog_new(GTK_WINDOW(widget()), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, (GtkButtonsType) 0, "Environment has been modified. Save?");
+		gtk_dialog_add_buttons(dialog, GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE, GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
+		{
+			int result;
+			result = gtk_dialog_run(dialog);
+			gtk_widget_destroy(GTK_WIDGET(dialog));
+			if(result == GTK_RESPONSE_CLOSE)
+				return(true);
+			return(save());
+		}
+	}
+	return(true);
 }
 
 };
