@@ -52,13 +52,14 @@ bool Config_save(struct Config* config) {
 	gchar* key_file_contents;
 	config->key_file = g_key_file_new();
 	config_dir_name = g_get_user_config_dir();
-	g_mkdir_with_parents(g_build_path(config_dir_name, "4D"), 0664);
-	full_name = g_build_path(config_dir_name, CONFIG_NAME, NULL);
-	//g_key_file_set_string(key_file, group_name, key, value);
-	key_file_contents = g_key_file_to_data (config->key_file, &size, &error);
-	if(!key_file_contents || !g_file_set_contents(full_name, key_file_contents, size, &error)) {
-		g_warning("could not save config \"%s\"", error->message);
-		g_error_free(error);
+	g_mkdir_with_parents(g_strdup_printf("%s%s", config_dir_name, "4D"), 0775);
+	full_name = g_strdup_printf("%s%s", config_dir_name, CONFIG_NAME);
+	g_key_file_set_string(config->key_file, "Global", "Environment", config->environment_name.c_str());
+	key_file_contents = g_key_file_to_data(config->key_file, &size, &error);
+	if(!key_file_contents || !size || !g_file_set_contents(full_name, key_file_contents, size, &error)) {
+		g_warning("could not save config \"%s\": %s", full_name, error ? error->message : "unknown error");
+		if(error)
+			g_error_free(error);
 		g_free(full_name);
 		return(false);
 	}

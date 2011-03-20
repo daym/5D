@@ -76,6 +76,12 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	//gtk_tree_view_column_set_sort_order(fNameColumn, GTK_SORT_ASCENDING);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(fEnvironmentStore), 0, GTK_SORT_ASCENDING);
 	fConfig = load_Config();
+	{
+		char* environment_name;
+		environment_name = Config_get_environment_name(fConfig);
+		if(environment_name && environment_name[0])
+			load_contents_from(environment_name);
+	}
 }
 GtkWidget* GTKREPL::widget(void) const {
 	return(GTK_WIDGET(fWidget));
@@ -150,7 +156,12 @@ const char* load_string(const char*& string_iter) {
 	string_iter += l + 1;
 	return(result);
 }
-
+static char* get_absolute_path(const char* name) {
+	if(g_path_is_absolute(name))
+		return(strdup(name));
+	else
+		return(g_build_filename(g_get_current_dir(), name, NULL));
+}
 bool GTKREPL::load_contents_from(const char* name) {
 	GError* error = NULL;
 	gsize size;
@@ -183,13 +194,11 @@ bool GTKREPL::load_contents_from(const char* name) {
 		gtk_list_store_set(fEnvironmentStore, &iter, 0, key, 1, value, -1);
 	}
 	g_free(contents);
+	{
+		char* absolute_name = get_absolute_path(name);
+		set_current_environment_name(absolute_name);
+	}
 	return(true);
-}
-char* get_absolute_path(const char* name) {
-	if(g_path_is_absolute(name))
-		return(strdup(name));
-	else
-		return(g_build_filename(g_get_current_dir(), name, NULL));
 }
 void GTKREPL::load(void) {
 	bool B_OK = false;
@@ -198,7 +207,6 @@ void GTKREPL::load(void) {
 		char* file_name = gtk_file_chooser_get_filename(fOpenDialog);
 		if(load_contents_from(file_name)) {
 			B_OK = true;
-			gtk_window_set_title(fWidget, get_absolute_path(file_name));
 		}
 		g_free(file_name);
 	}
@@ -222,9 +230,7 @@ void GTKREPL::save(void) {
 			if(rename(temp_name, file_name) != -1) {
 				char* absolute_name = get_absolute_path(file_name);
 				B_OK = true;
-				gtk_window_set_title(fWidget, absolute_name);
-				Config_set_environment_name(fConfig, absolute_name);
-				Config_save(fConfig);
+				set_current_environment_name(absolute_name);
 			}
 			//unlink(temp_name);
 		}
@@ -235,6 +241,11 @@ void GTKREPL::save(void) {
 	if(!B_OK) {
 		g_warning("could not save file");
 	}
+}
+void GTKREPL::set_current_environment_name(const char* absolute_name) {
+	gtk_window_set_title(fWidget, absolute_name);
+	Config_set_environment_name(fConfig, absolute_name);
+	Config_save(fConfig);
 }
 void GTKREPL::handle_response(gint response_id, GtkDialog* dialog) {
 	if(response_id != GTK_RESPONSE_OK) {
