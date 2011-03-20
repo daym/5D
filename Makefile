@@ -48,6 +48,7 @@ Scanners/Scanner.o: Scanners/Scanner.C Scanners/Scanner AST/Symbol
 Scanners/test-Scanner.o: Scanners/test-Scanner.C Scanners/Scanner
 Scanners/MathParser.o: Scanners/MathParser.C Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol
 Scanners/test-MathParser.o: Scanners/test-MathParser.C Scanners/MathParser Scanners/Scanner
+Evaluators/Evaluators.o: Evaluators/Evaluators.C Evaluators/Evaluators AST/AST AST/Symbol
 Config/GTKConfig.o: Config/GTKConfig.C Config/Config
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
@@ -60,7 +61,7 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 	./Scanners/test-Scanner
 	./Scanners/test-MathParser
 
-REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanner.o
+REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanner.o Evaluators/Evaluators.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 GUI/GTKGUI.o: GUI/GTKGUI.C GUI/GTKREPL GUI/GTKView
@@ -72,7 +73,7 @@ GUI/GTKREPL.o: GUI/GTKREPL.C Scanners/MathParser Scanners/Scanner AST/AST AST/Sy
 GUI/GTKView.o: GUI/GTKView.C
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKGUI: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o GUI/GTKView.o Config/GTKConfig.o
+GUI/GTKGUI: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o
 	g++ -o $@ $^ $(GUI_LDFLAGS)
 
 clean:
