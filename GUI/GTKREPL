@@ -9,6 +9,7 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #include "AST/AST"
 #include <gtk/gtk.h>
+struct Config;
 namespace GUI {
 class GTKREPL {
 private:
@@ -27,6 +28,7 @@ private:
 	GtkScrolledWindow* fEnvironmentScroller;
 	GtkFileChooser* fSaveDialog;
 	GtkFileChooser* fOpenDialog;
+	struct Config* fConfig;
 protected:
 	void handle_response(gint response_id, GtkDialog* dialog);
 	void execute(const char* command, GtkTextIter* destination);

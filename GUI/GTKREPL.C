@@ -12,6 +12,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <netinet/in.h>
 #include "GUI/GTKREPL"
 #include "Scanners/MathParser"
+#include "Config/Config"
 
 namespace GUI {
 
@@ -74,6 +75,7 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	gtk_tree_view_column_set_sort_indicator(fNameColumn, TRUE);
 	//gtk_tree_view_column_set_sort_order(fNameColumn, GTK_SORT_ASCENDING);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(fEnvironmentStore), 0, GTK_SORT_ASCENDING);
+	fConfig = load_Config();
 }
 GtkWidget* GTKREPL::widget(void) const {
 	return(GTK_WIDGET(fWidget));
@@ -218,8 +220,11 @@ void GTKREPL::save(void) {
 			fclose(output_file);
 			close(FD);
 			if(rename(temp_name, file_name) != -1) {
+				char* absolute_name = get_absolute_path(file_name);
 				B_OK = true;
-				gtk_window_set_title(fWidget, get_absolute_path(file_name));
+				gtk_window_set_title(fWidget, absolute_name);
+				Config_set_environment_name(fConfig, absolute_name);
+				Config_save(fConfig);
 			}
 			//unlink(temp_name);
 		}

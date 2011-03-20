@@ -1,0 +1,8 @@
+#ifndef __4D_CONFIG_H
+#define __4D_CONFIG_H
+struct Config;
+struct Config* load_Config(void);
+bool Config_save(struct Config* config);
+char* Config_get_environment_name(struct Config* config);
+void Config_set_environment_name(struct Config* config, const char* value);
+#endif /* ndef __4D_CONFIG_H */
