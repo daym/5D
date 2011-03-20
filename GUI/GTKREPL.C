@@ -32,7 +32,7 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	fNameColumn = gtk_tree_view_column_new_with_attributes("Name", gtk_cell_renderer_text_new(), "text", 0, NULL);
 	gtk_tree_view_append_column(fEnvironmentView, fNameColumn);
 	fEnvironmentStore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-	gtk_tree_view_set_model(fEnvironmentView, GTK_TREE_MODEL(fEnvironmentStore));
+	gtk_tree_view_set_model(fEnvironmentView, gtk_tree_model_sort_new_with_model(GTK_TREE_MODEL(fEnvironmentStore)));
 	gtk_widget_show(GTK_WIDGET(fEnvironmentView));
 	fEnvironmentScroller = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
 	gtk_scrolled_window_set_policy(fEnvironmentScroller, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -65,6 +65,10 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fCommandEntry), FALSE, FALSE, 7); 
 	g_signal_connect_swapped(GTK_DIALOG(fWidget), "response", G_CALLBACK(&GTKREPL::handle_response), (void*) this);
 	gtk_window_set_focus(GTK_WINDOW(fWidget), GTK_WIDGET(fCommandEntry));
+	gtk_tree_view_column_set_sort_column_id(fNameColumn, 0);
+	gtk_tree_view_column_set_sort_indicator(fNameColumn, TRUE);
+	//gtk_tree_view_column_set_sort_order(fNameColumn, GTK_SORT_ASCENDING);
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(fEnvironmentStore), 0, GTK_SORT_ASCENDING);
 }
 GtkWidget* GTKREPL::widget(void) const {
 	return(GTK_WIDGET(fWidget));
