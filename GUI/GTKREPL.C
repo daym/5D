@@ -336,6 +336,8 @@ void GTKREPL::add_to_environment(AST::Node* definition) {
 	using namespace AST;
 	AST::Cons* definitionCons;
 	GtkTreeIter iter;
+	if(!definition)
+		return;
 	definitionCons = dynamic_cast<AST::Cons*>(definition);
 	if(!definitionCons || !definitionCons->head || !definitionCons->tail || definitionCons->head != intern("define"))
 		return;

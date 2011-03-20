@@ -17,6 +17,7 @@ class MathParser : Scanner {
 protected:
 	AST::Node* input_value;
 private:
+	bool allow_args;
 	virtual void parse_token(void);
 	void parse_operator(int input);
 	void parse_star(int input);
@@ -27,11 +28,11 @@ private:
 	void parse_symbol(int input, int special_prefix = 0);
 	AST::Node* parse_value(void);
 	AST::Node* parse_binary_operation(int precedence_level);
-	AST::Node* parse_arguments(AST::Node* original);
 	AST::Node* parse_abstraction(void);
 	void parse_optional_whitespace(void);
 	AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2);
 	AST::Node* parse_macro(AST::Node* operand_1);
+	AST::Node* parse_argument(void);
 protected:
 	AST::Node* parse_expression(void);
 	AST::Node* consume(AST::Symbol* expected_token = NULL);

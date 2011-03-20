@@ -271,12 +271,11 @@ AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 	return(previous_value);
 }
 using namespace AST;
-static int apply_precedence_level = 3; /* keep in sync with below */
+static int apply_precedence_level = 2; /* keep in sync with below */
 static Symbol* operator_precedence[][7] = {
 	{intern("**")},
 	{intern("*"), intern("%"), intern("/")},
 	{intern("⨯")},
-	{intern("apply")},
 	{intern("+"), intern("-")},
 	{intern("="), intern("≠")},
 	{intern("<"), intern("<="), intern(">"), intern(">=") /*, intern("≤"), intern("≥")*/},
@@ -286,8 +285,6 @@ static Symbol* operator_precedence[][7] = {
 };
 static bool any_operator_P(AST::Node* input_token, int first_precedence_level, int frontier_precedence_level);
 static AST::Node* match_operator(int precedence_level, AST::Node* input_token) {
-	if(precedence_level == apply_precedence_level) // the invisible operator.
-		return(input_token != NULL && input_token != intern(")") && !any_operator_P(input_token, apply_precedence_level + 1, sizeof(operator_precedence)/sizeof(operator_precedence[0])) ? intern("apply") : NULL);
 	for(int i = 0; operator_precedence[precedence_level][i]; ++i)
 		if(operator_precedence[precedence_level][i] == input_token)
 			return(input_token);
@@ -336,22 +333,24 @@ AST::Node* MathParser::parse_abstraction(void) {
 		return(NULL);
 	} else {
 		AST::Node* parameter = consume();
-		// ? apply_precedence_level not really, it is annoying.
 		return(cons(intern("\\"), cons(parameter, cons(parse_expression(), NULL))));
 	}
 }
 AST::Node* MathParser::parse_value(void) {
+	AST::Node* result;
 	if(input_token == intern("(")) {
+		bool previous_allow_args = allow_args;
+		allow_args = true;
 		AST::Node* opening_brace = input_value;
-		AST::Node* result;
 		consume();
 		result = parse_expression();
 		if(opening_brace != intern("(") || input_value != intern(")")) {
 			raise_error(")", input_value ? input_value->str() : "<nothing>");
+			allow_args = previous_allow_args;
 			return(NULL);
 		}
 		consume(intern(")"));
-		return(result);
+		allow_args = previous_allow_args;
 	} else if(input_token == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());
@@ -364,35 +363,51 @@ AST::Node* MathParser::parse_value(void) {
 		       (operator_ == intern("-")) ? cons(intern("0-"), cons(argument, NULL)) :
 		       cons(operator_, cons(argument, NULL)));
 	} else {
-		return(consume());
-		// TODO []
-		// TODO .
-		// TODO ~ (not)
+		result = consume();
 	}
+	if(allow_args) {
+		allow_args = false; // sigh...
+		try {
+			// this will have problems with: "cos -3" because it doesn't know that that means "cos (-3)" and not "(cos)-3".
+			while(!(input_token == NULL || input_token == intern(")") || any_operator_P(input_token, 0, sizeof(operator_precedence)/sizeof(operator_precedence[0])))) {
+				//raise_error("<operand>", result ? result->str() : "<nothing>");
+				result = operation(intern("apply"), result, parse_argument());
+			}
+		} catch(...) {
+			allow_args = true;
+			throw;
+		}
+		allow_args = true;
+	}
+	return(result);
+	// TODO []
+	// TODO .
+	// TODO ~ (not)
 }
 AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 	if(precedence_level < 0)
 		return(parse_value());
 	AST::Node* result = parse_binary_operation(precedence_level - 1);
-	if(result == intern(")") || any_operator_P(result, apply_precedence_level + 1, sizeof(operator_precedence)/sizeof(operator_precedence[0]))) {
-		raise_error("<operand>", result ? result->str() : "<nothing>");
-	}
+	// FIXME
+	//if(result == intern(")") || any_operator_P(result, apply_precedence_level + 1, sizeof(operator_precedence)/sizeof(operator_precedence[0]))) {
+	//	raise_error("<operand>", result ? result->str() : "<nothing>");
+	//}
 	while(AST::Node* actual_token = match_operator(precedence_level, input_token)) {
 		AST::Node* operator_ = actual_token;
-		if(actual_token != intern("apply"))
-			consume(); /* operator */
-		if(actual_token == intern("apply") && macro_operator_P(result)) {
-			result = parse_macro(result);
-		} else
-			result = operation(operator_, result, parse_binary_operation(precedence_level - 1));
+		consume(); /* operator */
+		result = operation(operator_, result, parse_binary_operation(precedence_level - 1));
 	}
 	return(result);
 }
 AST::Node* MathParser::parse_expression(void) {
 	return parse_binary_operation(sizeof(operator_precedence)/sizeof(operator_precedence[0]) - 1);
 }
+AST::Node* MathParser::parse_argument(void) {
+	return parse_binary_operation(apply_precedence_level);
+}
 AST::Node* MathParser::parse(FILE* input_file) {
 	push(input_file, 0);
+	allow_args = true;
 	consume();
 	AST::Node* result = parse_expression();
 	pop();

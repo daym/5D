@@ -18,7 +18,7 @@ void test_expression(const char* source, const char* expected_tree) {
 	//std::cout << source << std::endl;
 	AST::Node* result = parser.parse(fmemopen((void*) buf, strlen(buf), "r"));
 	if(result->str() != expected_tree) {
-		std::cerr << result->str() << std::endl;
+		std::cerr << "error: input was " << source << "; expected " << expected_tree << " but got " << result->str() << std::endl;
 		abort();
 	}
 }
@@ -34,5 +34,6 @@ int main() {
 	test_expression("(\\x x) 1", "((\\ x x) 1)");
 	test_expression("a⨯b", "(⨯ a b)");
 	test_expression("a⃗⨯b⃗", "(⨯ a⃗ b⃗)");
+	test_expression("2⋅f(x)", "(* 2 (f x))");
 	return(0);
 }
