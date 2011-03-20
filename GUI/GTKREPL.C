@@ -21,6 +21,7 @@ static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer
 }
 
 GTKREPL::GTKREPL(GtkWindow* parent) {
+	fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
 	fWidget = (GtkWindow*) gtk_dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_OK, GTK_RESPONSE_OK, NULL);
 	gtk_dialog_set_default_response(GTK_DIALOG(fWidget), GTK_RESPONSE_OK);
 	fMainBox = (GtkBox*) gtk_vbox_new(FALSE, 7);
@@ -28,7 +29,7 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	gtk_widget_show(GTK_WIDGET(fMainBox));
 	fEnvironmentView = (GtkTreeView*) gtk_tree_view_new();
 	GtkTreeViewColumn* fNameColumn;
-	fNameColumn = gtk_tree_view_column_new_with_attributes("Name", gtk_cell_renderer_text_new(), NULL);
+	fNameColumn = gtk_tree_view_column_new_with_attributes("Name", gtk_cell_renderer_text_new(), "text", 0, NULL);
 	gtk_tree_view_append_column(fEnvironmentView, fNameColumn);
 	fEnvironmentStore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 	gtk_tree_view_set_model(fEnvironmentView, GTK_TREE_MODEL(fEnvironmentStore));
@@ -62,7 +63,7 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	//gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fShortcutBox), FALSE, FALSE, 7); 
 	gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fEditorBox), TRUE, TRUE, 7); 
 	gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fCommandEntry), FALSE, FALSE, 7); 
-	g_signal_connect_swapped(GTK_DIALOG(fWidget), "response", G_CALLBACK(&GTKREPL::handle_response), this);
+	g_signal_connect_swapped(GTK_DIALOG(fWidget), "response", G_CALLBACK(&GTKREPL::handle_response), (void*) this);
 	gtk_window_set_focus(GTK_WINDOW(fWidget), GTK_WIDGET(fCommandEntry));
 }
 GtkWidget* GTKREPL::widget(void) const {
@@ -75,6 +76,7 @@ void GTKREPL::execute(const char* command, GtkTextIter* destination) {
 		try {
 			try {
 				AST::Node* result = parser.parse(input_file);
+				add_to_environment(result);
 				std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
 				gtk_text_buffer_insert(fOutputBuffer, destination, v.c_str(), -1);
@@ -107,6 +109,28 @@ void GTKREPL::handle_response(gint response_id, GtkDialog* dialog) {
 		execute(text, &end);
 	}
 	g_free(text);
+}
+void GTKREPL::add_to_environment(AST::Node* definition) {
+	using namespace AST;
+	AST::Cons* definitionCons;
+	GtkTreeIter iter;
+	definitionCons = dynamic_cast<AST::Cons*>(definition);
+	if(!definitionCons || !definitionCons->head || !definitionCons->tail || definitionCons->head != intern("define"))
+		return;
+	definitionCons = definitionCons->tail;
+	AST::Symbol* procedureName = dynamic_cast<AST::Symbol*>(definitionCons->head);
+	if(!procedureName || !definitionCons->tail)
+		return;
+	std::string procedureNameString = procedureName->str();
+	//(apply (apply define x 2))
+	std::string body = definitionCons->tail->str();
+	gpointer hvalue;
+	if(!g_hash_table_lookup_extended(fEnvironmentKeys, procedureName, NULL, &hvalue))
+		gtk_list_store_append(fEnvironmentStore, &iter);
+	else
+		iter = * (GtkTreeIter*) hvalue;
+	gtk_list_store_set(fEnvironmentStore, &iter, 0, procedureNameString.c_str(), 1, body.c_str(), -1);
+	g_hash_table_replace(fEnvironmentKeys, procedureName, gtk_tree_iter_copy(&iter));
 }
 
 };

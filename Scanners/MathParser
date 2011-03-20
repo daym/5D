@@ -31,6 +31,7 @@ private:
 	AST::Node* parse_abstraction(void);
 	void parse_optional_whitespace(void);
 	AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2);
+	AST::Node* parse_macro(AST::Node* operand_1);
 protected:
 	AST::Node* parse_expression(void);
 	AST::Node* consume(AST::Symbol* expected_token = NULL);

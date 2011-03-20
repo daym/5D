@@ -306,6 +306,19 @@ AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 	} else
 		return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
 }
+static bool macro_operator_P(AST::Node* operator_) {
+	return(operator_ == intern("define"));
+}
+AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
+	if(operand_1 == intern("define")) {
+		AST::Node* parameter = consume(intern("<symbol>"));
+		return(cons(operand_1, cons(parameter, cons(parse_expression(), NULL))));
+		//return(cons(operand_1, cons(parse_expression(), NULL)));
+	} else {
+		raise_error("<known_macro>", "<unknown_macro>");
+		return(NULL);
+	}
+}
 static AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1) {
 	assert(operator_);
 	return(cons(operator_, cons(operand_1, NULL)));
@@ -361,7 +374,10 @@ AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 		AST::Node* operator_ = actual_token;
 		if(actual_token != intern("apply"))
 			consume(); /* operator */
-		result = operation(operator_, result, parse_binary_operation(precedence_level - 1));
+		if(actual_token == intern("apply") && macro_operator_P(result)) {
+			result = parse_macro(result);
+		} else
+			result = operation(operator_, result, parse_binary_operation(precedence_level - 1));
 	}
 	return(result);
 }
