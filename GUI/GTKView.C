@@ -34,6 +34,7 @@ void GTKView::repaint(GdkEventExpose* event) {
 	points[2].x = 0;
 	points[2].y = 90;
 	gdk_draw_polygon(GTK_WIDGET(fDrawingArea)->window, fGC, TRUE, points, 3);
+	// TODO print axes, labels, unit, axis names.
 }
 
 }; // end namespace GUI
