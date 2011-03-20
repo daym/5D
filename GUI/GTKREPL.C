@@ -6,7 +6,10 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
+#include <netinet/in.h>
 #include "GUI/GTKREPL"
 #include "Scanners/MathParser"
 
@@ -22,7 +25,9 @@ static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer
 
 GTKREPL::GTKREPL(GtkWindow* parent) {
 	fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
-	fWidget = (GtkWindow*) gtk_dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_OK, GTK_RESPONSE_OK, NULL);
+	fWidget = (GtkWindow*) gtk_dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_OK, GTK_RESPONSE_OK, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, GTK_STOCK_OPEN, GTK_RESPONSE_REJECT, NULL);
+	fSaveDialog = (GtkFileChooser*) gtk_file_chooser_dialog_new("Save REPL", GTK_WINDOW(fWidget), GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
+	fOpenDialog = (GtkFileChooser*) gtk_file_chooser_dialog_new("Open REPL", GTK_WINDOW(fWidget), GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
 	gtk_dialog_set_default_response(GTK_DIALOG(fWidget), GTK_RESPONSE_OK);
 	fMainBox = (GtkBox*) gtk_vbox_new(FALSE, 7);
 	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(fWidget)->vbox), GTK_WIDGET(fMainBox));
@@ -95,7 +100,135 @@ void GTKREPL::execute(const char* command, GtkTextIter* destination) {
 		}
 	}
 }
+static bool save_integer(FILE* output_file, long value) {
+	value = htonl(value);
+	return fwrite(&value, sizeof(value), 1, output_file) == 1;
+}
+static bool save_string(FILE* output_file, const char* s) {
+	if(!s)
+		s = "";
+	int l = strlen(s);
+	/*if(!save_integer(output_file, l))
+		return(false);
+	else*/
+		return fwrite(s, l + 1, 1, output_file) == 1;
+}
+bool GTKREPL::save_content_to(FILE* output_file) {
+	GtkTreeIter iter;
+	GtkTextIter start;
+	GtkTextIter end;
+	if(!save_string(output_file, "4DV1"))
+		return(false);
+	gtk_text_buffer_get_start_iter(fOutputBuffer, &start);
+	gtk_text_buffer_get_end_iter(fOutputBuffer, &end);
+	char* text = gtk_text_buffer_get_text(fOutputBuffer, &start, &end, FALSE);
+	if(!save_string(output_file, text))
+		return(false);
+	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(fEnvironmentStore), &iter)) {
+		while(1) {
+			char* name;
+			char* value;
+			gtk_tree_model_get(GTK_TREE_MODEL(fEnvironmentStore), &iter, 0, &name, 1, &value, -1);
+			if(!save_string(output_file, name))
+				return(false);
+			if(!save_string(output_file, value))
+				return(false);
+			//g_free(name);
+			//g_free(value);
+			if(!gtk_tree_model_iter_next(GTK_TREE_MODEL(fEnvironmentStore), &iter))
+				break;
+		}
+	}
+	return(true);
+}
+const char* load_string(const char*& string_iter) {
+	const char* result;
+	result = string_iter;
+	int l = strlen(string_iter);
+	string_iter += l + 1;
+	return(result);
+}
+
+bool GTKREPL::load_contents_from(const char* name) {
+	GError* error;
+	gsize size;
+	char* contents;
+	const char* content_iter;
+	GtkTextIter text_start;
+	GtkTextIter text_end;
+	gtk_text_buffer_get_start_iter(fOutputBuffer, &text_start);
+	gtk_text_buffer_get_end_iter(fOutputBuffer, &text_end);
+	gtk_text_buffer_delete(fOutputBuffer, &text_start, &text_end);
+	if(!g_file_get_contents(name, &contents, &size, &error)) {
+		g_warning("%s", error->message);
+		g_error_free(error);
+		return(false);
+	}
+	if(size < 1)
+		return(false);
+	if(contents[size - 1] != 0) /* should end with 00 */
+		return(false);
+	content_iter = contents;
+	if(strcmp(load_string(content_iter), "4DV1") != 0)
+		return(false);
+	gtk_text_buffer_insert(fOutputBuffer, &text_start, load_string(content_iter), -1);
+	gtk_list_store_clear(GTK_LIST_STORE(fEnvironmentStore));
+	const char* key;
+	while(key = load_string(content_iter), key[0]) {
+		GtkTreeIter iter;
+		gtk_list_store_append(fEnvironmentStore, &iter);
+		const char* value = load_string(content_iter);
+		gtk_list_store_set(fEnvironmentStore, &iter, 0, key, 1, value, -1);
+	}
+	g_free(contents);
+	return(true);
+}
+void GTKREPL::load(void) {
+	bool B_OK = false;
+	//gtk_file_chooser_set_filename(dialog, );
+	if(gtk_dialog_run(GTK_DIALOG(fOpenDialog)) == GTK_RESPONSE_OK) {
+		char* file_name = gtk_file_chooser_get_filename(fOpenDialog);
+		if(load_contents_from(file_name))
+			B_OK = true;
+		g_free(file_name);
+	}
+	gtk_widget_hide(GTK_WIDGET(fOpenDialog));
+	if(!B_OK) {
+		g_warning("could not open file");
+	}
+}
+void GTKREPL::save(void) {
+	bool B_OK = false;
+	gtk_file_chooser_set_do_overwrite_confirmation(fSaveDialog, TRUE);
+	//gtk_file_chooser_set_filename(dialog, );
+	if(gtk_dialog_run(GTK_DIALOG(fSaveDialog)) == GTK_RESPONSE_OK) {
+		char* file_name = gtk_file_chooser_get_filename(fSaveDialog);
+		char* temp_name = g_strdup_printf("%sXXXXXX", file_name);
+		int FD = mkstemp(temp_name);
+		FILE* output_file = fdopen(FD, "w");
+		if(save_content_to(output_file)) {
+			fclose(output_file);
+			close(FD);
+			if(rename(temp_name, file_name) != -1)
+				B_OK = true;
+			//unlink(temp_name);
+		}
+		g_free(temp_name);
+		g_free(file_name);
+	}
+	gtk_widget_hide(GTK_WIDGET(fSaveDialog));
+	if(!B_OK) {
+		g_warning("could not save file");
+	}
+}
 void GTKREPL::handle_response(gint response_id, GtkDialog* dialog) {
+	if(response_id != GTK_RESPONSE_OK) {
+		if(response_id == GTK_RESPONSE_ACCEPT)
+			save();
+		else if(response_id == GTK_RESPONSE_REJECT)
+			load();
+		return;
+	}
 	GtkTextIter beginning;
 	GtkTextIter end;
 	gchar* text;
