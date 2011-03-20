@@ -5,7 +5,7 @@
 #include "AST/Symbol"
 
 namespace Evaluators {
-void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& freeNames);
+void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames);
 };
 
 #endif /*ndef __EVALUATORS_H*/
