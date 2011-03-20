@@ -10,7 +10,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/GTKView"
 using namespace GUI;
 
-static GtkWindow* make_view_window(void) {
+static GtkWindow* make_view_window() {
 	GtkWindow* window;
 	GdkGeometry geometry;
 	GtkBox* box;
@@ -34,8 +34,10 @@ static GtkWindow* make_view_window(void) {
 	gtk_widget_show(GTK_WIDGET(window));
 	return(window);
 }
-static GtkWindow* make_REPL_window(GtkWindow* parent) {
+static GtkWindow* make_REPL_window(GtkWindow* parent, const char* source_file_name) {
 	GTKREPL* REPL = new GTKREPL(parent);
+	if(source_file_name)
+		REPL->load_contents_from(source_file_name);
 	gtk_widget_show(GTK_WIDGET(REPL->widget()));
 	return(GTK_WINDOW(REPL->widget()));
 }
@@ -45,8 +47,7 @@ static GtkWindow* make_REPL_window(GtkWindow* parent) {
 /* TODO LATEX display worker that displays the actual equation in the text view once it's done */
 int main(int argc, char* argv[]) {
 	gtk_init(&argc, &argv);
-	make_view_window();
-	g_signal_connect(G_OBJECT(make_REPL_window(NULL)), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
+	g_signal_connect(G_OBJECT(make_REPL_window(make_view_window(), argc > 1 ? argv[argc - 1] : NULL)), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 	gtk_main();
 	return(0);
 }

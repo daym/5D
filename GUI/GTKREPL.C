@@ -150,7 +150,7 @@ const char* load_string(const char*& string_iter) {
 }
 
 bool GTKREPL::load_contents_from(const char* name) {
-	GError* error;
+	GError* error = NULL;
 	gsize size;
 	char* contents;
 	const char* content_iter;
