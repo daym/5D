@@ -7,11 +7,14 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #include <gtk/gtk.h>
 #include "GUI/GTKREPL"
+#include "GUI/GTKView"
 using namespace GUI;
 
 static GtkWindow* make_view_window(void) {
 	GtkWindow* window;
 	window = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	GTKView* view = new GTKView();
+	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view->widget()));
 	gtk_widget_show(GTK_WIDGET(window));
 	return(window);
 }
@@ -26,6 +29,7 @@ static GtkWindow* make_REPL_window(GtkWindow* parent) {
 /* TODO LATEX display worker that displays the actual equation in the text view once it's done */
 int main(int argc, char* argv[]) {
 	gtk_init(&argc, &argv);
+	make_view_window();
 	g_signal_connect(G_OBJECT(make_REPL_window(NULL)), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 	gtk_main();
 	return(0);

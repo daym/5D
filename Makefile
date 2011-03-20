@@ -60,7 +60,7 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanner.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
-GUI/GTKGUI.o: GUI/GTKGUI.C GUI/GTKREPL
+GUI/GTKGUI.o: GUI/GTKGUI.C GUI/GTKREPL GUI/GTKView
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 GUI/GTKREPL.o: GUI/GTKREPL.C Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol

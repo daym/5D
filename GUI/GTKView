@@ -8,9 +8,12 @@ class GTKView {
 private:
 	GtkScrolledWindow* fScrolledWindow;
 	GtkDrawingArea* fDrawingArea;
+	GdkGC* fGC;
 public:
 	GTKView(void);
 	GtkWidget* widget() const;
+	void repaint(GdkEventExpose* event);
+	void allocate_resources(void);
 };
 
 };
