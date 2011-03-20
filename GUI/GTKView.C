@@ -9,7 +9,8 @@ static gboolean g_repaint(GtkWidget* widget, GdkEventExpose* event, GTKView* vie
 static void g_allocate_resources(GtkWidget* widget, GTKView* view) {
 	view->allocate_resources();
 }
-GTKView::GTKView(void) {
+GTKView::GTKView(GTKViewMode mode) {
+	fMode = mode;
 	fScrolledWindow = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
 	fDrawingArea = (GtkDrawingArea*) gtk_drawing_area_new();
 	gtk_scrolled_window_add_with_viewport(fScrolledWindow, GTK_WIDGET(fDrawingArea));

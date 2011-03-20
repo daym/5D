@@ -13,8 +13,20 @@ using namespace GUI;
 static GtkWindow* make_view_window(void) {
 	GtkWindow* window;
 	window = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	GTKView* view = new GTKView();
-	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view->widget()));
+	GtkBox* box;
+	GtkBox* hbox;
+	box = (GtkBox*) gtk_vbox_new(FALSE, 2);
+	hbox = (GtkBox*) gtk_hbox_new(FALSE, 2);
+	GTKView* viewXZ = new GTKView(MODE_XZ);
+	GTKView* viewXY = new GTKView(MODE_XY);
+	GTKView* viewPerspective = new GTKView(MODE_PERSPECTIVE);
+	gtk_box_pack_start(box, GTK_WIDGET(viewXZ->widget()), TRUE, TRUE, 2);
+	gtk_box_pack_start(box, GTK_WIDGET(viewXY->widget()), TRUE, TRUE, 2);
+	gtk_widget_show(GTK_WIDGET(box));
+	gtk_box_pack_start(hbox, GTK_WIDGET(box), TRUE, TRUE, 2);
+	gtk_box_pack_start(hbox, GTK_WIDGET(viewPerspective->widget()), TRUE, TRUE, 2);
+	gtk_widget_show(GTK_WIDGET(hbox));
+	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(hbox));
 	gtk_widget_show(GTK_WIDGET(window));
 	return(window);
 }
