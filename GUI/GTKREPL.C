@@ -375,5 +375,34 @@ bool GTKREPL::confirm_close(void) {
 	}
 	return(true);
 }
+static void g_LATEX_child_died(GPid pid, int status, GTKREPL* REPL) {
+	// FIXME status, non-death.
+	REPL->handle_LATEX_image(pid);
+	g_spawn_close_pid(pid);
+}
+void GTKREPL::handle_LATEX_image(GPid pid) {
+	GdkPixbuf* pixbuf;
+	pixbuf = gdk_pixbuf_new_from_file("eqn.png"/*FIXME*/, NULL);
+	if(pixbuf) {
+		GtkTextIter iter;
+		gtk_text_buffer_get_end_iter(fOutputBuffer, &iter);
+		gtk_text_buffer_insert_pixbuf(fOutputBuffer, &iter, pixbuf);
+		g_object_unref(G_OBJECT(pixbuf));
+	}
+}
+void GTKREPL::defer_LATEX(const char* text) {
+	GError* error;
+	const char* argv[] = {
+		"l2p",
+		"-i",
+		text,
+		//"'$I<latex_expression>$'
+		NULL,
+	};
+	GPid pid;
+	if(g_spawn_async(NULL, (char**) argv, NULL, (GSpawnFlags)(G_SPAWN_DO_NOT_REAP_CHILD|G_SPAWN_SEARCH_PATH|G_SPAWN_STDOUT_TO_DEV_NULL), NULL, this/*user_data*/, &pid, &error)) {
+		g_child_watch_add(pid, (GChildWatchFunc) g_LATEX_child_died, this);
+	}
+}
 
 };
