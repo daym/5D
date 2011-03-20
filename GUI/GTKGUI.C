@@ -12,9 +12,10 @@ using namespace GUI;
 
 static GtkWindow* make_view_window(void) {
 	GtkWindow* window;
-	window = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	GdkGeometry geometry;
 	GtkBox* box;
 	GtkBox* hbox;
+	window = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	box = (GtkBox*) gtk_vbox_new(FALSE, 2);
 	hbox = (GtkBox*) gtk_hbox_new(FALSE, 2);
 	GTKView* viewXZ = new GTKView(MODE_XZ);
@@ -27,6 +28,9 @@ static GtkWindow* make_view_window(void) {
 	gtk_box_pack_start(hbox, GTK_WIDGET(viewPerspective->widget()), TRUE, TRUE, 2);
 	gtk_widget_show(GTK_WIDGET(hbox));
 	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(hbox));
+	geometry.min_width = 400;
+	geometry.min_height = 400;
+	gtk_window_set_geometry_hints(window, NULL, &geometry, GDK_HINT_MIN_SIZE);
 	gtk_widget_show(GTK_WIDGET(window));
 	return(window);
 }

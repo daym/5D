@@ -13,7 +13,7 @@ typedef enum {
 
 class GTKView {
 private:
-	GtkScrolledWindow* fScrolledWindow;
+	//GtkScrolledWindow* fScrolledWindow;
 	GtkDrawingArea* fDrawingArea;
 	GdkGC* fGC;
 	GTKViewMode fMode;

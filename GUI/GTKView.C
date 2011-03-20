@@ -11,16 +11,16 @@ static void g_allocate_resources(GtkWidget* widget, GTKView* view) {
 }
 GTKView::GTKView(GTKViewMode mode) {
 	fMode = mode;
-	fScrolledWindow = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
+	//fScrolledWindow = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
 	fDrawingArea = (GtkDrawingArea*) gtk_drawing_area_new();
-	gtk_scrolled_window_add_with_viewport(fScrolledWindow, GTK_WIDGET(fDrawingArea));
+	//gtk_scrolled_window_add_with_viewport(fScrolledWindow, GTK_WIDGET(fDrawingArea));
 	gtk_widget_show(GTK_WIDGET(fDrawingArea));
-	gtk_widget_show(GTK_WIDGET(fScrolledWindow));
+	//gtk_widget_show(GTK_WIDGET(fScrolledWindow));
 	g_signal_connect(G_OBJECT(fDrawingArea), "realize", G_CALLBACK(g_allocate_resources), this);
 	g_signal_connect(G_OBJECT(fDrawingArea), "expose-event", G_CALLBACK(g_repaint), this);
 }
 GtkWidget* GTKView::widget() const {
-	return(GTK_WIDGET(fScrolledWindow));
+	return(GTK_WIDGET(fDrawingArea));
 }
 void GTKView::allocate_resources(void) {
 	fGC = gdk_gc_new(GTK_WIDGET(fDrawingArea)->window);
