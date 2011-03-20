@@ -337,21 +337,7 @@ AST::Node* MathParser::parse_abstraction(void) {
 	}
 }
 AST::Node* MathParser::parse_value(void) {
-	AST::Node* result;
-	if(input_token == intern("(")) {
-		bool previous_allow_args = allow_args;
-		allow_args = true;
-		AST::Node* opening_brace = input_value;
-		consume();
-		result = parse_expression();
-		if(opening_brace != intern("(") || input_value != intern(")")) {
-			raise_error(")", input_value ? input_value->str() : "<nothing>");
-			allow_args = previous_allow_args;
-			return(NULL);
-		}
-		consume(intern(")"));
-		allow_args = previous_allow_args;
-	} else if(input_token == intern("\\")) { // function abstraction
+	if(input_token == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());
 	} else if(input_token == intern("-") || input_token == intern("+") || input_token == intern("~")) {
@@ -363,23 +349,38 @@ AST::Node* MathParser::parse_value(void) {
 		       (operator_ == intern("-")) ? cons(intern("0-"), cons(argument, NULL)) :
 		       cons(operator_, cons(argument, NULL)));
 	} else {
-		result = consume();
-	}
-	if(allow_args) {
-		allow_args = false; // sigh...
-		try {
-			// this will have problems with: "cos -3" because it doesn't know that that means "cos (-3)" and not "(cos)-3".
-			while(!(input_token == NULL || input_token == intern(")") || any_operator_P(input_token, 0, sizeof(operator_precedence)/sizeof(operator_precedence[0])))) {
-				//raise_error("<operand>", result ? result->str() : "<nothing>");
-				result = operation(intern("apply"), result, parse_argument());
-			}
-		} catch(...) {
+		AST::Node* result;
+		if(input_token == intern("(")) {
+			bool previous_allow_args = allow_args;
 			allow_args = true;
-			throw;
+			AST::Node* opening_brace = input_value;
+			consume();
+			result = parse_expression();
+			if(opening_brace != intern("(") || input_value != intern(")")) {
+				raise_error(")", input_value ? input_value->str() : "<nothing>");
+				allow_args = previous_allow_args;
+				return(NULL);
+			}
+			consume(intern(")"));
+			allow_args = previous_allow_args;
+		} else
+			result = consume();
+		if(allow_args) {
+			allow_args = false; // sigh...
+			try {
+				// this will have problems with: "cos -3" because it doesn't know that that means "cos (-3)" and not "(cos)-3".
+				while(!(input_token == NULL || input_token == intern(")") || any_operator_P(input_token, 0, sizeof(operator_precedence)/sizeof(operator_precedence[0])))) {
+					//raise_error("<operand>", result ? result->str() : "<nothing>");
+					result = operation(intern("apply"), result, parse_argument());
+				}
+			} catch(...) {
+				allow_args = true;
+				throw;
+			}
+			allow_args = true;
 		}
-		allow_args = true;
+		return(result);
 	}
-	return(result);
 	// TODO []
 	// TODO .
 	// TODO ~ (not)
