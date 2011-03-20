@@ -24,7 +24,10 @@ static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer
 	return(FALSE);
 }
 static gboolean g_confirm_close(GtkDialog* dialog, GdkEvent* event, GTKREPL* REPL) {
-	return(!REPL->confirm_close());
+	if(REPL->confirm_close())
+		gtk_widget_hide(GTK_WIDGET(dialog));
+	return(TRUE);
+	//return(!REPL->confirm_close());
 }
 static gboolean accept_prefix(GtkEntryCompletion* completion, gchar* prefix, GtkEntry* entry) {
 	return(FALSE);
@@ -51,15 +54,14 @@ static gboolean complete_command(GtkEntry* entry, GdkEventKey* key, GtkEntryComp
 	}
 	return(FALSE);
 }
-static gboolean g_hide_window(GtkWidget* widget, GdkEvent* event, gpointer user_data) {
+/*static gboolean g_hide_window(GtkWidget* widget, GdkEvent* event, gpointer user_data) {
 	gtk_widget_hide(GTK_WIDGET(widget));
 	return(TRUE);
-}
+}*/
 GTKREPL::GTKREPL(GtkWindow* parent) {
 	fFileModified = false;
 	fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
 	fWidget = (GtkWindow*) gtk_dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_EXECUTE, GTK_RESPONSE_OK, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, GTK_STOCK_OPEN, GTK_RESPONSE_REJECT, NULL);
-	g_signal_connect(G_OBJECT(fWidget), "delete-event", G_CALLBACK(g_hide_window), NULL);
 	fSaveDialog = (GtkFileChooser*) gtk_file_chooser_dialog_new("Save REPL", GTK_WINDOW(fWidget), GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
 	fOpenDialog = (GtkFileChooser*) gtk_file_chooser_dialog_new("Open REPL", GTK_WINDOW(fWidget), GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
 	gtk_dialog_set_default_response(GTK_DIALOG(fWidget), GTK_RESPONSE_OK);
@@ -127,6 +129,7 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 			load_contents_from(environment_name);
 	}
 	g_signal_connect(G_OBJECT(fWidget), "delete-event", G_CALLBACK(g_confirm_close), this);
+	//g_signal_connect(G_OBJECT(fWidget), "delete-event", G_CALLBACK(g_hide_window), NULL);
 }
 GtkWidget* GTKREPL::widget(void) const {
 	return(GTK_WIDGET(fWidget));
