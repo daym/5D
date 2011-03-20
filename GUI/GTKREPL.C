@@ -23,17 +23,33 @@ static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer
 	}
 	return(FALSE);
 }
+static gboolean accept_prefix(GtkEntryCompletion* completion, gchar* prefix, GtkEntry* entry) {
+	return(FALSE);
+}
+static gboolean accept_match(GtkEntryCompletion* completion, GtkTreeModel* model, GtkTreeIter* iter, GtkEntry* entry) {
+	printf("MATCH\n");
+	return(FALSE);
+}
 static gboolean complete_command(GtkEntry* entry, GdkEventKey* key, GtkEntryCompletion* completion) {
 	if((key->state & (GDK_SHIFT_MASK|GDK_CONTROL_MASK|GDK_MOD1_MASK|GDK_MOD2_MASK|GDK_MOD3_MASK|GDK_MOD4_MASK|GDK_MOD5_MASK)) == 0 && key->keyval == GDK_Tab) {
 		gtk_entry_completion_set_popup_completion(completion, TRUE);
 		g_signal_emit_by_name(entry, "changed", NULL); // GTK bug 584402
 		gtk_entry_completion_complete(completion);
 		gtk_entry_completion_set_popup_completion(completion, FALSE);
+		{
+			gint beginning;
+			gint end;
+			if(gtk_editable_get_selection_bounds(GTK_EDITABLE(entry), &beginning, &end)) {
+				gtk_editable_select_region(GTK_EDITABLE(entry), end, end);
+				gtk_editable_set_position(GTK_EDITABLE(entry), end);
+			}
+		}
 		return(TRUE);
 	}
 	return(FALSE);
 }
 GTKREPL::GTKREPL(GtkWindow* parent) {
+	fFileModified = false;
 	fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
 	fWidget = (GtkWindow*) gtk_dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_OK, GTK_RESPONSE_OK, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, GTK_STOCK_OPEN, GTK_RESPONSE_REJECT, NULL);
 	fSaveDialog = (GtkFileChooser*) gtk_file_chooser_dialog_new("Save REPL", GTK_WINDOW(fWidget), GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
@@ -61,10 +77,14 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	fCommandEntry = (GtkEntry*) gtk_entry_new();
 	fCommandCompletion = gtk_entry_completion_new();
 	g_signal_connect(G_OBJECT(fCommandEntry), "key-press-event", G_CALLBACK(complete_command), fCommandCompletion);
-	//g_signal_connect(G_OBJECT(fCommandCompletion), "match-selected", G_CALLBACK(), fCommandEntry);
+	g_signal_connect(G_OBJECT(fCommandCompletion), "match-selected", G_CALLBACK(accept_match), fCommandEntry);
+	g_signal_connect(G_OBJECT(fCommandCompletion), "insert-prefix", G_CALLBACK(accept_prefix), fCommandEntry);
 	gtk_entry_completion_set_model(fCommandCompletion, GTK_TREE_MODEL(fEnvironmentStore));
 	gtk_entry_completion_set_text_column(fCommandCompletion, 0);
 	gtk_entry_completion_set_popup_completion(fCommandCompletion, FALSE);
+	gtk_entry_completion_set_inline_completion(fCommandCompletion, TRUE); // XXX
+	//gtk_entry_completion_set_inline_selection(fCommandCompletion, TRUE); // XXX
+	gtk_entry_completion_set_popup_single_match(fCommandCompletion, FALSE);
 	gtk_entry_set_completion(fCommandEntry, fCommandCompletion);
 	gtk_entry_set_activates_default(fCommandEntry, TRUE);
 	gtk_widget_show(GTK_WIDGET(fCommandEntry));
@@ -122,6 +142,7 @@ void GTKREPL::execute(const char* command, GtkTextIter* destination) {
 			v = " => " + v + "\n";
 			gtk_text_buffer_insert(fOutputBuffer, destination, v.c_str(), -1);
 		}
+		set_file_modified(true);
 	}
 }
 static bool save_integer(FILE* output_file, long value) {
@@ -185,6 +206,9 @@ bool GTKREPL::load_contents_from(const char* name) {
 	const char* content_iter;
 	GtkTextIter text_start;
 	GtkTextIter text_end;
+	if(get_file_modified())
+		if(!save())
+			return(false);
 	gtk_text_buffer_get_start_iter(fOutputBuffer, &text_start);
 	gtk_text_buffer_get_end_iter(fOutputBuffer, &text_end);
 	gtk_text_buffer_delete(fOutputBuffer, &text_start, &text_end);
@@ -212,6 +236,7 @@ bool GTKREPL::load_contents_from(const char* name) {
 	g_free(contents);
 	{
 		char* absolute_name = get_absolute_path(name);
+		set_file_modified(false);
 		set_current_environment_name(absolute_name);
 	}
 	return(true);
@@ -231,7 +256,7 @@ void GTKREPL::load(void) {
 		g_warning("could not open file");
 	}
 }
-void GTKREPL::save(void) {
+bool GTKREPL::save(void) {
 	bool B_OK = false;
 	gtk_file_chooser_set_do_overwrite_confirmation(fSaveDialog, TRUE);
 	//gtk_file_chooser_set_filename(dialog, );
@@ -252,11 +277,15 @@ void GTKREPL::save(void) {
 		}
 		g_free(temp_name);
 		g_free(file_name);
+	} else {
+		gtk_widget_hide(GTK_WIDGET(fSaveDialog));
+		return(true); // his own fault.
 	}
 	gtk_widget_hide(GTK_WIDGET(fSaveDialog));
 	if(!B_OK) {
 		g_warning("could not save file");
 	}
+	return(B_OK);
 }
 void GTKREPL::set_current_environment_name(const char* absolute_name) {
 	gtk_window_set_title(fWidget, absolute_name);
@@ -310,6 +339,21 @@ void GTKREPL::add_to_environment(AST::Node* definition) {
 		iter = * (GtkTreeIter*) hvalue;
 	gtk_list_store_set(fEnvironmentStore, &iter, 0, procedureNameString.c_str(), 1, body.c_str(), -1);
 	g_hash_table_replace(fEnvironmentKeys, procedureName, gtk_tree_iter_copy(&iter));
+	set_file_modified(true);
+}
+bool GTKREPL::get_file_modified(void) const {
+	return(fFileModified);
+}
+void GTKREPL::set_file_modified(bool value) {
+	if(fFileModified == value)
+		return;
+	fFileModified = value;
+	if(value) {
+		const char* title = gtk_window_get_title(fWidget);
+		char* new_title = g_strdup_printf("%s *", title);
+		gtk_window_set_title(fWidget, new_title);
+		g_free(new_title);
+	}
 }
 
 };

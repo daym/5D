@@ -30,13 +30,16 @@ private:
 	GtkFileChooser* fOpenDialog;
 	struct Config* fConfig;
 	GtkEntryCompletion* fCommandCompletion;
+	bool fFileModified;
 protected:
 	void handle_response(gint response_id, GtkDialog* dialog);
 	void execute(const char* command, GtkTextIter* destination);
 	void add_to_environment(AST::Node* definition);
 	void set_current_environment_name(const char* absolute_name);
+	void set_file_modified(bool value);
 public:
-	void save(void);
+	bool get_file_modified(void) const;
+	bool save(void);
 	void load(void);
 	bool save_content_to(FILE* output_file);
 	bool load_contents_from(const char* name);
