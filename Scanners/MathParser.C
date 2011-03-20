@@ -314,7 +314,12 @@ static bool macro_operator_P(AST::Node* operator_) {
 AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 	if(operand_1 == intern("define")) {
 		AST::Node* parameter = consume(intern("<symbol>"));
-		return(cons(operand_1, cons(parameter, cons(parse_expression(), NULL))));
+		AST::Node* body = parse_expression();
+		if(!parameter||!body||!operand_1) {
+			raise_error("<define-body>", "<incomplete>");
+			return(NULL);
+		}
+		return(cons(operand_1, cons(parameter, cons(body, NULL))));
 		//return(cons(operand_1, cons(parse_expression(), NULL)));
 	} else {
 		raise_error("<known_macro>", "<unknown_macro>");

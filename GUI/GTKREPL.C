@@ -23,7 +23,16 @@ static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer
 	}
 	return(FALSE);
 }
-
+static gboolean complete_command(GtkEntry* entry, GdkEventKey* key, GtkEntryCompletion* completion) {
+	if((key->state & (GDK_SHIFT_MASK|GDK_CONTROL_MASK|GDK_MOD1_MASK|GDK_MOD2_MASK|GDK_MOD3_MASK|GDK_MOD4_MASK|GDK_MOD5_MASK)) == 0 && key->keyval == GDK_Tab) {
+		gtk_entry_completion_set_popup_completion(completion, TRUE);
+		g_signal_emit_by_name(entry, "changed", NULL); // GTK bug 584402
+		gtk_entry_completion_complete(completion);
+		gtk_entry_completion_set_popup_completion(completion, FALSE);
+		return(TRUE);
+	}
+	return(FALSE);
+}
 GTKREPL::GTKREPL(GtkWindow* parent) {
 	fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
 	fWidget = (GtkWindow*) gtk_dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_OK, GTK_RESPONSE_OK, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, GTK_STOCK_OPEN, GTK_RESPONSE_REJECT, NULL);
@@ -50,6 +59,13 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	//gtk_box_pack_start(fShortcutBox, GTK_WIDGET(fExecuteButton), TRUE, TRUE, 7);
 	//gtk_widget_show(GTK_WIDGET(fShortcutBox));
 	fCommandEntry = (GtkEntry*) gtk_entry_new();
+	fCommandCompletion = gtk_entry_completion_new();
+	g_signal_connect(G_OBJECT(fCommandEntry), "key-press-event", G_CALLBACK(complete_command), fCommandCompletion);
+	//g_signal_connect(G_OBJECT(fCommandCompletion), "match-selected", G_CALLBACK(), fCommandEntry);
+	gtk_entry_completion_set_model(fCommandCompletion, GTK_TREE_MODEL(fEnvironmentStore));
+	gtk_entry_completion_set_text_column(fCommandCompletion, 0);
+	gtk_entry_completion_set_popup_completion(fCommandCompletion, FALSE);
+	gtk_entry_set_completion(fCommandEntry, fCommandCompletion);
 	gtk_entry_set_activates_default(fCommandEntry, TRUE);
 	gtk_widget_show(GTK_WIDGET(fCommandEntry));
 	fOutputArea = (GtkTextView*) gtk_text_view_new();
