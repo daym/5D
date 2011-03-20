@@ -183,13 +183,21 @@ bool GTKREPL::load_contents_from(const char* name) {
 	g_free(contents);
 	return(true);
 }
+char* get_absolute_path(const char* name) {
+	if(g_path_is_absolute(name))
+		return(strdup(name));
+	else
+		return(g_build_filename(g_get_current_dir(), name, NULL));
+}
 void GTKREPL::load(void) {
 	bool B_OK = false;
 	//gtk_file_chooser_set_filename(dialog, );
 	if(gtk_dialog_run(GTK_DIALOG(fOpenDialog)) == GTK_RESPONSE_OK) {
 		char* file_name = gtk_file_chooser_get_filename(fOpenDialog);
-		if(load_contents_from(file_name))
+		if(load_contents_from(file_name)) {
 			B_OK = true;
+			gtk_window_set_title(fWidget, get_absolute_path(file_name));
+		}
 		g_free(file_name);
 	}
 	gtk_widget_hide(GTK_WIDGET(fOpenDialog));
