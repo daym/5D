@@ -16,6 +16,13 @@ struct Symbol : Node {
 public:
 	virtual std::string str(void) const;
 };
+
+struct SymbolReference : Node {
+	struct Symbol* symbol;
+	int index;
+public:
+	virtual std::string str(void) const;
+};
 Symbol* intern(const char* name);
 
 };

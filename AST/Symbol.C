@@ -30,4 +30,8 @@ std::string Symbol::str(void) const {
 	return(name);
 }
 
+std::string SymbolReference::str(void) const {
+	return(symbol->str());
+}
+
 }; /* end namespace AST */
