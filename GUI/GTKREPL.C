@@ -250,10 +250,12 @@ void GTKREPL::load(void) {
 	//gtk_file_chooser_set_filename(dialog, );
 	if(gtk_dialog_run(GTK_DIALOG(fOpenDialog)) == GTK_RESPONSE_OK) {
 		char* file_name = gtk_file_chooser_get_filename(fOpenDialog);
-		if(load_contents_from(file_name)) {
+		if(file_name && load_contents_from(file_name)) {
 			B_OK = true;
 		}
 		g_free(file_name);
+	} else { // user did not want to load file after all.
+		B_OK = true;
 	}
 	gtk_widget_hide(GTK_WIDGET(fOpenDialog));
 	if(!B_OK) {
