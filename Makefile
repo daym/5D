@@ -10,7 +10,7 @@ GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 
-all: REPL/REPL GUI/GTKGUI
+all: REPL/REPL GUI/4D
 
 Linear_Algebra/test-Vector: Linear_Algebra/test-Vector.o
 	g++ -o Linear_Algebra/test-Vector Linear_Algebra/test-Vector.o
@@ -73,7 +73,7 @@ GUI/GTKREPL.o: GUI/GTKREPL.C Scanners/MathParser Scanners/Scanner AST/AST AST/Sy
 GUI/GTKView.o: GUI/GTKView.C
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKGUI: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o
+GUI/4D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o
 	g++ -o $@ $^ $(GUI_LDFLAGS)
 
 clean:
@@ -89,3 +89,5 @@ distclean: clean
 	rm -f AST/test-Symbol
 	rm -f Scanners/test-MathParser
 	rm -f Scanners/test-Scanner
+	rm -f GUI/4D
+	rm -f REPL/REPL
