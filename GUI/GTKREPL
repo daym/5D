@@ -19,6 +19,10 @@ private:
 	GtkEntry* fCommandEntry;
 	//GtkButton* fExecuteButton;
 	//GtkBox* fShortcutBox;
+	GtkTreeView* fEnvironmentView;
+	GtkListStore* fEnvironmentStore;
+	GtkBox* fEditorBox;
+	GtkScrolledWindow* fEnvironmentScroller;
 protected:
 	void handle_response(gint response_id, GtkDialog* dialog);
 	void execute(const char* command, GtkTextIter* destination);
