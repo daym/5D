@@ -1,0 +1,18 @@
+#ifndef __GTK_VIEW_H
+#define __GTK_VIEW_H
+#include <gtk/gtk.h>
+
+namespace GUI {
+
+class GTKView {
+private:
+	GtkScrolledWindow* fScrolledWindow;
+	GtkDrawingArea* fDrawingArea;
+public:
+	GTKView(void);
+	GtkWidget* widget() const;
+};
+
+};
+
+#endif /* ndef __GTK_VIEW_H */
