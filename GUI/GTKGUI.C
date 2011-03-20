@@ -10,12 +10,28 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/GTKView"
 using namespace GUI;
 
+static GtkWindow* REPL;
+static void open_REPL(GtkToolButton* button, GtkWindow* view) {
+	gtk_widget_show(GTK_WIDGET(REPL));
+}
 static GtkWindow* make_view_window() {
 	GtkWindow* window;
 	GdkGeometry geometry;
 	GtkBox* box;
 	GtkBox* hbox;
+	GtkBox* mainVbox;
+	GtkToolbar* toolbar;
+	GtkToolButton* REPL_item;
 	window = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	REPL_item = (GtkToolButton*) gtk_tool_button_new_from_stock(GTK_STOCK_EXECUTE);
+	gtk_tool_button_set_label(REPL_item, "REPL...");
+	g_signal_connect(G_OBJECT(REPL_item), "clicked", G_CALLBACK(open_REPL), window);
+	gtk_tool_item_set_tooltip_text(GTK_TOOL_ITEM(REPL_item), "Talk to computer...");
+	gtk_widget_show(GTK_WIDGET(REPL_item));
+	toolbar = (GtkToolbar*) gtk_toolbar_new();
+	gtk_toolbar_set_style(toolbar, GTK_TOOLBAR_BOTH);
+	gtk_toolbar_insert(toolbar, GTK_TOOL_ITEM(REPL_item), 0);
+	mainVbox = (GtkBox*) gtk_vbox_new(FALSE, 7);
 	box = (GtkBox*) gtk_vbox_new(FALSE, 2);
 	hbox = (GtkBox*) gtk_hbox_new(FALSE, 2);
 	GTKView* viewXZ = new GTKView(MODE_XZ);
@@ -27,7 +43,11 @@ static GtkWindow* make_view_window() {
 	gtk_box_pack_start(hbox, GTK_WIDGET(box), TRUE, TRUE, 2);
 	gtk_box_pack_start(hbox, GTK_WIDGET(viewPerspective->widget()), TRUE, TRUE, 2);
 	gtk_widget_show(GTK_WIDGET(hbox));
-	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(hbox));
+	gtk_widget_show(GTK_WIDGET(toolbar));
+	gtk_box_pack_start(mainVbox, GTK_WIDGET(toolbar), FALSE, FALSE, 7);
+	gtk_box_pack_start(mainVbox, GTK_WIDGET(hbox), TRUE, TRUE, 7);
+	gtk_widget_show(GTK_WIDGET(mainVbox));
+	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(mainVbox));
 	geometry.min_width = 400;
 	geometry.min_height = 400;
 	gtk_window_set_geometry_hints(window, NULL, &geometry, GDK_HINT_MIN_SIZE);
@@ -38,16 +58,15 @@ static GtkWindow* make_REPL_window(GtkWindow* parent, const char* source_file_na
 	GTKREPL* REPL = new GTKREPL(parent);
 	if(source_file_name)
 		REPL->load_contents_from(source_file_name);
-	gtk_widget_show(GTK_WIDGET(REPL->widget()));
+	//gtk_widget_show(GTK_WIDGET(REPL->widget()));
 	return(GTK_WINDOW(REPL->widget()));
 }
-
-/* TODO popup command dialog with TextView, TextArea and completion, history. */
-/* TODO main perspective window with maybe multiple perspective views */
-/* TODO LATEX display worker that displays the actual equation in the text view once it's done */
 int main(int argc, char* argv[]) {
+	GtkWindow* view;
 	gtk_init(&argc, &argv);
-	g_signal_connect(G_OBJECT(make_REPL_window(make_view_window(), argc > 1 ? argv[argc - 1] : NULL)), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
+	view = make_view_window();
+	g_signal_connect(G_OBJECT(view), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+	REPL = make_REPL_window(view, argc > 1 ? argv[argc - 1] : NULL);
 	gtk_main();
 	return(0);
 }
