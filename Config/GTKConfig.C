@@ -52,6 +52,7 @@ bool Config_save(struct Config* config) {
 	gchar* key_file_contents;
 	config->key_file = g_key_file_new();
 	config_dir_name = g_get_user_config_dir();
+	g_mkdir_with_parents(g_build_path(config_dir_name, "4D"), 0664);
 	full_name = g_build_path(config_dir_name, CONFIG_NAME, NULL);
 	//g_key_file_set_string(key_file, group_name, key, value);
 	key_file_contents = g_key_file_to_data (config->key_file, &size, &error);
