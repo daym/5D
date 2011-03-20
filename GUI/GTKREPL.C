@@ -217,8 +217,10 @@ void GTKREPL::save(void) {
 		if(save_content_to(output_file)) {
 			fclose(output_file);
 			close(FD);
-			if(rename(temp_name, file_name) != -1)
+			if(rename(temp_name, file_name) != -1) {
 				B_OK = true;
+				gtk_window_set_title(fWidget, get_absolute_path(file_name));
+			}
 			//unlink(temp_name);
 		}
 		g_free(temp_name);
