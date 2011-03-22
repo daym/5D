@@ -1,0 +1,3 @@
+allow deleting things out of the environment (with dependency check).
+put "define", "\\", "if", "cond" into the list of stuff to be auto-completed.
+just save the environment as an S expression.
