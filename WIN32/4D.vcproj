@@ -220,14 +220,6 @@
 				RelativePath="..\AST\Symbol.cc"
 				>
 			</File>
-			<File
-				RelativePath="..\Scanners\test-MathParser.cc"
-				>
-			</File>
-			<File
-				RelativePath="..\Scanners\test-Scanner.cc"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
