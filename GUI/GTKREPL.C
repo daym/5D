@@ -29,6 +29,15 @@ static gboolean g_confirm_close(GtkDialog* dialog, GdkEvent* event, GTKREPL* REP
 	return(TRUE);
 	//return(!REPL->confirm_close());
 }
+/*  the GdkWindow associated to the widget needs to enable the GDK_FOCUS_CHANGE_MASK mask. */
+static gboolean g_clear_output_selection(GtkWidget* widget, GdkEventFocus* event, GtkTextBuffer* buffer) {
+	if(gtk_text_buffer_get_has_selection(buffer)) {
+		GtkTextIter iter;
+		gtk_text_buffer_get_end_iter(buffer, &iter);
+		gtk_text_buffer_select_range(buffer, &iter, &iter);
+	}
+	return(FALSE);
+}
 static gboolean accept_prefix(GtkEntryCompletion* completion, gchar* prefix, GtkEntry* entry) {
 	return(FALSE);
 }
@@ -109,6 +118,7 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 	gtk_widget_show(GTK_WIDGET(fOutputScroller));
 	fOutputBuffer = gtk_text_view_get_buffer(fOutputArea);
 	fEditorBox = (GtkBox*) gtk_hbox_new(FALSE, 7);
+	g_signal_connect(G_OBJECT(fOutputArea), "focus-out-event", G_CALLBACK(g_clear_output_selection), fOutputBuffer);
 	gtk_box_pack_start(GTK_BOX(fEditorBox), GTK_WIDGET(fEnvironmentScroller), FALSE, FALSE, 7); 
 	gtk_box_pack_start(GTK_BOX(fEditorBox), GTK_WIDGET(fOutputScroller), TRUE, TRUE, 7); 
 	gtk_widget_show(GTK_WIDGET(fEditorBox));
