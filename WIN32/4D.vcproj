@@ -41,11 +41,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -114,10 +115,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -175,6 +177,26 @@
 				>
 			</File>
 			<File
+				RelativePath="..\AST\AST.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Evaluators\Evaluators.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Formatters\LATEX.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Scanners\MathParser.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Scanners\Scanner.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -193,6 +215,18 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\AST\Symbol.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Scanners\test-MathParser.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Scanners\test-Scanner.cc"
+				>
 			</File>
 		</Filter>
 		<Filter
@@ -236,7 +270,35 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath="..\AST\AST"
+			>
+		</File>
+		<File
+			RelativePath="..\Config\Config"
+			>
+		</File>
+		<File
+			RelativePath="..\Evaluators\Evaluators"
+			>
+		</File>
+		<File
+			RelativePath="..\Formatters\LATEX"
+			>
+		</File>
+		<File
+			RelativePath="..\Scanners\MathParser"
+			>
+		</File>
+		<File
 			RelativePath=".\ReadMe.txt"
+			>
+		</File>
+		<File
+			RelativePath="..\Scanners\Scanner"
+			>
+		</File>
+		<File
+			RelativePath="..\AST\Symbol"
 			>
 		</File>
 	</Files>
