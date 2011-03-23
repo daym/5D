@@ -1,0 +1,14 @@
+#ifndef __WIN32REPL_H
+#define __WIN32REPL_H
+#include <string>
+#include <windows.h>
+
+namespace GUI {
+
+struct REPL;
+void REPL_init(struct REPL* self, HWND parent);
+struct REPL* REPL_new(HWND parent);
+
+}
+
+#endif /* ndef __WIN32REPL_H */
