@@ -12,16 +12,19 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace AST {
 
-static std::map<std::string, Symbol*> symbols;
+static std::map<std::string, Symbol*>* symbols;
 
 Symbol* intern(const char* name) {
-	std::map<std::string, Symbol*>::const_iterator iter = symbols.find(name);
-	if(iter != symbols.end()) {
+	if(symbols == NULL)
+		symbols = new std::map<std::string, Symbol*>();
+	std::string xname = name;
+	std::map<std::string, Symbol*>::const_iterator iter = symbols->find(xname);
+	if(iter != symbols->end()) {
 		return(iter->second);
 	} else {
 		Symbol* result = new Symbol;
 		result->name = strdup(name);
-		symbols[name] = result;
+		(*symbols)[name] = result;
 		return(result);
 	}
 }

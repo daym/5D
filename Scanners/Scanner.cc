@@ -25,7 +25,7 @@ void Scanner::parse_token(void) {
 void Scanner::push(FILE* input_file, int line_number) {
 	this->input_file = input_file;
 	this->line_number = line_number;
-	this->position = ftell(input_file);
+	this->position = 0; // FIXME ftell(input_file);
 }
 
 void Scanner::pop(void) {
