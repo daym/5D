@@ -161,7 +161,7 @@ void MathParser::parse_unicode(int input) {
 void MathParser::parse_optional_whitespace(void) {
 	int input;
 	// skip whitespace...
-	while(++position, input = fgetc(input_file), input == ' ' || input == '\t' || input == '\n') {
+	while(++position, input = fgetc(input_file), input == ' ' || input == '\t' || input == '\n' || input == '\r') {
 		if(input == '\n')
 			++line_number;
 	}
