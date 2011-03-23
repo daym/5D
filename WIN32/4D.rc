@@ -62,8 +62,9 @@ END
 
 IDC_MY4D ACCELERATORS 
 BEGIN
-    "?",            IDM_ABOUT,              ASCII,  ALT
-    "/",            IDM_ABOUT,              ASCII,  ALT
+    "/",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
+    "?",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
+    VK_RETURN,      IDC_EXECUTE,            VIRTKEY, CONTROL, NOINVERT
 END
 
 

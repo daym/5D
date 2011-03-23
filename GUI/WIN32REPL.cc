@@ -78,6 +78,7 @@ SendMessage(hwnd, EM_SETSEL, (WPARAM)(int)iStartPos, (LPARAM)(int)iEndPos);
 
 struct REPL {
 	HWND dialog;
+	//HACCEL accelerators;
 };
 
 
@@ -133,6 +134,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 	hinstance = GetModuleHandle(NULL);
 	//DialogBox(hinstance, MAKEINTRESOURCE(IDD_REPL), parent, HandleREPLMessage);
 	self->dialog = CreateDialog(hinstance, MAKEINTRESOURCE(IDD_REPL), parent, HandleREPLMessage);
+	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY4D));
 	SetWindowLongPtr(self->dialog, GWLP_USERDATA, (LONG) self);
 	ShowWindow(self->dialog, SW_SHOWNORMAL);
 }
