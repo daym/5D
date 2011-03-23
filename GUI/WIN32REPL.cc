@@ -4,8 +4,25 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "WIN32REPL"
+#include "Scanners/MathParser"
 
 namespace GUI {
+
+static char* ToUTF8(const std::wstring& source) {
+	int count = WideCharToMultiByte(CP_UTF8, 0, source.c_str(), -1, NULL, 0, NULL, NULL);
+	char* result = (char*) calloc(count, sizeof(char));
+	if(WideCharToMultiByte(CP_UTF8, 0, source.c_str(), -1, result, count, NULL, NULL) != count)
+		abort();
+	return(result);
+}
+
+static std::wstring FromUTF8(const char* source) {
+	int count = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
+	WCHAR* result = (WCHAR*) calloc(count, sizeof(WCHAR));
+	if(MultiByteToWideChar(CP_UTF8, 0, source, -1, result, count) != count)
+		abort();
+	return(result);
+}
 
 std::wstring GetRichTextSelectedText(HWND control) {
 	WPARAM beginning = 0;
@@ -18,6 +35,16 @@ std::wstring GetRichTextSelectedText(HWND control) {
 		return(_T(""));
 	return(buffer);
 }
+void InsertRichText(HWND control, std::wstring value) {
+	int iTotalTextLength;
+	iTotalTextLength = GetWindowTextLength(control);
+	WPARAM beginning = 0;
+	LPARAM end = 0;
+	SendMessage(control, EM_GETSEL, (WPARAM) &beginning, (LPARAM) &end);
+	SendMessage(control, EM_SETSEL, (WPARAM) end, (LPARAM) end);
+	SendMessage(control, EM_REPLACESEL, (WPARAM)(BOOL)FALSE, (LPARAM)(LPWSTR) value.c_str());
+}
+
 std::wstring GetDlgItemTextCXX(HWND dialog, int control) {
 	WCHAR buffer[20000] = {0};
 	GetDlgItemTextW(dialog, control, buffer, 20000 - 1);
@@ -67,6 +94,23 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
+		switch(LOWORD(wParam)) {
+		case IDC_EXECUTE:
+			{
+				struct REPL* self;
+				std::wstring text;
+				HWND output;
+				self = (struct REPL*) GetWindowLongPtr(dialog, GWLP_USERDATA);
+				output = GetDlgItem(self->dialog, IDC_OUTPUT);
+				text = GetRichTextSelectedText(output);
+				if(text.length() == 0)
+					text = GetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY);
+				std::string UTF8_text = ToUTF8(text);
+				REPL_execute(self, UTF8_text.c_str());
+				break;
+			}
+		}
+
 		/*if (LOWORD(wParam) == IDCLOSE)
 		{
 			EndDialog(dialog, LOWORD(wParam));
@@ -87,9 +131,44 @@ struct REPL* REPL_new(HWND parent) {
 void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
 	hinstance = GetModuleHandle(NULL);
-	DialogBox(hinstance, MAKEINTRESOURCE(IDD_REPL), parent, HandleREPLMessage);
-
+	//DialogBox(hinstance, MAKEINTRESOURCE(IDD_REPL), parent, HandleREPLMessage);
+	self->dialog = CreateDialog(hinstance, MAKEINTRESOURCE(IDD_REPL), parent, HandleREPLMessage);
+	SetWindowLongPtr(self->dialog, GWLP_USERDATA, (LONG) self);
+	ShowWindow(self->dialog, SW_SHOWNORMAL);
 }
 
+void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
+	// TODO
+}
+
+void REPL_set_file_modified(struct REPL* self, bool value) {
+	// TODO
+}
+void REPL_insert_output(struct REPL* self, const char* output) {
+	InsertRichText(GetDlgItem(self->dialog, IDC_OUTPUT), FromUTF8(output));
+}
+void REPL_execute(struct REPL* self, const char* command) {
+	Scanners::MathParser parser;
+	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
+	if(input_file) {
+		try {
+			try {
+				AST::Node* result = parser.parse(input_file);
+				REPL_add_to_environment(self, result);
+				std::string v = result ? result->str() : "OK";
+				v = " => " + v + "\n";
+				REPL_insert_output(self, v.c_str());
+			} catch(...) {
+				fclose(input_file);
+				throw;
+			}
+		} catch(Scanners::ParseException e) {
+			std::string v = e.what() ? e.what() : "error";
+			v = " => " + v + "\n";
+			REPL_insert_output(self, v.c_str());
+		}
+		REPL_set_file_modified(self, true);
+	}
+}
 
 }; // end namespace GUI
