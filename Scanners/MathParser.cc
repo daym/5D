@@ -308,6 +308,12 @@ AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 static bool macro_operator_P(AST::Node* operator_) {
 	return(operator_ == intern("define"));
 }
+AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
+	if(macro_operator_P(node))
+		return(parse_macro(node));
+	else
+		return(NULL);
+}
 AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 	if(operand_1 == intern("define")) {
 		AST::Node* parameter = consume(intern("<symbol>"));
@@ -365,6 +371,12 @@ AST::Node* MathParser::parse_value(void) {
 			allow_args = previous_allow_args;
 		} else
 			result = consume();
+		{
+			AST::Node* macro_result;
+			macro_result = maybe_parse_macro(result);
+			if(macro_result)
+				return(macro_result);
+		}
 		if(allow_args) {
 			allow_args = false; // sigh...
 			try {

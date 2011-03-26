@@ -48,7 +48,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		// TODO IsWindow ? 
+		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg) /*|| !IsDialogMessage(msg.hwnd, &msg)*/)
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -135,6 +136,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+void Repaint(HWND hwnd, PAINTSTRUCT* ps) {
+}
+
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -174,7 +178,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code here...
+		Repaint(hWnd, &ps);
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:

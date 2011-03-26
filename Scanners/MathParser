@@ -33,6 +33,7 @@ private:
 	AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2);
 	AST::Node* parse_macro(AST::Node* operand_1);
 	AST::Node* parse_argument(void);
+	AST::Node* maybe_parse_macro(AST::Node* node);
 protected:
 	AST::Node* parse_expression(void);
 	AST::Node* consume(AST::Symbol* expected_token = NULL);
