@@ -10,6 +10,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 #include "Scanners/Scanner"
 #include "AST/AST"
+#include "AST/Symbol"
 
 namespace Scanners {
 
@@ -40,6 +41,7 @@ protected:
 public:
 	AST::Node* parse(FILE* input_file);
 };
+int get_operator_precedence(AST::Symbol* symbol);
 
 }; /* end namespace Scanners */
 

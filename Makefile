@@ -39,7 +39,7 @@ test-AST: test-AST.o
 Linear_Algebra/test-Vector.o: Linear_Algebra/test-Vector.cc Linear_Algebra/Vector
 Linear_Algebra/test-Matrix.o: Linear_Algebra/test-Matrix.cc Linear_Algebra/Matrix
 Linear_Algebra/test-Tensor.o: Linear_Algebra/test-Tensor.cc Linear_Algebra/Tensor
-Formatters/LATEX.o: Formatters/LATEX.cc Formatters/LATEX AST/AST AST/Symbol
+Formatters/LATEX.o: Formatters/LATEX.cc Formatters/LATEX AST/AST AST/Symbol Scanners/MathParser
 AST/AST.o: AST/AST.cc AST/AST
 AST/test-AST.o: AST/test-AST.cc AST/AST
 AST/test-Symbol.o: AST/test-Symbol.cc AST/Symbol AST/AST
@@ -67,19 +67,20 @@ REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Sca
 GUI/GTKGUI.o: GUI/GTKGUI.cc GUI/GTKREPL GUI/GTKView
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKREPL.o: GUI/GTKREPL.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol Config/Config
+GUI/GTKREPL.o: GUI/GTKREPL.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol Config/Config Formatters/LATEX
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 GUI/GTKView.o: GUI/GTKView.cc
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/4D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o
+GUI/4D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o
 	g++ -o $@ $^ $(GUI_LDFLAGS)
 
 clean:
 	rm -f Linear_Algebra/*.o
 	rm -f AST/*.o
 	rm -f Scanners/*.o
+	rm -f Formatters/*.o
 	
 distclean: clean
 	rm -f Linear_Algebra/test-Matrix
@@ -91,3 +92,4 @@ distclean: clean
 	rm -f Scanners/test-Scanner
 	rm -f GUI/4D
 	rm -f REPL/REPL
+

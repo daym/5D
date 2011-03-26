@@ -283,6 +283,15 @@ static Symbol* operator_precedence[][7] = {
 	//{intern("^")}
 	{intern("|")},
 };
+int get_operator_precedence(AST::Symbol* symbol) {
+	if(symbol == NULL)
+		return(-1);
+	for(size_t i = 0; i < sizeof(operator_precedence) / sizeof(operator_precedence[0]); ++i)
+		for(size_t j = 0; operator_precedence[i][j]; ++j)
+			if(operator_precedence[i][j] == symbol)
+				return(i);
+	return(-1);
+}
 static bool any_operator_P(AST::Node* input_token, int first_precedence_level, int frontier_precedence_level);
 static AST::Node* match_operator(int precedence_level, AST::Node* input_token) {
 	for(int i = 0; operator_precedence[precedence_level][i]; ++i)

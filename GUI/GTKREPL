@@ -39,6 +39,7 @@ protected:
 	void set_file_modified(bool value);
 public:
 	void handle_LATEX_image(GPid pid);
+	void queue_LATEX(AST::Node* node);
 	bool confirm_close(void);
 	bool get_file_modified(void) const;
 	bool save(void);

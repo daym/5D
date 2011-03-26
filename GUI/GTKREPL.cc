@@ -6,6 +6,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <string.h>
+#include <sstream>
 #include <unistd.h>
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
@@ -13,6 +14,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/GTKREPL"
 #include "Scanners/MathParser"
 #include "Config/Config"
+#include "Formatters/LATEX"
 
 namespace GUI {
 
@@ -42,7 +44,6 @@ static gboolean accept_prefix(GtkEntryCompletion* completion, gchar* prefix, Gtk
 	return(FALSE);
 }
 static gboolean accept_match(GtkEntryCompletion* completion, GtkTreeModel* model, GtkTreeIter* iter, GtkEntry* entry) {
-	printf("MATCH\n");
 	return(FALSE);
 }
 static gboolean complete_command(GtkEntry* entry, GdkEventKey* key, GtkEntryCompletion* completion) {
@@ -144,6 +145,12 @@ GTKREPL::GTKREPL(GtkWindow* parent) {
 GtkWidget* GTKREPL::widget(void) const {
 	return(GTK_WIDGET(fWidget));
 }
+void GTKREPL::queue_LATEX(AST::Node* node) {
+	std::stringstream result;
+	Formatters::to_LATEX(node, result);
+	std::string resultString = result.str();
+	defer_LATEX(resultString.c_str());
+}
 void GTKREPL::execute(const char* command, GtkTextIter* destination) {
 	Scanners::MathParser parser;
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
@@ -151,6 +158,7 @@ void GTKREPL::execute(const char* command, GtkTextIter* destination) {
 		try {
 			try {
 				AST::Node* result = parser.parse(input_file);
+				queue_LATEX(result);
 				add_to_environment(result);
 				std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
