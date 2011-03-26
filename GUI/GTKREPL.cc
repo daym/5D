@@ -46,7 +46,7 @@ void GTKREPL_set_current_environment_name(struct GTKREPL* self, const char* abso
 void GTKREPL_set_file_modified(struct GTKREPL* self, bool value);
 bool GTKREPL_save_content_to(struct GTKREPL* self, FILE* output_file);
 void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* destination);
-void GTKREPL_handle_LATEX_image(struct GTKREPL* self, GPid pid);
+void GTKREPL_handle_LATEX_image(struct GTKREPL* self, GPid pid, GtkTextIter* iter);
 
 static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer user_data) {
 	if(((event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK)) == GDK_CONTROL_MASK) && event->keyval == GDK_Return) {
@@ -437,18 +437,23 @@ bool GTKREPL_confirm_close(struct GTKREPL* self) {
 	}
 	return(true);
 }
-static void g_LATEX_child_died(GPid pid, int status, GTKREPL* REPL) {
+struct LATEXChildData {
+	struct GTKREPL* REPL;
+	GtkTextMark* mark;
+};
+static void g_LATEX_child_died(GPid pid, int status, struct LATEXChildData* data) {
+	GtkTextIter iter;
 	// FIXME status, non-death.
-	GTKREPL_handle_LATEX_image(REPL, pid);
+	gtk_text_buffer_get_iter_at_mark(gtk_text_mark_get_buffer(data->mark), &iter, data->mark);
+	GTKREPL_handle_LATEX_image(data->REPL, pid, &iter);
 	g_spawn_close_pid(pid);
+	g_free(data);
 }
-void GTKREPL_handle_LATEX_image(struct GTKREPL* self, GPid pid) {
+void GTKREPL_handle_LATEX_image(struct GTKREPL* self, GPid pid, GtkTextIter* iter) {
 	GdkPixbuf* pixbuf;
 	pixbuf = gdk_pixbuf_new_from_file("eqn.png"/*FIXME*/, NULL);
 	if(pixbuf) {
-		GtkTextIter iter;
-		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
-		gtk_text_buffer_insert_pixbuf(self->fOutputBuffer, &iter, pixbuf);
+		gtk_text_buffer_insert_pixbuf(self->fOutputBuffer, iter, pixbuf);
 		g_object_unref(G_OBJECT(pixbuf));
 	}
 }
@@ -463,7 +468,13 @@ void GTKREPL_defer_LATEX(struct GTKREPL* self, const char* text) {
 	};
 	GPid pid;
 	if(g_spawn_async(NULL, (char**) argv, NULL, (GSpawnFlags)(G_SPAWN_DO_NOT_REAP_CHILD|G_SPAWN_SEARCH_PATH|G_SPAWN_STDOUT_TO_DEV_NULL), NULL, self/*user_data*/, &pid, &error)) {
-		g_child_watch_add(pid, (GChildWatchFunc) g_LATEX_child_died, self);
+		struct LATEXChildData* data;
+		GtkTextIter iter;
+		data = (struct LATEXChildData*) calloc(1, sizeof(struct LATEXChildData));
+		data->REPL = self;
+		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
+		data->mark = gtk_text_buffer_create_mark(self->fOutputBuffer, NULL, &iter, TRUE);
+		g_child_watch_add(pid, (GChildWatchFunc) g_LATEX_child_died, data);
 	}
 }
 struct GTKREPL* GTKREPL_new(GtkWindow* parent) {
