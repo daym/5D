@@ -63,6 +63,7 @@ void EnsureInEnvironment(HWND dialog, const std::wstring& name, AST::Node* value
 	int index = SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_ADDSTRING, 0, (LPARAM) name.c_str());
 	SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_SETITEMDATA, (WPARAM)index, (LPARAM)value);
 }
+/*    AST::Node* hData = (AST::Node*) SendMessage(hList, LB_GETITEMDATA, (WPARAM)index, 0); */
 /*
    int iTotalTextLength = GetWindowTextLength(hwnd);
    
