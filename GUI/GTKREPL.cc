@@ -177,7 +177,9 @@ GtkWidget* GTKREPL_get_widget(struct GTKREPL* self) {
 }
 void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node) {
 	std::stringstream result;
+	result << "$ ";
 	Formatters::to_LATEX(node, result);
+	result << " $";
 	std::string resultString = result.str();
 	GTKREPL_defer_LATEX(self, resultString.c_str());
 }
@@ -446,6 +448,7 @@ static void g_LATEX_child_died(GPid pid, int status, struct LATEXChildData* data
 	// FIXME status, non-death.
 	gtk_text_buffer_get_iter_at_mark(gtk_text_mark_get_buffer(data->mark), &iter, data->mark);
 	GTKREPL_handle_LATEX_image(data->REPL, pid, &iter);
+	gtk_text_buffer_delete_mark(gtk_text_mark_get_buffer(data->mark), data->mark);
 	g_spawn_close_pid(pid);
 	g_free(data);
 }

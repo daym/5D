@@ -26,7 +26,15 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			output << node->str();
 	} else if(consNode) {
 		operator_precedence = get_operator_precedence(dynamic_cast<AST::Symbol*>(consNode->head));
-		if(operator_precedence != -1) { /* actual binary math operator */
+		if(operator_precedence != -1 && consNode->head == AST::intern("/")) { /* fraction */
+			output << "{\\frac{";
+			limited_to_LATEX(consNode->tail->head, output, operator_precedence);
+			output << "}{";
+			assert(consNode->tail->tail);
+			assert(!consNode->tail->tail->tail);
+			limited_to_LATEX(consNode->tail->tail->head, output, operator_precedence);
+			output << "}}";
+		} else if(operator_precedence != -1) { /* actual binary math operator */
 			if(operator_precedence > operator_precedence_limit)
 				output << '(';
 			limited_to_LATEX(consNode->tail->head, output, operator_precedence);
