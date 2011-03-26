@@ -36,14 +36,14 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			output << "}}";
 		} else if(operator_precedence != -1) { /* actual binary math operator */
 			if(operator_precedence > operator_precedence_limit)
-				output << '(';
+				output << "\\left(";
 			limited_to_LATEX(consNode->tail->head, output, operator_precedence);
 			limited_to_LATEX(consNode->head, output, operator_precedence); /* operator */
 			assert(consNode->tail->tail);
 			assert(!consNode->tail->tail->tail);
 			limited_to_LATEX(consNode->tail->tail->head, output, operator_precedence);
 			if(operator_precedence > operator_precedence_limit)
-				output << ')';
+				output << "\\right)";
 		} else {
 			/* TODO */
 			assert(0);
