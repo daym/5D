@@ -183,6 +183,12 @@ void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node) {
 	std::string resultString = result.str();
 	GTKREPL_defer_LATEX(self, resultString.c_str());
 }
+void GTKREPL_scroll_down(struct GTKREPL* self) {
+	// TODO check whether we were at the bottom before...
+	GtkTextIter iter;
+	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
+	gtk_text_view_scroll_to_iter(self->fOutputArea, &iter, 0.1, TRUE, 0.0, 1.0);
+}
 void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* destination) {
 	Scanners::MathParser parser;
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
@@ -206,6 +212,7 @@ void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* des
 		}
 		GTKREPL_set_file_modified(self, true);
 	}
+	GTKREPL_scroll_down(self);
 }
 static bool save_integer(FILE* output_file, long value) {
 	value = htonl(value);
@@ -450,6 +457,7 @@ static void g_LATEX_child_died(GPid pid, int status, struct LATEXChildData* data
 	GTKREPL_handle_LATEX_image(data->REPL, pid, &iter);
 	gtk_text_buffer_delete_mark(gtk_text_mark_get_buffer(data->mark), data->mark);
 	g_spawn_close_pid(pid);
+	GTKREPL_scroll_down(data->REPL);
 	g_free(data);
 }
 void GTKREPL_handle_LATEX_image(struct GTKREPL* self, GPid pid, GtkTextIter* iter) {
