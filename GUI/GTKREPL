@@ -11,45 +11,19 @@ You should have received a copy of the GNU General Public License along with thi
 #include <gtk/gtk.h>
 struct Config;
 namespace GUI {
-class GTKREPL {
-private:
-	GtkWindow* fWidget;
-	GtkBox* fMainBox;
-	GtkTextView* fOutputArea;
-	GtkScrolledWindow* fOutputScroller;
-	GtkTextBuffer* fOutputBuffer;
-	GtkEntry* fCommandEntry;
-	//GtkButton* fExecuteButton;
-	//GtkBox* fShortcutBox;
-	GtkTreeView* fEnvironmentView;
-	GtkListStore* fEnvironmentStore;
-	GHashTable* fEnvironmentKeys;
-	GtkBox* fEditorBox;
-	GtkScrolledWindow* fEnvironmentScroller;
-	GtkFileChooser* fSaveDialog;
-	GtkFileChooser* fOpenDialog;
-	struct Config* fConfig;
-	GtkEntryCompletion* fCommandCompletion;
-	bool fFileModified;
-protected:
-	void handle_response(gint response_id, GtkDialog* dialog);
-	void execute(const char* command, GtkTextIter* destination);
-	void add_to_environment(AST::Node* definition);
-	void set_current_environment_name(const char* absolute_name);
-	void set_file_modified(bool value);
-public:
-	void handle_LATEX_image(GPid pid);
-	void queue_LATEX(AST::Node* node);
-	bool confirm_close(void);
-	bool get_file_modified(void) const;
-	bool save(void);
-	void load(void);
-	bool save_content_to(FILE* output_file);
-	bool load_contents_from(const char* name);
-	GTKREPL(GtkWindow* parent);
-	GtkWidget* widget(void) const;
-	void defer_LATEX(const char* text);
-};
+
+struct GTKREPL;
+void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node);
+bool GTKREPL_confirm_close(struct GTKREPL* self);
+bool GTKREPL_get_file_modified(struct GTKREPL* self);
+bool GTKREPL_save(struct GTKREPL* self);
+void GTKREPL_load(struct GTKREPL* self);
+bool GTKREPL_save_content_to(struct GTKREPL* self, FILE* output_file);
+bool GTKREPL_load_contents_from(struct GTKREPL* self, const char* name);
+void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent);
+GtkWidget* GTKREPL_get_widget(struct GTKREPL* self);
+/*void defer_LATEX(struct GTKREPL* self, const char* text);*/
+struct GTKREPL* GTKREPL_new(GtkWindow* parent);
 
 }; // end namespace GUI
 #endif /* ndef __GTKREPL_H */

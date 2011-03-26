@@ -55,11 +55,11 @@ static GtkWindow* make_view_window() {
 	return(window);
 }
 static GtkWindow* make_REPL_window(GtkWindow* parent, const char* source_file_name) {
-	GTKREPL* REPL = new GTKREPL(parent);
+	GTKREPL* REPL = GTKREPL_new(parent);
 	if(source_file_name)
-		REPL->load_contents_from(source_file_name);
+		GTKREPL_load_contents_from(REPL, source_file_name);
 	//gtk_widget_show(GTK_WIDGET(REPL->widget()));
-	return(GTK_WINDOW(REPL->widget()));
+	return(GTK_WINDOW(GTKREPL_get_widget(REPL)));
 }
 int main(int argc, char* argv[]) {
 	GtkWindow* view;

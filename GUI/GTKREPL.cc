@@ -18,6 +18,36 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace GUI {
 
+struct GTKREPL {
+	GtkWindow* fWidget;
+	GtkBox* fMainBox;
+	GtkTextView* fOutputArea;
+	GtkScrolledWindow* fOutputScroller;
+	GtkTextBuffer* fOutputBuffer;
+	GtkEntry* fCommandEntry;
+	//GtkButton* fExecuteButton;
+	//GtkBox* fShortcutBox;
+	GtkTreeView* fEnvironmentView;
+	GtkListStore* fEnvironmentStore;
+	GHashTable* fEnvironmentKeys;
+	GtkBox* fEditorBox;
+	GtkScrolledWindow* fEnvironmentScroller;
+	GtkFileChooser* fSaveDialog;
+	GtkFileChooser* fOpenDialog;
+	struct Config* fConfig;
+	GtkEntryCompletion* fCommandCompletion;
+	bool fFileModified;
+};
+void GTKREPL_handle_response(struct GTKREPL* self, gint response_id, GtkDialog* dialog);
+void GTKREPL_defer_LATEX(struct GTKREPL* self, const char* text);
+void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node);
+void GTKREPL_add_to_environment(struct GTKREPL* self, AST::Node* definition);
+void GTKREPL_set_current_environment_name(struct GTKREPL* self, const char* absolute_name);
+void GTKREPL_set_file_modified(struct GTKREPL* self, bool value);
+bool GTKREPL_save_content_to(struct GTKREPL* self, FILE* output_file);
+void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* destination);
+void GTKREPL_handle_LATEX_image(struct GTKREPL* self, GPid pid);
+
 static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer user_data) {
 	if(((event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK)) == GDK_CONTROL_MASK) && event->keyval == GDK_Return) {
 		gtk_dialog_response(GTK_DIALOG(user_data), GTK_RESPONSE_OK);
@@ -26,7 +56,7 @@ static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer
 	return(FALSE);
 }
 static gboolean g_confirm_close(GtkDialog* dialog, GdkEvent* event, GTKREPL* REPL) {
-	if(REPL->confirm_close())
+	if(GTKREPL_confirm_close(REPL))
 		gtk_widget_hide(GTK_WIDGET(dialog));
 	return(TRUE);
 	//return(!REPL->confirm_close());
@@ -68,101 +98,101 @@ static gboolean complete_command(GtkEntry* entry, GdkEventKey* key, GtkEntryComp
 	gtk_widget_hide(GTK_WIDGET(widget));
 	return(TRUE);
 }*/
-GTKREPL::GTKREPL(GtkWindow* parent) {
-	fFileModified = false;
-	fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
-	fWidget = (GtkWindow*) gtk_dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_EXECUTE, GTK_RESPONSE_OK, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, GTK_STOCK_OPEN, GTK_RESPONSE_REJECT, NULL);
-	fSaveDialog = (GtkFileChooser*) gtk_file_chooser_dialog_new("Save REPL", GTK_WINDOW(fWidget), GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
-	fOpenDialog = (GtkFileChooser*) gtk_file_chooser_dialog_new("Open REPL", GTK_WINDOW(fWidget), GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
-	gtk_dialog_set_default_response(GTK_DIALOG(fWidget), GTK_RESPONSE_OK);
-	fMainBox = (GtkBox*) gtk_vbox_new(FALSE, 7);
-	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(fWidget)->vbox), GTK_WIDGET(fMainBox));
-	gtk_widget_show(GTK_WIDGET(fMainBox));
-	fEnvironmentView = (GtkTreeView*) gtk_tree_view_new();
+void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
+	self->fFileModified = false;
+	self->fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
+	self->fWidget = (GtkWindow*) gtk_dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_EXECUTE, GTK_RESPONSE_OK, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, GTK_STOCK_OPEN, GTK_RESPONSE_REJECT, NULL);
+	self->fSaveDialog = (GtkFileChooser*) gtk_file_chooser_dialog_new("Save REPL", GTK_WINDOW(self->fWidget), GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
+	self->fOpenDialog = (GtkFileChooser*) gtk_file_chooser_dialog_new("Open REPL", GTK_WINDOW(self->fWidget), GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
+	gtk_dialog_set_default_response(GTK_DIALOG(self->fWidget), GTK_RESPONSE_OK);
+	self->fMainBox = (GtkBox*) gtk_vbox_new(FALSE, 7);
+	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(self->fWidget)->vbox), GTK_WIDGET(self->fMainBox));
+	gtk_widget_show(GTK_WIDGET(self->fMainBox));
+	self->fEnvironmentView = (GtkTreeView*) gtk_tree_view_new();
 	GtkTreeViewColumn* fNameColumn;
 	fNameColumn = gtk_tree_view_column_new_with_attributes("Name", gtk_cell_renderer_text_new(), "text", 0, NULL);
-	gtk_tree_view_append_column(fEnvironmentView, fNameColumn);
-	fEnvironmentStore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-	gtk_tree_view_set_model(fEnvironmentView, gtk_tree_model_sort_new_with_model(GTK_TREE_MODEL(fEnvironmentStore)));
-	gtk_widget_show(GTK_WIDGET(fEnvironmentView));
-	fEnvironmentScroller = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy(fEnvironmentScroller, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_container_add(GTK_CONTAINER(fEnvironmentScroller), GTK_WIDGET(fEnvironmentView));
-	gtk_widget_show(GTK_WIDGET(fEnvironmentScroller));
-	//fShortcutBox = (GtkBox*) gtk_hbutton_box_new();
-	//fExecuteButton = (GtkButton*) gtk_button_new_from_stock(GTK_STOCK_OK);
-	//gtk_widget_show(GTK_WIDGET(fExecuteButton));
-	//gtk_box_pack_start(fShortcutBox, GTK_WIDGET(fExecuteButton), TRUE, TRUE, 7);
-	//gtk_widget_show(GTK_WIDGET(fShortcutBox));
-	fCommandEntry = (GtkEntry*) gtk_entry_new();
-	fCommandCompletion = gtk_entry_completion_new();
-	g_signal_connect(G_OBJECT(fCommandEntry), "key-press-event", G_CALLBACK(complete_command), fCommandCompletion);
-	g_signal_connect(G_OBJECT(fCommandCompletion), "match-selected", G_CALLBACK(accept_match), fCommandEntry);
-	g_signal_connect(G_OBJECT(fCommandCompletion), "insert-prefix", G_CALLBACK(accept_prefix), fCommandEntry);
-	gtk_entry_completion_set_model(fCommandCompletion, GTK_TREE_MODEL(fEnvironmentStore));
-	gtk_entry_completion_set_text_column(fCommandCompletion, 0);
-	gtk_entry_completion_set_popup_completion(fCommandCompletion, FALSE);
-	gtk_entry_completion_set_inline_completion(fCommandCompletion, TRUE); // XXX
-	//gtk_entry_completion_set_inline_selection(fCommandCompletion, TRUE); // XXX
-	gtk_entry_completion_set_popup_single_match(fCommandCompletion, FALSE);
-	gtk_entry_set_completion(fCommandEntry, fCommandCompletion);
-	gtk_entry_set_activates_default(fCommandEntry, TRUE);
-	gtk_widget_show(GTK_WIDGET(fCommandEntry));
-	fOutputArea = (GtkTextView*) gtk_text_view_new();
-	fOutputScroller = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy(fOutputScroller, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_tree_view_append_column(self->fEnvironmentView, fNameColumn);
+	self->fEnvironmentStore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+	gtk_tree_view_set_model(self->fEnvironmentView, gtk_tree_model_sort_new_with_model(GTK_TREE_MODEL(self->fEnvironmentStore)));
+	gtk_widget_show(GTK_WIDGET(self->fEnvironmentView));
+	self->fEnvironmentScroller = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
+	gtk_scrolled_window_set_policy(self->fEnvironmentScroller, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_container_add(GTK_CONTAINER(self->fEnvironmentScroller), GTK_WIDGET(self->fEnvironmentView));
+	gtk_widget_show(GTK_WIDGET(self->fEnvironmentScroller));
+	//self->fShortcutBox = (GtkBox*) gtk_hbutton_box_new();
+	//self->fExecuteButton = (GtkButton*) gtk_button_new_from_stock(GTK_STOCK_OK);
+	//gtk_widget_show(GTK_WIDGET(self->fExecuteButton));
+	//gtk_box_pack_start(self->fShortcutBox, GTK_WIDGET(self->fExecuteButton), TRUE, TRUE, 7);
+	//gtk_widget_show(GTK_WIDGET(self->fShortcutBox));
+	self->fCommandEntry = (GtkEntry*) gtk_entry_new();
+	self->fCommandCompletion = gtk_entry_completion_new();
+	g_signal_connect(G_OBJECT(self->fCommandEntry), "key-press-event", G_CALLBACK(complete_command), self->fCommandCompletion);
+	g_signal_connect(G_OBJECT(self->fCommandCompletion), "match-selected", G_CALLBACK(accept_match), self->fCommandEntry);
+	g_signal_connect(G_OBJECT(self->fCommandCompletion), "insert-prefix", G_CALLBACK(accept_prefix), self->fCommandEntry);
+	gtk_entry_completion_set_model(self->fCommandCompletion, GTK_TREE_MODEL(self->fEnvironmentStore));
+	gtk_entry_completion_set_text_column(self->fCommandCompletion, 0);
+	gtk_entry_completion_set_popup_completion(self->fCommandCompletion, FALSE);
+	gtk_entry_completion_set_inline_completion(self->fCommandCompletion, TRUE); // XXX
+	//gtk_entry_completion_set_inline_selection(self->fCommandCompletion, TRUE); // XXX
+	gtk_entry_completion_set_popup_single_match(self->fCommandCompletion, FALSE);
+	gtk_entry_set_completion(self->fCommandEntry, self->fCommandCompletion);
+	gtk_entry_set_activates_default(self->fCommandEntry, TRUE);
+	gtk_widget_show(GTK_WIDGET(self->fCommandEntry));
+	self->fOutputArea = (GtkTextView*) gtk_text_view_new();
+	self->fOutputScroller = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
+	gtk_scrolled_window_set_policy(self->fOutputScroller, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	// TODO set wrap mode
-	gtk_text_view_set_accepts_tab(fOutputArea, FALSE);
-	g_signal_connect(G_OBJECT(fOutputArea), "key-press-event", G_CALLBACK(handle_key_press), fWidget);
-	gtk_widget_show(GTK_WIDGET(fOutputArea));
-	gtk_container_add(GTK_CONTAINER(fOutputScroller), GTK_WIDGET(fOutputArea));
-	gtk_widget_show(GTK_WIDGET(fOutputScroller));
-	fOutputBuffer = gtk_text_view_get_buffer(fOutputArea);
-	fEditorBox = (GtkBox*) gtk_hbox_new(FALSE, 7);
-	g_signal_connect(G_OBJECT(fOutputArea), "focus-out-event", G_CALLBACK(g_clear_output_selection), fOutputBuffer);
-	gtk_box_pack_start(GTK_BOX(fEditorBox), GTK_WIDGET(fEnvironmentScroller), FALSE, FALSE, 7); 
-	gtk_box_pack_start(GTK_BOX(fEditorBox), GTK_WIDGET(fOutputScroller), TRUE, TRUE, 7); 
-	gtk_widget_show(GTK_WIDGET(fEditorBox));
-	//gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fShortcutBox), FALSE, FALSE, 7); 
-	gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fEditorBox), TRUE, TRUE, 7); 
-	gtk_box_pack_start(GTK_BOX(fMainBox), GTK_WIDGET(fCommandEntry), FALSE, FALSE, 7); 
-	g_signal_connect_swapped(GTK_DIALOG(fWidget), "response", G_CALLBACK(&GTKREPL::handle_response), (void*) this);
-	gtk_window_set_focus(GTK_WINDOW(fWidget), GTK_WIDGET(fCommandEntry));
+	gtk_text_view_set_accepts_tab(self->fOutputArea, FALSE);
+	g_signal_connect(G_OBJECT(self->fOutputArea), "key-press-event", G_CALLBACK(handle_key_press), self->fWidget);
+	gtk_widget_show(GTK_WIDGET(self->fOutputArea));
+	gtk_container_add(GTK_CONTAINER(self->fOutputScroller), GTK_WIDGET(self->fOutputArea));
+	gtk_widget_show(GTK_WIDGET(self->fOutputScroller));
+	self->fOutputBuffer = gtk_text_view_get_buffer(self->fOutputArea);
+	self->fEditorBox = (GtkBox*) gtk_hbox_new(FALSE, 7);
+	g_signal_connect(G_OBJECT(self->fOutputArea), "focus-out-event", G_CALLBACK(g_clear_output_selection), self->fOutputBuffer);
+	gtk_box_pack_start(GTK_BOX(self->fEditorBox), GTK_WIDGET(self->fEnvironmentScroller), FALSE, FALSE, 7); 
+	gtk_box_pack_start(GTK_BOX(self->fEditorBox), GTK_WIDGET(self->fOutputScroller), TRUE, TRUE, 7); 
+	gtk_widget_show(GTK_WIDGET(self->fEditorBox));
+	//gtk_box_pack_start(GTK_BOX(self->fMainBox), GTK_WIDGET(self->fShortcutBox), FALSE, FALSE, 7); 
+	gtk_box_pack_start(GTK_BOX(self->fMainBox), GTK_WIDGET(self->fEditorBox), TRUE, TRUE, 7); 
+	gtk_box_pack_start(GTK_BOX(self->fMainBox), GTK_WIDGET(self->fCommandEntry), FALSE, FALSE, 7); 
+	g_signal_connect_swapped(GTK_DIALOG(self->fWidget), "response", G_CALLBACK(GTKREPL_handle_response), (void*) self);
+	gtk_window_set_focus(GTK_WINDOW(self->fWidget), GTK_WIDGET(self->fCommandEntry));
 	gtk_tree_view_column_set_sort_column_id(fNameColumn, 0);
 	gtk_tree_view_column_set_sort_indicator(fNameColumn, TRUE);
 	//gtk_tree_view_column_set_sort_order(fNameColumn, GTK_SORT_ASCENDING);
-	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(fEnvironmentStore), 0, GTK_SORT_ASCENDING);
-	fConfig = load_Config();
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(self->fEnvironmentStore), 0, GTK_SORT_ASCENDING);
+	self->fConfig = load_Config();
 	{
 		char* environment_name;
-		environment_name = Config_get_environment_name(fConfig);
+		environment_name = Config_get_environment_name(self->fConfig);
 		if(environment_name && environment_name[0])
-			load_contents_from(environment_name);
+			GTKREPL_load_contents_from(self, environment_name);
 	}
-	g_signal_connect(G_OBJECT(fWidget), "delete-event", G_CALLBACK(g_confirm_close), this);
-	//g_signal_connect(G_OBJECT(fWidget), "delete-event", G_CALLBACK(g_hide_window), NULL);
+	g_signal_connect(G_OBJECT(self->fWidget), "delete-event", G_CALLBACK(g_confirm_close), self);
+	//g_signal_connect(G_OBJECT(self->fWidget), "delete-event", G_CALLBACK(g_hide_window), NULL);
 }
-GtkWidget* GTKREPL::widget(void) const {
-	return(GTK_WIDGET(fWidget));
+GtkWidget* GTKREPL_get_widget(struct GTKREPL* self) {
+	return(GTK_WIDGET(self->fWidget));
 }
-void GTKREPL::queue_LATEX(AST::Node* node) {
+void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node) {
 	std::stringstream result;
 	Formatters::to_LATEX(node, result);
 	std::string resultString = result.str();
-	defer_LATEX(resultString.c_str());
+	GTKREPL_defer_LATEX(self, resultString.c_str());
 }
-void GTKREPL::execute(const char* command, GtkTextIter* destination) {
+void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* destination) {
 	Scanners::MathParser parser;
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
 	if(input_file) {
 		try {
 			try {
 				AST::Node* result = parser.parse(input_file);
-				queue_LATEX(result);
-				add_to_environment(result);
+				GTKREPL_queue_LATEX(self, result);
+				GTKREPL_add_to_environment(self, result);
 				std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
-				gtk_text_buffer_insert(fOutputBuffer, destination, v.c_str(), -1);
+				gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
 			} catch(...) {
 				fclose(input_file);
 				throw;
@@ -170,9 +200,9 @@ void GTKREPL::execute(const char* command, GtkTextIter* destination) {
 		} catch(Scanners::ParseException e) {
 			std::string v = e.what() ? e.what() : "error";
 			v = " => " + v + "\n";
-			gtk_text_buffer_insert(fOutputBuffer, destination, v.c_str(), -1);
+			gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
 		}
-		set_file_modified(true);
+		GTKREPL_set_file_modified(self, true);
 	}
 }
 static bool save_integer(FILE* output_file, long value) {
@@ -188,29 +218,29 @@ static bool save_string(FILE* output_file, const char* s) {
 	else*/
 		return fwrite(s, l + 1, 1, output_file) == 1;
 }
-bool GTKREPL::save_content_to(FILE* output_file) {
+bool GTKREPL_save_content_to(struct GTKREPL* self, FILE* output_file) {
 	GtkTreeIter iter;
 	GtkTextIter start;
 	GtkTextIter end;
 	if(!save_string(output_file, "4DV1"))
 		return(false);
-	gtk_text_buffer_get_start_iter(fOutputBuffer, &start);
-	gtk_text_buffer_get_end_iter(fOutputBuffer, &end);
-	char* text = gtk_text_buffer_get_text(fOutputBuffer, &start, &end, FALSE);
+	gtk_text_buffer_get_start_iter(self->fOutputBuffer, &start);
+	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+	char* text = gtk_text_buffer_get_text(self->fOutputBuffer, &start, &end, FALSE);
 	if(!save_string(output_file, text))
 		return(false);
-	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(fEnvironmentStore), &iter)) {
+	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(self->fEnvironmentStore), &iter)) {
 		while(1) {
 			char* name;
 			char* value;
-			gtk_tree_model_get(GTK_TREE_MODEL(fEnvironmentStore), &iter, 0, &name, 1, &value, -1);
+			gtk_tree_model_get(GTK_TREE_MODEL(self->fEnvironmentStore), &iter, 0, &name, 1, &value, -1);
 			if(!save_string(output_file, name))
 				return(false);
 			if(!save_string(output_file, value))
 				return(false);
 			//g_free(name);
 			//g_free(value);
-			if(!gtk_tree_model_iter_next(GTK_TREE_MODEL(fEnvironmentStore), &iter))
+			if(!gtk_tree_model_iter_next(GTK_TREE_MODEL(self->fEnvironmentStore), &iter))
 				break;
 		}
 	}
@@ -229,19 +259,19 @@ static char* get_absolute_path(const char* name) {
 	else
 		return(g_build_filename(g_get_current_dir(), name, NULL));
 }
-bool GTKREPL::load_contents_from(const char* name) {
+bool GTKREPL_load_contents_from(struct GTKREPL* self, const char* name) {
 	GError* error = NULL;
 	gsize size;
 	char* contents;
 	const char* content_iter;
 	GtkTextIter text_start;
 	GtkTextIter text_end;
-	if(get_file_modified())
-		if(!confirm_close())
+	if(GTKREPL_get_file_modified(self))
+		if(!GTKREPL_confirm_close(self))
 			return(false);
-	gtk_text_buffer_get_start_iter(fOutputBuffer, &text_start);
-	gtk_text_buffer_get_end_iter(fOutputBuffer, &text_end);
-	gtk_text_buffer_delete(fOutputBuffer, &text_start, &text_end);
+	gtk_text_buffer_get_start_iter(self->fOutputBuffer, &text_start);
+	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);
+	gtk_text_buffer_delete(self->fOutputBuffer, &text_start, &text_end);
 	if(!g_file_get_contents(name, &contents, &size, &error)) {
 		g_warning("%s", error->message);
 		g_error_free(error);
@@ -254,105 +284,105 @@ bool GTKREPL::load_contents_from(const char* name) {
 	content_iter = contents;
 	if(strcmp(load_string(content_iter), "4DV1") != 0)
 		return(false);
-	gtk_text_buffer_insert(fOutputBuffer, &text_start, load_string(content_iter), -1);
-	gtk_list_store_clear(GTK_LIST_STORE(fEnvironmentStore));
+	gtk_text_buffer_insert(self->fOutputBuffer, &text_start, load_string(content_iter), -1);
+	gtk_list_store_clear(GTK_LIST_STORE(self->fEnvironmentStore));
 	const char* key;
-	g_hash_table_remove_all(fEnvironmentKeys);
+	g_hash_table_remove_all(self->fEnvironmentKeys);
 	while(key = load_string(content_iter), key[0]) {
 		GtkTreeIter iter;
-		gtk_list_store_append(fEnvironmentStore, &iter);
+		gtk_list_store_append(self->fEnvironmentStore, &iter);
 		const char* value = load_string(content_iter);
-		gtk_list_store_set(fEnvironmentStore, &iter, 0, key, 1, value, -1);
-		g_hash_table_replace(fEnvironmentKeys, AST::intern(key), gtk_tree_iter_copy(&iter));
+		gtk_list_store_set(self->fEnvironmentStore, &iter, 0, key, 1, value, -1);
+		g_hash_table_replace(self->fEnvironmentKeys, AST::intern(key), gtk_tree_iter_copy(&iter));
 	}
 	g_free(contents);
 	{
 		char* absolute_name = get_absolute_path(name);
-		set_file_modified(false);
-		set_current_environment_name(absolute_name);
+		GTKREPL_set_file_modified(self, false);
+		GTKREPL_set_current_environment_name(self, absolute_name);
 	}
 	return(true);
 }
-void GTKREPL::load(void) {
+void GTKREPL_load(struct GTKREPL* self) {
 	bool B_OK = false;
 	//gtk_file_chooser_set_filename(dialog, );
-	if(gtk_dialog_run(GTK_DIALOG(fOpenDialog)) == GTK_RESPONSE_OK) {
-		char* file_name = gtk_file_chooser_get_filename(fOpenDialog);
-		if(file_name && load_contents_from(file_name)) {
+	if(gtk_dialog_run(GTK_DIALOG(self->fOpenDialog)) == GTK_RESPONSE_OK) {
+		char* file_name = gtk_file_chooser_get_filename(self->fOpenDialog);
+		if(file_name && GTKREPL_load_contents_from(self, file_name)) {
 			B_OK = true;
 		}
 		g_free(file_name);
 	} else { // user did not want to load file after all.
 		B_OK = true;
 	}
-	gtk_widget_hide(GTK_WIDGET(fOpenDialog));
+	gtk_widget_hide(GTK_WIDGET(self->fOpenDialog));
 	if(!B_OK) {
 		g_warning("could not open file");
 	}
 }
-bool GTKREPL::save(void) {
+bool GTKREPL_save(struct GTKREPL* self) {
 	bool B_OK = false;
-	gtk_file_chooser_set_do_overwrite_confirmation(fSaveDialog, TRUE);
+	gtk_file_chooser_set_do_overwrite_confirmation(self->fSaveDialog, TRUE);
 	//gtk_file_chooser_set_filename(dialog, );
-	if(gtk_dialog_run(GTK_DIALOG(fSaveDialog)) == GTK_RESPONSE_OK) {
-		char* file_name = gtk_file_chooser_get_filename(fSaveDialog);
+	if(gtk_dialog_run(GTK_DIALOG(self->fSaveDialog)) == GTK_RESPONSE_OK) {
+		char* file_name = gtk_file_chooser_get_filename(self->fSaveDialog);
 		char* temp_name = g_strdup_printf("%sXXXXXX", file_name);
 		int FD = mkstemp(temp_name);
 		FILE* output_file = fdopen(FD, "w");
-		if(save_content_to(output_file)) {
+		if(GTKREPL_save_content_to(self, output_file)) {
 			fclose(output_file);
 			close(FD);
 			if(rename(temp_name, file_name) != -1) {
 				char* absolute_name = get_absolute_path(file_name);
 				B_OK = true;
-				set_current_environment_name(absolute_name);
+				GTKREPL_set_current_environment_name(self, absolute_name);
 			}
 			//unlink(temp_name);
 		}
 		g_free(temp_name);
 		g_free(file_name);
 	} else {
-		gtk_widget_hide(GTK_WIDGET(fSaveDialog));
+		gtk_widget_hide(GTK_WIDGET(self->fSaveDialog));
 		return(false);
 	}
-	gtk_widget_hide(GTK_WIDGET(fSaveDialog));
+	gtk_widget_hide(GTK_WIDGET(self->fSaveDialog));
 	if(!B_OK) {
 		g_warning("could not save file");
 	}
 	return(B_OK);
 }
-void GTKREPL::set_current_environment_name(const char* absolute_name) {
-	gtk_window_set_title(fWidget, absolute_name);
-	Config_set_environment_name(fConfig, absolute_name);
-	Config_save(fConfig);
+void GTKREPL_set_current_environment_name(struct GTKREPL* self, const char* absolute_name) {
+	gtk_window_set_title(self->fWidget, absolute_name);
+	Config_set_environment_name(self->fConfig, absolute_name);
+	Config_save(self->fConfig);
 }
-void GTKREPL::handle_response(gint response_id, GtkDialog* dialog) {
+void GTKREPL_handle_response(struct GTKREPL* self, gint response_id, GtkDialog* dialog) {
 	if(response_id != GTK_RESPONSE_OK) {
 		if(response_id == GTK_RESPONSE_ACCEPT)
-			save();
+			GTKREPL_save(self);
 		else if(response_id == GTK_RESPONSE_REJECT)
-			load();
+			GTKREPL_load(self);
 		return;
 	}
 	GtkTextIter beginning;
 	GtkTextIter end;
 	gchar* text;
-	if(!gtk_text_buffer_get_selection_bounds(fOutputBuffer, &beginning, &end)) {
-		gtk_text_buffer_get_start_iter(fOutputBuffer, &beginning);
-		gtk_text_buffer_get_end_iter(fOutputBuffer, &end);
-		text = strdup(gtk_entry_get_text(fCommandEntry));
+	if(!gtk_text_buffer_get_selection_bounds(self->fOutputBuffer, &beginning, &end)) {
+		gtk_text_buffer_get_start_iter(self->fOutputBuffer, &beginning);
+		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+		text = strdup(gtk_entry_get_text(self->fCommandEntry));
 		std::string v = text;
 		v += "\n";
-		gtk_text_buffer_insert(fOutputBuffer, &end, v.c_str(), -1);
+		gtk_text_buffer_insert(self->fOutputBuffer, &end, v.c_str(), -1);
 	} else {
-		text = gtk_text_buffer_get_text(fOutputBuffer, &beginning, &end, FALSE);
+		text = gtk_text_buffer_get_text(self->fOutputBuffer, &beginning, &end, FALSE);
 	}
 	if(text && text[0]) {
-		execute(text, &end);
+		GTKREPL_execute(self, text, &end);
 	}
 	g_free(text);
 }
-void GTKREPL::add_to_environment(AST::Node* definition) {
+void GTKREPL_add_to_environment(struct GTKREPL* self, AST::Node* definition) {
 	using namespace AST;
 	AST::Cons* definitionCons;
 	GtkTreeIter iter;
@@ -369,32 +399,32 @@ void GTKREPL::add_to_environment(AST::Node* definition) {
 	//(apply (apply define x 2))
 	std::string body = definitionCons->tail->str();
 	gpointer hvalue;
-	if(!g_hash_table_lookup_extended(fEnvironmentKeys, procedureName, NULL, &hvalue))
-		gtk_list_store_append(fEnvironmentStore, &iter);
+	if(!g_hash_table_lookup_extended(self->fEnvironmentKeys, procedureName, NULL, &hvalue))
+		gtk_list_store_append(self->fEnvironmentStore, &iter);
 	else
 		iter = * (GtkTreeIter*) hvalue;
-	gtk_list_store_set(fEnvironmentStore, &iter, 0, procedureNameString.c_str(), 1, body.c_str(), -1);
-	g_hash_table_replace(fEnvironmentKeys, procedureName, gtk_tree_iter_copy(&iter));
-	set_file_modified(true);
+	gtk_list_store_set(self->fEnvironmentStore, &iter, 0, procedureNameString.c_str(), 1, body.c_str(), -1);
+	g_hash_table_replace(self->fEnvironmentKeys, procedureName, gtk_tree_iter_copy(&iter));
+	GTKREPL_set_file_modified(self, true);
 }
-bool GTKREPL::get_file_modified(void) const {
-	return(fFileModified);
+bool GTKREPL_get_file_modified(struct GTKREPL* self) {
+	return(self->fFileModified);
 }
-void GTKREPL::set_file_modified(bool value) {
-	if(fFileModified == value)
+void GTKREPL_set_file_modified(struct GTKREPL* self, bool value) {
+	if(self->fFileModified == value)
 		return;
-	fFileModified = value;
+	self->fFileModified = value;
 	if(value) {
-		const char* title = gtk_window_get_title(fWidget);
+		const char* title = gtk_window_get_title(self->fWidget);
 		char* new_title = g_strdup_printf("%s *", title);
-		gtk_window_set_title(fWidget, new_title);
+		gtk_window_set_title(self->fWidget, new_title);
 		g_free(new_title);
 	}
 }
-bool GTKREPL::confirm_close(void) {
-	if(get_file_modified()) {
+bool GTKREPL_confirm_close(struct GTKREPL* self) {
+	if(GTKREPL_get_file_modified(self)) {
 		GtkDialog* dialog;
-		dialog = (GtkDialog*) gtk_message_dialog_new(GTK_WINDOW(widget()), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, (GtkButtonsType) 0, "Environment has been modified. Save?");
+		dialog = (GtkDialog*) gtk_message_dialog_new(GTK_WINDOW(GTKREPL_get_widget(self)), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, (GtkButtonsType) 0, "Environment has been modified. Save?");
 		gtk_dialog_add_buttons(dialog, GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE, GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
 		{
 			int result;
@@ -402,27 +432,27 @@ bool GTKREPL::confirm_close(void) {
 			gtk_widget_destroy(GTK_WIDGET(dialog));
 			if(result == GTK_RESPONSE_CLOSE)
 				return(true);
-			return(save());
+			return(GTKREPL_save(self));
 		}
 	}
 	return(true);
 }
 static void g_LATEX_child_died(GPid pid, int status, GTKREPL* REPL) {
 	// FIXME status, non-death.
-	REPL->handle_LATEX_image(pid);
+	GTKREPL_handle_LATEX_image(REPL, pid);
 	g_spawn_close_pid(pid);
 }
-void GTKREPL::handle_LATEX_image(GPid pid) {
+void GTKREPL_handle_LATEX_image(struct GTKREPL* self, GPid pid) {
 	GdkPixbuf* pixbuf;
 	pixbuf = gdk_pixbuf_new_from_file("eqn.png"/*FIXME*/, NULL);
 	if(pixbuf) {
 		GtkTextIter iter;
-		gtk_text_buffer_get_end_iter(fOutputBuffer, &iter);
-		gtk_text_buffer_insert_pixbuf(fOutputBuffer, &iter, pixbuf);
+		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
+		gtk_text_buffer_insert_pixbuf(self->fOutputBuffer, &iter, pixbuf);
 		g_object_unref(G_OBJECT(pixbuf));
 	}
 }
-void GTKREPL::defer_LATEX(const char* text) {
+void GTKREPL_defer_LATEX(struct GTKREPL* self, const char* text) {
 	GError* error;
 	const char* argv[] = {
 		"l2p",
@@ -432,9 +462,15 @@ void GTKREPL::defer_LATEX(const char* text) {
 		NULL,
 	};
 	GPid pid;
-	if(g_spawn_async(NULL, (char**) argv, NULL, (GSpawnFlags)(G_SPAWN_DO_NOT_REAP_CHILD|G_SPAWN_SEARCH_PATH|G_SPAWN_STDOUT_TO_DEV_NULL), NULL, this/*user_data*/, &pid, &error)) {
-		g_child_watch_add(pid, (GChildWatchFunc) g_LATEX_child_died, this);
+	if(g_spawn_async(NULL, (char**) argv, NULL, (GSpawnFlags)(G_SPAWN_DO_NOT_REAP_CHILD|G_SPAWN_SEARCH_PATH|G_SPAWN_STDOUT_TO_DEV_NULL), NULL, self/*user_data*/, &pid, &error)) {
+		g_child_watch_add(pid, (GChildWatchFunc) g_LATEX_child_died, self);
 	}
+}
+struct GTKREPL* GTKREPL_new(GtkWindow* parent) {
+	struct GTKREPL* result;
+	result = (struct GTKREPL*) calloc(1, sizeof(struct GTKREPL));
+	GTKREPL_init(result, parent);
+	return(result);
 }
 
 };
