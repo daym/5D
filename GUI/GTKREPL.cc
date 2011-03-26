@@ -249,11 +249,13 @@ bool GTKREPL::load_contents_from(const char* name) {
 	gtk_text_buffer_insert(fOutputBuffer, &text_start, load_string(content_iter), -1);
 	gtk_list_store_clear(GTK_LIST_STORE(fEnvironmentStore));
 	const char* key;
+	g_hash_table_remove_all(fEnvironmentKeys);
 	while(key = load_string(content_iter), key[0]) {
 		GtkTreeIter iter;
 		gtk_list_store_append(fEnvironmentStore, &iter);
 		const char* value = load_string(content_iter);
 		gtk_list_store_set(fEnvironmentStore, &iter, 0, key, 1, value, -1);
+		g_hash_table_replace(fEnvironmentKeys, AST::intern(key), gtk_tree_iter_copy(&iter));
 	}
 	g_free(contents);
 	{
