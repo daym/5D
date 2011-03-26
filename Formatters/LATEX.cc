@@ -6,22 +6,48 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <iostream>
+#include <assert.h>
 #include "AST/AST"
+#include "AST/Symbol"
 #include "Formatters/LATEX"
 #include "Scanners/MathParser"
 
 namespace Formatters {
 
-void to_LATEX(AST::Node* node, std::ostream& output) {
+void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_precedence_limit) {
 	using namespace Scanners;
 	int operator_precedence;
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);
-	operator_precedence = get_operator_precedence(symbolNode);
-	if(node)
+	if(symbolNode) {
+		if(symbolNode == AST::intern("*"))
+			output << "\\cdot";
+		else
+			output << node->str();
+	} else if(consNode) {
+		operator_precedence = get_operator_precedence(dynamic_cast<AST::Symbol*>(consNode->head));
+		if(operator_precedence != -1) { /* actual binary math operator */
+			if(operator_precedence > operator_precedence_limit)
+				output << '(';
+			limited_to_LATEX(consNode->tail->head, output, operator_precedence);
+			limited_to_LATEX(consNode->head, output, operator_precedence); /* operator */
+			assert(consNode->tail->tail);
+			assert(!consNode->tail->tail->tail);
+			limited_to_LATEX(consNode->tail->tail->head, output, operator_precedence);
+			if(operator_precedence > operator_precedence_limit)
+				output << ')';
+		} else {
+			/* TODO */
+			assert(0);
+		}
+	} else if(node)
 		output << node->str();
 	else
 		output << "?";
+}
+void to_LATEX(AST::Node* node, std::ostream& output) {
+	int operator_precedence_limit = 1000;
+	limited_to_LATEX(node, output, operator_precedence_limit);
 }
 
 }; // end namespace Formatters

@@ -9,10 +9,11 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #include <iostream>
 namespace AST {
-class Node;
+struct Node;
 };
 namespace Formatters {
-void to_LATEX(AST::Node* node, std::ostream& output);     
+void to_LATEX(AST::Node* node, std::ostream& output);
+void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_precedence_limit);
 }; // end namespace Formatters
 
 #endif /* ndef __FORMATTERS_LATEX_H */
