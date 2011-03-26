@@ -85,6 +85,7 @@ SendMessage(hwnd, EM_SETSEL, (WPARAM)(int)iStartPos, (LPARAM)(int)iEndPos);
 
 struct REPL {
 	HWND dialog;
+	bool B_file_modified;
 	//HACCEL accelerators;
 };
 
@@ -182,6 +183,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
 	hinstance = GetModuleHandle(NULL);
 	//DialogBox(hinstance, MAKEINTRESOURCE(IDD_REPL), parent, HandleREPLMessage);
+	self->B_file_modified = false;
 	self->dialog = CreateDialog(hinstance, MAKEINTRESOURCE(IDD_REPL), parent, HandleREPLMessage);
 	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY4D));
 	SetWindowLongPtr(self->dialog, GWLP_USERDATA, (LONG) self);
@@ -203,7 +205,7 @@ void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 }
 
 void REPL_set_file_modified(struct REPL* self, bool value) {
-	// TODO
+	self->B_file_modified = value;
 }
 void REPL_insert_output(struct REPL* self, const char* output) {
 	InsertRichText(GetDlgItem(self->dialog, IDC_OUTPUT), FromUTF8(output));
