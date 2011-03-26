@@ -461,6 +461,9 @@ void GTKREPL_defer_LATEX(struct GTKREPL* self, const char* text) {
 	GError* error;
 	const char* argv[] = {
 		"l2p",
+		"-T",
+		"-d",
+		"120",
 		"-i",
 		text,
 		//"'$I<latex_expression>$'
