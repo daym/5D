@@ -22,6 +22,12 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 	if(symbolNode) {
 		if(symbolNode == AST::intern("*"))
 			output << "\\cdot";
+		else if(symbolNode == AST::intern("<="))
+			output << "\\leq";
+		else if(symbolNode == AST::intern(">="))
+			output << "\\geq";
+		else if(symbolNode == AST::intern("≠"))
+			output << "\\neq";
 		else
 			output << node->str();
 	} else if(consNode) {
