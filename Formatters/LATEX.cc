@@ -51,8 +51,10 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\right)";
 		} else {
+			std::string v = node ? node->str() : "";
+			fprintf(stderr, "warning: Formatters/LATEX: unhandled node was: %s\n", v.c_str());
 			/* TODO */
-			assert(0);
+			//assert(0);
 		}
 	} else if(node)
 		output << node->str();
