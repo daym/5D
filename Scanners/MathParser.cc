@@ -99,6 +99,14 @@ void MathParser::parse_number(int input) {
 		matchtext << ((char) input);
 		++position, input = fgetc(input_file);
 	}
+	if(input == 'e' || input == 'E') {
+		matchtext << ((char) input);
+		++position, input = fgetc(input_file);
+		while((input >= '0' && input <= '9')/* || input == '.'*/) {
+			matchtext << ((char) input);                   
+			++position, input = fgetc(input_file);
+		}
+	}
 	ungetc(input, input_file);
 	input_token = intern("<number>");
 	input_value = literal(strdup(matchtext.str().c_str()));
