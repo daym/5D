@@ -139,7 +139,8 @@ void MathParser::parse_unicode(int input) {
 			//raise_error("<expression>", input);
 			return;
 		}
-	}
+	} else
+		++position, input = fgetc(input_file);
 	switch(input) {
 	case 0xA0:
 		input_token = intern("≠");
