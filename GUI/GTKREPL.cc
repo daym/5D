@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 #define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(GTKREPL_handle_##name), self)
+#define connect_accelerator(key, modifiers, action_name, path) GTKREPL_connect_accelerator(self, key, modifiers, get_action(action_name), path)
 
 namespace GUI {
 
@@ -44,6 +45,7 @@ struct GTKREPL {
 	GtkEntryCompletion* fCommandCompletion;
 	bool fFileModified;
 	GtkBuilder* UI_builder;
+	GtkAccelGroup* accelerator_group;
 };
 void GTKREPL_defer_LATEX(struct GTKREPL* self, const char* text);
 void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node);
@@ -148,6 +150,12 @@ static void GTKREPL_handle_about(struct GTKREPL* self, GtkAction* action) {
 	gtk_dialog_run(dialog);
 	gtk_widget_hide(GTK_WIDGET(dialog));
 }
+void GTKREPL_connect_accelerator(struct GTKREPL* self, int key, GdkModifierType modifiers, GtkAction* action, const char* path) {
+	/*gtk_accel_group_connect(self->accelerator_group, key, modifiers, GTK_ACCEL_VISIBLE, NULL);*/
+	gtk_action_set_accel_path(action, path);
+	gtk_accel_map_add_entry(path, key, modifiers);
+	/*"4D-REPL/File/Execute"*/
+}
 void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
 	GtkMenuBar* menu_bar;
@@ -157,6 +165,7 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	UI_manager = (GtkUIManager*) gtk_builder_get_object(self->UI_builder, "uiman");
 	if(!UI_manager)
 		abort();
+	self->accelerator_group = gtk_ui_manager_get_accel_group(UI_manager);
 	self->fFileModified = false;
 	self->fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
 	self->fWidget = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -247,6 +256,13 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	add_action_handler(paste);
 	add_action_handler(find);
 	add_action_handler(about);
+	connect_accelerator(GDK_F5, (GdkModifierType) 0, execute, "<4D-REPL>/File/Execute");
+	connect_accelerator(GDK_F3, (GdkModifierType) 0, open_file, "<4D-REPL>/File/Open");
+	connect_accelerator(GDK_F2, (GdkModifierType) 0, save_file, "<4D-REPL>/File/Save");
+	connect_accelerator(GDK_x, GDK_CONTROL_MASK, cut, "<4D-REPL>/Edit/Cut");
+	connect_accelerator(GDK_c, GDK_CONTROL_MASK, copy, "<4D-REPL>/Edit/Copy");
+	connect_accelerator(GDK_v, GDK_CONTROL_MASK, paste, "<4D-REPL>/Edit/Paste");
+	connect_accelerator(GDK_f, GDK_CONTROL_MASK, paste, "<4D-REPL>/Edit/Find");
 }
 GtkWidget* GTKREPL_get_widget(struct GTKREPL* self) {
 	return(GTK_WIDGET(self->fWidget));
