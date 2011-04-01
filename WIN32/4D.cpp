@@ -9,6 +9,8 @@
 
 #define MAX_LOADSTRING 100
 
+static struct GUI::REPL* REPL;
+
 // Global Variables:
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
@@ -49,7 +51,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		// TODO IsWindow ? 
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg) /*|| !IsDialogMessage(msg.hwnd, &msg)*/)
+		if (/*!TranslateAccelerator(msg.hwnd, hAccelTable, &msg) || */!REPL || !IsDialogMessage(REPL_get_window(REPL), &msg))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -164,7 +166,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wmId)
 		{
 		case IDM_FILE_REPL:
-			GUI::REPL_new(hWnd);
+			if(!REPL)
+				REPL = GUI::REPL_new(hWnd);
+			else
+				ShowWindow(REPL_get_window(REPL), SW_SHOW);
 			break;
 		case IDM_ABOUT:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);

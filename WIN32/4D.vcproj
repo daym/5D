@@ -299,6 +299,10 @@
 			RelativePath="..\AST\Symbol"
 			>
 		</File>
+		<File
+			RelativePath="..\GUI\WIN32REPL"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

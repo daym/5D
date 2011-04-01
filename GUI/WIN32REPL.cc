@@ -90,6 +90,9 @@ struct REPL {
 	//HACCEL accelerators;
 };
 
+HWND REPL_get_window(struct REPL* self) {
+	return(self->dialog);
+}
 void REPL_save(struct REPL* self) {
 	// TODO
 }
