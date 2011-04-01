@@ -268,7 +268,8 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	{
 
 	case WM_INITDIALOG:
-		return (INT_PTR)TRUE;
+		SendMessage(dialog, WM_NEXTDLGCTL, (WPARAM) GetDlgItem(dialog, IDC_COMMAND_ENTRY), (LPARAM)TRUE); 
+		return (INT_PTR)FALSE;
 	case WM_CLOSE:
 	case WM_DESTROY:
 		//EndDialog(dialog, IDCLOSE); /* or rather HideWindows */
@@ -319,11 +320,11 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
       break;*/
 
 	case WM_NEXTDLGCTL:
-		{/* WPARAM */
-			ClearRichTextSelection(GetDlgItem(self->dialog, IDC_OUTPUT));
+		{
+			if(self && self->dialog)
+				ClearRichTextSelection(GetDlgItem(self->dialog, IDC_OUTPUT));
 		}
 		break;
-
 	case WM_COMMAND:
 		switch(LOWORD(wParam)) {
 		case IDM_FILE_SAVE:
