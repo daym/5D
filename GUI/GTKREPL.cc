@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Formatters/LATEX"
 #include "GUI/UI_definition.UI"
 
+#define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(GTKREPL_handle_##name), self)
 
 namespace GUI {
@@ -169,6 +170,10 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	gtk_widget_show(GTK_WIDGET(self->fEnvironmentScroller));
 	//self->fShortcutBox = (GtkBox*) gtk_hbutton_box_new();
 	self->fExecuteButton = (GtkButton*) gtk_button_new_from_stock(GTK_STOCK_EXECUTE);
+	gtk_action_connect_proxy(get_action(execute), GTK_WIDGET(self->fExecuteButton));
+	gtk_button_set_use_stock(self->fExecuteButton, TRUE);
+	GTK_WIDGET_SET_FLAGS(self->fExecuteButton, GTK_CAN_DEFAULT);
+	gtk_window_set_default(self->fWidget, GTK_WIDGET(self->fExecuteButton));
 	gtk_widget_show(GTK_WIDGET(self->fExecuteButton));
 	//gtk_box_pack_start(self->fShortcutBox, GTK_WIDGET(self->fExecuteButton), TRUE, TRUE, 7);
 	//gtk_widget_show(GTK_WIDGET(self->fShortcutBox));
