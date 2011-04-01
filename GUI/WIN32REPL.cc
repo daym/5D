@@ -168,6 +168,20 @@ static INT_PTR CALLBACK HandleAboutMessages(HWND hDlg, UINT message, WPARAM wPar
 }
 
 
+static void ScreenToClientRect(HWND hwnd, RECT& rect) {
+	POINT p;
+	p.x = rect.left;
+	p.y = rect.top;
+	ScreenToClient(hwnd, &p);
+	rect.left = p.x;
+	rect.top = p.y;
+
+	p.x = rect.right;
+	p.y = rect.bottom;
+	ScreenToClient(hwnd, &p);
+	rect.right = p.x;
+	rect.bottom = p.y;
+}
 
 INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
 	UNREFERENCED_PARAMETER(lParam);
@@ -200,23 +214,39 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			int cy = clientRect.bottom - clientRect.top;
 			int cxtot = cx;
 			GetWindowRect(GetDlgItem(dialog, IDC_EXECUTE), &executeButtonRect);
+			ScreenToClientRect(dialog, executeButtonRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_SAVE), &saveButtonRect);
+			int button_height = executeButtonRect.bottom - executeButtonRect.top + 10;
+			ScreenToClientRect(dialog, saveButtonRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_OPEN), &openButtonRect);
+			ScreenToClientRect(dialog, openButtonRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_OUTPUT), &outputRect);
+			ScreenToClientRect(dialog, outputRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_COMMAND_ENTRY), &commandEntryRect);
+			ScreenToClientRect(dialog, commandEntryRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_ENVIRONMENT), &environmentRect);
+			ScreenToClientRect(dialog, environmentRect);
 			int commandEntryHeight = commandEntryRect.bottom - commandEntryRect.top;
-			cx -= outputRect.left;
-			cy -= outputRect.top + commandEntryHeight;
+			//cx -= outputRect.left + 10;
+			cy -= outputRect.top + commandEntryHeight + button_height;
+			//MoveWindow(,,,, , FALSE);
 			SetWindowPos(GetDlgItem(dialog, IDC_EXECUTE), NULL, executeButtonRect.left, clientRect.bottom - (executeButtonRect.bottom - executeButtonRect.top), 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_SAVE), NULL, saveButtonRect.left, clientRect.bottom - (saveButtonRect.bottom - saveButtonRect.top), 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_OPEN), NULL, openButtonRect.left, clientRect.bottom - (openButtonRect.bottom - openButtonRect.top), 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
-			SetWindowPos(GetDlgItem(dialog, IDC_OUTPUT), NULL, 0, 0, cx, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
+			SetWindowPos(GetDlgItem(dialog, IDC_OUTPUT), NULL, 0, 0, cx - outputRect.left - 10, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_ENVIRONMENT), NULL, 0, 0, environmentRect.right - environmentRect.left, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
-			SetWindowPos(GetDlgItem(dialog, IDC_COMMAND_ENTRY), NULL, 10, cy + 20, cxtot - 15, commandEntryRect.bottom - commandEntryRect.top, SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
+			SetWindowPos(GetDlgItem(dialog, IDC_COMMAND_ENTRY), NULL, 10, cy + 20, cx - 20, commandEntryRect.bottom - commandEntryRect.top, SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			//GetDlgItem(self->dialog, IDC_OUTPUT)
 		}
 		break;
+		/*case WM_GETMINMAXINFO:
+      lppt = (LPPOINT)lParam;   // lParam points to array of POINTs
+      lppt[3].x = MinDialogSize.x;
+      lppt[3].y = MinDialogSize.y;
+      lppt[4].x = MaxDialogSize.x;
+      lppt[4].y = MaxDialogSize.y;
+      return (INT_PTR)FALSE;
+      break;*/
 
 	case WM_NEXTDLGCTL:
 		{/* WPARAM */
