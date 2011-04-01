@@ -272,8 +272,8 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	case WM_CLOSE:
 	case WM_DESTROY:
 		//EndDialog(dialog, IDCLOSE); /* or rather HideWindows */
-		// FIXME save work.
-		if(!self->B_file_modified || !REPL_confirm_close(self))
+		// save work.
+		if(!self->B_file_modified || REPL_confirm_close(self))
 				PostQuitMessage(0);
 		break;
 
