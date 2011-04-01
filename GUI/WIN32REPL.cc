@@ -363,14 +363,12 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	//return(DefDlgProc(dialog, message, wParam, lParam));
 	return (INT_PTR)FALSE;
 }
-
 struct REPL* REPL_new(HWND parent) {
 	struct REPL* result;
 	result = (struct REPL*) calloc(1, sizeof(struct REPL));
 	REPL_init(result, parent);
 	return(result);
 }
-
 static ATOM registerMyClass(HINSTANCE hInstance)
 {
 	WNDCLASSEX wcex;
@@ -391,7 +389,6 @@ static ATOM registerMyClass(HINSTANCE hInstance)
 
 	return RegisterClassEx(&wcex);
 }
-
 void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
 	hinstance = GetModuleHandle(NULL);
@@ -407,7 +404,9 @@ void REPL_init(struct REPL* self, HWND parent) {
 	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY4D));
 	SetWindowLongPtr(self->dialog, GWLP_USERDATA, (LONG) self);
 }
-
+void REPL_set_file_modified(struct REPL* self, bool value) {
+	self->B_file_modified = value;
+}
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 	AST::Cons* definitionCons = dynamic_cast<AST::Cons*>(definition);
 	if(!definitionCons || definitionCons->head != AST::intern("define") || !definitionCons->tail)
@@ -420,10 +419,7 @@ void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 		return;
 	//std::string bodyString = body->str();
 	EnsureInEnvironment(self->dialog, FromUTF8(parameter->name), body);
-}
-
-void REPL_set_file_modified(struct REPL* self, bool value) {
-	self->B_file_modified = value;
+	REPL_set_file_modified(self, true);
 }
 void REPL_insert_output(struct REPL* self, const char* output) {
 	InsertRichText(GetDlgItem(self->dialog, IDC_OUTPUT), FromUTF8(output));
