@@ -62,11 +62,12 @@ static GtkWindow* make_REPL_window(GtkWindow* parent, const char* source_file_na
 	return(GTK_WINDOW(GTKREPL_get_widget(REPL)));
 }
 int main(int argc, char* argv[]) {
-	GtkWindow* view;
+	/*GtkWindow* view;*/
 	gtk_init(&argc, &argv);
-	view = make_view_window();
-	g_signal_connect(G_OBJECT(view), "destroy", G_CALLBACK(gtk_main_quit), NULL);
-	REPL = make_REPL_window(view, argc > 1 ? argv[argc - 1] : NULL);
+	/*view = make_view_window();*/
+	REPL = make_REPL_window(NULL, argc > 1 ? argv[argc - 1] : NULL);
+	g_signal_connect(G_OBJECT(REPL), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
+	gtk_widget_show(GTK_WIDGET(REPL));
 	gtk_main();
 	return(0);
 }

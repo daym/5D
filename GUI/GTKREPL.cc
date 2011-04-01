@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/MathParser"
 #include "Config/Config"
 #include "Formatters/LATEX"
+#include "GUI/UI_definition.UI"
 
 namespace GUI {
 
@@ -25,11 +26,13 @@ struct GTKREPL {
 	GtkScrolledWindow* fOutputScroller;
 	GtkTextBuffer* fOutputBuffer;
 	GtkEntry* fCommandEntry;
+	GtkBox* fCommandBox;
 	//GtkButton* fExecuteButton;
 	//GtkBox* fShortcutBox;
 	GtkTreeView* fEnvironmentView;
 	GtkListStore* fEnvironmentStore;
 	GHashTable* fEnvironmentKeys;
+	GtkButton* fExecuteButton;
 	GtkBox* fEditorBox;
 	GtkScrolledWindow* fEnvironmentScroller;
 	GtkFileChooser* fSaveDialog;
@@ -37,8 +40,8 @@ struct GTKREPL {
 	struct Config* fConfig;
 	GtkEntryCompletion* fCommandCompletion;
 	bool fFileModified;
+	GtkBuilder* UI_builder;
 };
-void GTKREPL_handle_response(struct GTKREPL* self, gint response_id, GtkDialog* dialog);
 void GTKREPL_defer_LATEX(struct GTKREPL* self, const char* text);
 void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node);
 void GTKREPL_add_to_environment(struct GTKREPL* self, AST::Node* definition);
@@ -55,7 +58,7 @@ static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer
 	}
 	return(FALSE);
 }
-static gboolean g_confirm_close(GtkDialog* dialog, GdkEvent* event, GTKREPL* REPL) {
+static gboolean g_confirm_close(GtkWindow* dialog, GdkEvent* event, GTKREPL* REPL) {
 	if(GTKREPL_confirm_close(REPL))
 		gtk_widget_hide(GTK_WIDGET(dialog));
 	return(TRUE);
@@ -99,14 +102,22 @@ static gboolean complete_command(GtkEntry* entry, GdkEventKey* key, GtkEntryComp
 	return(TRUE);
 }*/
 void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
+	GtkUIManager* UI_manager;
+	GtkMenuBar* menu_bar;
+	self->UI_builder = gtk_builder_new();
+	if(!gtk_builder_add_from_string(self->UI_builder, UI_definition, -1, NULL))
+		abort();
+	UI_manager = (GtkUIManager*) gtk_builder_get_object(self->UI_builder, "uiman");
+	if(!UI_manager)
+		abort();
 	self->fFileModified = false;
 	self->fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
-	self->fWidget = (GtkWindow*) gtk_dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_EXECUTE, GTK_RESPONSE_OK, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, GTK_STOCK_OPEN, GTK_RESPONSE_REJECT, NULL);
+	self->fWidget = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	/*dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_EXECUTE, GTK_RESPONSE_OK, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, GTK_STOCK_OPEN, GTK_RESPONSE_REJECT, NULL);*/
 	self->fSaveDialog = (GtkFileChooser*) gtk_file_chooser_dialog_new("Save REPL", GTK_WINDOW(self->fWidget), GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
 	self->fOpenDialog = (GtkFileChooser*) gtk_file_chooser_dialog_new("Open REPL", GTK_WINDOW(self->fWidget), GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
-	gtk_dialog_set_default_response(GTK_DIALOG(self->fWidget), GTK_RESPONSE_OK);
-	self->fMainBox = (GtkBox*) gtk_vbox_new(FALSE, 7);
-	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(self->fWidget)->vbox), GTK_WIDGET(self->fMainBox));
+	self->fMainBox = (GtkBox*) gtk_vbox_new(FALSE, 0);
+	gtk_container_add(GTK_CONTAINER(self->fWidget), GTK_WIDGET(self->fMainBox));
 	gtk_widget_show(GTK_WIDGET(self->fMainBox));
 	self->fEnvironmentView = (GtkTreeView*) gtk_tree_view_new();
 	GtkTreeViewColumn* fNameColumn;
@@ -120,10 +131,12 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	gtk_container_add(GTK_CONTAINER(self->fEnvironmentScroller), GTK_WIDGET(self->fEnvironmentView));
 	gtk_widget_show(GTK_WIDGET(self->fEnvironmentScroller));
 	//self->fShortcutBox = (GtkBox*) gtk_hbutton_box_new();
-	//self->fExecuteButton = (GtkButton*) gtk_button_new_from_stock(GTK_STOCK_OK);
-	//gtk_widget_show(GTK_WIDGET(self->fExecuteButton));
+	self->fExecuteButton = (GtkButton*) gtk_button_new_from_stock(GTK_STOCK_EXECUTE);
+	gtk_widget_show(GTK_WIDGET(self->fExecuteButton));
 	//gtk_box_pack_start(self->fShortcutBox, GTK_WIDGET(self->fExecuteButton), TRUE, TRUE, 7);
 	//gtk_widget_show(GTK_WIDGET(self->fShortcutBox));
+	self->fCommandBox = (GtkBox*) gtk_hbox_new(FALSE, 7);
+	gtk_widget_show(GTK_WIDGET(self->fCommandBox));
 	self->fCommandEntry = (GtkEntry*) gtk_entry_new();
 	self->fCommandCompletion = gtk_entry_completion_new();
 	g_signal_connect(G_OBJECT(self->fCommandEntry), "key-press-event", G_CALLBACK(complete_command), self->fCommandCompletion);
@@ -153,10 +166,14 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	gtk_box_pack_start(GTK_BOX(self->fEditorBox), GTK_WIDGET(self->fEnvironmentScroller), FALSE, FALSE, 7); 
 	gtk_box_pack_start(GTK_BOX(self->fEditorBox), GTK_WIDGET(self->fOutputScroller), TRUE, TRUE, 7); 
 	gtk_widget_show(GTK_WIDGET(self->fEditorBox));
-	//gtk_box_pack_start(GTK_BOX(self->fMainBox), GTK_WIDGET(self->fShortcutBox), FALSE, FALSE, 7); 
-	gtk_box_pack_start(GTK_BOX(self->fMainBox), GTK_WIDGET(self->fEditorBox), TRUE, TRUE, 7); 
-	gtk_box_pack_start(GTK_BOX(self->fMainBox), GTK_WIDGET(self->fCommandEntry), FALSE, FALSE, 7); 
-	g_signal_connect_swapped(GTK_DIALOG(self->fWidget), "response", G_CALLBACK(GTKREPL_handle_response), (void*) self);
+	menu_bar = (GtkMenuBar*) gtk_ui_manager_get_widget(UI_manager, "/menubar1");
+	gtk_widget_show_all(GTK_WIDGET(menu_bar));
+	gtk_box_pack_start(GTK_BOX(self->fMainBox), GTK_WIDGET(menu_bar), FALSE, FALSE, 0); 
+	gtk_box_pack_start(GTK_BOX(self->fMainBox), GTK_WIDGET(self->fEditorBox), TRUE, TRUE, 0); 
+	gtk_box_pack_start(GTK_BOX(self->fMainBox), GTK_WIDGET(self->fCommandBox), FALSE, FALSE, 0); 
+	gtk_box_pack_start(GTK_BOX(self->fCommandBox), GTK_WIDGET(self->fCommandEntry), TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(self->fCommandBox), GTK_WIDGET(self->fExecuteButton), FALSE, FALSE, 0);
+	/*g_signal_connect_swapped(GTK_DIALOG(self->fWidget), "response", G_CALLBACK(GTKREPL_handle_response), (void*) self);*/
 	gtk_window_set_focus(GTK_WINDOW(self->fWidget), GTK_WIDGET(self->fCommandEntry));
 	gtk_tree_view_column_set_sort_column_id(fNameColumn, 0);
 	gtk_tree_view_column_set_sort_indicator(fNameColumn, TRUE);
