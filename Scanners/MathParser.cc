@@ -176,6 +176,15 @@ void MathParser::parse_optional_whitespace(void) {
 	}
 	ungetc(input, input_file);
 }
+void MathParser::parse_S_optional_whitespace(void) {
+	int input;
+	// skip whitespace...
+	while(++position, input = fgetc(input_file), input == ' ' || input == '\t' || input == '\n' || input == '\r') {
+		if(input == '\n')
+			++line_number;
+	}
+	ungetc(input, input_file);
+}
 void MathParser::parse_token(void) {
 	int input;
 	++position, input = fgetc(input_file);
@@ -441,6 +450,43 @@ AST::Node* MathParser::parse(FILE* input_file) {
 	allow_args = true;
 	consume();
 	AST::Node* result = parse_expression();
+	pop();
+	return(result);
+}
+
+AST::Cons* MathParser::parse_S_list(void) {
+	if(input_token == intern(")"))
+		return(NULL);
+	else {
+		AST::Node* head;
+		head = parse_S_expression_inline();
+		return(cons(head, parse_S_list()));
+	}
+}
+
+AST::Node* MathParser::parse_S_expression_inline(void) {
+	/* TODO do this without tokenizing? How? */
+	if(input_token == intern("(")) {
+		AST::Cons* result = NULL;
+		consume();
+		result = parse_S_list();
+		consume(intern(")"));
+		parse_S_optional_whitespace();
+		return(result);
+	} else if(input_token == intern("<symbol>")) {
+		return(consume()); // & whitespace.
+	} else {
+		/* TODO numbers, strings */
+		assert(0);
+		parse_S_optional_whitespace();
+	}
+}
+
+AST::Node* MathParser::parse_S_expression(FILE* input_file) {
+	push(input_file, 0);
+	allow_args = true;
+	consume();
+	AST::Node* result = parse_S_expression_inline();
 	pop();
 	return(result);
 }

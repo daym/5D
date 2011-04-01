@@ -31,6 +31,7 @@ private:
 	AST::Node* parse_binary_operation(int precedence_level);
 	AST::Node* parse_abstraction(void);
 	void parse_optional_whitespace(void);
+	void parse_S_optional_whitespace(void);
 	AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2);
 	AST::Node* parse_macro(AST::Node* operand_1);
 	AST::Node* parse_argument(void);
@@ -38,8 +39,11 @@ private:
 protected:
 	AST::Node* parse_expression(void);
 	AST::Node* consume(AST::Symbol* expected_token = NULL);
+	AST::Node* parse_S_expression_inline(void);
+	AST::Cons* parse_S_list(void);
 public:
 	AST::Node* parse(FILE* input_file);
+	AST::Node* parse_S_expression(FILE* input_file);
 };
 int get_operator_precedence(AST::Symbol* symbol);
 
