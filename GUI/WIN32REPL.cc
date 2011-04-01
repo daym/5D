@@ -354,10 +354,15 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		case IDM_EDIT_CUT:
 		case IDM_EDIT_COPY:
 		case IDM_EDIT_PASTE:
+			{
+				SendMessage(GetFocus(), LOWORD(wParam) == IDM_EDIT_CUT ? WM_CUT :
+					                    LOWORD(wParam) == IDM_EDIT_COPY ? WM_COPY :
+										LOWORD(wParam) == IDM_EDIT_PASTE ? WM_PASTE : WM_CLEAR, 0, 0);
+				break;
+			}
 		case IDM_EDIT_FIND:
 			/* FIXME implement */
 			{
-				break;
 			}
 		}
 
