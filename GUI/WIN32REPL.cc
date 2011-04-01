@@ -54,12 +54,12 @@ static void initializeOpenFileNameStruct() {
 	openFileName.lpstrFile = openFileNameName;
 	openFileName.lpstrFile[0] = '\0';
 	openFileName.nMaxFile = sizeof(openFileNameName) / sizeof(openFileNameName[0]);
-	openFileName.lpstrFilter = _T("All\0*.*\04D Source File\0*.4D\0");
+	openFileName.lpstrFilter = _T("All Files (*)\0*.*\04D Source Files (*.4D)\0*.4D\0\0");
 	openFileName.nFilterIndex = 2;
 	openFileName.lpstrFileTitle = NULL;
 	openFileName.nMaxFileTitle = 0;
 	openFileName.lpstrInitialDir = NULL;
-	openFileName.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	openFileName.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 }
 std::wstring GetUsualOpenFileName(HWND hwndOwner) {
 	openFileName.hwndOwner = hwndOwner;
@@ -95,6 +95,60 @@ std::wstring GetDlgItemTextCXX(HWND dialog, int control) {
 	// TODO error handling (if at all possible).
 	return(buffer);
 }
+/*BOOL LoadTextFileToEdit(HWND hEdit, LPCTSTR pszFileName)
+{
+    HANDLE hFile;
+    BOOL bSuccess = FALSE;
+
+    hFile = CreateFile(pszFileName, GENERIC_READ, FILE_SHARE_READ, NULL,
+        OPEN_EXISTING, 0, NULL);
+    if(hFile != INVALID_HANDLE_VALUE) {
+        DWORD dwFileSize;
+        dwFileSize = GetFileSize(hFile, NULL);
+        if(dwFileSize != 0xFFFFFFFF) {
+            LPCWSTR pszFileText;
+            pszFileText = (LPCWSTR) GlobalAlloc(GPTR, dwFileSize + 1);
+            if(pszFileText != NULL) {
+                DWORD dwRead;
+                if(ReadFile(hFile, pszFileText, dwFileSize, &dwRead, NULL)) {
+                    pszFileText[dwFileSize] = 0; // Add null terminator
+                    if(SetWindowText(hEdit, pszFileText))
+                        bSuccess = TRUE; // It worked!
+                }
+                GlobalFree(pszFileText);
+            }
+        }
+        CloseHandle(hFile);
+    }
+    return bSuccess;
+}
+BOOL SaveTextFileFromEdit(HWND hEdit, LPCTSTR pszFileName)
+{
+    HANDLE hFile;
+    BOOL bSuccess = FALSE;
+    hFile = CreateFile(pszFileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if(hFile != INVALID_HANDLE_VALUE) {
+        DWORD dwTextLength;
+        dwTextLength = GetWindowTextLength(hEdit);
+        // No need to bother if there's no text.
+        if(dwTextLength > 0) {
+            LPSTR pszText;
+            DWORD dwBufferSize = dwTextLength + 1;
+            pszText = GlobalAlloc(GPTR, dwBufferSize);
+            if(pszText != NULL) {
+                if(GetWindowText(hEdit, pszText, dwBufferSize)) {
+                    DWORD dwWritten;
+                    if(WriteFile(hFile, pszText, dwTextLength, &dwWritten, NULL))
+                        bSuccess = TRUE;
+                }
+                GlobalFree(pszText);
+            }
+        }
+        CloseHandle(hFile);
+    }
+    return bSuccess;
+}*/
+
 void ClearRichTextSelection(HWND control) {
 	int iTotalTextLength;
 	iTotalTextLength = GetWindowTextLength(control);
@@ -136,13 +190,17 @@ struct REPL {
 HWND REPL_get_window(struct REPL* self) {
 	return(self->dialog);
 }
-void REPL_save(struct REPL* self) {
+bool REPL_save(struct REPL* self) {
 	std::wstring file_name;
 	file_name = GetUsualSaveFileName(self->dialog);
 	// TODO
 	self->B_file_modified = false;
+	return(true);
 }
 void REPL_load(struct REPL* self) {
+	if(self->B_file_modified)
+		if(!REPL_save(self))
+			return;
 	std::wstring file_name;
 	file_name = GetUsualOpenFileName(self->dialog);
 	// TODO
@@ -182,7 +240,26 @@ static void ScreenToClientRect(HWND hwnd, RECT& rect) {
 	rect.right = p.x;
 	rect.bottom = p.y;
 }
-
+static INT_PTR CALLBACK HandleConfirmCloseDialogMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
+	switch(message) {
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+	case WM_COMMAND:
+		EndDialog(dialog, wParam);
+		return((INT_PTR) TRUE);
+	}
+	return((INT_PTR) FALSE);
+}
+bool REPL_confirm_close(struct REPL* self) {
+	switch(DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_CONFIRM_CLOSE), self->dialog, HandleConfirmCloseDialogMessage)) {
+	case IDYES:
+		  return(REPL_save(self));
+	case IDNO:
+		  return(true);
+	default:
+		  return(false);
+	}
+}
 INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
 	UNREFERENCED_PARAMETER(lParam);
 	struct REPL* self;
@@ -191,12 +268,13 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	{
 
 	case WM_INITDIALOG:
-		return (INT_PTR)FALSE;
+		return (INT_PTR)TRUE;
 	case WM_CLOSE:
 	case WM_DESTROY:
 		//EndDialog(dialog, IDCLOSE); /* or rather HideWindows */
 		// FIXME save work.
-		PostQuitMessage(0);
+		if(!self->B_file_modified || !REPL_confirm_close(self))
+				PostQuitMessage(0);
 		break;
 
 	case WM_SIZE:
