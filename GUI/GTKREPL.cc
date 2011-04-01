@@ -11,6 +11,9 @@ You should have received a copy of the GNU General Public License along with thi
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
 #include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "GUI/GTKREPL"
 #include "Scanners/MathParser"
 #include "Config/Config"
@@ -65,7 +68,8 @@ static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer
 }
 static gboolean g_confirm_close(GtkWindow* dialog, GdkEvent* event, GTKREPL* REPL) {
 	if(GTKREPL_confirm_close(REPL))
-		gtk_widget_hide(GTK_WIDGET(dialog));
+		return(FALSE);
+		//gtk_widget_hide(GTK_WIDGET(dialog));
 	return(TRUE);
 	//return(!REPL->confirm_close());
 }
@@ -155,6 +159,15 @@ void GTKREPL_connect_accelerator(struct GTKREPL* self, int key, GdkModifierType 
 	gtk_action_set_accel_path(action, path);
 	gtk_accel_map_add_entry(path, key, modifiers);
 	/*"4D-REPL/File/Execute"*/
+}
+static void save_accelerators(struct GTKREPL* self, GtkObject* widget) {
+	const char* user_config_dir;
+	user_config_dir = g_get_user_config_dir();
+	if(!user_config_dir)
+		abort();
+	g_mkdir_with_parents(user_config_dir, 0744);
+	g_mkdir_with_parents(g_build_filename(user_config_dir, "4D", NULL), 0744);
+	gtk_accel_map_save(g_build_filename(user_config_dir, "4D", "accelerators", NULL));
 }
 void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
@@ -263,6 +276,18 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	connect_accelerator(GDK_c, GDK_CONTROL_MASK, copy, "<4D-REPL>/Edit/Copy");
 	connect_accelerator(GDK_v, GDK_CONTROL_MASK, paste, "<4D-REPL>/Edit/Paste");
 	connect_accelerator(GDK_f, GDK_CONTROL_MASK, paste, "<4D-REPL>/Edit/Find");
+	{
+		const char* user_config_dir;
+		int FD;
+		user_config_dir = g_get_user_config_dir();
+		FD = user_config_dir ? open(g_build_filename(user_config_dir, "4D", "accelerators", NULL), O_RDONLY, 0) : (-1);
+		if(FD != -1) {
+			gtk_accel_map_load_fd(FD);
+			close(FD);
+		}
+		/* TODO g_get_system_config_dirs */
+		g_signal_connect(G_OBJECT(self->fWidget), "destroy", G_CALLBACK(save_accelerators), self);
+	}
 }
 GtkWidget* GTKREPL_get_widget(struct GTKREPL* self) {
 	return(GTK_WIDGET(self->fWidget));
