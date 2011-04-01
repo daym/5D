@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Formatters/LATEX"
 #include "GUI/UI_definition.UI"
 
+#define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(GTKREPL_handle_##name), self)
+
 namespace GUI {
 
 struct GTKREPL {
@@ -101,6 +103,41 @@ static gboolean complete_command(GtkEntry* entry, GdkEventKey* key, GtkEntryComp
 	gtk_widget_hide(GTK_WIDGET(widget));
 	return(TRUE);
 }*/
+static void GTKREPL_handle_execute(struct GTKREPL* self, GtkAction* action) {
+	GtkTextIter beginning;
+	GtkTextIter end;
+	gchar* text;
+	if(!gtk_text_buffer_get_selection_bounds(self->fOutputBuffer, &beginning, &end)) {
+		gtk_text_buffer_get_start_iter(self->fOutputBuffer, &beginning);
+		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+		text = strdup(gtk_entry_get_text(self->fCommandEntry));
+		std::string v = text;
+		v += "\n";
+		gtk_text_buffer_insert(self->fOutputBuffer, &end, v.c_str(), -1);
+	} else {
+		text = gtk_text_buffer_get_text(self->fOutputBuffer, &beginning, &end, FALSE);
+	}
+	if(text && text[0]) {
+		GTKREPL_execute(self, text, &end);
+	}
+	g_free(text);
+}
+static void GTKREPL_handle_open_file(struct GTKREPL* self, GtkAction* action) {
+	GTKREPL_load(self);
+}
+static void GTKREPL_handle_save_file(struct GTKREPL* self, GtkAction* action) {
+	GTKREPL_save(self);
+}
+static void GTKREPL_handle_cut(struct GTKREPL* self, GtkAction* action) {
+}
+static void GTKREPL_handle_copy(struct GTKREPL* self, GtkAction* action) {
+}
+static void GTKREPL_handle_paste(struct GTKREPL* self, GtkAction* action) {
+}
+static void GTKREPL_handle_find(struct GTKREPL* self, GtkAction* action) {
+}
+static void GTKREPL_handle_about(struct GTKREPL* self, GtkAction* action) {
+}
 void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
 	GtkMenuBar* menu_bar;
@@ -188,6 +225,14 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	}
 	g_signal_connect(G_OBJECT(self->fWidget), "delete-event", G_CALLBACK(g_confirm_close), self);
 	//g_signal_connect(G_OBJECT(self->fWidget), "delete-event", G_CALLBACK(g_hide_window), NULL);
+	add_action_handler(execute);
+	add_action_handler(open_file);
+	add_action_handler(save_file);
+	add_action_handler(cut);
+	add_action_handler(copy);
+	add_action_handler(paste);
+	add_action_handler(find);
+	add_action_handler(about);
 }
 GtkWidget* GTKREPL_get_widget(struct GTKREPL* self) {
 	return(GTK_WIDGET(self->fWidget));
@@ -381,32 +426,6 @@ void GTKREPL_set_current_environment_name(struct GTKREPL* self, const char* abso
 	gtk_window_set_title(self->fWidget, absolute_name);
 	Config_set_environment_name(self->fConfig, absolute_name);
 	Config_save(self->fConfig);
-}
-void GTKREPL_handle_response(struct GTKREPL* self, gint response_id, GtkDialog* dialog) {
-	if(response_id != GTK_RESPONSE_OK) {
-		if(response_id == GTK_RESPONSE_ACCEPT)
-			GTKREPL_save(self);
-		else if(response_id == GTK_RESPONSE_REJECT)
-			GTKREPL_load(self);
-		return;
-	}
-	GtkTextIter beginning;
-	GtkTextIter end;
-	gchar* text;
-	if(!gtk_text_buffer_get_selection_bounds(self->fOutputBuffer, &beginning, &end)) {
-		gtk_text_buffer_get_start_iter(self->fOutputBuffer, &beginning);
-		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-		text = strdup(gtk_entry_get_text(self->fCommandEntry));
-		std::string v = text;
-		v += "\n";
-		gtk_text_buffer_insert(self->fOutputBuffer, &end, v.c_str(), -1);
-	} else {
-		text = gtk_text_buffer_get_text(self->fOutputBuffer, &beginning, &end, FALSE);
-	}
-	if(text && text[0]) {
-		GTKREPL_execute(self, text, &end);
-	}
-	g_free(text);
 }
 void GTKREPL_add_to_environment(struct GTKREPL* self, AST::Node* definition) {
 	using namespace AST;
