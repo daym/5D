@@ -291,7 +291,6 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			int cxtot = cx;
 			GetWindowRect(GetDlgItem(dialog, IDC_EXECUTE), &executeButtonRect);
 			ScreenToClientRect(dialog, executeButtonRect);
-			int button_height = executeButtonRect.bottom - executeButtonRect.top + 10;
 			GetWindowRect(GetDlgItem(dialog, IDC_OUTPUT), &outputRect);
 			ScreenToClientRect(dialog, outputRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_COMMAND_ENTRY), &commandEntryRect);
@@ -299,13 +298,14 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			GetWindowRect(GetDlgItem(dialog, IDC_ENVIRONMENT), &environmentRect);
 			ScreenToClientRect(dialog, environmentRect);
 			int commandEntryHeight = commandEntryRect.bottom - commandEntryRect.top;
+			int executeButtonWidth = executeButtonRect.right - executeButtonRect.left;
 			//cx -= outputRect.left + 10;
-			cy -= outputRect.top + commandEntryHeight + button_height;
+			cy -= outputRect.top + commandEntryHeight + 14;
 			//MoveWindow(,,,, , FALSE);
-			SetWindowPos(GetDlgItem(dialog, IDC_EXECUTE), NULL, executeButtonRect.left, clientRect.bottom - (executeButtonRect.bottom - executeButtonRect.top), 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
+			SetWindowPos(GetDlgItem(dialog, IDC_EXECUTE), NULL, cx - executeButtonWidth - 10, cy + 20, 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_OUTPUT), NULL, 0, 0, cx - outputRect.left - 10, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_ENVIRONMENT), NULL, 0, 0, environmentRect.right - environmentRect.left, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
-			SetWindowPos(GetDlgItem(dialog, IDC_COMMAND_ENTRY), NULL, 10, cy + 20, cx - 20, commandEntryRect.bottom - commandEntryRect.top, SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
+			SetWindowPos(GetDlgItem(dialog, IDC_COMMAND_ENTRY), NULL, 10, cy + 20, cx - 20 - executeButtonWidth, commandEntryRect.bottom - commandEntryRect.top, SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			//GetDlgItem(self->dialog, IDC_OUTPUT)
 		}
 		break;
