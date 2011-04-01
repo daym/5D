@@ -45,12 +45,12 @@ IDC_MY4D MENU
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "REPL",                        IDM_FILE_REPL
+        MENUITEM "Show REPL",                   IDM_FILE_REPL
         MENUITEM "E&xit",                       IDM_EXIT
     END
     POPUP "&Help"
     BEGIN
-        MENUITEM "&About ...",                  IDM_ABOUT
+        MENUITEM "&About",                      IDM_ABOUT
     END
 END
 
