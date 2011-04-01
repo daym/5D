@@ -161,9 +161,9 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	gtk_container_add(GTK_CONTAINER(self->fOutputScroller), GTK_WIDGET(self->fOutputArea));
 	gtk_widget_show(GTK_WIDGET(self->fOutputScroller));
 	self->fOutputBuffer = gtk_text_view_get_buffer(self->fOutputArea);
-	self->fEditorBox = (GtkBox*) gtk_hbox_new(FALSE, 7);
+	self->fEditorBox = (GtkBox*) gtk_hbox_new(FALSE, 0);
 	g_signal_connect(G_OBJECT(self->fOutputArea), "focus-out-event", G_CALLBACK(g_clear_output_selection), self->fOutputBuffer);
-	gtk_box_pack_start(GTK_BOX(self->fEditorBox), GTK_WIDGET(self->fEnvironmentScroller), FALSE, FALSE, 7); 
+	gtk_box_pack_start(GTK_BOX(self->fEditorBox), GTK_WIDGET(self->fEnvironmentScroller), FALSE, FALSE, 0); 
 	gtk_box_pack_start(GTK_BOX(self->fEditorBox), GTK_WIDGET(self->fOutputScroller), TRUE, TRUE, 7); 
 	gtk_widget_show(GTK_WIDGET(self->fEditorBox));
 	menu_bar = (GtkMenuBar*) gtk_ui_manager_get_widget(UI_manager, "/menubar1");
