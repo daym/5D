@@ -3,6 +3,7 @@
 #include "resource.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <Commdlg.h>
 #include "WIN32REPL"
 #include "Scanners/MathParser"
 #include "AST/AST"
@@ -35,6 +36,39 @@ std::wstring GetRichTextSelectedText(HWND control) {
 	if(GetWindowText(control, buffer, 20000 - 1) < 1) // FIXME error handling
 		return(_T(""));
 	return(buffer);
+}
+static OPENFILENAME openFileName;
+static WCHAR openFileNameName[2049];
+static void initializeOpenFileNameStruct() {
+	ZeroMemory(&openFileName, sizeof(openFileName));
+	openFileName.lStructSize = sizeof(openFileName);
+	openFileName.lpstrFile = openFileNameName;
+	openFileName.lpstrFile[0] = '\0';
+	openFileName.nMaxFile = sizeof(openFileNameName) / sizeof(openFileNameName[0]);
+	openFileName.lpstrFilter = _T("All\0*.*\04D Source File\0*.4D\0");
+	openFileName.nFilterIndex = 2;
+	openFileName.lpstrFileTitle = NULL;
+	openFileName.nMaxFileTitle = 0;
+	openFileName.lpstrInitialDir = NULL;
+	openFileName.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+}
+std::wstring GetUsualOpenFileName(HWND hwndOwner) {
+	openFileName.hwndOwner = hwndOwner;
+	if(!openFileName.lpstrFile)
+		initializeOpenFileNameStruct();
+	if(GetOpenFileNameW(&openFileName)) {
+		return(openFileName.lpstrFile);
+	} else
+		return(_T(""));
+}
+std::wstring GetUsualSaveFileName(HWND hwndOwner) {
+	openFileName.hwndOwner = hwndOwner;
+	if(!openFileName.lpstrFile)
+		initializeOpenFileNameStruct();
+	if(GetSaveFileNameW(&openFileName)) {
+		return(openFileName.lpstrFile);
+	} else
+		return(_T(""));
 }
 void InsertRichText(HWND control, std::wstring value) {
 	int iTotalTextLength;
@@ -94,6 +128,13 @@ HWND REPL_get_window(struct REPL* self) {
 	return(self->dialog);
 }
 void REPL_save(struct REPL* self) {
+	std::wstring file_name;
+	file_name = GetUsualSaveFileName(self->dialog);
+	// TODO
+}
+void REPL_load(struct REPL* self) {
+	std::wstring file_name;
+	file_name = GetUsualOpenFileName(self->dialog);
 	// TODO
 }
 
@@ -149,6 +190,11 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		case IDC_SAVE:
 			{
 				REPL_save(self);
+				break;
+			}
+		case IDC_OPEN:
+			{
+				REPL_load(self);
 				break;
 			}
 		case IDC_EXECUTE:
