@@ -351,6 +351,14 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				REPL_execute(self, UTF8_text.c_str());
 				break;
 			}
+		case IDM_EDIT_CUT:
+		case IDM_EDIT_COPY:
+		case IDM_EDIT_PASTE:
+		case IDM_EDIT_FIND:
+			/* FIXME implement */
+			{
+				break;
+			}
 		}
 
 		/*if (LOWORD(wParam) == IDCLOSE)
