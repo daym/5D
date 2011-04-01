@@ -203,8 +203,6 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		{
 			RECT clientRect;
 			RECT executeButtonRect;
-			RECT saveButtonRect;
-			RECT openButtonRect;
 			RECT windowRect;
 			RECT outputRect;
 			RECT commandEntryRect;
@@ -215,11 +213,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			int cxtot = cx;
 			GetWindowRect(GetDlgItem(dialog, IDC_EXECUTE), &executeButtonRect);
 			ScreenToClientRect(dialog, executeButtonRect);
-			GetWindowRect(GetDlgItem(dialog, IDC_SAVE), &saveButtonRect);
 			int button_height = executeButtonRect.bottom - executeButtonRect.top + 10;
-			ScreenToClientRect(dialog, saveButtonRect);
-			GetWindowRect(GetDlgItem(dialog, IDC_OPEN), &openButtonRect);
-			ScreenToClientRect(dialog, openButtonRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_OUTPUT), &outputRect);
 			ScreenToClientRect(dialog, outputRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_COMMAND_ENTRY), &commandEntryRect);
@@ -231,8 +225,6 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			cy -= outputRect.top + commandEntryHeight + button_height;
 			//MoveWindow(,,,, , FALSE);
 			SetWindowPos(GetDlgItem(dialog, IDC_EXECUTE), NULL, executeButtonRect.left, clientRect.bottom - (executeButtonRect.bottom - executeButtonRect.top), 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
-			SetWindowPos(GetDlgItem(dialog, IDC_SAVE), NULL, saveButtonRect.left, clientRect.bottom - (saveButtonRect.bottom - saveButtonRect.top), 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
-			SetWindowPos(GetDlgItem(dialog, IDC_OPEN), NULL, openButtonRect.left, clientRect.bottom - (openButtonRect.bottom - openButtonRect.top), 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_OUTPUT), NULL, 0, 0, cx - outputRect.left - 10, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_ENVIRONMENT), NULL, 0, 0, environmentRect.right - environmentRect.left, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_COMMAND_ENTRY), NULL, 10, cy + 20, cx - 20, commandEntryRect.bottom - commandEntryRect.top, SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
@@ -256,7 +248,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 
 	case WM_COMMAND:
 		switch(LOWORD(wParam)) {
-		case IDC_SAVE:
+		case IDM_FILE_SAVE:
 				REPL_save(self);
 				break;
 		case IDM_ABOUT:
@@ -265,10 +257,11 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		case IDM_EXIT:
 			DestroyWindow(dialog);
 			break;
-		case IDC_OPEN:
+		case IDM_FILE_OPEN:
 				REPL_load(self);
 				break;
 		case IDC_EXECUTE:
+		case IDM_FILE_EXECUTE:
 			{
 				std::wstring text;
 				HWND output;
