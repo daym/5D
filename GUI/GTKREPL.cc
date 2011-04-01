@@ -138,7 +138,7 @@ static void GTKREPL_handle_paste(struct GTKREPL* self, GtkAction* action) {
 static void GTKREPL_handle_find(struct GTKREPL* self, GtkAction* action) {
 }
 static void handle_about_response(GtkDialog* dialog, gint response_id, gpointer user_data) {
-	gtk_widget_destroy(GTK_WIDGET(dialog));
+	gtk_widget_hide(GTK_WIDGET(dialog));
 }
 static void GTKREPL_handle_about(struct GTKREPL* self, GtkAction* action) {
 	GtkDialog* dialog;
@@ -146,7 +146,7 @@ static void GTKREPL_handle_about(struct GTKREPL* self, GtkAction* action) {
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), self->fWidget);
 	g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(handle_about_response), NULL);
 	gtk_dialog_run(dialog);
-	gtk_widget_destroy(GTK_WIDGET(dialog));
+	gtk_widget_hide(GTK_WIDGET(dialog));
 }
 void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
