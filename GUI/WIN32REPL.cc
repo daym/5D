@@ -25,7 +25,16 @@ static std::wstring FromUTF8(const char* source) {
 		abort();
 	return(result);
 }
-
+static void ShowWIN32Diagnostics(void) {
+    LPVOID lpMsgBuf;
+    LPVOID lpDisplayBuf;
+    DWORD dw = GetLastError(); 
+    if(FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL) > 0) {
+		MessageBox(NULL, (LPCWSTR)lpMsgBuf, _T("Error"), MB_OK);
+	    LocalFree(lpMsgBuf);
+	}
+    //ExitProcess(dw); 
+}
 std::wstring GetRichTextSelectedText(HWND control) {
 	WPARAM beginning = 0;
 	LPARAM end = 0;
@@ -131,6 +140,7 @@ void REPL_save(struct REPL* self) {
 	std::wstring file_name;
 	file_name = GetUsualSaveFileName(self->dialog);
 	// TODO
+	self->B_file_modified = false;
 }
 void REPL_load(struct REPL* self) {
 	std::wstring file_name;
@@ -138,19 +148,42 @@ void REPL_load(struct REPL* self) {
 	// TODO
 }
 
-INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam)
+static INT_PTR CALLBACK HandleAboutMessages(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
+
+
+
+INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
 	UNREFERENCED_PARAMETER(lParam);
 	struct REPL* self;
 	self = (struct REPL*) GetWindowLongPtr(dialog, GWLP_USERDATA);
 	switch (message)
 	{
-	case WM_INITDIALOG:
-		return (INT_PTR)TRUE; /* set default input focus */
 
+	case WM_INITDIALOG:
+		return (INT_PTR)FALSE;
 	case WM_CLOSE:
-		EndDialog(dialog, IDCLOSE); /* or rather HideWindows */
-		return (INT_PTR)TRUE;
+	case WM_DESTROY:
+		//EndDialog(dialog, IDCLOSE); /* or rather HideWindows */
+		// FIXME save work.
+		PostQuitMessage(0);
+		break;
 
 	case WM_SIZE:
 		{
@@ -165,38 +198,46 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			GetClientRect(dialog, &clientRect);
 			int cx = clientRect.right - clientRect.left;
 			int cy = clientRect.bottom - clientRect.top;
+			int cxtot = cx;
 			GetWindowRect(GetDlgItem(dialog, IDC_EXECUTE), &executeButtonRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_SAVE), &saveButtonRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_OPEN), &openButtonRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_OUTPUT), &outputRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_COMMAND_ENTRY), &commandEntryRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_ENVIRONMENT), &environmentRect);
+			int commandEntryHeight = commandEntryRect.bottom - commandEntryRect.top;
 			cx -= outputRect.left;
-			cy -= outputRect.top;
+			cy -= outputRect.top + commandEntryHeight;
+			SetWindowPos(GetDlgItem(dialog, IDC_EXECUTE), NULL, executeButtonRect.left, clientRect.bottom - (executeButtonRect.bottom - executeButtonRect.top), 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_SAVE), NULL, saveButtonRect.left, clientRect.bottom - (saveButtonRect.bottom - saveButtonRect.top), 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
+			SetWindowPos(GetDlgItem(dialog, IDC_OPEN), NULL, openButtonRect.left, clientRect.bottom - (openButtonRect.bottom - openButtonRect.top), 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_OUTPUT), NULL, 0, 0, cx, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
+			SetWindowPos(GetDlgItem(dialog, IDC_ENVIRONMENT), NULL, 0, 0, environmentRect.right - environmentRect.left, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
+			SetWindowPos(GetDlgItem(dialog, IDC_COMMAND_ENTRY), NULL, 10, cy + 20, cxtot - 15, commandEntryRect.bottom - commandEntryRect.top, SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			//GetDlgItem(self->dialog, IDC_OUTPUT)
 		}
-		return (INT_PTR)TRUE;
+		break;
 
 	case WM_NEXTDLGCTL:
 		{/* WPARAM */
 			ClearRichTextSelection(GetDlgItem(self->dialog, IDC_OUTPUT));
 		}
-		return (INT_PTR)FALSE;
+		break;
 
 	case WM_COMMAND:
 		switch(LOWORD(wParam)) {
 		case IDC_SAVE:
-			{
 				REPL_save(self);
 				break;
-			}
+		case IDM_ABOUT:
+			DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_ABOUTBOX), dialog, HandleAboutMessages);
+			break;
+		case IDM_EXIT:
+			DestroyWindow(dialog);
+			break;
 		case IDC_OPEN:
-			{
 				REPL_load(self);
 				break;
-			}
 		case IDC_EXECUTE:
 			{
 				std::wstring text;
@@ -229,15 +270,41 @@ struct REPL* REPL_new(HWND parent) {
 	return(result);
 }
 
+static ATOM registerMyClass(HINSTANCE hInstance)
+{
+	WNDCLASSEX wcex;
+
+	ZeroMemory(&wcex, sizeof(wcex));
+	wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.style			= CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_GLOBALCLASS | CS_NOCLOSE | /*CS_OWNDC |*/ CS_PARENTDC;
+	wcex.lpfnWndProc	= ::DefWindowProc; // HandleREPLMessage2;
+	wcex.cbClsExtra		= 0;
+	wcex.cbWndExtra		= 0;
+	wcex.hInstance		= hInstance;
+	//wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MY4D));
+	//wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
+	//wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
+	//wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_MY4D);
+	wcex.lpszClassName	= _T("REPL");
+	//wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+
+	return RegisterClassEx(&wcex);
+}
+
 void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
 	hinstance = GetModuleHandle(NULL);
 	//DialogBox(hinstance, MAKEINTRESOURCE(IDD_REPL), parent, HandleREPLMessage);
 	self->B_file_modified = false;
+	/*if(!registerMyClass(hinstance)) {
+		ShowWIN32Diagnostics();
+	}*/
 	self->dialog = CreateDialog(hinstance, MAKEINTRESOURCE(IDD_REPL), parent, HandleREPLMessage);
+	if(self->dialog == NULL) {
+		ShowWIN32Diagnostics();
+	}
 	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY4D));
 	SetWindowLongPtr(self->dialog, GWLP_USERDATA, (LONG) self);
-	ShowWindow(self->dialog, SW_SHOWNORMAL);
 }
 
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
