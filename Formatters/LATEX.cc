@@ -6,7 +6,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <iostream>
-#include <assert.h>
+#include <stdexcept>
 #include "AST/AST"
 #include "AST/Symbol"
 #include "Formatters/LATEX"
@@ -36,8 +36,8 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			output << "{\\frac{";
 			limited_to_LATEX(consNode->tail->head, output, operator_precedence);
 			output << "}{";
-			assert(consNode->tail->tail);
-			assert(!consNode->tail->tail->tail);
+			if(!consNode->tail->tail || consNode->tail->tail->tail)
+				throw std::runtime_error("invalid fraction");
 			limited_to_LATEX(consNode->tail->tail->head, output, operator_precedence);
 			output << "}}";
 		} else if(operator_precedence != -1) { /* actual binary math operator */
@@ -45,8 +45,8 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 				output << "\\left(";
 			limited_to_LATEX(consNode->tail->head, output, operator_precedence);
 			limited_to_LATEX(consNode->head, output, operator_precedence); /* operator */
-			assert(consNode->tail->tail);
-			assert(!consNode->tail->tail->tail);
+			if(!consNode->tail->tail || consNode->tail->tail->tail)
+				throw std::runtime_error("invalid binary math operation");
 			limited_to_LATEX(consNode->tail->tail->head, output, operator_precedence);
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\right)";
@@ -54,7 +54,6 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			std::string v = node ? node->str() : "";
 			fprintf(stderr, "warning: Formatters/LATEX: unhandled node was: %s\n", v.c_str());
 			/* TODO */
-			//assert(0);
 		}
 	} else if(node)
 		output << node->str();
