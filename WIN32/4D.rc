@@ -78,11 +78,11 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "About 4D"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    ICON            128,IDC_STATIC,14,14,21,20
-    LTEXT           "4D, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    ICON            128,IDC_STATIC,14,14,20,20
+    LTEXT           "4D, Version 0.1",IDC_STATIC,42,14,114,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2011 Danny Milosavljevic",IDC_STATIC,179,26,154,8
     DEFPUSHBUTTON   "&Close",IDOK,283,83,50,14,WS_GROUP
-    LTEXT           "This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3, or (at your option) any later version, see http://www.gnu.org/licenses/",IDC_STATIC,7,42,326,25
+    LTEXT           "This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3, or (at your option) any later version,see http://www.gnu.org/licenses",IDC_STATIC,7,42,326,25
 END
 
 
@@ -171,7 +171,7 @@ CAPTION "4D REPL"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LISTBOX         IDC_ENVIRONMENT,7,7,99,146,LBS_SORT | LBS_MULTIPLESEL | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "",IDC_OUTPUT,"RichEdit20W",ES_MULTILINE | ES_AUTOHSCROLL | ES_NOHIDESEL | ES_WANTRETURN | WS_BORDER | WS_VSCROLL | WS_TABSTOP,120,7,245,144
+    CONTROL         "",IDC_OUTPUT,"RichEdit20W",WS_BORDER | WS_VSCROLL | WS_TABSTOP | 0x1184,120,7,245,144
     EDITTEXT        IDC_COMMAND_ENTRY,7,153,358,26,ES_MULTILINE | ES_AUTOHSCROLL | ES_WANTRETURN
     DEFPUSHBUTTON   "&Execute",IDC_EXECUTE,205,180,50,14
     PUSHBUTTON      "&Save",IDC_SAVE,260,180,50,14
