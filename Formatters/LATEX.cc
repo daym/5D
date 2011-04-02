@@ -26,7 +26,7 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			output << "\\leq";
 		else if(symbolNode == AST::intern(">="))
 			output << "\\geq";
-		else if(symbolNode == AST::intern("≠"))
+		else if(symbolNode == AST::intern("/="))
 			output << "\\neq";
 		else
 			output << node->str();

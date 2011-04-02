@@ -49,7 +49,13 @@ void MathParser::parse_operator(int input) {
 		}
 		break;
 	case '/':
-		input_value = input_token = intern("/");
+		++position, input = fgetc(input_file);
+		if(input == '=') { /* not equal */
+			input_value = input_token = intern("/=");
+		} else {
+			ungetc(input, input_file);
+			input_value = input_token = intern("/");
+		}
 		break;
 	case '%':
 		input_value = input_token = intern("/");
@@ -151,7 +157,7 @@ void MathParser::parse_unicode(int input) {
 		++position, input = fgetc(input_file);
 	switch(input) {
 	case 0xA0:
-		input_token = intern("≠");
+		input_token = intern("/=");
 		input_value = input_token;
 		return;
 	case 0xA4:
@@ -295,7 +301,7 @@ static Symbol* operator_precedence[][7] = {
 	{intern("*"), intern("%"), intern("/")},
 	{intern("⨯")},
 	{intern("+"), intern("-")},
-	{intern("="), intern("≠")},
+	{intern("="), intern("/=")},
 	{intern("<"), intern("<="), intern(">"), intern(">=") /*, intern("≤"), intern("≥")*/},
 	{intern("&")},
 	//{intern("^")}
