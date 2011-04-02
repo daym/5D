@@ -21,13 +21,13 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);
 	if(symbolNode) {
 		if(symbolNode == AST::intern("*"))
-			output << "\\cdot";
+			output << "\\cdot ";
 		else if(symbolNode == AST::intern("<="))
-			output << "\\leq";
+			output << "\\leq ";
 		else if(symbolNode == AST::intern(">="))
-			output << "\\geq";
+			output << "\\geq ";
 		else if(symbolNode == AST::intern("/="))
-			output << "\\neq";
+			output << "\\neq ";
 		else
 			output << node->str();
 	} else if(consNode) {
