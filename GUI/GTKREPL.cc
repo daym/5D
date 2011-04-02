@@ -7,6 +7,7 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #include <string.h>
 #include <sstream>
+#include <stdexcept>
 #include <unistd.h>
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
@@ -299,7 +300,11 @@ GtkWidget* GTKREPL_get_widget(struct GTKREPL* self) {
 void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node) {
 	std::stringstream result;
 	result << "$ ";
-	Formatters::to_LATEX(node, result);
+	try {
+		Formatters::to_LATEX(node, result);
+	} catch(std::runtime_error e) {
+		return;
+	}
 	result << " $";
 	std::string resultString = result.str();
 	GTKREPL_defer_LATEX(self, resultString.c_str());
