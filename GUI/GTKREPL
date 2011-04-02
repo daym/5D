@@ -13,7 +13,6 @@ struct Config;
 namespace GUI {
 
 struct GTKREPL;
-void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node);
 bool GTKREPL_confirm_close(struct GTKREPL* self);
 bool GTKREPL_get_file_modified(struct GTKREPL* self);
 bool GTKREPL_save(struct GTKREPL* self);
@@ -22,7 +21,6 @@ bool GTKREPL_save_content_to(struct GTKREPL* self, FILE* output_file);
 bool GTKREPL_load_contents_from(struct GTKREPL* self, const char* name);
 void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent);
 GtkWidget* GTKREPL_get_widget(struct GTKREPL* self);
-/*void defer_LATEX(struct GTKREPL* self, const char* text);*/
 struct GTKREPL* GTKREPL_new(GtkWindow* parent);
 
 }; // end namespace GUI

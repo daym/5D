@@ -51,14 +51,13 @@ struct GTKREPL {
 	GtkBuilder* UI_builder;
 	GtkAccelGroup* accelerator_group;
 };
-void GTKREPL_defer_LATEX(struct GTKREPL* self, const char* text);
-void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node);
+void GTKREPL_defer_LATEX(struct GTKREPL* self, AST::Node* node, const char* text, GtkTextIter* destination);
+void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node, GtkTextIter* destination);
 void GTKREPL_add_to_environment(struct GTKREPL* self, AST::Node* definition);
 void GTKREPL_set_current_environment_name(struct GTKREPL* self, const char* absolute_name);
 void GTKREPL_set_file_modified(struct GTKREPL* self, bool value);
 bool GTKREPL_save_content_to(struct GTKREPL* self, FILE* output_file);
 void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* destination);
-void GTKREPL_handle_LATEX_image(struct GTKREPL* self, GPid pid, GtkTextIter* iter);
 
 static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer user_data) {
 	if(((event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK)) == GDK_CONTROL_MASK) && event->keyval == GDK_Return) {
@@ -119,8 +118,8 @@ static void GTKREPL_handle_execute(struct GTKREPL* self, GtkAction* action) {
 		gtk_text_buffer_get_start_iter(self->fOutputBuffer, &beginning);
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
 		text = strdup(gtk_entry_get_text(self->fCommandEntry));
-		std::string v = text;
-		v += "\n";
+		/*std::string v = text;*/
+		std::string v = "\n";
 		gtk_text_buffer_insert(self->fOutputBuffer, &end, v.c_str(), -1);
 	} else {
 		text = gtk_text_buffer_get_text(self->fOutputBuffer, &beginning, &end, FALSE);
@@ -297,17 +296,28 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 GtkWidget* GTKREPL_get_widget(struct GTKREPL* self) {
 	return(GTK_WIDGET(self->fWidget));
 }
-void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node) {
+static void GTKREPL_print_fallback_at_iter(struct GTKREPL* self, AST::Node* node, GtkTextIter* iter) {
+	std::string v = node ? node->str() : "";
+	//v += "\n";
+	gtk_text_buffer_insert(self->fOutputBuffer, iter, v.c_str(), -1);
+}
+static void GTKREPL_print_fallback(struct GTKREPL* self, AST::Node* node, GtkTextMark* destination) {
+	GtkTextIter iter;
+	gtk_text_buffer_get_iter_at_mark(gtk_text_mark_get_buffer(destination), &iter, destination);
+	GTKREPL_print_fallback_at_iter(self, node, &iter);
+}
+void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node, GtkTextIter* destination) {
 	std::stringstream result;
 	result << "$ ";
 	try {
 		Formatters::to_LATEX(node, result);
 	} catch(std::runtime_error e) {
+		GTKREPL_print_fallback_at_iter(self, node, destination);
 		return;
 	}
 	result << " $";
 	std::string resultString = result.str();
-	GTKREPL_defer_LATEX(self, resultString.c_str());
+	GTKREPL_defer_LATEX(self, node, resultString.c_str(), destination);
 }
 void GTKREPL_scroll_down(struct GTKREPL* self) {
 	// TODO check whether we were at the bottom before...
@@ -322,11 +332,11 @@ void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* des
 		try {
 			try {
 				AST::Node* result = parser.parse(input_file);
-				GTKREPL_queue_LATEX(self, result);
-				GTKREPL_add_to_environment(self, result);
-				std::string v = result ? result->str() : "OK";
+				/*std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
-				gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
+				gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
+				GTKREPL_queue_LATEX(self, result, destination);
+				GTKREPL_add_to_environment(self, result);
 			} catch(...) {
 				fclose(input_file);
 				throw;
@@ -549,26 +559,29 @@ bool GTKREPL_confirm_close(struct GTKREPL* self) {
 struct LATEXChildData {
 	struct GTKREPL* REPL;
 	GtkTextMark* mark;
+	AST::Node* node;
 };
-static void g_LATEX_child_died(GPid pid, int status, struct LATEXChildData* data) {
-	GtkTextIter iter;
-	// FIXME status, non-death.
-	gtk_text_buffer_get_iter_at_mark(gtk_text_mark_get_buffer(data->mark), &iter, data->mark);
-	GTKREPL_handle_LATEX_image(data->REPL, pid, &iter);
-	gtk_text_buffer_delete_mark(gtk_text_mark_get_buffer(data->mark), data->mark);
-	g_spawn_close_pid(pid);
-	GTKREPL_scroll_down(data->REPL);
-	g_free(data);
-}
-void GTKREPL_handle_LATEX_image(struct GTKREPL* self, GPid pid, GtkTextIter* iter) {
+static void GTKREPL_handle_LATEX_image(struct GTKREPL* self, GPid pid, GtkTextIter* iter, struct LATEXChildData* data) {
 	GdkPixbuf* pixbuf;
 	pixbuf = gdk_pixbuf_new_from_file("eqn.png"/*FIXME*/, NULL);
 	if(pixbuf) {
 		gtk_text_buffer_insert_pixbuf(self->fOutputBuffer, iter, pixbuf);
 		g_object_unref(G_OBJECT(pixbuf));
-	}
+		unlink("eqn.png");
+	} else
+		GTKREPL_print_fallback(self, data->node, data->mark);
 }
-void GTKREPL_defer_LATEX(struct GTKREPL* self, const char* text) {
+static void g_LATEX_child_died(GPid pid, int status, struct LATEXChildData* data) {
+	GtkTextIter iter;
+	// FIXME status, non-death.
+	gtk_text_buffer_get_iter_at_mark(gtk_text_mark_get_buffer(data->mark), &iter, data->mark);
+	GTKREPL_handle_LATEX_image(data->REPL, pid, &iter, data);
+	gtk_text_buffer_delete_mark(gtk_text_mark_get_buffer(data->mark), data->mark);
+	g_spawn_close_pid(pid);
+	GTKREPL_scroll_down(data->REPL);
+	g_free(data);
+}
+void GTKREPL_defer_LATEX(struct GTKREPL* self, AST::Node* node, const char* text, GtkTextIter* destination) {
 	GError* error;
 	const char* argv[] = {
 		"l2p",
@@ -583,11 +596,10 @@ void GTKREPL_defer_LATEX(struct GTKREPL* self, const char* text) {
 	GPid pid;
 	if(g_spawn_async(NULL, (char**) argv, NULL, (GSpawnFlags)(G_SPAWN_DO_NOT_REAP_CHILD|G_SPAWN_SEARCH_PATH|G_SPAWN_STDOUT_TO_DEV_NULL), NULL, self/*user_data*/, &pid, &error)) {
 		struct LATEXChildData* data;
-		GtkTextIter iter;
 		data = (struct LATEXChildData*) calloc(1, sizeof(struct LATEXChildData));
 		data->REPL = self;
-		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
-		data->mark = gtk_text_buffer_create_mark(self->fOutputBuffer, NULL, &iter, TRUE);
+		data->node = node;
+		data->mark = gtk_text_buffer_create_mark(self->fOutputBuffer, NULL, destination, TRUE);
 		g_child_watch_add(pid, (GChildWatchFunc) g_LATEX_child_died, data);
 	}
 }
