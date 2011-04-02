@@ -102,7 +102,7 @@ void MathParser::parse_number(int input) {
 	if(input == 'e' || input == 'E') {
 		matchtext << ((char) input);
 		++position, input = fgetc(input_file);
-		while((input >= '0' && input <= '9')/* || input == '.'*/) {
+		while((input >= '0' && input <= '9') || input == '-' || input == '+'/* || input == '.'*/) {
 			matchtext << ((char) input);                   
 			++position, input = fgetc(input_file);
 		}
@@ -469,6 +469,7 @@ AST::Node* MathParser::parse_S_expression_inline(void) {
 	if(input_token == intern("(")) {
 		AST::Cons* result = NULL;
 		consume();
+		/* TODO macros (if we want) */
 		result = parse_S_list();
 		consume(intern(")"));
 		parse_S_optional_whitespace();
