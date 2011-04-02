@@ -14,6 +14,8 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace Formatters {
 
+static int apply_precedence_level = 2;
+
 void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_precedence_limit) {
 	using namespace Scanners;
 	int operator_precedence;
@@ -51,14 +53,19 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\right)";
 		} else { /* function call, maybe */
+			operator_precedence = apply_precedence_level;
+			if(operator_precedence > operator_precedence_limit)
+				output << "\\left(";
 			AST::Cons* args;
-			limited_to_LATEX(consNode->head, output, 1000); /* FIXME precedence */
+			limited_to_LATEX(consNode->head, output, operator_precedence_limit); /* FIXME precedence */
 			for(args = consNode->tail; args; args = args->tail) {
-				limited_to_LATEX(consNode->tail->head, output, 1000); /* FIXME precedence */
+				limited_to_LATEX(consNode->tail->head, output, operator_precedence_limit); /* FIXME precedence */
 				if(args->tail)
 					output << " ";
 			}
 			/* TODO what to do with more arguments, if that's even possible? */
+			if(operator_precedence > operator_precedence_limit)
+				output << "\\right)";
 		}
 	} else if(node) /* symbol etc */
 		output << node->str();
