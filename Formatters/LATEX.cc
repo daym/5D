@@ -50,12 +50,17 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			limited_to_LATEX(consNode->tail->tail->head, output, operator_precedence);
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\right)";
-		} else {
-			std::string v = node ? node->str() : "";
-			fprintf(stderr, "warning: Formatters/LATEX: unhandled node was: %s\n", v.c_str());
-			/* TODO */
+		} else { /* function call, maybe */
+			AST::Cons* args;
+			limited_to_LATEX(consNode->head, output, 1000); /* FIXME precedence */
+			for(args = consNode->tail; args; args = args->tail) {
+				limited_to_LATEX(consNode->tail->head, output, 1000); /* FIXME precedence */
+				if(args->tail)
+					output << " ";
+			}
+			/* TODO what to do with more arguments, if that's even possible? */
 		}
-	} else if(node)
+	} else if(node) /* symbol etc */
 		output << node->str();
 	else
 		output << "?";
