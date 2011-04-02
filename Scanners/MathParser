@@ -47,6 +47,9 @@ public:
 };
 int get_operator_precedence(AST::Symbol* symbol);
 
+extern int apply_precedence_level;
+
 }; /* end namespace Scanners */
+
 
 #endif /* ndef __SCANNERS_MATH_PARSER_H */

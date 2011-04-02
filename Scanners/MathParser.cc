@@ -32,6 +32,12 @@ void MathParser::parse_structural(int input) {
 void MathParser::parse_operator(int input) {
 	using namespace AST;
 	switch(input) {
+	case '.':
+		input_value = input_token = intern(".");
+		break;
+	case '^':
+		input_value = input_token = intern("^");
+		break;
 	case '+':
 		input_value = input_token = intern("+");
 		break;
@@ -228,6 +234,8 @@ void MathParser::parse_token(void) {
 	case '=':
 	case '&':
 	case '|':
+	case '.':
+	case '^':
 		parse_operator(input);
 		break;
 	case '\\':
@@ -254,8 +262,8 @@ static bool symbol1_char_P(int input) {
 static bool symbol_char_P(int input) {
 	return symbol1_char_P(input) 
 	    || (input >= '0' && input <= '9') 
-	    || input == '_'
-	    || input == '^';
+	    || input == '_';
+	  /*  || input == '^' not really part of the symbol name any more. */
 }
 void MathParser::parse_symbol(int input, int special_prefix) {
 	std::stringstream matchtext;
@@ -295,8 +303,10 @@ AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 	return(previous_value);
 }
 using namespace AST;
-static int apply_precedence_level = 2; /* keep in sync with below */
+/* keep apply_precedence_level in sync with operator_precedence below */
+int apply_precedence_level = 3;
 static Symbol* operator_precedence[][7] = {
+	{intern("."), intern("^")},
 	{intern("**")},
 	{intern("*"), intern("%"), intern("/")},
 	{intern("⨯")},

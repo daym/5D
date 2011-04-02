@@ -317,13 +317,19 @@ void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node, GtkTextIter* des
 	}
 	result << " $";
 	std::string resultString = result.str();
+	//std::cout << resultString << " X" << std::endl;
 	GTKREPL_defer_LATEX(self, node, resultString.c_str(), destination);
 }
-void GTKREPL_scroll_down(struct GTKREPL* self) {
-	// TODO check whether we were at the bottom before...
+static gboolean GTKREPL_scroll_down(struct GTKREPL* self) {
 	GtkTextIter iter;
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
 	gtk_text_view_scroll_to_iter(self->fOutputArea, &iter, 0.1, TRUE, 0.0, 1.0);
+	//printf("DU\n");
+	return(FALSE);
+}
+void GTKREPL_queue_scroll_down(struct GTKREPL* self) {
+	// TODO check whether we were at the bottom before...
+	g_idle_add((GSourceFunc) GTKREPL_scroll_down, self);
 }
 void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* destination) {
 	Scanners::MathParser parser;
@@ -348,7 +354,7 @@ void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* des
 		}
 		GTKREPL_set_file_modified(self, true);
 	}
-	GTKREPL_scroll_down(self);
+	GTKREPL_queue_scroll_down(self);
 }
 static bool save_integer(FILE* output_file, long value) {
 	value = htonl(value);
@@ -578,7 +584,7 @@ static void g_LATEX_child_died(GPid pid, int status, struct LATEXChildData* data
 	GTKREPL_handle_LATEX_image(data->REPL, pid, &iter, data);
 	gtk_text_buffer_delete_mark(gtk_text_mark_get_buffer(data->mark), data->mark);
 	g_spawn_close_pid(pid);
-	GTKREPL_scroll_down(data->REPL);
+	GTKREPL_queue_scroll_down(data->REPL);
 	g_free(data);
 }
 void GTKREPL_defer_LATEX(struct GTKREPL* self, AST::Node* node, const char* text, GtkTextIter* destination) {

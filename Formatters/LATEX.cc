@@ -11,10 +11,9 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/Symbol"
 #include "Formatters/LATEX"
 #include "Scanners/MathParser"
+#include "Formatters/UTFStateMachine"
 
 namespace Formatters {
-
-static int apply_precedence_level = 2;
 
 void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_precedence_limit) {
 	using namespace Scanners;
@@ -22,16 +21,35 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);
 	if(symbolNode) {
-		if(symbolNode == AST::intern("*"))
-			output << "\\cdot ";
-		else if(symbolNode == AST::intern("<="))
-			output << "\\leq ";
-		else if(symbolNode == AST::intern(">="))
-			output << "\\geq ";
-		else if(symbolNode == AST::intern("/="))
-			output << "\\neq ";
-		else
-			output << node->str();
+		std::string text = symbolNode->str();
+		const unsigned char* inputString = (const unsigned char*) text.c_str();
+		if(inputString) {
+			UTFStateMachine parser;
+			const char* unmatched_beginning = (const char*) inputString;
+			while(1) {
+				const char* result;
+				int input = *inputString;
+				result = parser.get_final_result(input);
+				if(result) {
+					output << result << std::endl;
+					parser.reset();
+					unmatched_beginning = (const char*) inputString;
+				} else {
+					if(parser.transition(input) == 0) { // was unknown.
+						const char* unmatched_end = (const char*) inputString;
+						for(const char* x = unmatched_beginning; x <= unmatched_end; ++x)
+							if(*x)
+								output << *x;
+						unmatched_beginning = (const char*) unmatched_end + 1;
+					} else
+						unmatched_beginning = (const char*) inputString + 1;
+					if(*inputString == 0)
+						break;
+					++inputString;
+				}
+			}
+		}
+		// TODO output << "\\operatorname{" << node->str() << "}"; // "\\math{" << node->str() << "}";
 	} else if(consNode) {
 		operator_precedence = get_operator_precedence(dynamic_cast<AST::Symbol*>(consNode->head));
 		/*if(operator_precedence == -1)
@@ -60,8 +78,9 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 				output << "\\left(";
 			AST::Cons* args;
 			limited_to_LATEX(consNode->head, output, operator_precedence_limit); /* FIXME precedence */
+			output << " ";
 			for(args = consNode->tail; args; args = args->tail) {
-				limited_to_LATEX(consNode->tail->head, output, operator_precedence_limit); /* FIXME precedence */
+				limited_to_LATEX(args->head, output, operator_precedence_limit); /* FIXME precedence */
 				if(args->tail)
 					output << " ";
 			}
@@ -69,8 +88,8 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\right)";
 		}
-	} else if(node) /* symbol etc */
-		output << node->str();
+	} else if(node)
+		output << "\\mathrm{" << node->str() << "}";
 	else
 		output << "?";
 }
