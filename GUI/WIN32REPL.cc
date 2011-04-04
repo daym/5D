@@ -97,6 +97,11 @@ std::wstring GetDlgItemTextCXX(HWND dialog, int control) {
 	// TODO error handling (if at all possible).
 	return(buffer);
 }
+std::wstring SetDlgItemTextCXX(HWND dialog, int control, WCHAR* buffer) {
+	SetDlgItemTextW(dialog, control, buffer);
+	// TODO error handling (if at all possible).
+	return(buffer);
+}
 /*BOOL LoadTextFileToEdit(HWND hEdit, LPCTSTR pszFileName)
 {
     HANDLE hFile;
@@ -343,13 +348,22 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		case IDM_FILE_EXECUTE:
 			{
 				std::wstring text;
+				bool B_used_entry = false;
 				HWND output;
 				output = GetDlgItem(self->dialog, IDC_OUTPUT);
 				text = GetRichTextSelectedText(output);
-				if(text.length() == 0)
+				if(text.length() == 0) {
 					text = GetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY);
+					B_used_entry = true;
+				}
 				std::string UTF8_text = ToUTF8(text);
-				REPL_execute(self, UTF8_text.c_str());
+				try {
+					REPL_execute(self, UTF8_text.c_str());
+					if(B_used_entry) {
+						SetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY, _T(""));
+					}
+				} catch(...) {
+				}
 				break;
 			}
 		case IDM_EDIT_CUT:
@@ -457,6 +471,8 @@ void REPL_execute(struct REPL* self, const char* command) {
 			std::string v = e.what() ? e.what() : "error";
 			v = " => " + v + "\n";
 			REPL_insert_output(self, v.c_str());
+			REPL_set_file_modified(self, true);
+			throw;
 		}
 		REPL_set_file_modified(self, true);
 	}
