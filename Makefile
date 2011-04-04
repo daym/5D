@@ -42,7 +42,7 @@ Linear_Algebra/test-Tensor.o: Linear_Algebra/test-Tensor.cc Linear_Algebra/Tenso
 Formatters/LATEX.o: Formatters/LATEX.cc Formatters/LATEX AST/AST AST/Symbol Scanners/MathParser Formatters/UTFStateMachine
 Formatters/UTFStateMachine.o: Formatters/UTFStateMachine.cc Formatters/UTFStateMachine Formatters/UTF-8_to_LATEX_result.h
 Formatters/UTF-8_to_LATEX_result.h: Formatters/UTF-8_to_LATEX.table Formatters/generate-state-machine
-	Formatters/generate-state-machine $^ >tmp4711 && mv tmp4711 Formatters/UTF-8_to_LATEX_result.h
+	Formatters/generate-state-machine Formatters/UTF-8_to_LATEX.table >tmp4711 && mv tmp4711 Formatters/UTF-8_to_LATEX_result.h
 AST/AST.o: AST/AST.cc AST/AST
 AST/test-AST.o: AST/test-AST.cc AST/AST
 AST/test-Symbol.o: AST/test-Symbol.cc AST/Symbol AST/AST
