@@ -14,6 +14,9 @@
 		/>
 	</Platforms>
 	<ToolFiles>
+		<ToolFile
+			RelativePath=".\StateTable.rules"
+		/>
 	</ToolFiles>
 	<Configurations>
 		<Configuration
@@ -28,6 +31,9 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="Build State Table"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -102,6 +108,9 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="Build State Table"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -223,6 +232,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Formatters\UTFStateMachine.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\GUI\WIN32REPL.cc"
 				>
 			</File>
@@ -297,6 +310,14 @@
 		</File>
 		<File
 			RelativePath="..\AST\Symbol"
+			>
+		</File>
+		<File
+			RelativePath="..\Formatters\UTF-8_to_LATEX.table"
+			>
+		</File>
+		<File
+			RelativePath="..\Formatters\UTFStateMachine"
 			>
 		</File>
 		<File

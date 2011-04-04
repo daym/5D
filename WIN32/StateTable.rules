@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VisualStudioToolFile
+	Name="State Table"
+	Version="8,00"
+	>
+	<Rules>
+		<CustomBuildRule
+			Name="Build State Table"
+			DisplayName="Build State Table"
+			CommandLine="python $(ProjectDir)..\Formatters\generate-state-machine -o $(InputName)_result.h [inputs]"
+			Outputs="$(InputName)_result.h"
+			FileExtensions="*.table"
+			>
+			<Properties>
+			</Properties>
+		</CustomBuildRule>
+	</Rules>
+</VisualStudioToolFile>

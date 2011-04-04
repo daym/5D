@@ -2,6 +2,14 @@
 
 import sys
 
+f = open("C:\\xxx.TXT", "w")
+f.write(",".join(sys.argv))
+f.close()
+if sys.argv[1] == "-o":
+	output_name = sys.argv[2]
+	sys.stdout = open(output_name, "w")
+input_name = sys.argv[-1]
+	
 # entry = [(input,new_state),(None,result)]
 
 numbered_states = {}
@@ -30,7 +38,7 @@ def add_entry(name, value):
 	assert(xget(None, r) is None) # no result set yet.
 	assert(value is not None)
 	r.append((None, value))
-f = open(sys.argv[1], "rb")
+f = open(input_name, "r")
 raw_entries = {}
 for line in f.readlines():
 	name, value = line.split("\t", 1)

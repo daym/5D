@@ -3,7 +3,7 @@
 
 namespace Formatters {
 
-#include "UTF-8_to_LATEX_result.t"
+#include "UTF-8_to_LATEX_result.h"
 
 UTFStateMachine::UTFStateMachine(void) {
 	state = 0;
