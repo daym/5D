@@ -102,6 +102,9 @@ std::wstring SetDlgItemTextCXX(HWND dialog, int control, WCHAR* buffer) {
 	// TODO error handling (if at all possible).
 	return(buffer);
 }
+static void SetDialogFocus(HWND dialog, int control) {
+	SendMessage(dialog, WM_NEXTDLGCTL, (WPARAM) GetDlgItem(dialog, control), (LPARAM) TRUE); 
+}
 /*BOOL LoadTextFileToEdit(HWND hEdit, LPCTSTR pszFileName)
 {
     HANDLE hFile;
@@ -273,7 +276,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	self = (struct REPL*) GetWindowLongPtr(dialog, GWLP_USERDATA);
 	switch (message) {
 	case WM_INITDIALOG:
-		SendMessage(dialog, WM_NEXTDLGCTL, (WPARAM) GetDlgItem(dialog, IDC_COMMAND_ENTRY), (LPARAM)TRUE); 
+		SetDialogFocus(dialog, IDC_COMMAND_ENTRY);
 		return (INT_PTR)FALSE;
 	case WM_CLOSE:
 	case WM_DESTROY:
@@ -364,6 +367,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 					}
 				} catch(...) {
 				}
+				SetDialogFocus(self->dialog, IDC_COMMAND_ENTRY);
 				break;
 			}
 		case IDM_EDIT_CUT:
