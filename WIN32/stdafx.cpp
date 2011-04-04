@@ -14,13 +14,27 @@ extern "C" {
 
 FILE* fmemopen(void* contents, size_t contents_length, const char* mode) {
 	FILE* str;
-/*
-InitializeCriticalSection( &(((_FILEX *)str)->lock) );
-__crtInitCritSecAndSpinCount
-*/
+#ifdef _MSC_VER
+	/*
+	InitializeCriticalSection( &(((_FILEX *)str)->lock) );
+	__crtInitCritSecAndSpinCount
+	*/
 	str = _getstream(); // (FILE*) calloc(1, sizeof(FILE));
+#else
+	str = (FILE*) calloc(1, sizeof(FILE));
+#endif
 	str->_flag = _IOREAD|_IOSTRG|_IOMYBUF;
 	str->_ptr = str->_base = (char *)contents;
 	str->_cnt = contents_length; // INT_MAX;
 	return(str);
+	/*
+	str->_ptr = self->_base = (char*) contents;
+	str->_cnt;
+	char*	_base;
+	int	_flag;
+	int	_file;
+	int	_charbuf;
+	int	_bufsiz;
+	char*	_tmpfname;*/
+
 }

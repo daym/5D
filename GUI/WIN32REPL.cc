@@ -1,8 +1,10 @@
 #include <string>
+#include <stdio.h>
 #include "stdafx.h"
 #include "resource.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <tchar.h>
 #include <Commdlg.h>
 #include "WIN32REPL"
 #include "Scanners/MathParser"
@@ -26,14 +28,14 @@ static std::wstring FromUTF8(const char* source) {
 	return(result);
 }
 static void ShowWIN32Diagnostics(void) {
-    LPVOID lpMsgBuf;
-    LPVOID lpDisplayBuf;
-    DWORD dw = GetLastError(); 
-    if(FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL) > 0) {
-		MessageBox(NULL, (LPCWSTR)lpMsgBuf, _T("Error"), MB_OK);
-	    LocalFree(lpMsgBuf);
+	LPVOID lpMsgBuf;
+	LPVOID lpDisplayBuf;
+	DWORD dw = GetLastError(); 
+	if(FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL) > 0) {
+		MessageBoxW(NULL, (LPCWSTR)lpMsgBuf, _T("Error"), MB_OK);
+		LocalFree(lpMsgBuf);
 	}
-    //ExitProcess(dw); 
+	//ExitProcess(dw); 
 }
 std::wstring GetRichTextSelectedText(HWND control) {
 	WPARAM beginning = 0;
@@ -41,12 +43,12 @@ std::wstring GetRichTextSelectedText(HWND control) {
 	WCHAR buffer[20000];
 	SendMessage(control, EM_GETSEL, (WPARAM) &beginning, (LPARAM) &end);
 	if(end <= beginning)
-		return(_T(""));
-	if(GetWindowText(control, buffer, 20000 - 1) < 1) // FIXME error handling
-		return(_T(""));
+		return(std::wstring());
+	if(GetWindowTextW(control, buffer, 20000 - 1) < 1) // FIXME error handling
+		return(std::wstring());
 	return(buffer);
 }
-static OPENFILENAME openFileName;
+static OPENFILENAMEW openFileName;
 static WCHAR openFileNameName[2049];
 static void initializeOpenFileNameStruct() {
 	ZeroMemory(&openFileName, sizeof(openFileName));
@@ -68,7 +70,7 @@ std::wstring GetUsualOpenFileName(HWND hwndOwner) {
 	if(GetOpenFileNameW(&openFileName)) {
 		return(openFileName.lpstrFile);
 	} else
-		return(_T(""));
+		return(std::wstring());
 }
 std::wstring GetUsualSaveFileName(HWND hwndOwner) {
 	openFileName.hwndOwner = hwndOwner;
@@ -77,7 +79,7 @@ std::wstring GetUsualSaveFileName(HWND hwndOwner) {
 	if(GetSaveFileNameW(&openFileName)) {
 		return(openFileName.lpstrFile);
 	} else
-		return(_T(""));
+		return(std::wstring());
 }
 void InsertRichText(HWND control, std::wstring value) {
 	int iTotalTextLength;
@@ -264,9 +266,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	UNREFERENCED_PARAMETER(lParam);
 	struct REPL* self;
 	self = (struct REPL*) GetWindowLongPtr(dialog, GWLP_USERDATA);
-	switch (message)
-	{
-
+	switch (message) {
 	case WM_INITDIALOG:
 		SendMessage(dialog, WM_NEXTDLGCTL, (WPARAM) GetDlgItem(dialog, IDC_COMMAND_ENTRY), (LPARAM)TRUE); 
 		return (INT_PTR)FALSE;
