@@ -23,7 +23,9 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 	if(symbolNode) {
 		std::string text = symbolNode->str();
 		const unsigned char* inputString = (const unsigned char*) text.c_str();
-		if(inputString) {
+		if(inputString[0] == '\\') {
+			output << "\\lambda ";
+		} else if(inputString) {
 			UTFStateMachine parser;
 			const char* unmatched_beginning = (const char*) inputString;
 			while(1) {
