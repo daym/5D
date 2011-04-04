@@ -308,7 +308,6 @@ static void GTKREPL_print_fallback(struct GTKREPL* self, AST::Node* node, GtkTex
 }
 void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node, GtkTextIter* destination) {
 	std::stringstream result;
-        result << "\\usepackage[utf8]{inputenc} ";
 	result << "$ ";
 	try {
 		Formatters::to_LATEX(node, result);

@@ -48,7 +48,8 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 					++inputString;
 				}
 			}
-		}
+		} /*else
+			output << text;*/
 		// TODO output << "\\operatorname{" << node->str() << "}"; // "\\math{" << node->str() << "}";
 	} else if(consNode) {
 		operator_precedence = get_operator_precedence(dynamic_cast<AST::Symbol*>(consNode->head));
