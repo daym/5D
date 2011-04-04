@@ -21,20 +21,17 @@ FILE* fmemopen(void* contents, size_t contents_length, const char* mode) {
 	*/
 	str = _getstream(); // (FILE*) calloc(1, sizeof(FILE));
 #else
-	str = (FILE*) calloc(1, sizeof(FILE));
+	str = _tfdopen(0, _T("r"));
+	//str = (FILE*) calloc(1, sizeof(FILE));
+	str->_bufsiz = 0;
 #endif
 	str->_flag = _IOREAD|_IOSTRG|_IOMYBUF;
 	str->_ptr = str->_base = (char *)contents;
 	str->_cnt = contents_length; // INT_MAX;
 	return(str);
 	/*
-	str->_ptr = self->_base = (char*) contents;
-	str->_cnt;
-	char*	_base;
-	int	_flag;
 	int	_file;
 	int	_charbuf;
-	int	_bufsiz;
 	char*	_tmpfname;*/
 
 }
