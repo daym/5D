@@ -62,6 +62,10 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 				result = annotate_impl(consNode->tail->tail, boundNames, boundNamesSet);
 			assert(!boundNames.empty() && boundNames.front() == parameterSymbolNode);
 			boundNames.pop_front();
+			if(result == consNode->tail->tail) // reuse the original nodes if we didn't migrate off them.
+				result = consNode;
+			else
+				result = cons(headNode, cons(parameterNode, dynamic_cast<AST::Cons*>(result)));
 		} else { // application etc.
 			// headNode
 			AST::Node* newHeadNode = annotate_impl(headNode, boundNames, boundNamesSet);
