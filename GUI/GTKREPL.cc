@@ -50,6 +50,7 @@ struct GTKREPL {
 	bool fFileModified;
 	GtkBuilder* UI_builder;
 	GtkAccelGroup* accelerator_group;
+	char* fCacheDirectoryName;
 };
 void GTKREPL_defer_LATEX(struct GTKREPL* self, AST::Node* node, const char* text, GtkTextIter* destination);
 void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node, GtkTextIter* destination);
@@ -172,6 +173,17 @@ static void save_accelerators(struct GTKREPL* self, GtkObject* widget) {
 	g_mkdir_with_parents(g_build_filename(user_config_dir, "4D", NULL), 0744);
 	gtk_accel_map_save(g_build_filename(user_config_dir, "4D", "accelerators", NULL));
 }
+static char* GTKREPL_init_cache_directory(void) {
+	char* result;
+	const char* user_cache_dir;
+	user_cache_dir = g_get_user_cache_dir();
+	if(!user_cache_dir)
+		abort();
+	g_mkdir_with_parents(user_cache_dir, 0744);
+	result = g_build_filename(user_cache_dir, "4D", NULL);
+	g_mkdir_with_parents(result, 0744);
+	return(result);
+}
 void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
 	GtkMenuBar* menu_bar;
@@ -292,6 +304,7 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 		/* TODO g_get_system_config_dirs */
 		g_signal_connect(G_OBJECT(self->fWidget), "destroy", G_CALLBACK(save_accelerators), self);
 	}
+	self->fCacheDirectoryName = GTKREPL_init_cache_directory();
 }
 GtkWidget* GTKREPL_get_widget(struct GTKREPL* self) {
 	return(GTK_WIDGET(self->fWidget));

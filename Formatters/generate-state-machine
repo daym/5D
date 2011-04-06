@@ -2,9 +2,9 @@
 
 import sys
 
-f = open("C:\\xxx.TXT", "w")
-f.write(",".join(sys.argv))
-f.close()
+#f = open("C:\\xxx.TXT", "w")
+#f.write(",".join(sys.argv))
+#f.close()
 if sys.argv[1] == "-o":
 	output_name = sys.argv[2]
 	sys.stdout = open(output_name, "w")
