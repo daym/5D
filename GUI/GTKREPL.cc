@@ -20,6 +20,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Config/Config"
 #include "Formatters/LATEX"
 #include "GUI/UI_definition.UI"
+#include "GUI/GTKLATEXGenerator"
 
 #define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(GTKREPL_handle_##name), self)
@@ -50,10 +51,8 @@ struct GTKREPL {
 	bool fFileModified;
 	GtkBuilder* UI_builder;
 	GtkAccelGroup* accelerator_group;
-	char* fCacheDirectoryName;
+	GTKLATEXGenerator* fLATEXGenerator;
 };
-void GTKREPL_defer_LATEX(struct GTKREPL* self, AST::Node* node, const char* text, GtkTextIter* destination);
-void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node, GtkTextIter* destination);
 void GTKREPL_add_to_environment(struct GTKREPL* self, AST::Node* definition);
 void GTKREPL_set_current_environment_name(struct GTKREPL* self, const char* absolute_name);
 void GTKREPL_set_file_modified(struct GTKREPL* self, bool value);
@@ -173,16 +172,19 @@ static void save_accelerators(struct GTKREPL* self, GtkObject* widget) {
 	g_mkdir_with_parents(g_build_filename(user_config_dir, "4D", NULL), 0744);
 	gtk_accel_map_save(g_build_filename(user_config_dir, "4D", "accelerators", NULL));
 }
-static char* GTKREPL_init_cache_directory(void) {
-	char* result;
-	const char* user_cache_dir;
-	user_cache_dir = g_get_user_cache_dir();
-	if(!user_cache_dir)
-		abort();
-	g_mkdir_with_parents(user_cache_dir, 0744);
-	result = g_build_filename(user_cache_dir, "4D", NULL);
-	g_mkdir_with_parents(result, 0744);
-	return(result);
+static gboolean GTKREPL_scroll_down(struct GTKREPL* self) {
+	GtkTextIter iter;
+	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
+	gtk_text_view_scroll_to_iter(self->fOutputArea, &iter, 0.1, TRUE, 0.0, 1.0);
+	//printf("DU\n");
+	return(FALSE);
+}
+void GTKREPL_queue_scroll_down(struct GTKREPL* self) {
+	// TODO check whether we were at the bottom before...
+	g_idle_add((GSourceFunc) GTKREPL_scroll_down, self);
+}
+static void track_changes(struct GTKREPL* self, GtkTextBuffer* buffer) {
+	GTKREPL_queue_scroll_down(self);
 }
 void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
@@ -250,6 +252,7 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	gtk_container_add(GTK_CONTAINER(self->fOutputScroller), GTK_WIDGET(self->fOutputArea));
 	gtk_widget_show(GTK_WIDGET(self->fOutputScroller));
 	self->fOutputBuffer = gtk_text_view_get_buffer(self->fOutputArea);
+	g_signal_connect_swapped(G_OBJECT(self->fOutputBuffer), "changed", G_CALLBACK(track_changes), self);
 	self->fEditorBox = (GtkBox*) gtk_hbox_new(FALSE, 0);
 	g_signal_connect(G_OBJECT(self->fOutputArea), "focus-out-event", G_CALLBACK(g_clear_output_selection), self->fOutputBuffer);
 	gtk_box_pack_start(GTK_BOX(self->fEditorBox), GTK_WIDGET(self->fEnvironmentScroller), FALSE, FALSE, 0); 
@@ -304,45 +307,30 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 		/* TODO g_get_system_config_dirs */
 		g_signal_connect(G_OBJECT(self->fWidget), "destroy", G_CALLBACK(save_accelerators), self);
 	}
-	self->fCacheDirectoryName = GTKREPL_init_cache_directory();
+	self->fLATEXGenerator = GTKLATEXGenerator_new();
 }
 GtkWidget* GTKREPL_get_widget(struct GTKREPL* self) {
 	return(GTK_WIDGET(self->fWidget));
 }
-static void GTKREPL_print_fallback_at_iter(struct GTKREPL* self, AST::Node* node, GtkTextIter* iter) {
-	std::string v = node ? node->str() : "";
-	//v += "\n";
-	gtk_text_buffer_insert(self->fOutputBuffer, iter, v.c_str(), -1);
-}
-static void GTKREPL_print_fallback(struct GTKREPL* self, AST::Node* node, GtkTextMark* destination) {
-	GtkTextIter iter;
-	gtk_text_buffer_get_iter_at_mark(gtk_text_mark_get_buffer(destination), &iter, destination);
-	GTKREPL_print_fallback_at_iter(self, node, &iter);
-}
-void GTKREPL_queue_LATEX(struct GTKREPL* self, AST::Node* node, GtkTextIter* destination) {
+static void GTKREPL_enqueue_LATEX(struct GTKREPL* self, AST::Node* node, GtkTextIter* destination) {
 	std::stringstream result;
 	result << "$ ";
+	std::string resultString;
+	const char* nodeText = NULL;
 	try {
 		Formatters::to_LATEX(node, result);
+		result << " $";
+		resultString = result.str();
+		nodeText = resultString.c_str();
 	} catch(std::runtime_error e) {
-		GTKREPL_print_fallback_at_iter(self, node, destination);
-		return;
+		nodeText = NULL;
 	}
-	result << " $";
-	std::string resultString = result.str();
 	//std::cout << resultString << " X" << std::endl;
-	GTKREPL_defer_LATEX(self, node, resultString.c_str(), destination);
-}
-static gboolean GTKREPL_scroll_down(struct GTKREPL* self) {
-	GtkTextIter iter;
-	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
-	gtk_text_view_scroll_to_iter(self->fOutputArea, &iter, 0.1, TRUE, 0.0, 1.0);
-	//printf("DU\n");
-	return(FALSE);
-}
-void GTKREPL_queue_scroll_down(struct GTKREPL* self) {
-	// TODO check whether we were at the bottom before...
-	g_idle_add((GSourceFunc) GTKREPL_scroll_down, self);
+	{
+		char* alt_text;
+		alt_text = strdup(node->str().c_str());
+		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? strdup(nodeText) : NULL, alt_text, destination);
+	}
 }
 void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* destination) {
 	Scanners::MathParser parser;
@@ -354,7 +342,7 @@ void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* des
 				/*std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
 				gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
-				GTKREPL_queue_LATEX(self, result, destination);
+				GTKREPL_enqueue_LATEX(self, result, destination);
 				GTKREPL_add_to_environment(self, result);
 			} catch(...) {
 				fclose(input_file);
@@ -574,53 +562,6 @@ bool GTKREPL_confirm_close(struct GTKREPL* self) {
 		}
 	}
 	return(true);
-}
-struct LATEXChildData {
-	struct GTKREPL* REPL;
-	GtkTextMark* mark;
-	AST::Node* node;
-};
-static void GTKREPL_handle_LATEX_image(struct GTKREPL* self, GPid pid, GtkTextIter* iter, struct LATEXChildData* data) {
-	GdkPixbuf* pixbuf;
-	pixbuf = gdk_pixbuf_new_from_file("eqn.png"/*FIXME*/, NULL);
-	if(pixbuf) {
-		gtk_text_buffer_insert_pixbuf(self->fOutputBuffer, iter, pixbuf);
-		g_object_unref(G_OBJECT(pixbuf));
-		unlink("eqn.png");
-	} else
-		GTKREPL_print_fallback(self, data->node, data->mark);
-}
-static void g_LATEX_child_died(GPid pid, int status, struct LATEXChildData* data) {
-	GtkTextIter iter;
-	// FIXME status, non-death.
-	gtk_text_buffer_get_iter_at_mark(gtk_text_mark_get_buffer(data->mark), &iter, data->mark);
-	GTKREPL_handle_LATEX_image(data->REPL, pid, &iter, data);
-	gtk_text_buffer_delete_mark(gtk_text_mark_get_buffer(data->mark), data->mark);
-	g_spawn_close_pid(pid);
-	GTKREPL_queue_scroll_down(data->REPL);
-	g_free(data);
-}
-void GTKREPL_defer_LATEX(struct GTKREPL* self, AST::Node* node, const char* text, GtkTextIter* destination) {
-	GError* error;
-	const char* argv[] = {
-		"l2p",
-		"-T",
-		"-d",
-		"120",
-		"-i",
-		text,
-		//"'$I<latex_expression>$'
-		NULL,
-	};
-	GPid pid;
-	if(g_spawn_async(NULL, (char**) argv, NULL, (GSpawnFlags)(G_SPAWN_DO_NOT_REAP_CHILD|G_SPAWN_SEARCH_PATH|G_SPAWN_STDOUT_TO_DEV_NULL), NULL, self/*user_data*/, &pid, &error)) {
-		struct LATEXChildData* data;
-		data = (struct LATEXChildData*) calloc(1, sizeof(struct LATEXChildData));
-		data->REPL = self;
-		data->node = node;
-		data->mark = gtk_text_buffer_create_mark(self->fOutputBuffer, NULL, destination, TRUE);
-		g_child_watch_add(pid, (GChildWatchFunc) g_LATEX_child_died, data);
-	}
 }
 struct GTKREPL* GTKREPL_new(GtkWindow* parent) {
 	struct GTKREPL* result;

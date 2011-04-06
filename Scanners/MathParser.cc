@@ -382,7 +382,11 @@ AST::Node* MathParser::parse_abstraction(void) {
 		return(NULL);
 	} else {
 		AST::Node* parameter = consume();
-		return(cons(intern("\\"), cons(parameter, cons(parse_expression(), NULL))));
+		AST::Node* expression = parse_expression();
+		if(expression)
+			return(cons(intern("\\"), cons(parameter, cons(expression, NULL))));
+		else // ???
+			return(cons(intern("\\"), cons(parameter, NULL)));
 	}
 }
 AST::Node* MathParser::parse_value(void) {

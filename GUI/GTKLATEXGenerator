@@ -1,0 +1,14 @@
+#ifndef __4D_GUI_GTKLATEXGenerator_H
+#define __4D_GUI_GTKLATEXGenerator_H
+
+namespace GUI {
+
+typedef void (GTKLATEXGeneratorFailure_t)(GtkTextIter* destination, void* user_data);
+struct GTKLATEXGenerator;
+void GTKLATEXGenerator_init(struct GTKLATEXGenerator* self);
+struct GTKLATEXGenerator* GTKLATEXGenerator_new(void);
+void GTKLATEXGenerator_enqueue(struct GTKLATEXGenerator* self, const char* document, const char* alt_text, GtkTextIter* destination);
+void GTKLATEXGenerator_set_failure_callback(struct GTKLATEXGenerator* self, GTKLATEXGeneratorFailure_t* value);
+}; // end namespace GUI
+
+#endif /* ndef __4D_GUI_GTKLATEXGenerator_H */
