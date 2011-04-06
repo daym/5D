@@ -33,7 +33,7 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 				int input = *inputString;
 				result = parser.get_final_result(input);
 				if(result) {
-					output << result << std::endl;
+					output << result;
 					parser.reset();
 					unmatched_beginning = (const char*) inputString;
 				} else {

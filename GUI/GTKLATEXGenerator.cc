@@ -48,8 +48,14 @@ static void get_cached_file_name(struct GTKLATEXGenerator* self, const char* doc
 	if(snprintf(destination, destination_size, "%s/%s", self->fLATEXCacheDirectoryName, document) == -1)
 		abort();
 	for(i = strlen(self->fLATEXCacheDirectoryName) + 1; destination[i]; ++i)
-		if(destination[i] == '/')
+		switch(destination[i]) {
+		case '/':
 			destination[i] = '_';
+			break;
+		case '\n':
+			destination[i] = ' ';
+			break;
+		}
 }
 static void GTKLATEXGenerator_handle_LATEX_image(struct GTKLATEXGenerator* self, GtkTextIter* iter, const char* document, const char* alt_text) {
 	GdkPixbuf* pixbuf;
