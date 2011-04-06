@@ -184,7 +184,8 @@ void GTKREPL_queue_scroll_down(struct GTKREPL* self) {
 	g_idle_add((GSourceFunc) GTKREPL_scroll_down, self);
 }
 static void track_changes(struct GTKREPL* self, GtkTextBuffer* buffer) {
-	GTKREPL_queue_scroll_down(self);
+	if(!gtk_widget_is_focus(GTK_WIDGET(self->fOutputArea)) && !gtk_widget_is_focus(GTK_WIDGET(self->fOutputScroller)))
+		GTKREPL_queue_scroll_down(self);
 }
 void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;

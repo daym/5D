@@ -59,7 +59,6 @@ static void GTKLATEXGenerator_handle_LATEX_image_at_mark(struct GTKLATEXGenerato
 }
 static void g_LATEX_child_died(GPid pid, int status, struct LATEXChildData* data) {
 	GTKLATEXGenerator_handle_LATEX_image_at_mark(data->generator, data->mark, data->document, data->alt_text);
-	// FIXME GTKLATEXGenerator_queue_scroll_down(data->generator);
 	// FIXME status, non-death.
 	g_spawn_close_pid(pid);
 	g_free(data);
@@ -86,7 +85,6 @@ void GTKLATEXGenerator_enqueue(struct GTKLATEXGenerator* self, const char* docum
 	char name[PATH_MAX];
 	if(snprintf(name, PATH_MAX, "%s/%s", self->fLATEXCacheDirectoryName, document) == 1 && g_file_test(name, G_FILE_TEST_EXISTS)) {
 		GTKLATEXGenerator_handle_LATEX_image(self, destination, document, alt_text);
-		// FIXME GTKLATEXGenerator_queue_scroll_down(self);
 		return;
 	}
 	if(g_spawn_async(NULL, (char**) argv, NULL, (GSpawnFlags)(G_SPAWN_DO_NOT_REAP_CHILD|G_SPAWN_SEARCH_PATH|G_SPAWN_STDOUT_TO_DEV_NULL), NULL, self/*user_data*/, &pid, &error)) {
