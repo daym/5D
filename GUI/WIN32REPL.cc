@@ -9,6 +9,7 @@
 #include "WIN32REPL"
 #include "Scanners/MathParser"
 #include "AST/AST"
+#include "Evaluators/Evaluators"
 
 namespace GUI {
 
@@ -464,6 +465,7 @@ void REPL_execute(struct REPL* self, const char* command) {
 			try {
 				AST::Node* result = parser.parse(input_file);
 				REPL_add_to_environment(self, result);
+				result = Evaluators::annotate(result);
 				std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
 				REPL_insert_output(self, v.c_str());
