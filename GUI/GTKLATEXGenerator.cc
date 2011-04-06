@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sstream>
 #include <limits.h>
 #include "GUI/GTKLATEXGenerator"
@@ -41,13 +42,23 @@ struct LATEXChildData {
 	const char* alt_text;
 	const char* document;
 };
-static void GTKLATEXGenerator_handle_LATEX_image(struct GTKLATEXGenerator* self, GtkTextIter* iter, const char* name, const char* alt_text) {
+static void get_cached_file_name(struct GTKLATEXGenerator* self, const char* document, char* destination, size_t destination_size) {
+	int i;
+	if(snprintf(destination, destination_size, "%s/%s", self->fLATEXCacheDirectoryName, document) == -1)
+		abort();
+	for(i = strlen(self->fLATEXCacheDirectoryName) + 1; destination[i]; ++i)
+		if(destination[i] == '/')
+			destination[i] = '_';
+}
+static void GTKLATEXGenerator_handle_LATEX_image(struct GTKLATEXGenerator* self, GtkTextIter* iter, const char* document, const char* alt_text) {
 	GdkPixbuf* pixbuf;
-	pixbuf = gdk_pixbuf_new_from_file("eqn.png"/*FIXME*/, NULL);
+	char name[PATH_MAX];
+	get_cached_file_name(self, document, name, PATH_MAX);
+	pixbuf = gdk_pixbuf_new_from_file(name, NULL);
 	if(pixbuf) {
 		gtk_text_buffer_insert_pixbuf(gtk_text_iter_get_buffer(iter), iter, pixbuf);
 		g_object_unref(G_OBJECT(pixbuf));
-		unlink("eqn.png");
+		/*unlink(name);*/
 	} else
 		GTKLATEXGenerator_print_fallback_at_iter(self, alt_text, iter);
 }
@@ -71,8 +82,16 @@ struct GTKLATEXGenerator* GTKLATEXGenerator_new(void) {
 }
 void GTKLATEXGenerator_enqueue(struct GTKLATEXGenerator* self, const char* document, const char* alt_text, GtkTextIter* destination) {
 	GError* error;
+	char name[PATH_MAX];
+	get_cached_file_name(self, document, name, PATH_MAX);
+	if(g_file_test(name, G_FILE_TEST_EXISTS)) {
+		GTKLATEXGenerator_handle_LATEX_image(self, destination, document, alt_text);
+		return;
+	}
 	const char* argv[] = {
 		"l2p",
+		"-o",
+		name,
 		"-T",
 		"-d",
 		"120",
@@ -82,11 +101,6 @@ void GTKLATEXGenerator_enqueue(struct GTKLATEXGenerator* self, const char* docum
 		NULL,
 	};
 	GPid pid;
-	char name[PATH_MAX];
-	if(snprintf(name, PATH_MAX, "%s/%s", self->fLATEXCacheDirectoryName, document) == 1 && g_file_test(name, G_FILE_TEST_EXISTS)) {
-		GTKLATEXGenerator_handle_LATEX_image(self, destination, document, alt_text);
-		return;
-	}
 	if(g_spawn_async(NULL, (char**) argv, NULL, (GSpawnFlags)(G_SPAWN_DO_NOT_REAP_CHILD|G_SPAWN_SEARCH_PATH|G_SPAWN_STDOUT_TO_DEV_NULL), NULL, self/*user_data*/, &pid, &error)) {
 		struct LATEXChildData* data;
 		data = (struct LATEXChildData*) calloc(1, sizeof(struct LATEXChildData));
