@@ -26,6 +26,7 @@ static char* GTKLATEXGenerator_init_cache_directory(void) {
 void GTKLATEXGenerator_init(struct GTKLATEXGenerator* self) {
 	self->fCacheDirectoryName = GTKLATEXGenerator_init_cache_directory();
 	self->fLATEXCacheDirectoryName = g_build_filename(self->fCacheDirectoryName, "LATEX", NULL);
+	g_mkdir_with_parents(self->fLATEXCacheDirectoryName, 0744);
 }
 static void GTKLATEXGenerator_print_fallback_at_iter(struct GTKLATEXGenerator* self, const char* alt_text, GtkTextIter* iter) {
 	gtk_text_buffer_insert(gtk_text_iter_get_buffer(iter), iter, alt_text, -1);
