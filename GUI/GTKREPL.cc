@@ -155,12 +155,20 @@ static void GTKREPL_find_text(struct GTKREPL* self, const char* text, gboolean u
 	last_pos = gtk_text_buffer_get_mark(self->fOutputBuffer, "insert");
 	if(last_pos)
 		gtk_text_buffer_get_iter_at_mark(self->fOutputBuffer, &match_beginning, last_pos);
-	else
-		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &match_beginning);
-	B_found = gtk_text_iter_backward_search(&match_beginning, text, case_sensitive ? ((GtkTextSearchFlags) 0) : GTK_TEXT_SEARCH_CASE_INSENSITIVE, &match_beginning, &match_end, NULL /* TODO maybe just search selection if so requested. */);
+	else {
+		if(upwards)
+			gtk_text_buffer_get_end_iter(self->fOutputBuffer, &match_beginning);
+		else
+			gtk_text_buffer_get_start_iter(self->fOutputBuffer, &match_beginning);
+	}
+	B_found = upwards ? gtk_text_iter_backward_search(&match_beginning, text, case_sensitive ? ((GtkTextSearchFlags) 0) : GTK_TEXT_SEARCH_CASE_INSENSITIVE, &match_beginning, &match_end, NULL /* TODO maybe just search selection if so requested. */)
+	                  : gtk_text_iter_forward_search(&match_beginning, text, case_sensitive ? ((GtkTextSearchFlags) 0) : GTK_TEXT_SEARCH_CASE_INSENSITIVE, &match_beginning, &match_end, NULL /* TODO maybe just search selection if so requested. */);
 	if(B_found) {
 		/* TODO is there a less iffy way? */
-		last_pos = gtk_text_buffer_create_mark(self->fOutputBuffer, "insert", &match_end, FALSE);
+		if(upwards)
+			last_pos = gtk_text_buffer_create_mark(self->fOutputBuffer, "insert", &match_beginning, FALSE);
+		else
+			last_pos = gtk_text_buffer_create_mark(self->fOutputBuffer, "insert", &match_end, FALSE);
 		gtk_text_buffer_select_range(self->fOutputBuffer, &match_beginning, &match_end);
 		gtk_text_view_scroll_mark_onscreen(self->fOutputArea, last_pos);
 	}
