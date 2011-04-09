@@ -1,5 +1,3 @@
-#ifndef __AST_SYMBOL_H
-#define __AST_SYMBOL_H
 /*
 4D vector analysis program
 Copyright (C) 2011  Danny Milosavljevic
@@ -7,24 +5,32 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "AST/AST"
+#include <windows.h>
+#include "Evaluators/FFI"
+#include "FFIs/WIN32"
 
-namespace AST {
+namespace FFIs {
 
-struct Symbol : Node {
-	const char* name;
-public:
-	virtual std::string str(void) const;
+using namespace Evaluators;
+
+struct CP {
+	const char* symbol_name;
+	const char* library_name;
+	const char* signature;
+	HMODULE library;
+	void* value;
 };
 
-struct SymbolReference : Node {
-	struct Symbol* symbol;
-	int index;
-public:
-	SymbolReference(struct Symbol* symbol, int index);
-	virtual std::string str(void) const;
-};
-Symbol* intern(const char* name);
+C::C(const char* symbol, const char* signature, const char* library) {
+	this->p = new CP();
+	p->symbol_name = symbol;
+	p->library_name = library;
+	p->library = LoadLibrary(library, RTLD_LAZY); /* TODO cache */
+	p->value = GetProcAddress(p->library, symbol);
+}
+
+AST::Node* C::execute(AST::Node* argument) {
+	return(NULL);
+}
 
 };
-#endif /* ndef __AST_SYMBOL_H */

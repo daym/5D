@@ -1,6 +1,6 @@
 
 CXXFLAGS += -Wall -I. -g3
-LDFLAGS += -lreadline
+LDFLAGS += -lreadline -ldl
 GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
 GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
 
@@ -52,6 +52,9 @@ Scanners/test-Scanner.o: Scanners/test-Scanner.cc Scanners/Scanner
 Scanners/MathParser.o: Scanners/MathParser.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol
 Scanners/test-MathParser.o: Scanners/test-MathParser.cc Scanners/MathParser Scanners/Scanner
 Evaluators/Evaluators.o: Evaluators/Evaluators.cc Evaluators/Evaluators AST/AST AST/Symbol
+Evaluators/Builtins.o: Evaluators/Builtins.cc Evaluators/Builtins AST/AST AST/Symbol
+Evaluators/FFI.o: Evaluators/FFI.cc Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators
+FFIs/POSIX.o: FFIs/POSIX.cc FFIs/POSIX Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators
 Config/GTKConfig.o: Config/GTKConfig.cc Config/Config
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
@@ -64,7 +67,7 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 	./Scanners/test-Scanner
 	./Scanners/test-MathParser
 
-REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanner.o Evaluators/Evaluators.o
+REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 GUI/GTKGUI.o: GUI/GTKGUI.cc GUI/GTKREPL GUI/GTKView
@@ -79,7 +82,7 @@ GUI/GTKLATEXGenerator.o: GUI/GTKLATEXGenerator.cc GUI/GTKLATEXGenerator
 GUI/GTKView.o: GUI/GTKView.cc
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/4D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o
+GUI/4D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o
 	g++ -o $@ $^ $(GUI_LDFLAGS)
 
 clean:

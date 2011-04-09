@@ -1,0 +1,11 @@
+#ifndef __4D_BUILTINS_H
+#define __4D_BUILTINS_H
+
+namespace Evaluators {
+struct Quoter;
+
+AST::Node* intern(int value);
+
+};
+
+#endif /* ndef __4D_BUILTINS_H */

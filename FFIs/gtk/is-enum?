@@ -1,0 +1,9 @@
+#!/bin/sh
+
+a="$1"
+enum=
+grep -r -q "} $a\>" /usr/include/glib-2.0 && enum=1
+grep -r -q "} $a\>" /usr/include/gtk-2.0 && enum=1
+grep -r -q "} $a\>" /usr/include/atk-1.0 && enum=1
+grep -r -q "} $a\>" /usr/include/pango-1.0 && enum=1
+[ ! -z "${enum}" ]

@@ -29,7 +29,6 @@ struct Literal : Node {
 	virtual std::string str(void) const;
 };
 
-
 std::string str(const Literal& a);
 
 Cons* cons(Node* head, Cons* tail);

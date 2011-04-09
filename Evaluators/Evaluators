@@ -12,8 +12,14 @@ public:
 	virtual const char* what() const throw();
 };
 
+struct Operation : AST::Node {
+	virtual bool eager_P() const;
+	virtual AST::Node* execute(AST::Node* argument) = 0;
+};
+
 void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames);
 AST::Node* annotate(AST::Node* root);
+AST::Node* reduce(AST::Node* term);
 };
 
 #endif /*ndef __EVALUATORS_H*/

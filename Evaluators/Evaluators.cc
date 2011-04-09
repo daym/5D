@@ -43,6 +43,57 @@ void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames) {
 	std::set<AST::Symbol*> boundNames;
 	get_free_variables_impl(root, boundNames, freeNames);
 }
+static bool abstraction_P(AST::Node* root) {
+	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
+	if(!consNode)
+		return(false);
+	else
+		return(consNode->head == intern("\\") && consNode->tail);
+}
+static AST::Cons* follow_tail(AST::Cons* root) {
+	if(!root)
+		return(NULL);
+	while(root->tail)
+		root = root->tail;
+	return(root);
+}
+static AST::Node* get_abstraction_body(AST::Node* root) {
+	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
+	if(consNode && consNode->head == intern("\\") && consNode->tail && consNode->tail->tail) {
+		/* take the trailing item as body */
+		return(follow_tail(consNode->tail->tail)->head);
+	} else
+		return(NULL);
+}
+static bool application_P(AST::Node* root) {
+	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
+	if(!consNode)
+		return(false);
+	else
+		return(consNode->head != intern("\\"));
+}
+static AST::Node* get_application_operator(AST::Node* root) {
+	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
+	return(consNode ? consNode->head : NULL);
+}
+static AST::Node* get_application_operand(AST::Node* root) {
+	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
+	return((consNode && consNode->tail) ? consNode->tail->head : NULL);
+}
+static AST::Symbol* get_variable_name(AST::Node* root) {
+	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
+	if(refNode)
+		return(refNode->symbol);
+	else
+		return(NULL);
+}
+static int get_variable_index(AST::Node* root) {
+	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
+	if(refNode)
+		return(refNode->index);
+	else
+		return(-1);
+}
 AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& boundNamesSet) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(root);
@@ -86,9 +137,7 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 				break;
 		if(i < size) { /* found */
 			//std::distance(boundNames.begin(), std::find(boundNames.begin(), boundNames.end(), symbolNode));
-			SymbolReference* ref = new SymbolReference();
-			ref->symbol = symbolNode;
-			ref->index = i + 1;
+			SymbolReference* ref = new SymbolReference(symbolNode, i + 1);
 			return(ref);
 		}
 	} // else other stuff.
@@ -98,6 +147,77 @@ AST::Node* annotate(AST::Node* root) {
 	std::deque<AST::Symbol*> boundNames;
 	std::set<AST::Symbol*> boundNamesSet;
 	return(annotate_impl(root, boundNames, boundNamesSet));
+}
+static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
+	int x_index;
+	x_index = get_variable_index(term);
+	if(x_index != -1) {
+		if(x_index == index)
+			return(argument);
+		else if(x_index > index)
+			return(new SymbolReference(get_variable_name(term), x_index - 1));
+		else
+			return(term);
+	} else if(application_P(term)) {
+		AST::Node* x_fn;
+		AST::Node* x_argument;
+		AST::Node* new_fn;
+		AST::Node* new_argument;
+		x_fn = get_application_operator(term);
+		x_argument = get_application_operand(term);
+		new_fn = shift(argument, index, x_fn);
+		new_argument = shift(argument, index, x_argument);
+		if(new_fn == x_fn && new_argument == x_argument)
+			return(term);
+		else
+			return(cons(new_fn, cons(new_argument, NULL)));
+	} else if(abstraction_P(term)) {
+		AST::Node* body;
+		AST::Node* parameter;
+		AST::Node* new_body;
+		body = get_abstraction_body(term);
+		if(body) {
+			parameter = dynamic_cast<AST::Cons*>(term)->tail->head;
+			new_body = shift(argument, index + 1, body);
+		} else
+			new_body = NULL;
+		if(body == new_body)
+			return(term);
+		else
+			return(cons(intern("\\"), cons(parameter, cons(new_body, NULL))));
+	} else 
+		return(term);
+}
+static bool wants_its_argument_reduced_P(AST::Node* fn) {
+	// TODO don't reduce for quote.
+	return(true);
+}
+AST::Node* reduce(AST::Node* term) {
+	if(application_P(term)) {
+		AST::Node* fn;
+		AST::Node* argument;
+		fn = reduce(get_application_operator(term));
+		argument = get_application_operand(term);
+		if(wants_its_argument_reduced_P(fn))
+			argument = reduce(argument);
+		if(abstraction_P(fn)) {
+			AST::Node* body;
+			body = get_abstraction_body(fn);
+			return(shift(argument, 1, body));
+		} else {
+			// TODO better error message.
+			throw EvaluationException("that wasn't an operation.");
+			return(term);
+		}
+	} else if(abstraction_P(term)) {
+		return(term);
+	} else
+		return(term);
+}
+
+// Operation
+bool Operation::eager_P(void) const {
+	return(true);
 }
 
 }; // end namespace Evaluators.

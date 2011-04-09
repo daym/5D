@@ -39,4 +39,9 @@ std::string SymbolReference::str(void) const {
 	return(symbol->str());
 }
 
+SymbolReference::SymbolReference(struct Symbol* symbol, int index) {
+	this->symbol = symbol;
+	this->index = index;
+}
+
 }; /* end namespace AST */
