@@ -52,6 +52,9 @@ struct GTKREPL {
 	GtkBuilder* UI_builder;
 	GtkAccelGroup* accelerator_group;
 	GTKLATEXGenerator* fLATEXGenerator;
+	char* fSearchTerm;
+	bool fBSearchUpwards;
+	bool fBSearchCaseSensitive;
 };
 void GTKREPL_add_to_environment(struct GTKREPL* self, AST::Node* definition);
 void GTKREPL_set_current_environment_name(struct GTKREPL* self, const char* absolute_name);
@@ -141,14 +144,81 @@ static void GTKREPL_handle_copy(struct GTKREPL* self, GtkAction* action) {
 }
 static void GTKREPL_handle_paste(struct GTKREPL* self, GtkAction* action) {
 }
+
+/* Gtk 2 compat; TODO: remove */
+#define GTK_TEXT_SEARCH_CASE_INSENSITIVE ((GtkTextSearchFlags)(1<<2))
+
+static void GTKREPL_find_text(struct GTKREPL* self, const char* text, gboolean upwards, gboolean case_sensitive) {
+	gboolean B_found;
+	GtkTextIter match_beginning, match_end;
+	GtkTextMark* last_pos;
+	last_pos = gtk_text_buffer_get_mark(self->fOutputBuffer, "insert");
+	if(last_pos)
+		gtk_text_buffer_get_iter_at_mark(self->fOutputBuffer, &match_beginning, last_pos);
+	else
+		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &match_beginning);
+	B_found = gtk_text_iter_backward_search(&match_beginning, text, case_sensitive ? ((GtkTextSearchFlags) 0) : GTK_TEXT_SEARCH_CASE_INSENSITIVE, &match_beginning, &match_end, NULL /* TODO maybe just search selection if so requested. */);
+	if(B_found) {
+		gtk_text_buffer_select_range(self->fOutputBuffer, &match_beginning, &match_end);
+		/* TODO is there a less iffy way? */
+		last_pos = gtk_text_buffer_create_mark(self->fOutputBuffer, "insert", &match_end, FALSE);
+		gtk_text_view_scroll_mark_onscreen(self->fOutputArea, last_pos);
+	}
+}
+static int GTKREPL_show_search_dialog(struct GTKREPL* self) {
+	int response;
+	GtkDialog* dialog;
+	dialog = (GtkDialog*) gtk_builder_get_object(self->UI_builder, "searchDialog");
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), self->fWidget);
+	/*g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(handle_search_response), NULL);*/
+	{
+		GtkEntry* searchTermEntry;
+		GtkToggleButton* searchUpwardsButton;
+		GtkToggleButton* searchCaseSensitiveButton;
+		searchTermEntry = (GtkEntry*) gtk_builder_get_object(self->UI_builder, "searchTerm");
+		searchUpwardsButton = (GtkToggleButton*) gtk_builder_get_object(self->UI_builder, "searchUpwardsButton");
+		searchCaseSensitiveButton = (GtkToggleButton*) gtk_builder_get_object(self->UI_builder, "searchCaseSensitiveButton");
+		if(self->fSearchTerm)
+			gtk_entry_set_text(searchTermEntry, self->fSearchTerm);
+		gtk_toggle_button_set_active(searchUpwardsButton, self->fBSearchUpwards);
+		gtk_toggle_button_set_active(searchCaseSensitiveButton, self->fBSearchCaseSensitive);
+	}
+	gtk_dialog_set_default_response(dialog, GTK_RESPONSE_OK);
+	response = gtk_dialog_run(dialog);
+	gtk_widget_hide(GTK_WIDGET(dialog));
+	return(response);
+}
 static void GTKREPL_handle_find(struct GTKREPL* self, GtkAction* action) {
+	char* text = NULL;
+	if(GTKREPL_show_search_dialog(self) == GTK_RESPONSE_OK) {
+		GtkEntry* searchTermEntry;
+		GtkToggleButton* searchUpwardsButton;
+		GtkToggleButton* searchCaseSensitiveButton;
+		searchTermEntry = (GtkEntry*) gtk_builder_get_object(self->UI_builder, "searchTerm");
+		searchUpwardsButton = (GtkToggleButton*) gtk_builder_get_object(self->UI_builder, "searchUpwardsButton");
+		searchCaseSensitiveButton = (GtkToggleButton*) gtk_builder_get_object(self->UI_builder, "searchCaseSensitiveButton");
+		self->fBSearchUpwards = gtk_toggle_button_get_active(searchUpwardsButton);
+		self->fBSearchCaseSensitive = gtk_toggle_button_get_active(searchCaseSensitiveButton);
+	}
+	/*gtk_text_buffer_delete_mark_by_name(self->fOutputBuffer, "last_match");*/
+	if(!text)
+		return;
+	if(self->fSearchTerm) {
+		g_free(self->fSearchTerm);
+		self->fSearchTerm = NULL;
+	}
+	self->fSearchTerm = strdup(text);
+	GTKREPL_find_text(self, text, self->fBSearchUpwards, self->fBSearchCaseSensitive);
+}
+static void GTKREPL_handle_find_next(struct GTKREPL* self, GtkAction* action) {
+	GTKREPL_find_text(self, self->fSearchTerm, self->fBSearchUpwards, self->fBSearchCaseSensitive);
 }
 static void handle_about_response(GtkDialog* dialog, gint response_id, gpointer user_data) {
 	gtk_widget_hide(GTK_WIDGET(dialog));
 }
 static void GTKREPL_handle_about(struct GTKREPL* self, GtkAction* action) {
 	GtkDialog* dialog;
-	dialog = (GtkDialog*) gtk_builder_get_object(self->UI_builder, "about_dialog");
+	dialog = (GtkDialog*) gtk_builder_get_object(self->UI_builder, "aboutDialog");
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), self->fWidget);
 	g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(handle_about_response), NULL);
 	gtk_dialog_run(dialog);
@@ -189,10 +259,15 @@ static void track_changes(struct GTKREPL* self, GtkTextBuffer* buffer) {
 }
 void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
+	GError* error = NULL;
 	GtkMenuBar* menu_bar;
+	self->fBSearchUpwards = TRUE;
 	self->UI_builder = gtk_builder_new();
-	if(!gtk_builder_add_from_string(self->UI_builder, UI_definition, -1, NULL))
+	if(!gtk_builder_add_from_string(self->UI_builder, UI_definition, -1, &error)) {
+		g_warning("UI error: %s", error->message);
+		g_error_free(error);
 		abort();
+	}
 	UI_manager = (GtkUIManager*) gtk_builder_get_object(self->UI_builder, "uiman");
 	if(!UI_manager)
 		abort();
@@ -288,6 +363,7 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	add_action_handler(copy);
 	add_action_handler(paste);
 	add_action_handler(find);
+	add_action_handler(find_next);
 	add_action_handler(about);
 	connect_accelerator(GDK_F5, (GdkModifierType) 0, execute);
 	connect_accelerator(GDK_F3, (GdkModifierType) 0, open_file);
@@ -296,6 +372,7 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	connect_accelerator(GDK_c, GDK_CONTROL_MASK, copy);
 	connect_accelerator(GDK_v, GDK_CONTROL_MASK, paste);
 	connect_accelerator(GDK_f, GDK_CONTROL_MASK, find);
+	connect_accelerator(GDK_l, GDK_CONTROL_MASK, find_next);
 	{
 		const char* user_config_dir;
 		int FD;
