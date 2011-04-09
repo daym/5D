@@ -159,9 +159,9 @@ static void GTKREPL_find_text(struct GTKREPL* self, const char* text, gboolean u
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &match_beginning);
 	B_found = gtk_text_iter_backward_search(&match_beginning, text, case_sensitive ? ((GtkTextSearchFlags) 0) : GTK_TEXT_SEARCH_CASE_INSENSITIVE, &match_beginning, &match_end, NULL /* TODO maybe just search selection if so requested. */);
 	if(B_found) {
-		gtk_text_buffer_select_range(self->fOutputBuffer, &match_beginning, &match_end);
 		/* TODO is there a less iffy way? */
 		last_pos = gtk_text_buffer_create_mark(self->fOutputBuffer, "insert", &match_end, FALSE);
+		gtk_text_buffer_select_range(self->fOutputBuffer, &match_beginning, &match_end);
 		gtk_text_view_scroll_mark_onscreen(self->fOutputArea, last_pos);
 	}
 }
@@ -189,7 +189,7 @@ static int GTKREPL_show_search_dialog(struct GTKREPL* self) {
 	return(response);
 }
 static void GTKREPL_handle_find(struct GTKREPL* self, GtkAction* action) {
-	char* text = NULL;
+	const char* text = NULL;
 	if(GTKREPL_show_search_dialog(self) == GTK_RESPONSE_OK) {
 		GtkEntry* searchTermEntry;
 		GtkToggleButton* searchUpwardsButton;
@@ -199,6 +199,7 @@ static void GTKREPL_handle_find(struct GTKREPL* self, GtkAction* action) {
 		searchCaseSensitiveButton = (GtkToggleButton*) gtk_builder_get_object(self->UI_builder, "searchCaseSensitiveButton");
 		self->fBSearchUpwards = gtk_toggle_button_get_active(searchUpwardsButton);
 		self->fBSearchCaseSensitive = gtk_toggle_button_get_active(searchCaseSensitiveButton);
+		text = gtk_entry_get_text(searchTermEntry);
 	}
 	/*gtk_text_buffer_delete_mark_by_name(self->fOutputBuffer, "last_match");*/
 	if(!text)
@@ -262,6 +263,7 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 	GError* error = NULL;
 	GtkMenuBar* menu_bar;
 	self->fBSearchUpwards = TRUE;
+	self->fBSearchCaseSensitive = TRUE;
 	self->UI_builder = gtk_builder_new();
 	if(!gtk_builder_add_from_string(self->UI_builder, UI_definition, -1, &error)) {
 		g_warning("UI error: %s", error->message);
