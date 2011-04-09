@@ -62,6 +62,9 @@ void GTKREPL_set_file_modified(struct GTKREPL* self, bool value);
 bool GTKREPL_save_content_to(struct GTKREPL* self, FILE* output_file);
 void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* destination);
 
+static void handle_clipboard_change(GtkClipboard* clipboard, GdkEvent* event, struct GTKREPL* self) {
+	gtk_action_set_sensitive(get_action(paste), gtk_clipboard_wait_is_text_available(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)));
+}
 static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer user_data) {
 	if(((event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK)) == GDK_CONTROL_MASK) && event->keyval == GDK_Return) {
 		gtk_dialog_response(GTK_DIALOG(user_data), GTK_RESPONSE_OK);
@@ -139,10 +142,22 @@ static void GTKREPL_handle_save_file(struct GTKREPL* self, GtkAction* action) {
 	GTKREPL_save(self);
 }
 static void GTKREPL_handle_cut(struct GTKREPL* self, GtkAction* action) {
+	GtkWidget* control;
+	control = gtk_window_get_focus(self->fWidget);
+	if(control && g_signal_lookup("cut-clipboard", G_OBJECT_TYPE(control)))
+		g_signal_emit_by_name(control, "cut-clipboard", NULL);
 }
 static void GTKREPL_handle_copy(struct GTKREPL* self, GtkAction* action) {
+	GtkWidget* control;
+	control = gtk_window_get_focus(self->fWidget);
+	if(control && g_signal_lookup("copy-clipboard", G_OBJECT_TYPE(control)))
+		g_signal_emit_by_name(control, "copy-clipboard", NULL);
 }
 static void GTKREPL_handle_paste(struct GTKREPL* self, GtkAction* action) {
+	GtkWidget* control;
+	control = gtk_window_get_focus(self->fWidget);
+	if(control && g_signal_lookup("paste-clipboard", G_OBJECT_TYPE(control)))
+		g_signal_emit_by_name(control, "paste-clipboard", NULL);
 }
 
 /* Gtk 2 compat; TODO: remove */
@@ -165,10 +180,11 @@ static void GTKREPL_find_text(struct GTKREPL* self, const char* text, gboolean u
 	                  : gtk_text_iter_forward_search(&match_beginning, text, case_sensitive ? ((GtkTextSearchFlags) 0) : GTK_TEXT_SEARCH_CASE_INSENSITIVE, &match_beginning, &match_end, NULL /* TODO maybe just search selection if so requested. */);
 	if(B_found) {
 		/* TODO is there a less iffy way? */
-		if(upwards)
+/*		if(upwards)
 			last_pos = gtk_text_buffer_create_mark(self->fOutputBuffer, "insert", &match_beginning, FALSE);
 		else
 			last_pos = gtk_text_buffer_create_mark(self->fOutputBuffer, "insert", &match_end, FALSE);
+*/
 		gtk_text_buffer_select_range(self->fOutputBuffer, &match_beginning, &match_end);
 		gtk_text_view_scroll_mark_onscreen(self->fOutputArea, last_pos);
 	}
@@ -396,6 +412,10 @@ void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent) {
 		g_signal_connect(G_OBJECT(self->fWidget), "destroy", G_CALLBACK(save_accelerators), self);
 	}
 	self->fLATEXGenerator = GTKLATEXGenerator_new();
+	{ /* fix sensitivity of "paste" menu entry. */
+		gtk_action_set_sensitive(get_action(paste), gtk_clipboard_wait_is_text_available(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)));
+		g_signal_connect(G_OBJECT(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)), "owner-change", G_CALLBACK(handle_clipboard_change), self);
+	}
 }
 GtkWidget* GTKREPL_get_widget(struct GTKREPL* self) {
 	return(GTK_WIDGET(self->fWidget));
