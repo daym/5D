@@ -19,6 +19,6 @@ void* get_native_pointer(AST::Node* root) {
 }
 bool get_native_boolean(AST::Node* root) {
 	/* FIXME */
-	return(NULL);
+	return(false);
 }
 };

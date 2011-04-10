@@ -6,6 +6,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <windows.h>
+#include "stdafx.h"
 #include "Evaluators/FFI"
 #include "FFIs/WIN32"
 
@@ -14,19 +15,20 @@ namespace FFIs {
 using namespace Evaluators;
 
 struct CP {
-	const char* symbol_name;
-	const char* library_name;
-	const char* signature;
+	AST::Symbol* fn_name;
+	AST::Symbol* library_name;
+	AST::Symbol* signature;
 	HMODULE library;
-	void* value;
+	WINBASEAPI FARPROC value;
 };
 
-C::C(const char* symbol, const char* signature, const char* library) {
+C::C(AST::Symbol* fn, AST::Symbol* signature, AST::Symbol* library) {
 	this->p = new CP();
-	p->symbol_name = symbol;
+	p->fn_name = fn;
 	p->library_name = library;
-	p->library = LoadLibrary(library, RTLD_LAZY); /* TODO cache */
-	p->value = GetProcAddress(p->library, symbol);
+	std::wstring library_W = FromUTF8(library->name);
+	p->library = LoadLibrary(library_W.c_str()); /* TODO cache */
+	p->value = GetProcAddress(p->library, fn->name);
 }
 
 AST::Node* C::execute(AST::Node* argument) {

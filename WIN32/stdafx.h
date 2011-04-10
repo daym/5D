@@ -17,6 +17,9 @@
 #include <memory.h>
 #include <tchar.h>
 #include <stdio.h>
+#include <string>
 
 // TODO: reference additional headers your program requires here
 FILE* fmemopen(void* contents, size_t contents_length, const char* mode);
+char* ToUTF8(const std::wstring& source);
+std::wstring FromUTF8(const char* source);

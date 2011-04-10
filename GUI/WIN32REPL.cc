@@ -13,21 +13,6 @@
 
 namespace GUI {
 
-static char* ToUTF8(const std::wstring& source) {
-	int count = WideCharToMultiByte(CP_UTF8, 0, source.c_str(), -1, NULL, 0, NULL, NULL);
-	char* result = (char*) calloc(count, sizeof(char));
-	if(WideCharToMultiByte(CP_UTF8, 0, source.c_str(), -1, result, count, NULL, NULL) != count)
-		abort();
-	return(result);
-}
-
-static std::wstring FromUTF8(const char* source) {
-	int count = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
-	WCHAR* result = (WCHAR*) calloc(count, sizeof(WCHAR));
-	if(MultiByteToWideChar(CP_UTF8, 0, source, -1, result, count) != count)
-		abort();
-	return(result);
-}
 static void ShowWIN32Diagnostics(void) {
 	LPVOID lpMsgBuf;
 	LPVOID lpDisplayBuf;

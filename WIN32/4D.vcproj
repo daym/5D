@@ -192,7 +192,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Evaluators\Builtins.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\Evaluators\Evaluators.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Evaluators\FFI.cc"
 				>
 			</File>
 			<File
@@ -233,6 +241,10 @@
 			</File>
 			<File
 				RelativePath="..\Formatters\UTFStateMachine.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\FFIs\WIN32.cc"
 				>
 			</File>
 			<File
@@ -285,11 +297,19 @@
 			>
 		</File>
 		<File
+			RelativePath="..\Evaluators\Builtins"
+			>
+		</File>
+		<File
 			RelativePath="..\Config\Config"
 			>
 		</File>
 		<File
 			RelativePath="..\Evaluators\Evaluators"
+			>
+		</File>
+		<File
+			RelativePath="..\Evaluators\FFI"
 			>
 		</File>
 		<File
@@ -318,6 +338,10 @@
 		</File>
 		<File
 			RelativePath="..\Formatters\UTFStateMachine"
+			>
+		</File>
+		<File
+			RelativePath="..\FFIs\WIN32"
 			>
 		</File>
 		<File

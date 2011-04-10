@@ -9,10 +9,14 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #include "Evaluators/FFI"
 
+namespace AST {
+	struct Symbol;
+};
+
 namespace FFIs {
 
 struct C : Evaluators::FFI {
-	C(const char* symbol, const char* signature, const char* library);
+	C(AST::Symbol* symbol, AST::Symbol* signature, AST::Symbol* library);
 	virtual AST::Node* execute(AST::Node* argument);
 private:
 	struct CP* p;
