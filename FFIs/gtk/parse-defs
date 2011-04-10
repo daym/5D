@@ -398,7 +398,7 @@ for i, line in enumerate(sys.stdin.readlines()):
 			# probably class ptr.
 			ty = "void*"
 		if ty not in types:
-			if os.spawnvp(os.P_WAIT, "./is-enum?", ["./is-enum?", ty]) == 0: # it is
+			if os.spawnvp(os.P_WAIT, "./is-enum-P", ["./is-enum-P", ty]) == 0: # it is
 				types[ty] = "i"
 				print("\t%r: \"i\"," % ty)
 			else:
