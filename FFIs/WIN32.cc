@@ -19,7 +19,7 @@ struct CP {
 	AST::Symbol* library_name;
 	AST::Symbol* signature;
 	HMODULE library;
-	WINBASEAPI FARPROC value;
+	FARPROC value;
 };
 
 C::C(AST::Symbol* fn, AST::Symbol* signature, AST::Symbol* library) {
