@@ -119,6 +119,7 @@ static gboolean complete_command(GtkEntry* entry, GdkEventKey* key, GtkEntryComp
 static void GTKREPL_handle_execute(struct GTKREPL* self, GtkAction* action) {
 	GtkTextIter beginning;
 	GtkTextIter end;
+	gboolean B_from_entry = false;
 	gchar* text;
 	if(!gtk_text_buffer_get_selection_bounds(self->fOutputBuffer, &beginning, &end)) {
 		gtk_text_buffer_get_start_iter(self->fOutputBuffer, &beginning);
@@ -127,11 +128,14 @@ static void GTKREPL_handle_execute(struct GTKREPL* self, GtkAction* action) {
 		/*std::string v = text;*/
 		std::string v = "\n";
 		gtk_text_buffer_insert(self->fOutputBuffer, &end, v.c_str(), -1);
+		B_from_entry = true;
 	} else {
 		text = gtk_text_buffer_get_text(self->fOutputBuffer, &beginning, &end, FALSE);
 	}
 	if(text && text[0]) {
 		GTKREPL_execute(self, text, &end);
+		if(B_from_entry)
+			gtk_entry_set_text(self->fCommandEntry, "");
 	}
 	g_free(text);
 }
