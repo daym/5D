@@ -24,24 +24,24 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 	else if(symbolNode)
 		print_text(output, position, symbolNode->name);
 	else if(consNode) {
-		bool B_first = true;
+		int index = 0;
 		output << '(';
 		++position;
-		for(; consNode; consNode = consNode->tail) {
+		for(; consNode; ++index, consNode = consNode->tail) {
 			print_S_Expression_CXX(output, position, indentation, consNode->head);
 			if(consNode->tail) {
-				if(B_split_cons_items) {
-					if(B_first) {
-						B_first = false;
-						indentation = position;
+				if(B_split_cons_items && index >= 1) {
+					if(index == 1) {
+						output << std::endl;
+						print_indentation(output, indentation);
+						position = indentation;
 					}
-					output << std::endl;
-					print_indentation(output, indentation);
-					position = indentation;
 				} else {
 					output << ' ';
 					++position;
 				}
+				if(B_split_cons_items && index == 0)
+					indentation = position;
 			}
 		}
 		output << ')';
