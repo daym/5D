@@ -13,8 +13,8 @@ namespace AST {
 struct Node;
 };
 namespace Formatters {
-void print_S_Expression(FILE* output_file, int indentation, AST::Node* node);
-void print_S_Expression_CXX(std::ostream& output, int indentation, AST::Node* node);
+void print_S_Expression(FILE* output_file, int position, int indentation, AST::Node* node);
+void print_S_Expression_CXX(std::ostream& output, int& position, int indentation, AST::Node* node);
 }; // end namespace Formatters
 
 #endif /* ndef __FORMATTERS_SEXPRESSION_H */

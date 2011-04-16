@@ -455,7 +455,7 @@ void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* des
 				/*std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
 				gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
-				Formatters::print_S_Expression(stdout, 0, result);
+				Formatters::print_S_Expression(stdout, 0, 0, result);
 				fprintf(stdout, "\n");
 				fflush(stdout);
 				GTKREPL_enqueue_LATEX(self, result, destination);
