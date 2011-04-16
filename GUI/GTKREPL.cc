@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/MathParser"
 #include "Config/Config"
 #include "Formatters/LATEX"
+#include "Formatters/SExpression"
 #include "GUI/UI_definition.UI"
 #include "GUI/GTKLATEXGenerator"
 
@@ -454,6 +455,9 @@ void GTKREPL_execute(struct GTKREPL* self, const char* command, GtkTextIter* des
 				/*std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
 				gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
+				Formatters::print_S_Expression(stdout, 0, result);
+				fprintf(stdout, "\n");
+				fflush(stdout);
 				GTKREPL_enqueue_LATEX(self, result, destination);
 				GTKREPL_add_to_environment(self, result);
 			} catch(...) {
