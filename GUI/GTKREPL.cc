@@ -516,7 +516,6 @@ char* REPL_get_absolute_path(const char* name) {
 		return(g_build_filename(g_get_current_dir(), name, NULL));
 }
 void REPL_append_to_output_buffer(struct REPL* self, const char* text) {
-	REPL_append_to_output_buffer(self, text);
 	GtkTextIter text_start;
 	gtk_text_buffer_get_start_iter(self->fOutputBuffer, &text_start);
 	gtk_text_buffer_insert(self->fOutputBuffer, &text_start, text, -1);
