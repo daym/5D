@@ -95,6 +95,10 @@ void GTKLATEXGenerator_enqueue(struct GTKLATEXGenerator* self, const char* docum
 		GTKLATEXGenerator_handle_LATEX_image(self, destination, document, alt_text);
 		return;
 	}
+	if(!document) {
+		GTKLATEXGenerator_handle_LATEX_image(self, destination, NULL, alt_text);
+		return;
+	}
 	const char* argv[] = {
 		"l2p",
 		"-o",

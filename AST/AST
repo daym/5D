@@ -29,11 +29,15 @@ struct Literal : Node {
 	virtual std::string str(void) const;
 };
 
+struct StringLiteral : Literal {
+	virtual std::string str(void) const;
+};
+
 std::string str(const Literal& a);
 
 Cons* cons(Node* head, Cons* tail);
 Literal* literal(const char* text);
-Literal* string_literal(const char* text);
+StringLiteral* string_literal(const char* text);
 
 }; /* namespace AST */
 #endif /* __AST_H */

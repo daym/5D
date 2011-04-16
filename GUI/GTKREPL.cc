@@ -446,6 +446,8 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 	{
 		char* alt_text;
 		alt_text = strdup(node->str().c_str());
+		if(alt_text && strchr(alt_text, '"')) /* contains string */
+			nodeText = NULL;
 		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? strdup(nodeText) : NULL, alt_text, destination);
 	}
 }

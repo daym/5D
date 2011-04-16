@@ -6,6 +6,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <assert.h>
+#include <string.h>
 #include <string>
 #include <sstream>
 #include "AST/AST"
@@ -15,11 +16,12 @@ namespace AST {
 std::string Node::str(void) const {
 	return("<node>");
 }
-
 std::string Literal::str(void) const {
 	return(text);
 }
-
+std::string StringLiteral::str(void) const {
+	return(std::string("\"") + text + "\""); // FIXME escape.
+}
 std::string Cons::str(void) const {
 	std::stringstream result;
 	Cons* tail = this->tail;
@@ -33,7 +35,6 @@ std::string Cons::str(void) const {
 	result << ')';
 	return(result.str());
 }
-
 Cons* cons(Node* head, Cons* tail) {
 	Cons* result = new Cons;
 	assert(head);
@@ -41,15 +42,15 @@ Cons* cons(Node* head, Cons* tail) {
 	result->tail = tail;
 	return(result);
 }
-
 Literal* literal(const char* text) {
 	Literal* result = new Literal;
 	result->text = text;
 	return(result);
 }
-
-Literal* string_literal(const char* text) {
-	return(literal(text)); /* FIXME (?) */
+StringLiteral* string_literal(const char* text) {
+	StringLiteral* result = new StringLiteral;
+	result->text = strdup(text);
+	return(result);
 }
 
 }; /* end namespace AST */

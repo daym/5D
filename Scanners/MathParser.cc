@@ -28,7 +28,30 @@ void MathParser::parse_structural(int input) {
 		raise_error("<expression>", input);	
 	}
 }
-
+void MathParser::parse_string(int input) {
+	std::stringstream matchtext;
+	bool B_escaped = false;
+	for(++position, input = fgetc(input_file); input != EOF && (input != '"' || B_escaped); ++position, input = fgetc(input_file)) {
+		if(!B_escaped) {
+			if(input == '\\') {
+				B_escaped = true;
+				continue;
+			}
+			matchtext << (char) input;
+		} else { /* escaped */
+			B_escaped = false;
+			switch(input) {
+			case '\\':
+			default:
+				matchtext << (char) input;
+			}
+		}
+	}
+	parse_optional_whitespace();
+	input_token = AST::intern("<string>");
+	std::string value = matchtext.str();
+	input_value = AST::string_literal(value.c_str());
+}
 void MathParser::parse_operator(int input) {
 	using namespace AST;
 	switch(input) {
@@ -245,6 +268,9 @@ void MathParser::parse_token(void) {
 	case ')':
 		parse_structural(input);
 		break;
+	case '"':
+		parse_string(input);
+		break;
 	case EOF:
 		input_value = input_token = NULL;
 		break;
@@ -401,6 +427,8 @@ AST::Node* MathParser::parse_value(void) {
 		return((operator_ == intern("+")) ? argument :
 		       (operator_ == intern("-")) ? cons(intern("0-"), cons(argument, NULL)) :
 		       cons(operator_, cons(argument, NULL)));
+	} else if(input_token == intern("<string>")) {
+		return(consume());
 	} else {
 		AST::Node* result;
 		if(input_token == intern("(")) {
