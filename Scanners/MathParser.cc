@@ -427,8 +427,8 @@ AST::Node* MathParser::parse_value(void) {
 		return((operator_ == intern("+")) ? argument :
 		       (operator_ == intern("-")) ? cons(intern("0-"), cons(argument, NULL)) :
 		       cons(operator_, cons(argument, NULL)));
-	} else if(input_token == intern("<string>")) {
-		return(consume());
+	/*} else if(input_token == intern("<string>")) {
+		return(consume());*/
 	} else {
 		AST::Node* result;
 		if(input_token == intern("(")) {
