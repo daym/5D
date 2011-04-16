@@ -14,6 +14,7 @@ static GtkWindow* REPL_window;
 static void open_REPL(GtkToolButton* button, GtkWindow* view) {
 	gtk_widget_show(GTK_WIDGET(REPL_window));
 }
+/*
 static GtkWindow* make_view_window() {
 	GtkWindow* window;
 	GdkGeometry geometry;
@@ -54,6 +55,7 @@ static GtkWindow* make_view_window() {
 	gtk_widget_show(GTK_WIDGET(window));
 	return(window);
 }
+*/
 static GtkWindow* make_REPL_window(GtkWindow* parent, const char* source_file_name) {
 	REPL* REPL = REPL_new(parent);
 	if(source_file_name)

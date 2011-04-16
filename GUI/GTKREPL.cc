@@ -553,7 +553,7 @@ bool REPL_save(struct REPL* self) {
 		char* temp_name = g_strdup_printf("%sXXXXXX", file_name);
 		int FD = mkstemp(temp_name);
 		FILE* output_file = fdopen(FD, "w");
-		if(REPL_save_content_to(self, output_file)) {
+		if(REPL_save_contents_to(self, output_file)) {
 			fclose(output_file);
 			close(FD);
 			if(rename(temp_name, file_name) != -1) {

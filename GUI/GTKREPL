@@ -23,6 +23,7 @@ GtkWidget* REPL_get_widget(struct REPL* self);
 struct REPL* REPL_new(GtkWindow* parent);
 void REPL_clear(struct REPL* self);
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition);
+AST::Cons* REPL_get_environment(struct REPL* self);
 
 }; // end namespace GUI
 #endif /* ndef __GTKREPL_H */

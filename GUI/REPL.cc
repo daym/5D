@@ -41,13 +41,13 @@ void REPL_add_to_environment(struct REPL* self, AST::Node* definition);
 char* REPL_get_absolute_path(const char* name);
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 void REPL_set_file_modified(struct REPL* self, bool value);
-bool REPL_save_content_to(struct REPL* self, FILE* output_file) {
+bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
 	using namespace AST;
 	char* buffer_text;
 	buffer_text = REPL_get_output_buffer_text(self);
 	AST::Cons* buffer_text_box = AST::cons(AST::intern("text_buffer_text"), AST::cons(string_literal(buffer_text), NULL));
 	AST::Cons* environment_box = AST::cons(AST::intern("environment"), REPL_get_environment(self));
-	AST::Cons* content_box = AST::cons(buffer_text_box, AST::cons(environment_box, NULL));
+	AST::Cons* content_box = AST::cons(AST::intern("REPL_V1"), AST::cons(buffer_text_box, AST::cons(environment_box, NULL)));
 	Formatters::print_S_Expression(output_file, 0, 0, content_box);
 	return(true);
 }
@@ -70,11 +70,11 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 		}
 		content = parser.parse_S_Expression(input_file);
 		contentCons = dynamic_cast<AST::Cons*>(content);
-		if(!contentCons) {
+		if(!contentCons || contentCons->head != AST::intern("REPL_V1")) {
 			fclose(input_file);
 			return(false);
 		}
-		for(AST::Cons* entryCons = contentCons; entryCons; entryCons = entryCons->tail) {
+		for(AST::Cons* entryCons = contentCons->tail; entryCons; entryCons = entryCons->tail) {
 			AST::Cons* entry = dynamic_cast<AST::Cons*>(entryCons->head);
 			if(!entry)
 				continue;
@@ -90,9 +90,10 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 				for(AST::Cons* definition = environment; definition; definition = definition->tail) {
 					AST::Node* nameNode = definition->head;
 					AST::Symbol* nameSymbol = dynamic_cast<AST::Symbol*>(nameNode);
-					if(!nameSymbol)
+					AST::Cons* value = definition->tail ? dynamic_cast<AST::Cons*>(definition->tail->head) : NULL;
+					if(!nameSymbol || !value || !value->head)
 						continue;
-					REPL_add_to_environment(self, AST::cons(AST::intern("define"), AST::cons(nameSymbol, AST::cons(definition->tail->head, NULL))));
+					REPL_add_to_environment(self, AST::cons(AST::intern("define"), AST::cons(nameSymbol, AST::cons(value->head, NULL))));
 					/*key = nameSymbol->name;
 					GtkTreeIter iter;
 					std::string valueString;
