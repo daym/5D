@@ -14,6 +14,8 @@ void to_S_Expression_CXX(AST::Node* node, std::ostream& output) {
 		output << '(';
 		for(; consNode; consNode = consNode->tail) {
 			to_S_Expression_CXX(consNode->head, output);
+			if(consNode->tail)
+				output << ' ';
 		}
 		output << ')';
 	} else { /* literal etc */
@@ -31,6 +33,8 @@ void to_S_Expression(AST::Node* node, FILE* output_file) {
 		fputc('(', output_file);
 		for(; consNode; consNode = consNode->tail) {
 			to_S_Expression(consNode->head, output_file);
+			if(consNode->tail)
+				fputc(' ', output_file);
 		}
 		fputc(')', output_file);
 	} else { /* literal etc */
