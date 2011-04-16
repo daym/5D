@@ -479,12 +479,12 @@ AST::Cons* MathParser::parse_S_list(void) {
 		return(NULL);
 	else {
 		AST::Node* head;
-		head = parse_S_expression_inline();
+		head = parse_S_Expression_inline();
 		return(cons(head, parse_S_list()));
 	}
 }
 
-AST::Node* MathParser::parse_S_expression_inline(void) {
+AST::Node* MathParser::parse_S_Expression_inline(void) {
 	/* TODO do this without tokenizing? How? */
 	if(input_token == intern("(")) {
 		AST::Cons* result = NULL;
@@ -497,17 +497,22 @@ AST::Node* MathParser::parse_S_expression_inline(void) {
 	} else if(input_token == intern("<symbol>")) {
 		return(consume()); // & whitespace.
 	} else {
-		/* TODO numbers, strings */
-		assert(0);
-		parse_S_optional_whitespace();
+		/* numbers, strings */
+		if(input_value)
+			return(consume());
+		else {
+			raise_error("<S_Expression>", "<junk>");
+			return(NULL);
+		}
+		//parse_S_optional_whitespace();
 	}
 }
 
-AST::Node* MathParser::parse_S_expression(FILE* input_file) {
+AST::Node* MathParser::parse_S_Expression(FILE* input_file) {
 	push(input_file, 0);
 	allow_args = true;
 	consume();
-	AST::Node* result = parse_S_expression_inline();
+	AST::Node* result = parse_S_Expression_inline();
 	pop();
 	return(result);
 }

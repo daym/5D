@@ -48,5 +48,9 @@ Literal* literal(const char* text) {
 	return(result);
 }
 
+Literal* string_literal(const char* text) {
+	return(literal(text)); /* FIXME (?) */
+}
+
 }; /* end namespace AST */
 

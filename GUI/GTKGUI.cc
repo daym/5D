@@ -10,9 +10,9 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/GTKView"
 using namespace GUI;
 
-static GtkWindow* REPL;
+static GtkWindow* REPL_window;
 static void open_REPL(GtkToolButton* button, GtkWindow* view) {
-	gtk_widget_show(GTK_WIDGET(REPL));
+	gtk_widget_show(GTK_WIDGET(REPL_window));
 }
 static GtkWindow* make_view_window() {
 	GtkWindow* window;
@@ -55,19 +55,19 @@ static GtkWindow* make_view_window() {
 	return(window);
 }
 static GtkWindow* make_REPL_window(GtkWindow* parent, const char* source_file_name) {
-	GTKREPL* REPL = GTKREPL_new(parent);
+	REPL* REPL = REPL_new(parent);
 	if(source_file_name)
-		GTKREPL_load_contents_from(REPL, source_file_name);
+		REPL_load_contents_from(REPL, source_file_name);
 	//gtk_widget_show(GTK_WIDGET(REPL->widget()));
-	return(GTK_WINDOW(GTKREPL_get_widget(REPL)));
+	return(GTK_WINDOW(REPL_get_widget(REPL)));
 }
 int main(int argc, char* argv[]) {
 	/*GtkWindow* view;*/
 	gtk_init(&argc, &argv);
 	/*view = make_view_window();*/
-	REPL = make_REPL_window(NULL, argc > 1 ? argv[argc - 1] : NULL);
-	g_signal_connect(G_OBJECT(REPL), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
-	gtk_widget_show(GTK_WIDGET(REPL));
+	REPL_window = make_REPL_window(NULL, argc > 1 ? argv[argc - 1] : NULL);
+	g_signal_connect(G_OBJECT(REPL_window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
+	gtk_widget_show(GTK_WIDGET(REPL_window));
 	gtk_main();
 	return(0);
 }

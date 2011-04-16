@@ -74,7 +74,7 @@ REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Sca
 GUI/GTKGUI.o: GUI/GTKGUI.cc GUI/GTKREPL GUI/GTKView
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKREPL.o: GUI/GTKREPL.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol Config/Config Formatters/LATEX GUI/UI_definition.UI GUI/GTKLATEXGenerator Formatters/SExpression
+GUI/GTKREPL.o: GUI/GTKREPL.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol Config/Config Formatters/LATEX GUI/UI_definition.UI GUI/GTKLATEXGenerator Formatters/SExpression Evaluators/FFI Evaluators/Evaluators
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 GUI/GTKLATEXGenerator.o: GUI/GTKLATEXGenerator.cc GUI/GTKLATEXGenerator

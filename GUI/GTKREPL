@@ -1,5 +1,5 @@
-#ifndef __GTKREPL_H
-#define __GTKREPL_H
+#ifndef __REPL_H
+#define __REPL_H
 /*
 4D vector analysis program
 Copyright (C) 2011  Danny Milosavljevic
@@ -12,16 +12,16 @@ You should have received a copy of the GNU General Public License along with thi
 struct Config;
 namespace GUI {
 
-struct GTKREPL;
-bool GTKREPL_confirm_close(struct GTKREPL* self);
-bool GTKREPL_get_file_modified(struct GTKREPL* self);
-bool GTKREPL_save(struct GTKREPL* self);
-void GTKREPL_load(struct GTKREPL* self);
-bool GTKREPL_save_content_to(struct GTKREPL* self, FILE* output_file);
-bool GTKREPL_load_contents_from(struct GTKREPL* self, const char* name);
-void GTKREPL_init(struct GTKREPL* self, GtkWindow* parent);
-GtkWidget* GTKREPL_get_widget(struct GTKREPL* self);
-struct GTKREPL* GTKREPL_new(GtkWindow* parent);
+struct REPL;
+bool REPL_confirm_close(struct REPL* self);
+bool REPL_get_file_modified(struct REPL* self);
+bool REPL_save(struct REPL* self);
+void REPL_load(struct REPL* self);
+bool REPL_save_content_to(struct REPL* self, FILE* output_file);
+bool REPL_load_contents_from(struct REPL* self, const char* name);
+void REPL_init(struct REPL* self, GtkWindow* parent);
+GtkWidget* REPL_get_widget(struct REPL* self);
+struct REPL* REPL_new(GtkWindow* parent);
 
 }; // end namespace GUI
-#endif /* ndef __GTKREPL_H */
+#endif /* ndef __REPL_H */

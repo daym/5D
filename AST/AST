@@ -33,5 +33,7 @@ std::string str(const Literal& a);
 
 Cons* cons(Node* head, Cons* tail);
 Literal* literal(const char* text);
+Literal* string_literal(const char* text);
+
 }; /* namespace AST */
 #endif /* __AST_H */
