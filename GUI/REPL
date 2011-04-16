@@ -1,0 +1,11 @@
+#ifndef __REPL_H
+#define __REPL_H
+#include <stdio.h>
+
+namespace GUI {
+struct REPL;
+bool REPL_save_content_to(struct REPL* self, FILE* output_file);
+bool REPL_load_contents_from(struct REPL* self, const char* name);
+}; /* end namespace */
+
+#endif /* ndef __REPL_H */

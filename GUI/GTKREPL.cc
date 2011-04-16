@@ -288,6 +288,8 @@ void REPL_queue_scroll_down(struct REPL* self) {
 static void track_changes(struct REPL* self, GtkTextBuffer* buffer) {
 	if(!gtk_widget_is_focus(GTK_WIDGET(self->fOutputArea)) && !gtk_widget_is_focus(GTK_WIDGET(self->fOutputScroller)))
 		REPL_queue_scroll_down(self);
+	if(!self->fFileModified)
+		REPL_set_file_modified(self, true);
 }
 void REPL_init(struct REPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
@@ -475,57 +477,39 @@ void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destinati
 	}
 	REPL_queue_scroll_down(self);
 }
-#if 0
-static bool save_integer(FILE* output_file, long value) {
-	value = htonl(value);
-	return fwrite(&value, sizeof(value), 1, output_file) == 1;
-}
-static bool save_string(FILE* output_file, const char* s) {
-	if(!s)
-		s = "";
-	int l = strlen(s);
-	/*if(!save_integer(output_file, l))
-		return(false);
-	else*/
-		return fwrite(s, l + 1, 1, output_file) == 1;
-}
-const char* load_string(const char*& string_iter) {
-	const char* result;
-	result = string_iter;
-	int l = strlen(string_iter);
-	string_iter += l + 1;
-	return(result);
-}
-#endif
-AST::Cons* box_tree_nodes(struct REPL* self, GtkTreeIter* iter) {
+AST::Cons* REPL_box_tree_nodes(struct REPL* self, GtkTreeIter* iter) {
 	using namespace AST;
 	char* name;
 	char* value;
+	Scanners::MathParser parser;
+	FILE* input_file;
 	AST::Cons* tail;
 	gtk_tree_model_get(GTK_TREE_MODEL(self->fEnvironmentStore), iter, 0, &name, 1, &value, -1);
 	if(!gtk_tree_model_iter_next(GTK_TREE_MODEL(self->fEnvironmentStore), iter))
 		tail = NULL;
 	else
-		tail = box_tree_nodes(self, iter);
-	return(cons(cons(AST::intern(name), cons(string_literal(value), NULL)), tail));
+		tail = REPL_box_tree_nodes(self, iter);
+	input_file = fmemopen(value, strlen(value), "r");
+	if(!input_file)
+		abort();
+	return(cons(cons(AST::intern(name), cons(parser.parse_S_Expression(input_file), NULL)), tail));
 	//g_free(name);
 	//g_free(value);
 }
-bool REPL_save_content_to(struct REPL* self, FILE* output_file) {
-	using namespace AST;
+AST::Cons* REPL_get_environment(struct REPL* self) {
 	GtkTreeIter iter;
-	GtkTextIter start;
-	GtkTextIter end;
-	gtk_text_buffer_get_start_iter(self->fOutputBuffer, &start);
-	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-	char* buffer_text = gtk_text_buffer_get_text(self->fOutputBuffer, &start, &end, FALSE);
-	AST::Cons* buffer_text_box = AST::cons(AST::intern("text_buffer_text"), AST::cons(string_literal(buffer_text), NULL));
-	AST::Cons* environment_box = AST::cons(AST::intern("environment"), (gtk_tree_model_get_iter_first(GTK_TREE_MODEL(self->fEnvironmentStore), &iter)) ? box_tree_nodes(self, &iter) : NULL);
-	AST::Cons* content_box = AST::cons(buffer_text_box, AST::cons(environment_box, NULL));
-	Formatters::print_S_Expression(output_file, 0, 0, content_box);
-	return(true);
+	return((gtk_tree_model_get_iter_first(GTK_TREE_MODEL(self->fEnvironmentStore), &iter)) ? REPL_box_tree_nodes(self, &iter) : NULL);
 }
-static char* get_absolute_path(const char* name) {
+void REPL_clear(struct REPL* self) {
+	GtkTextIter text_start;
+	GtkTextIter text_end;
+	gtk_text_buffer_get_start_iter(self->fOutputBuffer, &text_start);
+	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);
+	gtk_text_buffer_delete(self->fOutputBuffer, &text_start, &text_end);
+	gtk_list_store_clear(GTK_LIST_STORE(self->fEnvironmentStore));
+	g_hash_table_remove_all(self->fEnvironmentKeys);
+}
+char* REPL_get_absolute_path(const char* name) {
 	if(g_path_is_absolute(name))
 		return(strdup(name));
 	else
@@ -537,75 +521,12 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* text) {
 	gtk_text_buffer_get_start_iter(self->fOutputBuffer, &text_start);
 	gtk_text_buffer_insert(self->fOutputBuffer, &text_start, text, -1);
 }
-bool REPL_load_contents_from(struct REPL* self, const char* name) {
-	{
-		if(REPL_get_file_modified(self))
-			if(!REPL_confirm_close(self))
-				return(false);
-	}
-	{
-		GtkTextIter text_start;
-		GtkTextIter text_end;
-		gtk_text_buffer_get_start_iter(self->fOutputBuffer, &text_start);
-		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);
-		gtk_text_buffer_delete(self->fOutputBuffer, &text_start, &text_end);
-		gtk_list_store_clear(GTK_LIST_STORE(self->fEnvironmentStore));
-		g_hash_table_remove_all(self->fEnvironmentKeys);
-	}
-	{
-		FILE* input_file;
-		AST::Node* content;
-		AST::Cons* contentCons;
-		Scanners::MathParser parser;
-		input_file = fopen(name, "r");
-		if(!input_file) {
-			g_warning("could not open \"%s\": %s", name, strerror(errno));
-			return(false);
-		}
-		content = parser.parse_S_Expression(input_file);
-		contentCons = dynamic_cast<AST::Cons*>(content);
-		if(!contentCons) {
-			fclose(input_file);
-			return(false);
-		}
-		for(AST::Cons* entryCons = contentCons; entryCons; entryCons = entryCons->tail) {
-			AST::Cons* entry = dynamic_cast<AST::Cons*>(entryCons->head);
-			if(!entry)
-				continue;
-			if(entry->head == AST::intern("text_buffer_text") && entry->tail) {
-				char* text;
-				text = Evaluators::get_native_string(entry->tail->head);
-				REPL_append_to_output_buffer(self, text);
-				g_free(text);
-			} else if(entry->head == AST::intern("environment") && entry->tail) {
-				AST::Cons* environment = dynamic_cast<AST::Cons*>(entry->tail->head);
-				if(!environment)
-					continue;
-				for(AST::Cons* definition = environment; definition; definition = definition->tail) {
-					AST::Node* nameNode = definition->head;
-					GtkTreeIter iter;
-					const char* key;
-					char* value;
-					AST::Symbol* nameSymbol = dynamic_cast<AST::Symbol*>(nameNode);
-					if(!nameSymbol)
-						continue;
-					key = nameSymbol->name;
-					value = definition->tail ? Evaluators::get_native_string(definition->tail->head) : NULL;
-					gtk_list_store_append(self->fEnvironmentStore, &iter);
-					gtk_list_store_set(self->fEnvironmentStore, &iter, 0, key, 1, value, -1);
-					g_hash_table_replace(self->fEnvironmentKeys, AST::intern(key), gtk_tree_iter_copy(&iter));
-					g_free(value);
-				}
-			}
-		}
-		fclose(input_file);
-	}
-	{
-		char* absolute_name = get_absolute_path(name);
-		REPL_set_file_modified(self, false);
-		REPL_set_current_environment_name(self, absolute_name);
-	}
-	return(true);
+char* REPL_get_output_buffer_text(struct REPL* self) {
+	GtkTextIter start;
+	GtkTextIter end;
+	gtk_text_buffer_get_start_iter(self->fOutputBuffer, &start);
+	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+	return(gtk_text_buffer_get_text(self->fOutputBuffer, &start, &end, FALSE));
 }
 void REPL_load(struct REPL* self) {
 	bool B_OK = false;
@@ -637,9 +558,10 @@ bool REPL_save(struct REPL* self) {
 			fclose(output_file);
 			close(FD);
 			if(rename(temp_name, file_name) != -1) {
-				char* absolute_name = get_absolute_path(file_name);
+				char* absolute_name = REPL_get_absolute_path(file_name);
 				B_OK = true;
 				REPL_set_current_environment_name(self, absolute_name);
+				REPL_set_file_modified(self, false);
 			}
 			//unlink(temp_name);
 		}
