@@ -9,7 +9,15 @@ namespace Formatters {
 
 static void print_text(std::ostream& output, int& visible_position, const char* text) {
 	output << text;
-	visible_position += strlen(text); /* TODO UTF-8 decode and ignore compositing characters completely */
+	for(; *text; ++text) {
+		unsigned c = (unsigned) *text;
+		if(c == 10)
+			visible_position = 0;
+		else if(c < 0x20)
+			;
+		else if(c < 0x80 || c >= 0xC0)
+			++visible_position;
+	}
 }
 static void print_indentation(std::ostream& output, int indentation) {
 	for(; indentation > 0; --indentation)
