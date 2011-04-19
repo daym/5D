@@ -17,6 +17,17 @@ bool get_native_boolean(AST::Node* root);
 char* get_native_string(AST::Node* root);
 
 struct FFI : Operation {
+	virtual AST::Node* execute(AST::Node* argument);
+	virtual AST::Node* executeLowlevel(AST::Node* argument) = 0;
+};
+struct FFIClosure : Operation {
+	AST::Node* argument;
+	FFI* routine;
+	FFIClosure(AST::Node* argument, FFI* routine) {
+		this->argument = argument;
+		this->routine = routine;
+	}
+	virtual AST::Node* execute(AST::Node* state);
 };
 
 };

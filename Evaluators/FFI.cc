@@ -7,8 +7,10 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #include <string.h>
 #include "Evaluators/FFI"
+#include "AST/AST"
 
 namespace Evaluators {
+using namespace AST;
 
 int get_native_integer(AST::Node* root) {
 	/* FIXME */
@@ -25,6 +27,17 @@ bool get_native_boolean(AST::Node* root) {
 char* get_native_string(AST::Node* root) {
 	std::string value = root->str(); /* FIXME */
 	return(strdup(value.c_str()));
+}
+AST::Node* FFI::execute(AST::Node* argument) {
+	//lambda state: makeList(executeLowlevel(argument), state);
+	// TODO maybe cache that, makes not a lot of sense to regenerate the intermediate things all the time!
+	return(new FFIClosure(argument, this));
+}
+AST::Node* FFIClosure::execute(AST::Node* state) {
+	if(routine)
+		return(cons(routine->executeLowlevel(argument), cons(state, NULL)));
+	else
+		return(NULL);
 }
 
 };

@@ -31,7 +31,7 @@ C::C(AST::Symbol* fn, AST::Symbol* signature, AST::Symbol* library) {
 	p->value = GetProcAddress(p->library, fn->name);
 }
 
-AST::Node* C::execute(AST::Node* argument) {
+AST::Node* C::executeLowlevel(AST::Node* argument) {
 	return(NULL);
 }
 

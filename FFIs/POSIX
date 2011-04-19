@@ -1,5 +1,5 @@
-#ifndef __4D_FFIs_WIN32_H
-#define __4D_FFIs_WIN32_H
+#ifndef __4D_FFIs_POSIX_H
+#define __4D_FFIs_POSIX_H
 /*
 4D vector analysis program
 Copyright (C) 2011  Danny Milosavljevic
@@ -10,17 +10,17 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/FFI"
 
 namespace AST {
-	struct Symbol;
+struct Symbol;
 };
 
 namespace FFIs {
 
 struct C : Evaluators::FFI {
-	C(AST::Symbol* symbol, AST::Symbol* signature, AST::Symbol* library);
+	C(AST::Symbol* fn, AST::Symbol* signature, AST::Symbol* library);
 	virtual AST::Node* executeLowlevel(AST::Node* argument);
 private:
 	struct CP* p;
 };
 
 };
-#endif /* ndef __4D_FFIs_WIN32_H */
+#endif /* ndef __4D_FFIs_POSIX_H */
