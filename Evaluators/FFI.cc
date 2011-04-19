@@ -31,7 +31,10 @@ char* get_native_string(AST::Node* root) {
 AST::Node* FFI::execute(AST::Node* argument) {
 	//lambda state: makeList(executeLowlevel(argument), state);
 	// TODO maybe cache that, makes not a lot of sense to regenerate the intermediate things all the time!
-	return(new FFIClosure(argument, this));
+	if(B_pure)
+		return(executeLowlevel(argument));
+	else
+		return(new FFIClosure(argument, this));
 }
 AST::Node* FFIClosure::execute(AST::Node* state) {
 	/* TODO change state if neccessary. Cache the old result? */
