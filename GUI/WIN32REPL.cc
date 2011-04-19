@@ -13,6 +13,7 @@
 #include "Config/Config"
 
 namespace GUI {
+void REPL_append_to_output_buffer(struct REPL* self, const char* text);
 
 static void ShowWIN32Diagnostics(void) {
 	LPVOID lpMsgBuf;
@@ -444,9 +445,6 @@ void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 	EnsureInEnvironment(self->dialog, FromUTF8(parameter->name), body);
 	REPL_set_file_modified(self, true);
 }
-void REPL_insert_output(struct REPL* self, const char* output) {
-	InsertRichText(GetDlgItem(self->dialog, IDC_OUTPUT), FromUTF8(output));
-}
 void REPL_execute(struct REPL* self, const char* command) {
 	Scanners::MathParser parser;
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
@@ -458,7 +456,7 @@ void REPL_execute(struct REPL* self, const char* command) {
 				result = Evaluators::annotate(result);
 				std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
-				REPL_insert_output(self, v.c_str());
+				REPL_append_to_output_buffer(self, v.c_str());
 			} catch(...) {
 				fclose(input_file);
 				throw;
@@ -466,7 +464,7 @@ void REPL_execute(struct REPL* self, const char* command) {
 		} catch(Scanners::ParseException e) {
 			std::string v = e.what() ? e.what() : "error";
 			v = " => " + v + "\n";
-			REPL_insert_output(self, v.c_str());
+			REPL_append_to_output_buffer(self, v.c_str());
 			REPL_set_file_modified(self, true);
 			throw;
 		}
@@ -483,11 +481,20 @@ char* REPL_get_absolute_path(const char* name) {
 	return(strdup(name)); // FIXME
 }
 void REPL_append_to_output_buffer(struct REPL* self, const char* text) {
-	// FIXME
+	InsertRichText(GetDlgItem(self->dialog, IDC_OUTPUT), FromUTF8(text));
 }
 char* REPL_get_output_buffer_text(struct REPL* self) {
 	std::wstring value = GetDlgItemTextCXX(self->dialog, IDC_OUTPUT);
 	return(ToUTF8(value));
+}
+void REPL_clear(struct REPL* self) {
+	SetDlgItemTextCXX(self->dialog, IDC_OUTPUT, _T(""));
+	while(SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LB_DELETESTRING, 0, 0) > 0)
+		;
+}
+AST::Cons* REPL_get_environment(struct REPL* self) {
+	// FIXME
+	return(NULL);
 }
 
 }; // end namespace GUI
