@@ -34,6 +34,7 @@ AST::Node* FFI::execute(AST::Node* argument) {
 	return(new FFIClosure(argument, this));
 }
 AST::Node* FFIClosure::execute(AST::Node* state) {
+	/* TODO change state if neccessary. Cache the old result? */
 	if(routine)
 		return(cons(routine->executeLowlevel(argument), cons(state, NULL)));
 	else

@@ -7,6 +7,7 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <stdlib.h>
 #include "Evaluators/Evaluators"
 
 namespace Evaluators {
@@ -23,9 +24,13 @@ struct FFI : Operation {
 struct FFIClosure : Operation {
 	AST::Node* argument;
 	FFI* routine;
+	AST::Node* result;
+	bool B_has_result;
 	FFIClosure(AST::Node* argument, FFI* routine) {
 		this->argument = argument;
 		this->routine = routine;
+		this->result = NULL;
+		this->B_has_result = 0;
 	}
 	virtual AST::Node* execute(AST::Node* state);
 };
