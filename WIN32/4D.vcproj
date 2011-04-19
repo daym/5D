@@ -212,7 +212,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\GUI\REPL.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\Scanners\Scanner.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Formatters\SExpression.cc"
 				>
 			</File>
 			<File
@@ -245,6 +253,10 @@
 			</File>
 			<File
 				RelativePath="..\FFIs\WIN32.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Config\WIN32Config.cc"
 				>
 			</File>
 			<File
@@ -325,7 +337,15 @@
 			>
 		</File>
 		<File
+			RelativePath="..\GUI\REPL"
+			>
+		</File>
+		<File
 			RelativePath="..\Scanners\Scanner"
+			>
+		</File>
+		<File
+			RelativePath="..\Formatters\SExpression"
 			>
 		</File>
 		<File

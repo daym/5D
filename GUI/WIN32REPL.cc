@@ -10,6 +10,7 @@
 #include "Scanners/MathParser"
 #include "AST/AST"
 #include "Evaluators/Evaluators"
+#include "Config/Config"
 
 namespace GUI {
 
@@ -180,6 +181,7 @@ SendMessage(hwnd, EM_SETSEL, (WPARAM)(int)iStartPos, (LPARAM)(int)iEndPos);
 struct REPL {
 	HWND dialog;
 	bool B_file_modified;
+	struct Config* fConfig;
 	//HACCEL accelerators;
 };
 
@@ -425,6 +427,9 @@ void REPL_init(struct REPL* self, HWND parent) {
 void REPL_set_file_modified(struct REPL* self, bool value) {
 	self->B_file_modified = value;
 }
+bool REPL_get_file_modified(struct REPL* self) {
+	return(self->B_file_modified);
+}
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 	AST::Cons* definitionCons = dynamic_cast<AST::Cons*>(definition);
 	if(!definitionCons || definitionCons->head != AST::intern("define") || !definitionCons->tail)
@@ -467,6 +472,22 @@ void REPL_execute(struct REPL* self, const char* command) {
 		}
 		REPL_set_file_modified(self, true);
 	}
+}
+void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name) {
+	std::wstring text = FromUTF8(absolute_name);
+	SetWindowText(self->dialog, text.c_str());
+	Config_set_environment_name(self->fConfig, absolute_name);
+	Config_save(self->fConfig);
+}
+char* REPL_get_absolute_path(const char* name) {
+	return(strdup(name)); // FIXME
+}
+void REPL_append_to_output_buffer(struct REPL* self, const char* text) {
+	// FIXME
+}
+char* REPL_get_output_buffer_text(struct REPL* self) {
+	std::wstring value = GetDlgItemTextCXX(self->dialog, IDC_OUTPUT);
+	return(ToUTF8(value));
 }
 
 }; // end namespace GUI

@@ -5,7 +5,6 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <gtk/gtk.h>
 #include <errno.h>
 #include <string.h>
 #include "AST/AST"
@@ -72,7 +71,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 		Scanners::MathParser parser;
 		input_file = fopen(name, "r");
 		if(!input_file) {
-			g_warning("could not open \"%s\": %s", name, strerror(errno));
+			fprintf(stderr, "could not open \"%s\": %s", name, strerror(errno)); // FIXME nicer logging
 			return(false);
 		}
 		content = parser.parse_S_Expression(input_file);
@@ -89,7 +88,8 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 				char* text;
 				text = Evaluators::get_native_string(entry->tail->head);
 				REPL_append_to_output_buffer(self, text);
-				g_free(text);
+				if(text)
+					free(text);
 			} else if(entry->head == AST::intern("environment") && entry->tail) {
 				AST::Cons* environment = dynamic_cast<AST::Cons*>(entry->tail->head);
 				if(!environment)
