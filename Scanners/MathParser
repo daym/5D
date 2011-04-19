@@ -35,6 +35,7 @@ private:
 	void parse_S_optional_whitespace(void);
 	AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2);
 	AST::Node* parse_macro(AST::Node* operand_1);
+	AST::Node* parse_define(AST::Node* operand_1);
 	AST::Node* parse_argument(void);
 	AST::Node* maybe_parse_macro(AST::Node* node);
 protected:

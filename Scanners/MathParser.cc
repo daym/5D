@@ -67,6 +67,9 @@ void MathParser::parse_operator(int input) {
 	case '-':
 		input_value = input_token = intern("-");
 		break;
+	case ';':
+		input_value = input_token = intern(";");
+		break;
 	case '*':
 		++position, input = fgetc(input_file);
 		if(input == '*') {
@@ -259,6 +262,7 @@ void MathParser::parse_token(void) {
 	case '|':
 	case '.':
 	case '^':
+	case ';':
 		parse_operator(input);
 		break;
 	case '\\':
@@ -331,6 +335,8 @@ AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 using namespace AST;
 /* keep apply_precedence_level in sync with operator_precedence below */
 int apply_precedence_level = 3;
+static int precedence_level_R_1 = 9;
+static int precedence_level_R_2 = 1;
 static Symbol* operator_precedence[][7] = {
 	{intern("."), intern("^")},
 	{intern("**")},
@@ -342,6 +348,7 @@ static Symbol* operator_precedence[][7] = {
 	{intern("&")},
 	//{intern("^")}
 	{intern("|")},
+	{intern(";")}, // do
 };
 int get_operator_precedence(AST::Symbol* symbol) {
 	if(symbol == NULL)
@@ -383,16 +390,20 @@ AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 	else
 		return(NULL);
 }
+AST::Node* MathParser::parse_define(AST::Node* operand_1) {
+	AST::Node* parameter = consume(intern("<symbol>"));
+	AST::Node* body = parse_expression();
+	if(!parameter||!body||!operand_1) {
+		raise_error("<define-body>", "<incomplete>");
+		return(NULL);
+	}
+	return(cons(operand_1, cons(parameter, cons(body, NULL))));
+	//return(cons(operand_1, cons(parse_expression(), NULL)));
+}
 AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
+	// TODO subst, include, cond, make-list, quote, case.
 	if(operand_1 == intern("define")) {
-		AST::Node* parameter = consume(intern("<symbol>"));
-		AST::Node* body = parse_expression();
-		if(!parameter||!body||!operand_1) {
-			raise_error("<define-body>", "<incomplete>");
-			return(NULL);
-		}
-		return(cons(operand_1, cons(parameter, cons(body, NULL))));
-		//return(cons(operand_1, cons(parse_expression(), NULL)));
+		return(parse_define(operand_1));
 	} else {
 		raise_error("<known_macro>", "<unknown_macro>");
 		return(NULL);
@@ -475,17 +486,24 @@ AST::Node* MathParser::parse_value(void) {
 AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 	if(precedence_level < 0)
 		return(parse_value());
-	AST::Node* result = parse_binary_operation(precedence_level - 1);
-	// FIXME
-	//if(result == intern(")") || any_operator_P(result, apply_precedence_level + 1, sizeof(operator_precedence)/sizeof(operator_precedence[0]))) {
-	//	raise_error("<operand>", result ? result->str() : "<nothing>");
-	//}
-	while(AST::Node* actual_token = match_operator(precedence_level, input_token)) {
-		AST::Node* operator_ = actual_token;
-		consume(); /* operator */
-		result = operation(operator_, result, parse_binary_operation(precedence_level - 1));
+	if(precedence_level == precedence_level_R_1 || precedence_level == precedence_level_R_2) {
+		AST::Node* head = parse_binary_operation(precedence_level - 1);
+		if(AST::Node* actual_token = match_operator(precedence_level, input_token)) {
+			AST::Node* operator_ = actual_token;
+			consume(); /* operator */
+			AST::Node* rest = parse_binary_operation(precedence_level);
+			return(operation(operator_, head, rest));
+		} else
+			return(head);
+	} else {
+		AST::Node* result = parse_binary_operation(precedence_level - 1);
+		while(AST::Node* actual_token = match_operator(precedence_level, input_token)) {
+			AST::Node* operator_ = actual_token;
+			consume(); /* operator */
+			result = operation(operator_, result, parse_binary_operation(precedence_level - 1));
+		}
+		return(result);
 	}
-	return(result);
 }
 AST::Node* MathParser::parse_expression(void) {
 	return parse_binary_operation(sizeof(operator_precedence)/sizeof(operator_precedence[0]) - 1);
