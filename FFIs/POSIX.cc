@@ -26,11 +26,12 @@ struct CP {
 	void* library;
 	void* value;
 };
-C::C(AST::Symbol* fn, AST::Symbol* signature, AST::Symbol* library) {
+C::C(AST::Symbol* fn, AST::Symbol* signature, AST::Symbol* library, bool B_pure) {
 	this->p = new CP();
 	p->fn_name = fn;
 	p->library_name = library;
 	p->signature = signature;
+	this->B_pure = B_pure;
 	std::map<AST::Symbol*, void*>::const_iterator library_iter = known_libraries.find(library);
 	if(library_iter == known_libraries.end()) {
 		p->library = dlopen(library->name, RTLD_LAZY);

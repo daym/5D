@@ -22,8 +22,9 @@ struct CP {
 	FARPROC value;
 };
 
-C::C(AST::Symbol* fn, AST::Symbol* signature, AST::Symbol* library) {
+C::C(AST::Symbol* fn, AST::Symbol* signature, AST::Symbol* library, bool B_pure) {
 	this->p = new CP();
+	this->B_pure = B_pure;
 	p->fn_name = fn;
 	p->library_name = library;
 	std::wstring library_W = FromUTF8(library->name);

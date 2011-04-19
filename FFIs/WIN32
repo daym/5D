@@ -16,7 +16,7 @@ namespace AST {
 namespace FFIs {
 
 struct C : Evaluators::FFI {
-	C(AST::Symbol* symbol, AST::Symbol* signature, AST::Symbol* library);
+	C(AST::Symbol* symbol, AST::Symbol* signature, AST::Symbol* library, bool B_pure = false);
 	virtual AST::Node* executeLowlevel(AST::Node* argument);
 private:
 	struct CP* p;
