@@ -65,6 +65,7 @@ void REPL_set_current_environment_name(struct REPL* self, const char* absolute_n
 void REPL_set_file_modified(struct REPL* self, bool value);
 bool REPL_save_content_to(struct REPL* self, FILE* output_file);
 void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destination);
+bool REPL_load_contents_by_name(self, const char* file_name);
 
 static void handle_clipboard_change(GtkClipboard* clipboard, GdkEvent* event, struct REPL* self) {
 	gtk_action_set_sensitive(get_action(paste), gtk_clipboard_wait_is_text_available(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)));
@@ -388,9 +389,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 		char* environment_name;
 		environment_name = Config_get_environment_name(self->fConfig);
 		if(environment_name && environment_name[0]) {
-			REPL_load_contents_from(self, environment_name);
-			char* absolute_name = REPL_get_absolute_path(name);
-			REPL_set_current_environment_name(self, absolute_name);
+			REPL_load_contents_by_name(self, environment_name);
 		}
 	}
 	g_signal_connect(G_OBJECT(self->fWidget), "delete-event", G_CALLBACK(g_confirm_close), self);
@@ -534,6 +533,16 @@ char* REPL_get_output_buffer_text(struct REPL* self) {
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
 	return(gtk_text_buffer_get_text(self->fOutputBuffer, &start, &end, FALSE));
 }
+bool REPL_load_contents_by_name(self, const char* file_name) {
+	if(!REPL_load_contents_from(self, file_name)))
+		return(false);
+	else {
+		char* absolute_name = REPL_get_absolute_path(name);
+		REPL_set_file_modified(self, false);
+		REPL_set_current_environment_name(self, absolute_name);
+		return(true);
+	}
+}
 void REPL_load(struct REPL* self) {
 	bool B_OK = false;
 	{
@@ -544,12 +553,8 @@ void REPL_load(struct REPL* self) {
 	//gtk_file_chooser_set_filename(dialog, );
 	if(gtk_dialog_run(GTK_DIALOG(self->fOpenDialog)) == GTK_RESPONSE_OK) {
 		char* file_name = gtk_file_chooser_get_filename(self->fOpenDialog);
-		if(file_name && REPL_load_contents_from(self, file_name)) {
-			char* absolute_name = REPL_get_absolute_path(name);
-			REPL_set_file_modified(self, false);
-			REPL_set_current_environment_name(self, absolute_name);
+		if(file_name && REPL_load_contents_by_name(self, file_name))
 			B_OK = true;
-		}
 		g_free(file_name);
 	} else { // user did not want to load file after all.
 		B_OK = true;
