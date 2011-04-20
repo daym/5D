@@ -204,6 +204,19 @@ BEGIN
     LTEXT           "Save changes?",IDC_STATIC,21,21,49,8
 END
 
+IDD_SEARCH DIALOGEX 0, 0, 236, 89
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Find"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "&Find Next",IDOK,127,68,50,14
+    PUSHBUTTON      "&Close",IDCLOSE,179,68,50,14
+    EDITTEXT        IDC_SEARCH_TERM,58,15,171,14,ES_AUTOHSCROLL
+    CONTROL         "Search &Upwards",IDC_SEARCH_UPWARDS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,37,68,10
+    CONTROL         "C&ase Sensitive",IDC_SEARCH_CASE_SENSITIVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,52,63,10
+    LTEXT           "Text to Find:",IDC_STATIC,7,18,42,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -227,6 +240,14 @@ BEGIN
         RIGHTMARGIN, 241
         TOPMARGIN, 7
         BOTTOMMARGIN, 103
+    END
+
+    IDD_SEARCH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 229
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 82
     END
 END
 #endif    // APSTUDIO_INVOKED

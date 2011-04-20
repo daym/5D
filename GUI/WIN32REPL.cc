@@ -86,10 +86,16 @@ std::wstring GetDlgItemTextCXX(HWND dialog, int control) {
 	// TODO error handling (if at all possible).
 	return(buffer);
 }
-std::wstring SetDlgItemTextCXX(HWND dialog, int control, WCHAR* buffer) {
-	SetDlgItemTextW(dialog, control, buffer);
+bool GetDlgItemCheckedCXX(HWND dialog, int control) {
+	return(SendMessageW(dialog, control, BM_GETCHECK, 0) == BST_CHECKED);
+}
+void SetDlgItemCheckedCXX(HWND dialog, int control, bool value) {
+	SendMessageW(dialog, control, BM_SETCHECK, value ? BST_CHECKED : BST_UNCHECKED);
+}
+void SetDlgItemTextCXX(HWND dialog, int control, const std::wstring& value) {
+	SetDlgItemTextW(dialog, control, value.c_str());
 	// TODO error handling (if at all possible).
-	return(buffer);
+	//return(buffer);
 }
 static void SetDialogFocus(HWND dialog, int control) {
 	SendMessage(dialog, WM_NEXTDLGCTL, (WPARAM) GetDlgItem(dialog, control), (LPARAM) TRUE); 
@@ -184,7 +190,11 @@ struct REPL {
 	HWND dialog;
 	bool B_file_modified;
 	struct Config* fConfig;
+	HWND fSearchDialog;
 	//HACCEL accelerators;
+	std::wstring fSearchTerm;
+	bool fBSearchUpwards;
+	bool fBSearchCaseSensitive;
 };
 
 HWND REPL_get_window(struct REPL* self) {
@@ -293,6 +303,53 @@ bool REPL_confirm_close(struct REPL* self) {
 	default:
 		  return(false);
 	}
+}
+static void REPL_find_text(struct REPL* self, const std::wstring& text, bool upwards, bool case_sensitive) {
+	// FIXME
+}
+INT_PTR CALLBACK HandleSearchDialogMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
+	UNREFERENCED_PARAMETER(lParam);
+	struct REPL* self;
+	self = (struct REPL*) GetWindowLongPtr(dialog, GWLP_USERDATA);
+	switch (message) {
+	case WM_INITDIALOG:
+		SetDialogFocus(dialog, IDC_SEARCH_TERM);
+		return (INT_PTR)FALSE;
+	case WM_CLOSE:
+	case WM_DESTROY:
+		//EndDialog(dialog, IDCLOSE); /* or rather HideWindows */
+		// save work.
+		break;
+	case WM_SIZE:
+		break;
+	case WM_COMMAND:
+		if(LOWORD(wParam) == IDOK) {
+			self->fBSearchUpwards = GetDlgItemCheckedCXX(self->fSearchDialog, IDC_SEARCH_UPWARDS);
+			self->fBSearchCaseSensitive = GetDlgItemCheckedCXX(self->fSearchDialog, IDC_SEARCH_CASE_SENSITIVE);
+			self->fSearchTerm = GetDlgItemTextCXX(self->fSearchDialog, IDC_SEARCH_TERM);
+			REPL_find_text(self, self->fSearchTerm, self->fBSearchUpwards, self->fBSearchCaseSensitive);
+		} else if(LOWORD(wParam) == IDCANCEL || LOWORD(wParam) == IDCLOSE) {
+			ShowWindow(dialog, SW_HIDE);
+		}
+		break;
+	}
+	//return(DefDlgProc(dialog, message, wParam, lParam));
+	return (INT_PTR)FALSE;
+}
+static void REPL_show_search_dialog(struct REPL* self) {
+	//gtk_window_set_transient_for(GTK_WINDOW(dialog), self->fWidget);
+	{
+		std::wstring searchTerm = GetDlgItemTextCXX(self->fSearchDialog, IDC_SEARCH_TERM);
+		SetDlgItemCheckedCXX(self->fSearchDialog, IDC_SEARCH_UPWARDS, self->fBSearchUpwards);
+		SetDlgItemCheckedCXX(self->fSearchDialog, IDC_SEARCH_CASE_SENSITIVE, self->fBSearchCaseSensitive);
+		SetDlgItemTextCXX(self->fSearchDialog, IDC_SEARCH_TERM, self->fSearchTerm.c_str());
+	}
+	ShowWindow(self->fSearchDialog, SW_SHOW);
+	//ShowWindow(self->fSearchDialog, SW_HIDE);
+}
+void REPL_handle_find(struct REPL* self) {
+	const char* text = NULL;
+	REPL_show_search_dialog(self);
 }
 INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
 	UNREFERENCED_PARAMETER(lParam);
@@ -415,6 +472,8 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		case IDM_EDIT_FIND:
 			/* FIXME implement */
 			{
+				REPL_handle_find(self);
+				break;
 			}
 		}
 
@@ -466,8 +525,13 @@ void REPL_init(struct REPL* self, HWND parent) {
 	if(self->dialog == NULL) {
 		ShowWIN32Diagnostics();
 	}
-	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY4D));
 	SetWindowLongPtr(self->dialog, GWLP_USERDATA, (LONG) self);
+	self->fSearchDialog = CreateDialog(hinstance, MAKEINTRESOURCE(IDD_SEARCH), self->dialog, HandleSearchDialogMessage);
+	if(self->fSearchDialog == NULL) {
+		ShowWIN32Diagnostics();
+	}
+	SetWindowLongPtr(self->fSearchDialog, GWLP_USERDATA, (LONG) self);
+	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY4D));
 	self->fConfig = load_Config();
 	{
 		char* environment_name;
