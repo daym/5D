@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <tchar.h>
 #include <Commdlg.h>
+#include <Richedit.h>
 #include "REPL"
 #include "WIN32REPL"
 #include "Scanners/MathParser"
@@ -87,10 +88,10 @@ std::wstring GetDlgItemTextCXX(HWND dialog, int control) {
 	return(buffer);
 }
 bool GetDlgItemCheckedCXX(HWND dialog, int control) {
-	return(SendMessageW(dialog, control, BM_GETCHECK, 0) == BST_CHECKED);
+	return(SendMessageW(GetDlgItem(dialog, control), BM_GETCHECK, 0, 0) == BST_CHECKED);
 }
 void SetDlgItemCheckedCXX(HWND dialog, int control, bool value) {
-	SendMessageW(dialog, control, BM_SETCHECK, value ? BST_CHECKED : BST_UNCHECKED);
+	SendMessageW(GetDlgItem(dialog, control), BM_SETCHECK, value ? BST_CHECKED : BST_UNCHECKED, 0);
 }
 void SetDlgItemTextCXX(HWND dialog, int control, const std::wstring& value) {
 	SetDlgItemTextW(dialog, control, value.c_str());
@@ -308,6 +309,24 @@ bool REPL_confirm_close(struct REPL* self) {
 	}
 }
 static void REPL_find_text(struct REPL* self, const std::wstring& text, bool upwards, bool case_sensitive) {
+	int index;
+	FINDTEXTEX range;
+	if(upwards) {
+		range.chrg.cpMin = 0; // FIXME curstart
+		range.chrg.cpMax = 0;
+	} else {
+		range.chrg.cpMin = 0;
+		range.chrg.cpMax = -1;
+	}
+	range.lpstrText = text.c_str();
+	index = SendMessage(GetDlgItem(self->fSearchDialog, IDC_OUTPUT), EM_FINDTEXTEXW, (!upwards ? FR_DOWN : 0) | (case_sensitive ? FR_MATCHCASE : 0), (LPARAM) &range);
+	if(index != -1) { // found
+		SendMessage(GetDlgItem(self->fSearchDialog, IDC_OUTPUT), EM_SETSEL,(WPARAM) range.chrgText.cpMin,(LPARAM) range.chrgText.cpMax);
+	}
+	// TODO search in selection?
+	// TODO FR_WHOLEWORD
+	//LPCTSTR   lpstrText;
+	//CHARRANGE chrgText;
 	// FIXME
 }
 INT_PTR CALLBACK HandleSearchDialogMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -518,6 +537,8 @@ static ATOM registerMyClass(HINSTANCE hInstance)
 }
 void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
+	self->fBSearchUpwards = true;
+	self->fBSearchCaseSensitive = true;
 	hinstance = GetModuleHandle(NULL);
 	//DialogBox(hinstance, MAKEINTRESOURCE(IDD_REPL), parent, HandleREPLMessage);
 	self->B_file_modified = false;
