@@ -16,10 +16,10 @@ namespace AST {
 std::string Node::str(void) const {
 	return("<node>");
 }
-std::string Literal::str(void) const {
+std::string Atom::str(void) const {
 	return(text);
 }
-std::string StringLiteral::str(void) const {
+std::string String::str(void) const {
 	return(std::string("\"") + text + "\""); // FIXME escape.
 }
 std::string Cons::str(void) const {
@@ -42,13 +42,13 @@ Cons* cons(Node* head, Cons* tail) {
 	result->tail = tail;
 	return(result);
 }
-Literal* literal(const char* text) {
-	Literal* result = new Literal;
+Atom* literal(const char* text) {
+	Atom* result = new Atom;
 	result->text = text;
 	return(result);
 }
-StringLiteral* string_literal(const char* text) {
-	StringLiteral* result = new StringLiteral;
+String* string_literal(const char* text) {
+	String* result = new String;
 	result->text = strdup(text);
 	return(result);
 }

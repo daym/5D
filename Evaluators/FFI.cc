@@ -25,8 +25,13 @@ bool get_native_boolean(AST::Node* root) {
 	return(false);
 }
 char* get_native_string(AST::Node* root) {
-	std::string value = root->str(); /* FIXME */
-	return(strdup(value.c_str()));
+	AST::String* rootString = dynamic_cast<AST::String*>(root);
+	if(rootString)
+		return(strdup(rootString->text));
+	else {
+		std::string value = root->str(); /* FIXME */
+		return(strdup(value.c_str()));
+	}
 }
 AST::Node* FFI::execute(AST::Node* argument) {
 	//lambda state: makeList(executeLowlevel(argument), state);

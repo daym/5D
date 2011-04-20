@@ -24,20 +24,20 @@ struct Cons : Node {
 
 std::string str(const Cons& a);
 
-struct Literal : Node {
+struct Atom : Node {
 	const char* text;
 	virtual std::string str(void) const;
 };
 
-struct StringLiteral : Literal {
+struct String : Atom {
 	virtual std::string str(void) const;
 };
 
-std::string str(const Literal& a);
+std::string str(const Atom& a);
 
 Cons* cons(Node* head, Cons* tail);
-Literal* literal(const char* text);
-StringLiteral* string_literal(const char* text);
+Atom* literal(const char* text);
+String* string_literal(const char* text);
 
 }; /* namespace AST */
 #endif /* __AST_H */
