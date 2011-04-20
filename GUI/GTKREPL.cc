@@ -65,7 +65,7 @@ void REPL_set_current_environment_name(struct REPL* self, const char* absolute_n
 void REPL_set_file_modified(struct REPL* self, bool value);
 bool REPL_save_content_to(struct REPL* self, FILE* output_file);
 void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destination);
-bool REPL_load_contents_by_name(self, const char* file_name);
+bool REPL_load_contents_by_name(struct REPL* self, const char* file_name);
 
 static void handle_clipboard_change(GtkClipboard* clipboard, GdkEvent* event, struct REPL* self) {
 	gtk_action_set_sensitive(get_action(paste), gtk_clipboard_wait_is_text_available(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)));
@@ -533,11 +533,11 @@ char* REPL_get_output_buffer_text(struct REPL* self) {
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
 	return(gtk_text_buffer_get_text(self->fOutputBuffer, &start, &end, FALSE));
 }
-bool REPL_load_contents_by_name(self, const char* file_name) {
-	if(!REPL_load_contents_from(self, file_name)))
+bool REPL_load_contents_by_name(struct REPL* self, const char* file_name) {
+	if(!REPL_load_contents_from(self, file_name))
 		return(false);
 	else {
-		char* absolute_name = REPL_get_absolute_path(name);
+		char* absolute_name = REPL_get_absolute_path(file_name);
 		REPL_set_file_modified(self, false);
 		REPL_set_current_environment_name(self, absolute_name);
 		return(true);
@@ -548,7 +548,7 @@ void REPL_load(struct REPL* self) {
 	{
 		if(REPL_get_file_modified(self))
 			if(!REPL_confirm_close(self))
-				return(false);
+				return;
 	}
 	//gtk_file_chooser_set_filename(dialog, );
 	if(gtk_dialog_run(GTK_DIALOG(self->fOpenDialog)) == GTK_RESPONSE_OK) {
