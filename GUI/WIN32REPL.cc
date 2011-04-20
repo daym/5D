@@ -200,6 +200,9 @@ struct REPL {
 HWND REPL_get_window(struct REPL* self) {
 	return(self->dialog);
 }
+HWND REPL_get_search_window(struct REPL* self) {
+	return(self->fSearchDialog);
+}
 std::wstring REPL_get_absolute_pathw(const std::wstring& file_name) {
 	return(file_name);
 }

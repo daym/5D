@@ -55,7 +55,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MY4D));
 	while(GetMessage(&msg, NULL, 0, 0)) {
 		// TODO IsWindow ? 
-		if (!REPL || (!TranslateAccelerator(REPL_get_window(REPL), hAccelTable, &msg) && !IsDialogMessage(REPL_get_window(REPL), &msg))) {
+		if (!REPL || 
+			((!TranslateAccelerator(REPL_get_window(REPL), hAccelTable, &msg) && !IsDialogMessage(REPL_get_window(REPL), &msg)) &&
+			(!TranslateAccelerator(REPL_get_search_window(REPL), hAccelTable, &msg) && !IsDialogMessage(REPL_get_search_window(REPL), &msg)))) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}

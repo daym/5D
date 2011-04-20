@@ -14,6 +14,7 @@ void REPL_execute(struct REPL* self, const char* command);
 bool REPL_save(struct REPL* self);
 void REPL_load(struct REPL* self);
 HWND REPL_get_window(struct REPL* self);
+HWND REPL_get_search_window(struct REPL* self);
 
 }
 
