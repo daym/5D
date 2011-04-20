@@ -310,7 +310,7 @@ bool REPL_confirm_close(struct REPL* self) {
 }
 static void REPL_find_text(struct REPL* self, const std::wstring& text, bool upwards, bool case_sensitive) {
 	int index;
-	FINDTEXTEX range;
+	FINDTEXTEXW range;
 	if(upwards) {
 		range.chrg.cpMin = 0; // FIXME curstart
 		range.chrg.cpMax = 0;
@@ -318,9 +318,11 @@ static void REPL_find_text(struct REPL* self, const std::wstring& text, bool upw
 		range.chrg.cpMin = 0;
 		range.chrg.cpMax = -1;
 	}
+	range.chrgText.cpMax = -1;
+	range.chrgText.cpMin = -1;
 	range.lpstrText = text.c_str();
 	index = SendMessage(GetDlgItem(self->fSearchDialog, IDC_OUTPUT), EM_FINDTEXTEXW, (!upwards ? FR_DOWN : 0) | (case_sensitive ? FR_MATCHCASE : 0), (LPARAM) &range);
-	if(index != -1) { // found
+	if(index != -1 && range.chrgText.cpMax != -1 && range.chrgText.cpMin != -1) { // found
 		SendMessage(GetDlgItem(self->fSearchDialog, IDC_OUTPUT), EM_SETSEL,(WPARAM) range.chrgText.cpMin,(LPARAM) range.chrgText.cpMax);
 	}
 	// TODO search in selection?
