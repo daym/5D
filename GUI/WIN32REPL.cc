@@ -379,6 +379,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	self = (struct REPL*) GetWindowLongPtr(dialog, GWLP_USERDATA);
 	switch (message) {
 	case WM_INITDIALOG:
+		SendMessage(GetDlgItem(dialog, IDC_OUTPUT), EM_SETEVENTMASK, 0, SendMessage(GetDlgItem(dialog, IDC_OUTPUT), EM_GETEVENTMASK, 0, 0) | ENM_CHANGE);
 		SetDialogFocus(dialog, IDC_COMMAND_ENTRY);
 		return (INT_PTR)FALSE;
 	case WM_CLOSE:
@@ -480,6 +481,12 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				SendMessage(GetFocus(), LOWORD(wParam) == IDM_EDIT_CUT ? WM_CUT :
 					                    LOWORD(wParam) == IDM_EDIT_COPY ? WM_COPY :
 										LOWORD(wParam) == IDM_EDIT_PASTE ? WM_PASTE : WM_CLEAR, 0, 0);
+				break;
+			}
+		case IDC_OUTPUT:
+			{
+				if(HIWORD(wParam) == EN_CHANGE)
+					REPL_set_file_modified(self, true);
 				break;
 			}
 		case IDC_ENVIRONMENT:
