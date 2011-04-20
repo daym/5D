@@ -221,13 +221,23 @@ bool REPL_save(struct REPL* self) {
 	} else 
 		return(false);
 }
+bool REPL_load_contents_by_name(struct REPL* self, const char* name) {
+	if(!REPL_load_contents_from(self, name))
+		return(false);
+	else {
+		char* absolute_name = ToUTF8(REPL_get_absolute_pathw(FromUTF8(name)));
+		REPL_set_file_modified(self, false);
+		REPL_set_current_environment_name(self, absolute_name);
+		return(true);
+	}
+}
 void REPL_load(struct REPL* self) {
 	if(self->B_file_modified)
 		if(!REPL_save(self))
 			return;
 	std::wstring file_name;
 	file_name = GetUsualOpenFileName(self->dialog);
-	REPL_load_contents_from(self, ToUTF8(file_name));
+	REPL_load_contents_by_name(self, ToUTF8(file_name));
 }
 
 static INT_PTR CALLBACK HandleAboutMessages(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -458,6 +468,13 @@ void REPL_init(struct REPL* self, HWND parent) {
 	}
 	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY4D));
 	SetWindowLongPtr(self->dialog, GWLP_USERDATA, (LONG) self);
+	self->fConfig = load_Config();
+	{
+		char* environment_name;
+		environment_name = Config_get_environment_name(self->fConfig);
+		if(environment_name && environment_name[0])
+			REPL_load_contents_by_name(self, environment_name);
+	}
 }
 bool REPL_get_file_modified(struct REPL* self) {
 	return(self->B_file_modified);
