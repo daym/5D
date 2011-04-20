@@ -369,6 +369,9 @@ static void REPL_show_search_dialog(struct REPL* self) {
 	ShowWindow(self->fSearchDialog, SW_SHOW);
 	//ShowWindow(self->fSearchDialog, SW_HIDE);
 }
+void REPL_handle_find_next(struct REPL* self) {
+	REPL_find_text(self, self->fSearchTerm, self->fBSearchUpwards, self->fBSearchCaseSensitive);
+}
 void REPL_handle_find(struct REPL* self) {
 	const char* text = NULL;
 	REPL_show_search_dialog(self);
@@ -499,9 +502,13 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				break;
 			}
 		case IDM_EDIT_FIND:
-			/* FIXME implement */
 			{
 				REPL_handle_find(self);
+				break;
+			}
+		case IDM_EDIT_FINDNEXT:
+			{
+				REPL_handle_find_next(self);
 				break;
 			}
 		}
