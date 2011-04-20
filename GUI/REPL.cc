@@ -45,7 +45,6 @@ bool REPL_confirm_close(struct REPL* self);
 void REPL_clear(struct REPL* self);
 void REPL_append_to_output_buffer(struct REPL* self, const char* text);
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition);
-char* REPL_get_absolute_path(const char* name);
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 void REPL_set_file_modified(struct REPL* self, bool value);
 bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
@@ -59,11 +58,6 @@ bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
 	return(true);
 }
 bool REPL_load_contents_from(struct REPL* self, const char* name) {
-	{
-		if(REPL_get_file_modified(self))
-			if(!REPL_confirm_close(self))
-				return(false);
-	}
 	REPL_clear(self);
 	{
 		FILE* input_file;
@@ -116,11 +110,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 		}
 		fclose(input_file);
 	}
-	{
-		char* absolute_name = REPL_get_absolute_path(name);
-		REPL_set_file_modified(self, false);
-		REPL_set_current_environment_name(self, absolute_name);
-	}
+	REPL_set_file_modified(self, false);
 	return(true);
 }
 

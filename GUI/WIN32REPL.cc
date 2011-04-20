@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <tchar.h>
 #include <Commdlg.h>
+#include "REPL"
 #include "WIN32REPL"
 #include "Scanners/MathParser"
 #include "AST/AST"
@@ -189,12 +190,36 @@ struct REPL {
 HWND REPL_get_window(struct REPL* self) {
 	return(self->dialog);
 }
+std::wstring REPL_get_absolute_pathw(const std::wstring& file_name) {
+	return(file_name);
+}
+void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name) {
+	std::wstring text = FromUTF8(absolute_name);
+	SetWindowText(self->dialog, text.c_str());
+	Config_set_environment_name(self->fConfig, absolute_name);
+	Config_save(self->fConfig);
+}
+void REPL_set_file_modified(struct REPL* self, bool value) {
+	self->B_file_modified = value;
+}
 bool REPL_save(struct REPL* self) {
 	std::wstring file_name;
 	file_name = GetUsualSaveFileName(self->dialog);
-	// TODO
-	self->B_file_modified = false;
-	return(true);
+	if(file_name.length() > 0) {
+		bool B_OK = false;
+		// FIXME save into temp file first.
+		FILE* output_file = _wfopen(file_name.c_str(), _T("w"));
+		if(REPL_save_contents_to(self, output_file)) {
+			fclose(output_file);
+			char* absolute_name = ToUTF8(REPL_get_absolute_pathw(file_name));
+			B_OK = true;
+			REPL_set_current_environment_name(self, absolute_name);
+			REPL_set_file_modified(self, false);
+			//unlink(temp_name);
+		}
+		return(B_OK);
+	} else 
+		return(false);
 }
 void REPL_load(struct REPL* self) {
 	if(self->B_file_modified)
@@ -202,7 +227,7 @@ void REPL_load(struct REPL* self) {
 			return;
 	std::wstring file_name;
 	file_name = GetUsualOpenFileName(self->dialog);
-	// TODO
+	REPL_load_contents_from(self, ToUTF8(file_name));
 }
 
 static INT_PTR CALLBACK HandleAboutMessages(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -368,6 +393,15 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 										LOWORD(wParam) == IDM_EDIT_PASTE ? WM_PASTE : WM_CLEAR, 0, 0);
 				break;
 			}
+		case IDC_ENVIRONMENT:
+			{
+				if(HIWORD(wParam) == LBN_DBLCLK) {
+					/*
+					ListIndex = SendMessage(hListe, LB_GETCURSEL, 0, 0);
+					*/
+				}
+				break;
+			}
 		case IDM_EDIT_FIND:
 			/* FIXME implement */
 			{
@@ -425,9 +459,6 @@ void REPL_init(struct REPL* self, HWND parent) {
 	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY4D));
 	SetWindowLongPtr(self->dialog, GWLP_USERDATA, (LONG) self);
 }
-void REPL_set_file_modified(struct REPL* self, bool value) {
-	self->B_file_modified = value;
-}
 bool REPL_get_file_modified(struct REPL* self) {
 	return(self->B_file_modified);
 }
@@ -471,15 +502,6 @@ void REPL_execute(struct REPL* self, const char* command) {
 		REPL_set_file_modified(self, true);
 	}
 }
-void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name) {
-	std::wstring text = FromUTF8(absolute_name);
-	SetWindowText(self->dialog, text.c_str());
-	Config_set_environment_name(self->fConfig, absolute_name);
-	Config_save(self->fConfig);
-}
-char* REPL_get_absolute_path(const char* name) {
-	return(strdup(name)); // FIXME
-}
 void REPL_append_to_output_buffer(struct REPL* self, const char* text) {
 	InsertRichText(GetDlgItem(self->dialog, IDC_OUTPUT), FromUTF8(text));
 }
@@ -491,10 +513,25 @@ void REPL_clear(struct REPL* self) {
 	SetDlgItemTextCXX(self->dialog, IDC_OUTPUT, _T(""));
 	while(SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LB_DELETESTRING, 0, 0) > 0)
 		;
+	// or just LB_RESETCONTENT
+}
+static AST::Cons* box_environment_elements(HWND dialog, int index, int count) {
+	if(index >= count)
+		return(NULL);
+	else {
+		// FIXME Ptr
+		AST::Node* value = (AST::Node*) SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_GETITEMDATA, (WPARAM) index, (LPARAM) 0);
+		int length = SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_GETTEXTLEN, (WPARAM) index, (LPARAM) 0);
+		TCHAR* buffer = new TCHAR[length + 1];
+		SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_GETTEXT, (WPARAM) index, (LPARAM) buffer);
+		AST::Symbol* nameSymbol = AST::intern(ToUTF8(buffer));
+		delete buffer;
+		return(cons(cons(nameSymbol, cons(value, NULL)), box_environment_elements(dialog, index + 1, count)));
+	}
 }
 AST::Cons* REPL_get_environment(struct REPL* self) {
-	// FIXME
-	return(NULL);
+	int count = SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LB_GETCOUNT, (WPARAM) 0, (LPARAM) 0);
+	return(box_environment_elements(self->dialog, 0, count));
 }
 
 }; // end namespace GUI

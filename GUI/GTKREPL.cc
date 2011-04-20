@@ -387,8 +387,11 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	{
 		char* environment_name;
 		environment_name = Config_get_environment_name(self->fConfig);
-		if(environment_name && environment_name[0])
+		if(environment_name && environment_name[0]) {
 			REPL_load_contents_from(self, environment_name);
+			char* absolute_name = REPL_get_absolute_path(name);
+			REPL_set_current_environment_name(self, absolute_name);
+		}
 	}
 	g_signal_connect(G_OBJECT(self->fWidget), "delete-event", G_CALLBACK(g_confirm_close), self);
 	//g_signal_connect(G_OBJECT(self->fWidget), "delete-event", G_CALLBACK(g_hide_window), NULL);
@@ -533,10 +536,18 @@ char* REPL_get_output_buffer_text(struct REPL* self) {
 }
 void REPL_load(struct REPL* self) {
 	bool B_OK = false;
+	{
+		if(REPL_get_file_modified(self))
+			if(!REPL_confirm_close(self))
+				return(false);
+	}
 	//gtk_file_chooser_set_filename(dialog, );
 	if(gtk_dialog_run(GTK_DIALOG(self->fOpenDialog)) == GTK_RESPONSE_OK) {
 		char* file_name = gtk_file_chooser_get_filename(self->fOpenDialog);
 		if(file_name && REPL_load_contents_from(self, file_name)) {
+			char* absolute_name = REPL_get_absolute_path(name);
+			REPL_set_file_modified(self, false);
+			REPL_set_current_environment_name(self, absolute_name);
 			B_OK = true;
 		}
 		g_free(file_name);
