@@ -1,15 +1,14 @@
 #ifndef __COMPILERS_X86_BORLANDFASTCALLGEN_H
 #define __COMPILERS_X86_BORLANDFASTCALLGEN_H
 #include "Compilers/X86/PascalCallGen"
+#include "AST/AST"
+#include "AST/Symbol"
+#include "Compilers/CallGen"
 namespace Compilers {
 namespace X86 {
-class BorlandFastCallGen(PascalCallGen):
-	def add(self, source):
-		if self.argument_count < 3:
-			self.header.append("MOV", eax edx ecx depending on self.argument_count, source)
-			self.argument_count += 1
-		else:
-			return(PascalCallGen.add(self, source))
+struct BorlandFastCallGen : public PascalCallGen {
+	virtual void build(AST::Node* call_destination);
+};
 }; /* end namespace X86 */
 }; /* end namespace X86 */
 #endif /*ndef __COMPILERS_X86_BORLANDFASTCALLGEN_H*/

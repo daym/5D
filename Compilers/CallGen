@@ -1,6 +1,7 @@
 #ifndef __COMPILERS_CALLGEN_H
 #define __COMPILERS_CALLGEN_H
 #include <deque>
+#include <vector>
 #include "stdafx.h"
 #include "AST/AST"
 #include "AST/Symbol"
@@ -12,19 +13,18 @@ typedef enum {
 	CGI_MOV,
 } CallGenOpcode;
 class CallGen {
-private:
-	std::deque<uint32_t> header; /* FIXME type */
-	std::deque<uint32_t> footer;
-	CodeGen* code_gen;
 protected:
-	unsigned argument_count;
+	CodeGen* code_gen;
+	std::vector<AST::Node*> arguments;
 	unsigned stack_usage_afterwards;
 public:
 	CallGen(CodeGen* code_gen);
-	void clear(void);
-	/*virtual void emit_call(AST::Node* destination) = 0;*/
-	virtual void add(AST::Node* source);
-	/*virtual*/ void build(AST::Node* call_destination);
+	virtual void clear(void);
+	void add(AST::Node* source) {
+		arguments.push_back(source);
+		stack_usage_afterwards += code_gen->get_size_in_bits(source);
+	}
+	virtual void build(AST::Node* call_destination);
 };
 
 }; /* namespace Compilers */

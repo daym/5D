@@ -7,6 +7,7 @@ public:
 	virtual void gen_push(AST::Node* source);
 	virtual void gen_stack_throwaway_bits(int bit_count);
 	virtual void gen_call(AST::Node* destination);
+	virtual void gen_load_register(AST::Symbol* register_, AST::Node* value);
 };
 }; /* end namespace X86 */
 }; /* end namespace Compilers */

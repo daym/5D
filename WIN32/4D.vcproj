@@ -192,11 +192,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Compilers\X86\BorlandFastCallGen.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\Evaluators\Builtins.cc"
 				>
 			</File>
 			<File
 				RelativePath="..\Compilers\CallGen.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Compilers\X86\CDECLCallGen.cc"
 				>
 			</File>
 			<File
@@ -221,6 +229,10 @@
 			</File>
 			<File
 				RelativePath="..\Scanners\MathParser.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Compilers\X86\PascalCallGen.cc"
 				>
 			</File>
 			<File
@@ -254,6 +266,10 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\Compilers\X86\StdCallGen.cc"
+				>
 			</File>
 			<File
 				RelativePath="..\AST\Symbol.cc"
