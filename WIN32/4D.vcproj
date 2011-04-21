@@ -204,6 +204,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Compilers\X86\CodeGen.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\Evaluators\Evaluators.cc"
 				>
 			</File>
@@ -334,6 +338,10 @@
 		</File>
 		<File
 			RelativePath="..\Compilers\CodeGen"
+			>
+		</File>
+		<File
+			RelativePath="..\Compilers\X86\CodeGen"
 			>
 		</File>
 		<File

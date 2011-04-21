@@ -4,8 +4,8 @@
 namespace Compilers {
 
 namespace ARMEL {
-class ARMELCallGen(CallGen):
-	# TODO align stack to 16 bytes.
+class CallGen(CallGen):
+	# TODO align stack to 8 bytes.
 	def emit_call(self, destination):
 		emit bl destination
 
