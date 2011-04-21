@@ -7,4 +7,8 @@ AST::Node* ResultMarshaller::executeLowlevel(AST::Node* argument) /* argument is
 {
 	return(new ArgumentMarshaller(dynamic_cast<AST::Symbol*>(argument)));
 }
+std::string ResultMarshaller::str(void) const {
+	return("<ResultMarshaller>");
+}
+
 };

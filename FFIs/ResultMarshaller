@@ -3,6 +3,7 @@
 #include "Evaluators/FFI"
 namespace FFIs {
 class ResultMarshaller : public Evaluators::SymArgCacheFFI {
+	virtual std::string str(void) const;
 	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the result type signature. Result is a ArgumentMarshaller */
 };
 };

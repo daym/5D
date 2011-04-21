@@ -15,19 +15,13 @@ struct Symbol;
 
 namespace FFIs {
 
-struct C : Evaluators::FFI {
-	C(AST::Symbol* fn, AST::Symbol* result_signature, AST::Symbol* signature, AST::Symbol* library, bool B_pure = false);
-	virtual AST::Node* executeLowlevel(AST::Node* argument);
-private:
-	struct CP* p;
-};
-
 struct LibraryLoader : Evaluators::FFI {
 private:
 	struct LibraryLoaderP* p;
 public:
 	LibraryLoader(void);
 	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the library to be loaded. Result is a CLibrary */
+	virtual std::string str(void) const;
 };
 struct CLibrary : Evaluators::FFI { /* routine loader */
 private:
@@ -35,9 +29,11 @@ private:
 public:
 	CLibrary(const char* name);
 	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the name (symbol). Result is a CProcedure */
+	virtual std::string str(void) const;
 };
 struct CProcedure : AST::Box {
 	CProcedure(void* native);
+	virtual std::string str(void) const;
 };
 
 };

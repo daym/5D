@@ -436,6 +436,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	/* just to make sure */
 	REPL_add_to_environment_simple(self, AST::intern("loadFromLibrary"), &libraryLoader);
 	REPL_add_to_environment_simple(self, AST::intern("quote"), &quoter);
+	REPL_add_to_environment_simple(self, AST::intern("nil"), NULL);
 }
 void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value) {
 	REPL_add_to_environment(self, cons(AST::intern("define"), cons(name, cons(value, NULL))));
@@ -459,7 +460,7 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 	//std::cout << resultString << " X" << std::endl;
 	{
 		char* alt_text;
-		alt_text = strdup(node->str().c_str());
+		alt_text = strdup(node ? node->str().c_str() : "");
 		if(alt_text && strchr(alt_text, '"')) /* contains string */
 			nodeText = NULL;
 		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? strdup(nodeText) : NULL, alt_text, destination);

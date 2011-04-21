@@ -26,6 +26,9 @@ struct LibraryLoaderP {
 LibraryLoader::LibraryLoader(void) {
 	p = new LibraryLoaderP();
 }
+std::string LibraryLoader::str(void) const {
+	return("loadFromLibrary");
+}
 AST::Node* LibraryLoader::executeLowlevel(AST::Node* libraryName) {
 	AST::Symbol* libraryNameSymbol = dynamic_cast<AST::Symbol*>(libraryName);
 	if(libraryNameSymbol == NULL)
@@ -40,10 +43,12 @@ AST::Node* LibraryLoader::executeLowlevel(AST::Node* libraryName) {
 }
 struct CLibraryP {
 	void* library;
+	std::string name;
 	std::map<AST::Symbol*, CProcedure*> knownProcedures;
 };
 CLibrary::CLibrary(const char* name) {
 	p = new CLibraryP();
+	p->name = name;
 	p->library = dlopen(name, RTLD_LAZY);
 }
 AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
@@ -59,9 +64,15 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 		return(p->knownProcedures[nameSymbol]);
 	}
 }
+std::string CLibrary::str(void) const {
+	return(std::string("(loadFromLibrary '") + p->name + ")"); // FIXME nicer
+}
 CProcedure::CProcedure(void* native) : 
 	AST::Box(native)
 {
+}
+std::string CProcedure::str(void) const {
+	return("<CProcedure>"); // FIXME nicer
 }
 
 };

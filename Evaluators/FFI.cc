@@ -48,6 +48,9 @@ AST::Node* FFIClosure::execute(AST::Node* state) {
 	else
 		return(NULL);
 }
+std::string FFIClosure::str(void) const {
+	return(std::string("(FFIClosure ") + (argument ? argument->str() : "nil") + ")"); // FIXME nicer
+}
 AST::Node* SymArgCacheFFI::executeLowlevel(AST::Node* argument) {
 	/* TODO for non-pure, this doesn't make a whole lot of sense. */
 /*	AST::Symbol* argumentSymbol = dynamic_cast<AST::Symbol*>(argument);

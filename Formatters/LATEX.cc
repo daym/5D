@@ -94,7 +94,7 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 	} else if(node)
 		output << "\\mathrm{" << node->str() << "}";
 	else
-		output << "?";
+		output << "()";
 }
 void to_LATEX(AST::Node* node, std::ostream& output) {
 	int operator_precedence_limit = 1000;

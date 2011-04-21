@@ -40,7 +40,7 @@ std::string Cons::str(void) const {
 }
 Cons* cons(Node* head, Cons* tail) {
 	Cons* result = new Cons;
-	assert(head);
+	/*assert(head); unfortunately, now that we have NIL, that's allowed. */
 	result->head = head;
 	result->tail = tail;
 	return(result);

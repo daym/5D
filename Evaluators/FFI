@@ -38,6 +38,7 @@ struct FFIClosure : Operation {
 		this->B_has_result = 0;
 	}
 	virtual AST::Node* execute(AST::Node* state);
+	virtual std::string str(void) const;
 };
 struct SymArgCacheFFI : FFI {
 private:
