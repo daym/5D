@@ -204,12 +204,19 @@ AST::Node* reduce(AST::Node* term) {
 			AST::Node* body;
 			body = get_abstraction_body(fn);
 			body = shift(argument, 1, body);
-			printf("AA %s\n", body->str().c_str());
 			return(reduce(body));
 		} else {
 			// TODO better error message.
 			AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(fn);
-			throw EvaluationException(std::string(std::string("unknown operation \"") + fnName->name + "\"").c_str());
+			if(fnName)
+				throw EvaluationException(std::string(std::string("unknown operation \"") + fnName->name + "\"").c_str());
+			else {
+				Evaluators::Operation* fnOperation = dynamic_cast<Evaluators::Operation*>(fn);
+				if(fnOperation) {
+					return(fnOperation->execute(argument));
+				} else
+					throw EvaluationException("evaluation error");
+			}
 			return(term);
 		}
 	} else if(abstraction_P(term)) {
