@@ -63,6 +63,7 @@ struct REPL {
 	bool fBSearchCaseSensitive;
 };
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition);
+void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value);
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 void REPL_set_file_modified(struct REPL* self, bool value);
 bool REPL_save_content_to(struct REPL* self, FILE* output_file);
@@ -295,6 +296,8 @@ static void track_changes(struct REPL* self, GtkTextBuffer* buffer) {
 	if(!self->fFileModified)
 		REPL_set_file_modified(self, true);
 }
+static FFIs::LibraryLoader libraryLoader;
+static Evaluators::Quoter quoter;
 void REPL_init(struct REPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
 	GError* error = NULL;
@@ -325,7 +328,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	GtkTreeViewColumn* fNameColumn;
 	fNameColumn = gtk_tree_view_column_new_with_attributes("Name", gtk_cell_renderer_text_new(), "text", 0, NULL);
 	gtk_tree_view_append_column(self->fEnvironmentView, fNameColumn);
-	self->fEnvironmentStore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+	self->fEnvironmentStore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 	gtk_tree_view_set_model(self->fEnvironmentView, gtk_tree_model_sort_new_with_model(GTK_TREE_MODEL(self->fEnvironmentStore)));
 	gtk_widget_show(GTK_WIDGET(self->fEnvironmentView));
 	self->fEnvironmentScroller = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
@@ -430,6 +433,12 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 		gtk_action_set_sensitive(get_action(paste), gtk_clipboard_wait_is_text_available(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)));
 		g_signal_connect(G_OBJECT(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)), "owner-change", G_CALLBACK(handle_clipboard_change), self);
 	}
+	/* just to make sure */
+	REPL_add_to_environment_simple(self, AST::intern("loadFromLibrary"), &libraryLoader);
+	REPL_add_to_environment_simple(self, AST::intern("quote"), &quoter);
+}
+void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value) {
+	REPL_add_to_environment(self, cons(AST::intern("define"), cons(name, cons(value, NULL))));
 }
 GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));
@@ -456,8 +465,21 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? strdup(nodeText) : NULL, alt_text, destination);
 	}
 }
-static FFIs::LibraryLoader libraryLoader;
-static Evaluators::Quoter quoter;
+static AST::Node* follow_tail(AST::Cons* list) {
+	if(!list)
+		return(NULL);
+	while(list->tail)
+		list = list->tail;
+	return(list->head);
+}
+static AST::Node* close_environment(AST::Node* node, struct AST::Cons* entries) {
+	if(!entries)
+		return(node);
+	else {
+		AST::Cons* entry = dynamic_cast<AST::Cons*>(entries->head);
+		return(Evaluators::close(dynamic_cast<AST::Symbol*>(entry->head), follow_tail(dynamic_cast<AST::Cons*>(entry->tail->head)), close_environment(node, entries->tail)));
+	}
+}
 void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destination) {
 	Scanners::MathParser parser;
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
@@ -465,9 +487,7 @@ void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destinati
 		try {
 			try {
 				AST::Node* result = parser.parse(input_file);
-				result = Evaluators::close(AST::intern("loadFromLibrary"), &libraryLoader, 
-				         Evaluators::close(AST::intern("quote"), &quoter, 
-				         result));
+				result = close_environment(result, REPL_get_environment(self));
 				result = Evaluators::annotate(result);
 				result = Evaluators::reduce(result);
 				/*std::string v = result ? result->str() : "OK";
@@ -498,7 +518,7 @@ void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destinati
 AST::Cons* REPL_box_tree_nodes(struct REPL* self, GtkTreeIter* iter) {
 	using namespace AST;
 	char* name;
-	char* value;
+	AST::Node* value; /* FIXME test */
 	Scanners::MathParser parser;
 	FILE* input_file;
 	AST::Cons* tail;
@@ -507,10 +527,11 @@ AST::Cons* REPL_box_tree_nodes(struct REPL* self, GtkTreeIter* iter) {
 		tail = NULL;
 	else
 		tail = REPL_box_tree_nodes(self, iter);
-	input_file = fmemopen(value, strlen(value), "r");
+	/*input_file = fmemopen(value, strlen(value), "r");
 	if(!input_file)
 		abort();
-	return(cons(cons(AST::intern(name), cons(parser.parse_S_Expression(input_file), NULL)), tail));
+	return(cons(cons(AST::intern(name), cons(parser.parse_S_Expression(input_file), NULL)), tail));*/
+	return(cons(cons(AST::intern(name), cons(value, NULL)), tail));
 	//g_free(name);
 	//g_free(value);
 }
@@ -628,13 +649,14 @@ void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 		return;
 	std::string procedureNameString = procedureName->str();
 	//(apply (apply define x 2))
-	std::string body = definitionCons->tail->str();
+	AST::Node* value = definitionCons->tail;
+	//std::string body = definitionCons->tail->str();
 	gpointer hvalue;
 	if(!g_hash_table_lookup_extended(self->fEnvironmentKeys, procedureName, NULL, &hvalue))
 		gtk_list_store_append(self->fEnvironmentStore, &iter);
 	else
 		iter = * (GtkTreeIter*) hvalue;
-	gtk_list_store_set(self->fEnvironmentStore, &iter, 0, procedureNameString.c_str(), 1, body.c_str(), -1);
+	gtk_list_store_set(self->fEnvironmentStore, &iter, 0, procedureNameString.c_str(), 1, value, -1);
 	g_hash_table_replace(self->fEnvironmentKeys, procedureName, gtk_tree_iter_copy(&iter));
 	REPL_set_file_modified(self, true);
 }
