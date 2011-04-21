@@ -25,6 +25,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/GTKLATEXGenerator"
 #include "Evaluators/FFI"
 #include "Evaluators/Evaluators"
+#include "Evaluators/Builtins"
+#include "FFIs/POSIX"
 
 #define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(REPL_handle_##name), self)
@@ -454,6 +456,8 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? strdup(nodeText) : NULL, alt_text, destination);
 	}
 }
+static FFIs::LibraryLoader libraryLoader;
+static Evaluators::Quoter quoter;
 void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destination) {
 	Scanners::MathParser parser;
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
@@ -461,7 +465,11 @@ void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destinati
 		try {
 			try {
 				AST::Node* result = parser.parse(input_file);
+				result = Evaluators::close(AST::intern("loadFromLibrary"), &libraryLoader, 
+				         Evaluators::close(AST::intern("quote"), &quoter, 
+				         result));
 				result = Evaluators::annotate(result);
+				result = Evaluators::reduce(result);
 				/*std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
 				gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
@@ -475,6 +483,10 @@ void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destinati
 				throw;
 			}
 		} catch(Scanners::ParseException e) {
+			std::string v = e.what() ? e.what() : "error";
+			v = " => " + v + "\n";
+			gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
+		} catch(Evaluators::EvaluationException e) {
 			std::string v = e.what() ? e.what() : "error";
 			v = " => " + v + "\n";
 			gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);

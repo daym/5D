@@ -22,6 +22,9 @@ std::string Atom::str(void) const {
 std::string String::str(void) const {
 	return(std::string("\"") + text + "\""); // FIXME escape.
 }
+std::string Box::str(void) const {
+	return("box"); // TODO nicer?
+}
 std::string Cons::str(void) const {
 	std::stringstream result;
 	Cons* tail = this->tail;

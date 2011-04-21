@@ -48,5 +48,18 @@ AST::Node* FFIClosure::execute(AST::Node* state) {
 	else
 		return(NULL);
 }
+AST::Node* SymArgCacheFFI::executeLowlevel(AST::Node* argument) {
+	/* TODO for non-pure, this doesn't make a whole lot of sense. */
+/*	AST::Symbol* argumentSymbol = dynamic_cast<AST::Symbol*>(argument);
+	if(argumentSymbol == NULL)
+		return(NULL);
+	std::map<AST::Symbol*, AST::Node*>::const_iterator iter = knownResults.find(argumentSymbol);
+	if(iter != knownResults.end())
+		return(iter->second);
+	knownResults[argumentSymbol] = executeUncached(argumentSymbol);
+	return(knownResults[argumentSymbol]);
+	*/
+	return(NULL); /* TODO */
+}
 
-};
+}; /* end namspace */

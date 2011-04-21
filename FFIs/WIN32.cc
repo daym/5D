@@ -9,29 +9,20 @@ You should have received a copy of the GNU General Public License along with thi
 #include "stdafx.h"
 #include "Evaluators/FFI"
 #include "FFIs/WIN32"
-
+#include "FFIs/Trampoline"
 namespace FFIs {
-
 using namespace Evaluators;
-
-typedef enum {
-	BT_NONE,
-	BT_OBJECT,
-	BT_INT,
-	BT_STRING,
-} NativeBaseType;
-
 struct CP {
 	AST::Symbol* fn_name;
 	AST::Symbol* library_name;
 	AST::Symbol* signature;
 	HMODULE library;
 	FARPROC value;
+	NativeBaseType result_type;
 	NativeBaseType argument_types[16];
 	/* TODO int minimum_argument_count; */
 };
-
-C::C(AST::Symbol* fn, AST::Symbol* signature, AST::Symbol* library, bool B_pure) {
+C::C(AST::Symbol* fn, AST::Symbol* result_signature, AST::Symbol* signature, AST::Symbol* library, bool B_pure) {
 	this->p = new CP();
 	this->B_pure = B_pure;
 	p->fn_name = fn;
@@ -40,10 +31,10 @@ C::C(AST::Symbol* fn, AST::Symbol* signature, AST::Symbol* library, bool B_pure)
 	p->library = LoadLibrary(library_W.c_str()); /* TODO cache */
 	p->value = GetProcAddress(p->library, fn->name);
 	p->signature = signature;
+	p->result_type = BT_NONE; /* TODO */
 	for(int i = 0; i < 16; ++i)
 		p->argument_types[i] = BT_NONE;
 }
-
 /* TODO Make this FPU-safe, X8664-safe. Long term, use the Compiler (see "Compilers").  */
 static void* use_main_trampoline(void* fn, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6, void* a7, void* a8, void* a9, void* a10, void* a11, void *a12, void* a13, void* a14, void* a15, void* a16) {
 	__asm {
@@ -51,14 +42,6 @@ static void* use_main_trampoline(void* fn, void* a1, void* a2, void* a3, void* a
 		call eax
 		push eax
 	}
-}
-/* EEW. */
-static void* get_native(NativeBaseType t, AST::Node* argument) {
-	return(t == BT_NONE ? NULL : 
-		   t == BT_OBJECT ? (void*) get_native_pointer(argument) : 
-		   t == BT_INT ? (void*) get_native_integer(argument) :
-		   t == BT_STRING ? (void*) get_native_string(argument) :
-		   NULL);
 }
 AST::Node* C::executeLowlevel(AST::Node* argument) {
 	void* result;

@@ -14,25 +14,26 @@ namespace AST {
 struct Node {
 	virtual std::string str(void) const;
 };
-
-
 struct Cons : Node {
 	Node* head;
 	Cons* tail;
 	virtual std::string str(void) const;
 };
-
 std::string str(const Cons& a);
-
 struct Atom : Node {
 	const char* text;
 	virtual std::string str(void) const;
 };
-
 struct String : Atom {
 	virtual std::string str(void) const;
 };
-
+struct Box : Atom {
+	void* native;
+	Box(void* native) {
+		this->native = native;
+	}
+	virtual std::string str(void) const;
+};
 std::string str(const Atom& a);
 
 Cons* cons(Node* head, Cons* tail);

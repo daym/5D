@@ -6,6 +6,13 @@ struct Quoter;
 
 AST::Node* intern(int value);
 AST::Node* intern(bool value);
+struct Quoter : Operation {
+	virtual bool eager_P(void) const;
+	virtual AST::Node* execute(AST::Node* argument);
+};
+struct ProcedureP : Operation {
+	virtual AST::Node* execute(AST::Node* argument);
+};
 
 };
 

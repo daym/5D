@@ -1,16 +1,10 @@
 #include "AST/AST"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
+#include "FFIs/POSIX"
 
 namespace Evaluators {
 
-struct Quoter : Operation {
-	virtual bool eager_P(void) const;
-	virtual AST::Node* execute(AST::Node* argument);
-};
-struct ProcedureP : Operation {
-	virtual AST::Node* execute(AST::Node* argument);
-};
 
 bool Quoter::eager_P(void) const {
 	return(false);

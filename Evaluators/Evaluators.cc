@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <assert.h>
 #include <string.h>
 #include <vector>
@@ -14,7 +15,6 @@ EvaluationException::EvaluationException(const char* s) throw() {
 const char* EvaluationException::what() const throw() {
 	return message; //message.c_str();
 };
-
 
 static void get_free_variables_impl(AST::Node* root, std::set<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& freeNames) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
@@ -189,8 +189,8 @@ static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
 		return(term);
 }
 static bool wants_its_argument_reduced_P(AST::Node* fn) {
-	// TODO don't reduce for quote.
-	return(true);
+	Operation* fnOperation = dynamic_cast<Operation*>(fn);
+	return(fnOperation ? fnOperation->eager_P() : true);
 }
 AST::Node* reduce(AST::Node* term) {
 	if(application_P(term)) {
@@ -203,10 +203,13 @@ AST::Node* reduce(AST::Node* term) {
 		if(abstraction_P(fn)) {
 			AST::Node* body;
 			body = get_abstraction_body(fn);
-			return(shift(argument, 1, body));
+			body = shift(argument, 1, body);
+			printf("AA %s\n", body->str().c_str());
+			return(reduce(body));
 		} else {
 			// TODO better error message.
-			throw EvaluationException("that wasn't an operation.");
+			AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(fn);
+			throw EvaluationException(std::string(std::string("unknown operation \"") + fnName->name + "\"").c_str());
 			return(term);
 		}
 	} else if(abstraction_P(term)) {
@@ -218,6 +221,9 @@ AST::Node* reduce(AST::Node* term) {
 // Operation
 bool Operation::eager_P(void) const {
 	return(true);
+}
+AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body) {
+	return(cons(cons(AST::intern("\\"), cons(parameter, cons(body, NULL))), cons(argument, NULL)));
 }
 
 }; // end namespace Evaluators.

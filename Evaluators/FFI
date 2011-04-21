@@ -8,6 +8,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <stdlib.h>
+#include <map>
 #include "Evaluators/Evaluators"
 
 namespace Evaluators {
@@ -37,6 +38,12 @@ struct FFIClosure : Operation {
 		this->B_has_result = 0;
 	}
 	virtual AST::Node* execute(AST::Node* state);
+};
+struct SymArgCacheFFI : FFI {
+private:
+	std::map<AST::Symbol*, AST::Node*> knownResults;
+public:
+	virtual AST::Node* executeLowlevel(AST::Node* argument);
 };
 
 };

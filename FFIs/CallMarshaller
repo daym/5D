@@ -1,0 +1,14 @@
+#ifndef __4D_FFIS_CALLMARSHALLER_H
+#define __4D_FFIS_CALLMARSHALLER_H
+#include "Evaluators/FFI"
+namespace FFIs {
+struct CallMarshaller : Evaluators::FFI {
+private:
+	AST::Symbol* resultSignature;
+	AST::Symbol* parameterSignature;
+public:
+	CallMarshaller(AST::Symbol* resultSignature, AST::Symbol* parameterSignature);
+	virtual AST::Node* executeLowlevel(AST::Node* argument);
+};
+};
+#endif /* ndef __4D_FFIS_CALLMARSHALLER_H */

@@ -1,0 +1,9 @@
+#ifndef __4D_FFIS_RESULTMARSHALLER_H
+#define __4F_FFIS_RESULTMARSHALLER_H
+#include "Evaluators/FFI"
+namespace FFIs {
+class ResultMarshaller : public Evaluators::SymArgCacheFFI {
+	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the result type signature. Result is a ArgumentMarshaller */
+};
+};
+#endif /*ndef __4D_FFIS_RESULTMARSHALLER_H*/
