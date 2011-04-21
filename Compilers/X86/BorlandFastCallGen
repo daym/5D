@@ -4,9 +4,11 @@
 #include "AST/AST"
 #include "AST/Symbol"
 #include "Compilers/CallGen"
+#include "Compilers/CodeGen"
 namespace Compilers {
 namespace X86 {
 struct BorlandFastCallGen : public PascalCallGen {
+	BorlandFastCallGen(CodeGen* code_gen);
 	virtual void build(AST::Node* call_destination);
 };
 }; /* end namespace X86 */

@@ -1,9 +1,11 @@
 #ifndef __COMPILERS_X86_CDECLCALLGEN_H
 #define __COMPILERS_X86_CDECLCALLGEN_H
+#include "Compilers/CodeGen"
 #include "Compilers/X86/StdCallGen"
 namespace Compilers {
 namespace X86 {
 struct CDECLCallGen : StdCallGen {
+	CDECLCallGen(CodeGen* code_gen);
 	virtual void build(AST::Node* call_destination);
 };
 }; /* end namespace X86 */

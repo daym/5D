@@ -2,7 +2,10 @@
 
 namespace Compilers {
 namespace X86 {
-
+BorlandFastCallGen::BorlandFastCallGen(CodeGen* code_gen) :
+	PascalCallGen(code_gen)
+{
+}
 void BorlandFastCallGen::build(AST::Node* call_destination) {
 	std::vector<AST::Node*>::const_iterator end_iter = arguments.end();
 	int index = 0;

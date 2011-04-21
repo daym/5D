@@ -4,6 +4,10 @@
 namespace Compilers {
 namespace X86 {
 
+StdCallGen::StdCallGen(CodeGen* code_gen) :
+	Compilers::CallGen(code_gen)
+{
+}
 void StdCallGen::build(AST::Node* call_destination) {
 	std::vector<AST::Node*>::const_reverse_iterator end_iter = arguments.rend();
 	for(std::vector<AST::Node*>::const_reverse_iterator iter = arguments.rbegin(); iter != end_iter; ++iter)

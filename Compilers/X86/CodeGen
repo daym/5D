@@ -1,9 +1,11 @@
 #ifndef __COMPILERS_X86_CODEGEN_H
 #define __COMPILERS_X86_CODEGEN_H
+#include "Compilers/CodeGen"
 namespace Compilers {
 namespace X86 {
-class CodeGen : public Compilers::CodeGen {
+struct CodeGen : Compilers::CodeGen {
 public:
+	virtual unsigned get_size_in_bits(AST::Node* source);
 	virtual void gen_push(AST::Node* source);
 	virtual void gen_stack_throwaway_bits(int bit_count);
 	virtual void gen_call(AST::Node* destination);
