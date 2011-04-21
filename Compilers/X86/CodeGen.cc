@@ -10,7 +10,7 @@ void CodeGen::gen_push(AST::Node* source) {
         AST::Symbol* sourceSymbol = dynamic_cast<AST::Symbol*>(source);
 		if(sourceSystem) {
 			if(sourceSystem == AST::intern("%eax")) {
-				0x50+r
+				//0x50+r
 			}
 		}
 }
@@ -19,7 +19,7 @@ void CodeGen::gen_pop(AST::Node* source) {
         AST::Symbol* sourceSymbol = dynamic_cast<AST::Symbol*>(source);
 		if(sourceSystem) {
 			if(sourceSystem == AST::intern("%eax")) {
-				0x58+r
+				//0x58+r
 			}
 		}
 }
