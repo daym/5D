@@ -10,6 +10,9 @@ public:
 	virtual void gen_stack_throwaway_bits(int bit_count) = 0;
 	virtual void gen_call(AST::Node* destination) = 0;
 	virtual void gen_load_register(AST::Symbol* register_, AST::Node* value) = 0;
+	virtual void gen_enter_frame(void) = 0;
+	virtual void gen_leave_frame(void) = 0;
+	virtual void gen_return(int bit_count) = 0;
 };
 }; /* end namespace Compilers */
 #endif /* __COMPILERS_CODEGEN_H */
