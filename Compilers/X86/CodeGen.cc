@@ -6,8 +6,22 @@ unsigned CodeGen::get_size_in_bits(AST::Node* source) {
         return(32);
 }
 void CodeGen::gen_push(AST::Node* source) {
-        /* FIXME push source */
-        //FF, 89, 8A, 8B, 8C, 8E, ...
+        /* if source is a symbol, we assume it means a register. */
+        AST::Symbol* sourceSymbol = dynamic_cast<AST::Symbol*>(source);
+		if(sourceSystem) {
+			if(sourceSystem == AST::intern("%eax")) {
+				0x50+r
+			}
+		}
+}
+void CodeGen::gen_pop(AST::Node* source) {
+        /* if source is a symbol, we assume it means a register. */
+        AST::Symbol* sourceSymbol = dynamic_cast<AST::Symbol*>(source);
+		if(sourceSystem) {
+			if(sourceSystem == AST::intern("%eax")) {
+				0x58+r
+			}
+		}
 }
 void CodeGen::gen_stack_throwaway_bits(int bit_count) {
         /* FIXME add bit_count / 8, %esp */

@@ -7,6 +7,7 @@ class CodeGen {
 public:
 	virtual unsigned get_size_in_bits(AST::Node* source) = 0;
 	virtual void gen_push(AST::Node* source) = 0;
+	virtual void gen_pop(AST::Node* source) = 0;
 	virtual void gen_stack_throwaway_bits(int bit_count) = 0;
 	virtual void gen_call(AST::Node* destination) = 0;
 	virtual void gen_load_register(AST::Symbol* register_, AST::Node* value) = 0;
