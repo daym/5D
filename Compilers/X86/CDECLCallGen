@@ -1,0 +1,12 @@
+#ifndef __COMPILERS_X86_CDECLCALLGEN_H
+#define __COMPILERS_X86_CDECLCALLGEN_H
+namespace Compilers {
+namespace X86 {
+class CDECLCallGen(StdcallCallGen):
+	def add(self, source):
+		result = StdcallCallGen.add(self, source)
+		self.stack_usage_afterwards += size_in_bites(source)
+		return(result)
+}; /* end namespace X86 */
+}; /* end namespace X86 */
+#endif /* ndef __COMPILERS_X86_CDECLCALLGEN_H */

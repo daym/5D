@@ -11,7 +11,7 @@ If the type of value returned is too large to fit in r0 to r3, or whose size can
 
 Subroutines must preserve the contents of r4 to r11 and the stack pointer. (Perhaps by saving them to the stack in the function prolog, then using them as scratch space, then restoring them from the stack in the function epilog). In particular, subroutines that call other subroutines *must* save the return value in the link register r14 to the stack before calling those other subroutines. However, such subroutines do not need to return that value to r14 -- they merely need to load that value into r15, the program counter, to return.
 
-The ARM stack is full-descending.[1]
+The ARM stack is full-descending. (pointing to the item that was last filled, the item that is now full).
 
 This calling convention causes a "typical" ARM subroutine to
 
@@ -29,11 +29,5 @@ Note
 public interface constraint:
 SP mod 8 = 0. The stack must be double-word aligned.
 
-???
-	align stack to 16 bytes.
-	push arguments right to left.
-	EAX, EDX, ECX free to use within called function.
-	result is in EAX or ST0.
-	caller cleans up.
-
-Both the ARM and Thumb instruction sets contain a primitive subroutine call instruction, BL, which performs a branch-with-link operation. The effect of executing BL is to transfer the sequentially next value of the program counter—the return address—into the link register (LR) and the destination address into the program counter (PC). Bit 0 of the link register will be set to 1 if the BL instruction was executed from Thumb state, and to 0 if executed from ARM state. The result is to transfer control to the destination address, passing the return address in LR as an additional parameter to the called subroutine.
+Both the ARM and Thumb instruction sets contain a primitive subroutine call instruction, BL, which performs a branch-with-link operation. 
+The effect of executing BL is to transfer the sequentially next value of the program counter—the return address—into the link register (LR) and the destination address into the program counter (PC). Bit 0 of the link register will be set to 1 if the BL instruction was executed from Thumb state, and to 0 if executed from ARM state. The result is to transfer control to the destination address, passing the return address in LR as an additional parameter to the called subroutine.

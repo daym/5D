@@ -1,0 +1,14 @@
+#ifndef __COMPILERS_CODEGEN_H
+#define __COMPILERS_CODEGEN_H
+#include "AST/AST"
+#include "AST/Symbol"
+namespace Compilers {
+class CodeGen {
+public:
+	unsigned get_size_in_bits(AST::Node* source);
+	void gen_push(AST::Node* source);
+	void gen_stack_trowaway_bits(int bit_count);
+	void gen_call(AST::Node* destination);
+};
+}; /* end namespace Compilers */
+#endif /* __COMPILERS_CODEGEN_H */

@@ -1,0 +1,12 @@
+#ifndef __COMPILERS_X86_PASCALCALLGEN_H
+#define __COMPILERS_X86_PASCALCALLGEN_H
+namespace Compilers {
+namespace X86 {
+class PascalCallGen(CallGen):
+	def add(self, source):
+		self.argument_count += 1
+		self.header.prepend(("PUSH", source))
+		# stack_usage_afterwards unchanged since it is been cleaned up by the callee anyway.
+}; /* end namespace X86 */
+}; /* end namespace X86 */
+#endif /* ndef __COMPILERS_X86_PASCALCALLGEN_H */

@@ -196,6 +196,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Compilers\CallGen.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Compilers\CodeGen.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\Evaluators\Evaluators.cc"
 				>
 			</File>
@@ -309,7 +317,23 @@
 			>
 		</File>
 		<File
+			RelativePath="..\Compilers\X86\BorlandFastCallGen"
+			>
+		</File>
+		<File
 			RelativePath="..\Evaluators\Builtins"
+			>
+		</File>
+		<File
+			RelativePath="..\Compilers\CallGen"
+			>
+		</File>
+		<File
+			RelativePath="..\Compilers\X86\CDECLCallGen"
+			>
+		</File>
+		<File
+			RelativePath="..\Compilers\CodeGen"
 			>
 		</File>
 		<File
@@ -333,6 +357,14 @@
 			>
 		</File>
 		<File
+			RelativePath="..\Compilers\X86\MicrosoftThisCallGen"
+			>
+		</File>
+		<File
+			RelativePath="..\Compilers\X86\PascalCallGen"
+			>
+		</File>
+		<File
 			RelativePath=".\ReadMe.txt"
 			>
 		</File>
@@ -346,6 +378,10 @@
 		</File>
 		<File
 			RelativePath="..\Formatters\SExpression"
+			>
+		</File>
+		<File
+			RelativePath="..\Compilers\X86\StdCallGen"
 			>
 		</File>
 		<File

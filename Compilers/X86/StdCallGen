@@ -1,0 +1,13 @@
+#ifndef __COMPILERS_X86_STDCALLGEN_H
+#define __COMPILERS_X86_STDCALLGEN_H
+namespace Compilers {
+namespace X86 {
+class StdCallGen(CallGen):
+	# callee(!) cleans up.
+	def add(self, source):
+		self.argument_count += 1
+		self.header.prepend(("PUSH", source))
+		#self.stack_usage_afterwards += size_in_bites(source)
+}; /* end namespace X86 */
+}; /* end namespace X86 */
+#endif /* ndef __COMPILERS_X86_STDCALLGEN_H */

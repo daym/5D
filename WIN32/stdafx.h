@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <string>
 
+typedef DWORD uint32_t; /* FIXME */
+
 // TODO: reference additional headers your program requires here
 FILE* fmemopen(void* contents, size_t contents_length, const char* mode);
 char* ToUTF8(const std::wstring& source);
