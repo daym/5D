@@ -18,7 +18,7 @@ void CallGen::add(AST::Node* source) {
 void CallGen::build(AST::Node* call_destination) {
 		emit header;
 		code_gen->gen_call(call_destination);
-		code_gen->gen_stack_trowaway_bits(self.stack_usage_afterwards);
+		code_gen->gen_stack_trowaway_bits(stack_usage_afterwards);
 }
 
 }; /* end namespace Compilers */

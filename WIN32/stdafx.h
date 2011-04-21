@@ -19,7 +19,9 @@
 #include <stdio.h>
 #include <string>
 
+#ifdef _MSC_VER
 typedef DWORD uint32_t; /* FIXME */
+#endif
 
 // TODO: reference additional headers your program requires here
 FILE* fmemopen(void* contents, size_t contents_length, const char* mode);
