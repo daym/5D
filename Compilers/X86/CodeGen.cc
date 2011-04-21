@@ -3,7 +3,7 @@ namespace Compilers {
 namespace X86 {
 unsigned CodeGen::get_size_in_bits(AST::Node* source) {
         /* FIXME */
-        return(42);
+        return(32);
 }
 void CodeGen::gen_push(AST::Node* source) {
         /* FIXME push source */
