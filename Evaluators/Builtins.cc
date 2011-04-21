@@ -17,11 +17,11 @@ AST::Node* ProcedureP::execute(AST::Node* argument) {
 	else
 		return(NULL);
 }
-AST::Node* intern(int value) {
+AST::Node* internNative(int value) {
 	/* FIXME */
 	return(NULL);
 }
-AST::Node* intern(bool value) {
+AST::Node* internNative(bool value) {
 	/* FIXME */
 	return(NULL);
 }
@@ -37,7 +37,7 @@ AST::Node* Conser::execute(AST::Node* argument) {
 }
 AST::Node* ConsP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<AST::Cons*>(argument) != NULL;
-	return(intern(result));
+	return(internNative(result));
 }
 AST::Node* HeadGetter::execute(AST::Node* argument) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
