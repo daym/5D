@@ -298,6 +298,10 @@ static void track_changes(struct REPL* self, GtkTextBuffer* buffer) {
 }
 static FFIs::LibraryLoader libraryLoader;
 static Evaluators::Quoter quoter;
+static Evaluators::Conser conser;
+static Evaluators::HeadGetter headGetter;
+static Evaluators::TailGetter tailGetter;
+static Evaluators::ConsP consP;
 void REPL_init(struct REPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
 	GError* error = NULL;
@@ -437,6 +441,10 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	REPL_add_to_environment_simple(self, AST::intern("loadFromLibrary"), &libraryLoader);
 	REPL_add_to_environment_simple(self, AST::intern("quote"), &quoter);
 	REPL_add_to_environment_simple(self, AST::intern("nil"), NULL);
+	REPL_add_to_environment_simple(self, AST::intern("cons"), &conser);
+	REPL_add_to_environment_simple(self, AST::intern("cons?"), &consP);
+	REPL_add_to_environment_simple(self, AST::intern("head"), &headGetter);
+	REPL_add_to_environment_simple(self, AST::intern("tail"), &tailGetter);
 }
 void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value) {
 	REPL_add_to_environment(self, cons(AST::intern("define"), cons(name, cons(value, NULL))));

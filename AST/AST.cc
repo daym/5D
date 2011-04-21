@@ -29,11 +29,9 @@ std::string Cons::str(void) const {
 	std::stringstream result;
 	Cons* tail = this->tail;
 	result << '(';
-	assert(head);
-	result << head->str();
+	result << (head ? head->str() : "()");
 	for(; tail; tail = tail->tail) {
-		assert(tail->head);
-		result << ' ' << tail->head->str();
+		result << ' ' << (tail->head ? tail->head->str() : "()");
 	}
 	result << ')';
 	return(result.str());

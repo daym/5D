@@ -28,7 +28,7 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);
 	if(node == NULL)
-		print_text(output, position, "nil");
+		print_text(output, position, "()");
 	else if(symbolNode)
 		print_text(output, position, symbolNode->name);
 	else if(consNode) {

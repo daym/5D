@@ -5,7 +5,6 @@
 
 namespace Evaluators {
 
-
 bool Quoter::eager_P(void) const {
 	return(false);
 }
@@ -25,6 +24,34 @@ AST::Node* intern(int value) {
 AST::Node* intern(bool value) {
 	/* FIXME */
 	return(NULL);
+}
+Conser2::Conser2(AST::Node* head) {
+	this->head = head;
+}
+AST::Node* Conser2::execute(AST::Node* argument) {
+	/* FIXME error message if it doesn't work. */
+	return(cons(head, dynamic_cast<AST::Cons*>(argument)));
+}
+AST::Node* Conser::execute(AST::Node* argument) {
+	return(new Conser2(argument));
+}
+AST::Node* ConsP::execute(AST::Node* argument) {
+	bool result = dynamic_cast<AST::Cons*>(argument) != NULL;
+	return(intern(result));
+}
+AST::Node* HeadGetter::execute(AST::Node* argument) {
+	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
+	if(consNode)
+		return(consNode->head);
+	else
+		return(NULL); // FIXME proper error message!
+}
+AST::Node* TailGetter::execute(AST::Node* argument) {
+	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
+	if(consNode)
+		return(consNode->tail);
+	else
+		return(NULL); // FIXME proper error message!
 }
 
 }; /* end namespace Evaluators */

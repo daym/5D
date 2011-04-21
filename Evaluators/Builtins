@@ -10,7 +10,20 @@ struct Quoter : Operation {
 	virtual bool eager_P(void) const;
 	virtual AST::Node* execute(AST::Node* argument);
 };
-struct ProcedureP : Operation {
+#define DECLARE_SIMPLE_OPERATION(P) \
+struct P : Operation { \
+	virtual AST::Node* execute(AST::Node* argument); \
+};
+DECLARE_SIMPLE_OPERATION(ProcedureP)
+DECLARE_SIMPLE_OPERATION(Conser)
+DECLARE_SIMPLE_OPERATION(HeadGetter)
+DECLARE_SIMPLE_OPERATION(TailGetter)
+DECLARE_SIMPLE_OPERATION(ConsP)
+struct Conser2 : Operation {
+private:
+	AST::Node* head;
+public:
+	Conser2(AST::Node* head);
 	virtual AST::Node* execute(AST::Node* argument);
 };
 
