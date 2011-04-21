@@ -48,7 +48,7 @@ BEGIN
         MENUITEM "&Execute\tF5",                IDM_FILE_EXECUTE
         MENUITEM "&Open...\tF3",                IDM_FILE_OPEN
         MENUITEM "&Save\tF2",                   IDM_FILE_SAVE
-        MENUITEM "E&xit",                       IDM_EXIT
+        MENUITEM "E&xit\tAlt+X",                IDM_EXIT
     END
     POPUP "&Edit"
     BEGIN
@@ -75,13 +75,15 @@ BEGIN
     VK_RETURN,      IDC_EXECUTE,            VIRTKEY, CONTROL, NOINVERT
     "/",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
     "?",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
+    "C",            IDM_EDIT_COPY,          VIRTKEY, CONTROL, NOINVERT
+    "X",            IDM_EDIT_CUT,           VIRTKEY, CONTROL, NOINVERT
+    "F",            IDM_EDIT_FIND,          VIRTKEY, CONTROL, NOINVERT
+    "V",            IDM_EDIT_PASTE,         VIRTKEY, CONTROL, NOINVERT
     VK_F5,          IDM_FILE_EXECUTE,       VIRTKEY, NOINVERT
     VK_F3,          IDM_FILE_OPEN,          VIRTKEY, NOINVERT
     VK_F2,          IDM_FILE_SAVE,          VIRTKEY, NOINVERT
-    "C",            IDM_EDIT_COPY,          VIRTKEY, CONTROL, NOINVERT
-    "X",            IDM_EDIT_CUT,           VIRTKEY, CONTROL, NOINVERT
-    "V",            IDM_EDIT_PASTE,         VIRTKEY, CONTROL, NOINVERT
-    "F",            IDM_EDIT_FIND,          VIRTKEY, CONTROL, NOINVERT
+    "L",            IDM_EDIT_FINDNEXT,      VIRTKEY, CONTROL, NOINVERT
+    "X",            IDM_EXIT,               VIRTKEY, ALT, NOINVERT
 END
 
 
@@ -189,7 +191,7 @@ MENU IDC_MY4D
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LISTBOX         IDC_ENVIRONMENT,7,7,99,146,LBS_SORT | LBS_MULTIPLESEL | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "",IDC_OUTPUT,"RichEdit20W",ES_MULTILINE | ES_AUTOHSCROLL | ES_NOHIDESEL | ES_WANTRETURN | WS_BORDER | WS_VSCROLL | WS_TABSTOP,110,7,255,144
+    CONTROL         "",IDC_OUTPUT,"RichEdit20W",WS_BORDER | WS_VSCROLL | WS_TABSTOP | 0x1184,110,7,255,144
     EDITTEXT        IDC_COMMAND_ENTRY,7,153,306,26,ES_MULTILINE | ES_AUTOHSCROLL
     DEFPUSHBUTTON   "&Execute",IDC_EXECUTE,316,153,49,26
 END
