@@ -164,7 +164,10 @@ static void REPL_handle_open_file(struct REPL* self, GtkAction* action) {
 	REPL_load(self);
 }
 static void REPL_handle_save_file(struct REPL* self, GtkAction* action) {
-	REPL_save(self);
+	REPL_save(self, FALSE);
+}
+static void REPL_handle_save_file_as(struct REPL* self, GtkAction* action) {
+	REPL_save(self, TRUE);
 }
 static void REPL_handle_cut(struct REPL* self, GtkAction* action) {
 	GtkWidget* control;
@@ -447,6 +450,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	add_action_handler(execute);
 	add_action_handler(open_file);
 	add_action_handler(save_file);
+	add_action_handler(save_file_as);
 	add_action_handler(cut);
 	add_action_handler(copy);
 	add_action_handler(paste);
@@ -620,12 +624,22 @@ void REPL_load(struct REPL* self) {
 		g_warning("could not open file");
 	}
 }
-bool REPL_save(struct REPL* self) {
+bool REPL_save(struct REPL* self, bool B_force_dialog) {
 	bool B_OK = false;
+	char* file_name;
+	file_name = Config_get_environment_name(self->fConfig);
+	if(!(file_name && file_name[0]))
+		B_force_dialog = TRUE;
+	else
+		file_name = g_strdup(file_name);
 	gtk_file_chooser_set_do_overwrite_confirmation(self->fSaveDialog, TRUE);
-	gtk_file_chooser_set_filename(self->fSaveDialog, Config_get_environment_name(self->fConfig));
-	if(gtk_dialog_run(GTK_DIALOG(self->fSaveDialog)) == GTK_RESPONSE_OK) {
-		char* file_name = gtk_file_chooser_get_filename(self->fSaveDialog);
+	if(file_name)
+		gtk_file_chooser_set_filename(self->fSaveDialog, file_name);
+	if(!B_force_dialog || gtk_dialog_run(GTK_DIALOG(self->fSaveDialog)) == GTK_RESPONSE_OK) {
+		if(B_force_dialog) {
+			g_free(file_name);
+			file_name = gtk_file_chooser_get_filename(self->fSaveDialog);
+		}
 		char* temp_name = g_strdup_printf("%sXXXXXX", file_name);
 		int FD = mkstemp(temp_name);
 		FILE* output_file = fdopen(FD, "w");
@@ -641,12 +655,13 @@ bool REPL_save(struct REPL* self) {
 			//unlink(temp_name);
 		}
 		g_free(temp_name);
-		g_free(file_name);
 	} else {
 		gtk_widget_hide(GTK_WIDGET(self->fSaveDialog));
+		g_free(file_name);
 		return(false);
 	}
 	gtk_widget_hide(GTK_WIDGET(self->fSaveDialog));
+	g_free(file_name);
 	if(!B_OK) {
 		g_warning("could not save file");
 	}
@@ -683,7 +698,7 @@ bool REPL_confirm_close(struct REPL* self) {
 			gtk_widget_destroy(GTK_WIDGET(dialog));
 			if(result == GTK_RESPONSE_CLOSE)
 				return(true);
-			return(REPL_save(self));
+			return(REPL_save(self, TRUE));
 		}
 	}
 	return(true);

@@ -162,7 +162,8 @@ void REPL_set_current_environment_name(struct REPL* self, const char* absolute_n
 void REPL_set_file_modified(struct REPL* self, bool value) {
 	self->B_file_modified = value;
 }
-bool REPL_save(struct REPL* self) {
+bool REPL_save(struct REPL* self, bool B_force_save_dialog) {
+	/* FIXME honor B_force_save_dialog */
 	std::wstring file_name;
 	file_name = GetUsualSaveFileName(self->dialog);
 	if(file_name.length() > 0) {
@@ -193,7 +194,7 @@ bool REPL_load_contents_by_name(struct REPL* self, const char* name) {
 }
 void REPL_load(struct REPL* self) {
 	if(self->B_file_modified)
-		if(!REPL_save(self))
+		if(!REPL_save(self, TRUE))
 			return;
 	std::wstring file_name;
 	file_name = GetUsualOpenFileName(self->dialog);
@@ -247,7 +248,7 @@ static INT_PTR CALLBACK HandleConfirmCloseDialogMessage(HWND dialog, UINT messag
 bool REPL_confirm_close(struct REPL* self) {
 	switch(DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_CONFIRM_CLOSE), self->dialog, HandleConfirmCloseDialogMessage)) {
 	case IDYES:
-		  return(REPL_save(self));
+		  return(REPL_save(self, TRUE));
 	case IDNO:
 		  return(true);
 	default:
@@ -391,7 +392,10 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	case WM_COMMAND:
 		switch(LOWORD(wParam)) {
 		case IDM_FILE_SAVE:
-				REPL_save(self);
+				REPL_save(self, FALSE);
+				break;
+		case IDM_FILE_SAVE_AS:
+				REPL_save(self, TRUE);
 				break;
 		case IDM_ABOUT:
 			DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_ABOUTBOX), dialog, HandleAboutMessages);
