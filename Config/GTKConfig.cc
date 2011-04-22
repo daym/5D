@@ -10,6 +10,7 @@ struct Config {
 	std::string environment_name;
 	int main_window_width;
 	int main_window_height;
+	bool show_tips;
 };
 struct Config* load_Config(void) {
 	const char** system_config_dirs;
@@ -23,6 +24,7 @@ struct Config* load_Config(void) {
 	config_dir_name = g_get_user_config_dir();
 	system_config_dirs = (const char**) g_get_system_config_dirs();
 	config = new Config;
+	config->show_tips = true;
 	config->main_window_width = 400;
 	config->main_window_height = 400;
 	config->key_file = g_key_file_new();
@@ -46,6 +48,14 @@ struct Config* load_Config(void) {
 	config->environment_name = environment_name ? environment_name : "";
 	config->main_window_width = g_key_file_get_integer(config->key_file, "MainWindow", "Width", NULL);
 	config->main_window_height = g_key_file_get_integer(config->key_file, "MainWindow", "Height", NULL);
+	{
+		GError* error = NULL;
+		config->show_tips = g_key_file_get_boolean(config->key_file, "Global", "ShowTips", &error);
+		if(error) {
+			config->show_tips = true;
+			g_error_free(error);
+		}
+	}
 	if(!config->main_window_width || !config->main_window_height)
 		config->main_window_height = config->main_window_width = 400;
 	g_free(environment_name);
@@ -65,6 +75,7 @@ bool Config_save(struct Config* config) {
 	g_key_file_set_string(config->key_file, "Global", "Environment", config->environment_name.c_str());
 	g_key_file_set_integer(config->key_file, "MainWindow", "Width", config->main_window_width);
 	g_key_file_set_integer(config->key_file, "MainWindow", "Height", config->main_window_height);
+	g_key_file_set_boolean(config->key_file, "Global", "ShowTips", config->show_tips);
 	key_file_contents = g_key_file_to_data(config->key_file, &size, &error);
 	if(!key_file_contents || !size || !g_file_set_contents(full_name, key_file_contents, size, &error)) {
 		g_warning("could not save config \"%s\": %s", full_name, error ? error->message : "unknown error");
@@ -94,3 +105,10 @@ void Config_set_main_window_width(struct Config* config, int value) {
 void Config_set_main_window_height(struct Config* config, int value) {
 	config->main_window_height = value;
 }
+void Config_set_show_tips(struct Config* config, bool value) {
+	config->show_tips = value;
+}
+bool Config_get_show_tips(struct Config* config) {
+	return(config->show_tips);
+}
+

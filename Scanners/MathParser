@@ -47,6 +47,7 @@ protected:
 public:
 	AST::Node* parse(FILE* input_file);
 	AST::Node* parse_S_Expression(FILE* input_file);
+	static AST::Node* parse_simple(const char* text); /* I've had it by now... */
 };
 int get_operator_precedence(AST::Symbol* symbol);
 

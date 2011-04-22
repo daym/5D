@@ -54,6 +54,8 @@ DECLARE_SMALL_VALUE(SmallInteger, int)
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
 DECLARE_SMALL_VALUE(SmallReal, NativeReal)
 AST::Node* provide_dynamic_builtins(AST::Node* body);
+extern AST::Node* churchFalse;
+extern AST::Node* churchTrue;
 
 };
 

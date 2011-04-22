@@ -32,3 +32,10 @@ void Config_set_main_window_width(struct Config* config, int value) {
 void Config_set_main_window_height(struct Config* config, int value) {
 	// FIXME
 }
+void Config_set_show_tips(struct Config* config, bool value) {
+	// FIXME
+}
+bool Config_get_show_tips(struct Config* config) {
+	// FIXME
+	return(true);
+}

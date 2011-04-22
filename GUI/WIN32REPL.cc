@@ -543,7 +543,8 @@ void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 	EnsureInEnvironment(self->dialog, FromUTF8(parameter->name), body);
 	REPL_set_file_modified(self, true);
 }
-void REPL_execute(struct REPL* self, const char* command) {
+/* TODO abstract into common place */
+bool REPL_execute(struct REPL* self, const char* command) {
 	Scanners::MathParser parser;
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
 	if(input_file) {

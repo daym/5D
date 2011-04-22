@@ -5,6 +5,7 @@
 #include "AST/AST"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
+#include "Scanners/MathParser"
 #include "FFIs/POSIX"
 
 namespace Evaluators {
@@ -20,10 +21,7 @@ AST::Node* Quoter::execute(AST::Node* argument) {
 	return(argument);
 }
 AST::Node* ProcedureP::execute(AST::Node* argument) {
-	if(argument != NULL && (dynamic_cast<Operation*>(argument) != NULL))
-		return(argument); /* FIXME return true or false */
-	else
-		return(NULL);
+	return(internNative(argument != NULL && (dynamic_cast<Operation*>(argument) != NULL)));
 }
 static SmallInteger integers[256] = {
 	SmallInteger(0),
@@ -291,9 +289,11 @@ AST::Node* internNative(int value) {
 AST::Node* internNative(NativeReal value) {
 	return(new SmallReal(value)); /* TODO cache 0, 1. */
 }
+using namespace AST;
+AST::Node* churchTrue = Scanners::MathParser::parse_simple("(\\t (\\f t))");
+AST::Node* churchFalse = Scanners::MathParser::parse_simple("(\\t (\\f f))");
 AST::Node* internNative(bool value) {
-	/* FIXME */
-	return(NULL);
+	return(value ? churchTrue : churchFalse);
 }
 Conser2::Conser2(AST::Node* head) {
 	this->head = head;
@@ -344,7 +344,7 @@ static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 		long int value;
 		char* endptr = NULL;
 		value = strtol(name, &endptr, 10);
-		if(endptr || *endptr) { /* maybe a real */
+		if(endptr && *endptr) { /* maybe a real */
 			NativeReal value;
 			std::istringstream sst(name);
 			if(sst >> value)

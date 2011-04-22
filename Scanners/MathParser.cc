@@ -5,6 +5,8 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <iostream>
 #include <string.h>
@@ -290,6 +292,7 @@ void MathParser::parse_token(void) {
 static bool symbol1_char_P(int input) {
 	return (input >= '@' && input <= 'Z')
 	    || (input >= 'a' && input <= 'z')
+	    || input == '#' 
 	    || (input >= 128 && input != 0xE2 /* operators */);
 }
 bool symbol_char_P(int input) {
@@ -394,7 +397,9 @@ AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 		return(NULL);
 }
 AST::Node* MathParser::parse_define(AST::Node* operand_1) {
-	AST::Node* parameter = consume(intern("<symbol>"));
+	AST::Node* parameter = any_operator_P(input_token, 0, sizeof(operator_precedence)/sizeof(operator_precedence[0])) ? consume() : input_token == AST::intern("~") ? consume() : consume(intern("<symbol>"));
+
+	//AST::Node* parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
 	AST::Node* body = parse_expression();
 	if(!parameter||!body||!operand_1) {
 		raise_error("<define-body>", "<incomplete>");
@@ -569,6 +574,21 @@ AST::Node* MathParser::parse_S_Expression(FILE* input_file) {
 	AST::Node* result = parse_S_Expression_inline();
 	pop();
 	return(result);
+}
+
+AST::Node* MathParser::parse_simple(const char* text) {
+	AST::Node* result;
+	MathParser parser;
+	FILE* input_file;
+	try {
+		input_file = fmemopen((void*) text, strlen(text), "r");
+		result = parser.parse(input_file);
+		fclose(input_file);
+		return(result);
+	} catch(ParseException& exception) {
+		fprintf(stderr, "could not parse \"%s\" because: %s\n", text, exception.what());
+		abort();
+	}
 }
 
 };
