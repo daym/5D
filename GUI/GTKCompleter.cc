@@ -53,6 +53,13 @@ static bool in_all_keys_P(GList* keys, int i, char c) {
 	}
 	return(true);
 }
+static const char* strrchrset(const char* haystack, const char* needles) {
+	const char* match = NULL;
+	for(; *haystack; ++haystack)
+		if(strchr(needles, *haystack))
+			match = haystack;
+	return(match);
+}
 void Completer_complete(struct Completer* self) {
 	const char* entry_text;
 	entry_text = gtk_entry_get_text(self->fEntry);
@@ -61,7 +68,7 @@ void Completer_complete(struct Completer* self) {
 		g_hash_table_destroy(self->fMatches);
 	self->fMatches = g_hash_table_new(g_direct_hash, g_direct_equal);
 	/* TODO take caret position into account */
-	entry_needle = g_strrstr((gchar*) entry_text, " "); /* TODO make this more sophisticated */
+	entry_needle = strrchrset(entry_text, " ()\"");
 	if(!entry_needle)
 		entry_needle = entry_text;
 	else

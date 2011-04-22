@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 #include "AST/AST"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
@@ -303,6 +304,10 @@ AST::Node* ConsP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<AST::Cons*>(argument) != NULL;
 	return(internNative(result));
 }
+AST::Node* SmallIntegerP::execute(AST::Node* argument) {
+	bool result = dynamic_cast<SmallInteger*>(argument) != NULL;
+	return(internNative(result));
+}
 AST::Node* HeadGetter::execute(AST::Node* argument) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
 	if(consNode)
@@ -321,9 +326,14 @@ static std::map<AST::Symbol*, AST::Node*> cachedDynamicBuiltins;
 static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 	const char* name;
 	name = symbol->name;
-	if(name[0] >= '0' && name[0] <= '9') { /* hello, number */
-		int value = atoi(name); /* FIXME error checking */
-		return(internNative(value));
+	if((name[0] >= '0' && name[0] <= '9') || name[0] == '-') { /* hello, number */
+		long int value;
+		char* endptr = NULL;
+		value = strtol(name, &endptr, 10);
+		if(endptr || *endptr) /* error */
+			return(NULL);
+		assert(sizeof(long int) == sizeof(int));
+		return(internNative((int) value));
 	} else
 		return(NULL);
 }
