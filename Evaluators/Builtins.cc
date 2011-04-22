@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include "AST/AST"
 #include "Evaluators/Evaluators"
@@ -286,6 +287,9 @@ AST::Node* internNative(int value) {
 		return(&integers[value]);
 	return(new SmallInteger(value));
 }
+AST::Node* internNative(NativeReal value) {
+	return(new SmallReal(value)); /* TODO cache 0, 1. */
+}
 AST::Node* internNative(bool value) {
 	/* FIXME */
 	return(NULL);
@@ -306,6 +310,10 @@ AST::Node* ConsP::execute(AST::Node* argument) {
 }
 AST::Node* SmallIntegerP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<SmallInteger*>(argument) != NULL;
+	return(internNative(result));
+}
+AST::Node* SmallRealP::execute(AST::Node* argument) {
+	bool result = dynamic_cast<SmallReal*>(argument) != NULL;
 	return(internNative(result));
 }
 AST::Node* HeadGetter::execute(AST::Node* argument) {
@@ -330,8 +338,13 @@ static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 		long int value;
 		char* endptr = NULL;
 		value = strtol(name, &endptr, 10);
-		if(endptr || *endptr) /* error */
-			return(NULL);
+		if(endptr || *endptr) { /* maybe a real */
+			NativeReal value;
+			value = strtof(name, &endptr); /* FIXME depend on NativeReal's type */
+			if(endptr || *endptr) /* ??? */
+				return(NULL);
+			return(internNative(value));
+		}
 		assert(sizeof(long int) == sizeof(int));
 		return(internNative((int) value));
 	} else

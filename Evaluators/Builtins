@@ -4,9 +4,10 @@
 
 namespace Evaluators {
 struct Quoter;
-
+typedef float NativeReal; /* TODO use double for 64 bits? */
 AST::Node* internNative(int value);
 AST::Node* internNative(bool value);
+AST::Node* internNative(NativeReal value);
 struct Quoter : Operation {
 	virtual bool eager_P(void) const;
 	virtual AST::Node* execute(AST::Node* argument);
@@ -27,6 +28,7 @@ DECLARE_SIMPLE_OPERATION(HeadGetter)
 DECLARE_SIMPLE_OPERATION(TailGetter)
 DECLARE_SIMPLE_OPERATION(ConsP)
 DECLARE_SIMPLE_OPERATION(SmallIntegerP)
+DECLARE_SIMPLE_OPERATION(SmallRealP)
 struct Conser2 : Operation {
 private:
 	AST::Node* head;
@@ -34,18 +36,21 @@ public:
 	Conser2(AST::Node* head);
 	virtual AST::Node* execute(AST::Node* argument);
 };
-/* use internNative to create. */
-struct SmallInteger : AST::Node {
-	int value;
-	SmallInteger(int value) {
-		this->value = value;
-	}
-	virtual std::string str(void) const {
-		std::stringstream sst;
-		sst << this->value;
-		return(sst.str());
-	}
+#define DECLARE_SMALL_VALUE(P, T) \
+/* use internNative to create. */ \
+struct P : AST::Node { \
+	T value; \
+	P(T value) { \
+		this->value = value; \
+	} \
+	virtual std::string str(void) const { \
+		std::stringstream sst; \
+		sst << this->value; \
+		return(sst.str()); \
+	} \
 };
+DECLARE_SMALL_VALUE(SmallInteger, int)
+DECLARE_SMALL_VALUE(SmallReal, NativeReal)
 AST::Node* provide_dynamic_builtins(AST::Node* body);
 
 };

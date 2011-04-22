@@ -290,6 +290,7 @@ static Evaluators::HeadGetter headGetter;
 static Evaluators::TailGetter tailGetter;
 static Evaluators::ConsP consP;
 static Evaluators::SmallIntegerP smallIntegerP;
+static Evaluators::SmallRealP smallRealP;
 void REPL_add_builtins(struct REPL* self);
 void REPL_init(struct REPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
@@ -431,6 +432,7 @@ void REPL_add_builtins(struct REPL* self) {
 	REPL_add_to_environment_simple(self, AST::intern("head"), &headGetter);
 	REPL_add_to_environment_simple(self, AST::intern("tail"), &tailGetter);
 	REPL_add_to_environment_simple(self, AST::intern("smallInteger?"), &smallIntegerP);
+	REPL_add_to_environment_simple(self, AST::intern("smallReal?"), &smallRealP);
 }
 void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value) {
 	REPL_add_to_environment(self, cons(AST::intern("define"), cons(name, cons(value, NULL))));
