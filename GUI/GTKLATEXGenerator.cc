@@ -45,8 +45,16 @@ struct LATEXChildData {
 };
 static void get_cached_file_name(struct GTKLATEXGenerator* self, const char* document, char* destination, size_t destination_size) {
 	int i;
-	if(snprintf(destination, destination_size, "%s/%s", self->fLATEXCacheDirectoryName, document) == -1)
-		abort();
+	if(strlen(document) > 100) {
+		GChecksum* checksum;
+		checksum = g_checksum_new(G_CHECKSUM_MD5);
+		g_checksum_update(checksum, (const guchar*) document, -1);
+		if(snprintf(destination, destination_size, "%s/%s", self->fLATEXCacheDirectoryName, g_checksum_get_string(checksum)) == -1)
+			abort();
+		g_checksum_free(checksum);
+	} else
+		if(snprintf(destination, destination_size, "%s/%s", self->fLATEXCacheDirectoryName, document) == -1)
+			abort();
 	for(i = strlen(self->fLATEXCacheDirectoryName) + 1; destination[i]; ++i)
 		switch(destination[i]) {
 		case '/':
