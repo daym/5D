@@ -1,3 +1,12 @@
+/*
+4D vector analysis program
+Copyright (C) 2011  Danny Milosavljevic
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* for gdk_pixbuf_set_option */
+#define GDK_PIXBUF_ENABLE_BACKEND
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
@@ -74,6 +83,7 @@ static void GTKLATEXGenerator_handle_LATEX_image(struct GTKLATEXGenerator* self,
 		get_cached_file_name(self, document, name, PATH_MAX);
 	pixbuf = document ? gdk_pixbuf_new_from_file(name, NULL) : NULL;
 	if(pixbuf) {
+		gdk_pixbuf_set_option(pixbuf, "alt_text", alt_text);
 		gtk_text_buffer_insert_pixbuf(gtk_text_iter_get_buffer(iter), iter, pixbuf);
 		g_object_unref(G_OBJECT(pixbuf));
 		/*unlink(name);*/

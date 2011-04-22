@@ -59,9 +59,9 @@ bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
 	using namespace AST;
 	char* buffer_text;
 	buffer_text = REPL_get_output_buffer_text(self);
-	AST::Cons* buffer_text_box = AST::cons(AST::intern("text_buffer_text"), AST::cons(string_literal(buffer_text), NULL));
+	AST::Cons* buffer_text_box = AST::cons(AST::intern("textBufferText"), AST::cons(string_literal(buffer_text), NULL));
 	AST::Cons* environment_box = AST::cons(AST::intern("environment"), AST::cons(dynamic_cast<AST::Cons*>(REPL_filter_environment(self, REPL_get_user_environment(self))), NULL));
-	AST::Cons* content_box = AST::cons(AST::intern("REPL_V1"), AST::cons(buffer_text_box, AST::cons(environment_box, NULL)));
+	AST::Cons* content_box = AST::cons(AST::intern("REPLV1"), AST::cons(buffer_text_box, AST::cons(environment_box, NULL)));
 	Formatters::print_S_Expression(output_file, 0, 0, content_box);
 	return(true);
 }
@@ -77,9 +77,15 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 			fprintf(stderr, "could not open \"%s\": %s\n", name, strerror(errno)); // FIXME nicer logging
 			return(false);
 		}
-		content = parser.parse_S_Expression(input_file);
+		try {
+			content = parser.parse_S_Expression(input_file);
+		} catch(Scanners::ParseException exception) {
+			fprintf(stderr, "error: failed to load file: \"%s\"\n", name);
+			fclose(input_file);
+			return(false);
+		}
 		contentCons = dynamic_cast<AST::Cons*>(content);
-		if(!contentCons || contentCons->head != AST::intern("REPL_V1")) {
+		if(!contentCons || contentCons->head != AST::intern("REPLV1")) {
 			fclose(input_file);
 			return(false);
 		}
@@ -87,7 +93,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 			AST::Cons* entry = dynamic_cast<AST::Cons*>(entryCons->head);
 			if(!entry)
 				continue;
-			if(entry->head == AST::intern("text_buffer_text") && entry->tail) {
+			if(entry->head == AST::intern("textBufferText") && entry->tail) {
 				char* text;
 				text = Evaluators::get_native_string(entry->tail->head);
 				REPL_append_to_output_buffer(self, text);
