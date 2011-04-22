@@ -78,7 +78,7 @@ void MathParser::parse_operator(int input) {
 			// FIXME exponentiation is right-associative.
 			input_value = input_token = intern("**");
 		} else {
-			ungetc(input, input_file);
+			ungetc(input, input_file), --position;
 			input_value = input_token = intern("*");
 		}
 		break;
@@ -87,7 +87,7 @@ void MathParser::parse_operator(int input) {
 		if(input == '=') { /* not equal */
 			input_value = input_token = intern("/=");
 		} else {
-			ungetc(input, input_file);
+			ungetc(input, input_file), --position;
 			input_value = input_token = intern("/");
 		}
 		break;
@@ -102,7 +102,7 @@ void MathParser::parse_operator(int input) {
 		if(input == '=')
 			input_value = input_token = intern("<=");
 		else {
-			ungetc(input, input_file);
+			ungetc(input, input_file), --position;
 			input_value = input_token = intern("<");
 		}
 		break;
@@ -111,7 +111,7 @@ void MathParser::parse_operator(int input) {
 		if(input == '=')
 			input_value = input_token = intern(">=");
 		else {
-			ungetc(input, input_file);
+			ungetc(input, input_file), --position;
 			input_value = input_token = intern(">");
 		}
 		break;
@@ -147,7 +147,7 @@ void MathParser::parse_number(int input) {
 			++position, input = fgetc(input_file);
 		}
 	}
-	ungetc(input, input_file);
+	ungetc(input, input_file), --position;
 	/*input_token = intern("<number>");
 	input_value = literal(strdup(matchtext.str().c_str()));*/
 	input_token = intern("<symbol>");
@@ -217,7 +217,7 @@ void MathParser::parse_optional_whitespace(void) {
 		if(input == '\n')
 			++line_number;
 	}
-	ungetc(input, input_file);
+	ungetc(input, input_file), --position;
 }
 void MathParser::parse_S_optional_whitespace(void) {
 	int input;
@@ -226,7 +226,7 @@ void MathParser::parse_S_optional_whitespace(void) {
 		if(input == '\n')
 			++line_number;
 	}
-	ungetc(input, input_file);
+	ungetc(input, input_file), --position;
 }
 void MathParser::parse_token(void) {
 	int input;
@@ -320,12 +320,12 @@ void MathParser::parse_symbol(int input, int special_prefix) {
 			++position, input = fgetc(input_file);
 			matchtext << (char) 0xE2 << (char) 0x83 << (char) input; // usually 0x97
 		} else {
-			ungetc(input, input_file);
-			ungetc(0xE2, input_file); // FIXME it is actually unsupported to unget more than 1 character :-(
+			ungetc(input, input_file), --position;
+			ungetc(0xE2, input_file), --position; // FIXME it is actually unsupported to unget more than 1 character :-(
 			//raise_error("<unicode_operator>", "<unknown>");
 		}
 	} else
-		ungetc(input, input_file);
+		ungetc(input, input_file), --position;
 	input_token = intern("<symbol>");
 	input_value = intern(matchtext.str().c_str());
 }

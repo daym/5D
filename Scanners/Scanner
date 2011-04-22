@@ -32,6 +32,9 @@ protected:
 	void push(FILE* input_file, int line_number);
 	void pop(void);
 public:
+	int get_position(void) const {
+		return(position);
+	}
 	void raise_error(const std::string& expected_text, int got_text);
 	void raise_error(const std::string& expected_text, std::string got_text);
 };

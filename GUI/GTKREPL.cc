@@ -134,7 +134,7 @@ char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIte
 			next_text = image_match + 3;
 			*image_match = 0;
 		}
-		temp_result = g_strdup_printf("%s%s", result, text);
+		temp_result = g_strdup_printf("%s%s", result, text); 
 		g_free(result);
 		result = temp_result;
 		// actually handle the image match:
@@ -149,7 +149,7 @@ char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIte
 				const char* alt_text;
 				alt_text = gdk_pixbuf_get_option(pixbuf, "alt_text");
 				if(alt_text) {
-					temp_result = g_strdup_printf("%s%s", result, alt_text);
+					temp_result = g_strdup_printf("%s\xef\xbf\xbc%s", result, alt_text); /* leave the marker in so we can regenerate the images when loading. */
 					g_free(result);
 					result = temp_result;
 				}
@@ -485,6 +485,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	gtk_tree_view_column_set_sort_indicator(fNameColumn, TRUE);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(self->fEnvironmentStore2), 0, GTK_SORT_ASCENDING);
 	REPL_init_builtins(self);
+	self->fLATEXGenerator = GTKLATEXGenerator_new();
 	self->fConfig = load_Config();
 	{
 		gtk_window_resize(GTK_WINDOW(self->fWidget), Config_get_main_window_width(self->fConfig), Config_get_main_window_height(self->fConfig));
@@ -526,7 +527,6 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 		/* TODO g_get_system_config_dirs */
 		g_signal_connect(G_OBJECT(self->fWidget), "destroy", G_CALLBACK(save_accelerators), self);
 	}
-	self->fLATEXGenerator = GTKLATEXGenerator_new();
 	{ /* fix sensitivity of "paste" menu entry. */
 		gtk_action_set_sensitive(get_action(paste), gtk_clipboard_wait_is_text_available(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)));
 		g_signal_connect(G_OBJECT(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)), "owner-change", G_CALLBACK(handle_clipboard_change), self);
@@ -630,10 +630,41 @@ char* REPL_get_absolute_path(const char* name) {
 	else
 		return(g_build_filename(g_get_current_dir(), name, NULL));
 }
-void REPL_append_to_output_buffer(struct REPL* self, const char* text) {
-	GtkTextIter text_start;
-	gtk_text_buffer_get_start_iter(self->fOutputBuffer, &text_start);
-	gtk_text_buffer_insert(self->fOutputBuffer, &text_start, text, -1);
+void REPL_append_to_output_buffer(struct REPL* self, const char* o_text) {
+	/* will detect \xef\xbf\xbc and automatically call LATEX */
+	GtkTextIter text_end;
+	gchar* text;
+	gchar* image_match;
+	gchar* next_text;
+	/* 0xFFFC = \xef\xbf\xbc */
+	for(text = g_strdup(o_text); *text; text = next_text) {
+		image_match = strstr(text, "\xef\xbf\xbc");
+		if(!image_match) {
+			image_match = text + strlen(text);
+			next_text = image_match;
+			gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);
+			gtk_text_buffer_insert(self->fOutputBuffer, &text_end, text, -1);
+		} else {
+			FILE* input_file;
+			Scanners::MathParser parser;
+			AST::Node* content;
+			next_text = image_match + 3;
+			*image_match = 0;
+			gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);
+			gtk_text_buffer_insert(self->fOutputBuffer, &text_end, text, -1);
+			try {
+				input_file = fmemopen((void*) next_text, strlen(next_text), "r");
+				content = parser.parse_S_Expression(input_file);
+				fclose(input_file);
+				gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);
+				REPL_enqueue_LATEX(self, content, &text_end);
+				next_text += parser.get_position();
+			} catch(Scanners::ParseException& e) {
+				fclose(input_file);
+				continue;
+			}
+		}
+	}
 }
 char* REPL_get_output_buffer_text(struct REPL* self) {
 	GtkTextIter start;
