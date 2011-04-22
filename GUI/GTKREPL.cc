@@ -6,6 +6,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <string.h>
+#include <assert.h>
 #include <errno.h>
 #include <sstream>
 #include <stdexcept>
@@ -28,6 +29,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/Builtins"
 #include "FFIs/POSIX"
 #include "GUI/Completer"
+#include "FFIs/ResultMarshaller"
 
 #define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(REPL_handle_##name), self)
@@ -46,7 +48,7 @@ struct REPL {
 	//GtkButton* fExecuteButton;
 	//GtkBox* fShortcutBox;
 	GtkTreeView* fEnvironmentView;
-	GtkListStore* fEnvironmentStore;
+	GtkListStore* fEnvironmentStore2;
 	GHashTable* fEnvironmentKeys;
 	GtkButton* fExecuteButton;
 	GtkBox* fEditorBox;
@@ -62,9 +64,13 @@ struct REPL {
 	char* fSearchTerm;
 	bool fBSearchUpwards;
 	bool fBSearchCaseSensitive;
+	AST::Cons* fTailEnvironment;
+	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::Cons* fTailUserEnvironmentFrontier;
 };
-void REPL_add_to_environment(struct REPL* self, AST::Node* definition);
-void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value);
+};
+#include "GUI/REPLEnvironment"
+namespace GUI {
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 void REPL_set_file_modified(struct REPL* self, bool value);
 bool REPL_save_content_to(struct REPL* self, FILE* output_file);
@@ -126,6 +132,29 @@ static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 			gtk_entry_set_text(self->fCommandEntry, "");
 	}
 	g_free(text);
+}
+static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePath* path, GtkTreeViewColumn* column, GtkTreeView* view) {
+	char* command;
+	GtkTreeModel* model;
+	GtkTextIter end;
+	GtkTreeIter iter;
+	model = gtk_tree_view_get_model(view);
+	if(gtk_tree_model_get_iter(model, &iter, path)) {
+		command = NULL;
+		gtk_tree_model_get(model, &iter, 0, &command, -1);
+		if(!command)
+			return;
+		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+		gtk_text_buffer_insert(self->fOutputBuffer, &end, "\ndefine ", -1);
+		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+		gtk_text_buffer_insert(self->fOutputBuffer, &end, command, -1);
+		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+		gtk_text_buffer_insert(self->fOutputBuffer, &end, " ", -1);
+		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+		/* TODO ensure newline */
+		REPL_execute(self, command, &end);
+		g_free(command);
+	}
 }
 static void REPL_handle_open_file(struct REPL* self, GtkAction* action) {
 	REPL_load(self);
@@ -283,15 +312,6 @@ static gboolean complete_command(GtkEntry* entry, GdkEventKey* key, struct Compl
 	}
 	return(FALSE);
 }
-static FFIs::LibraryLoader libraryLoader;
-static Evaluators::Quoter quoter;
-static Evaluators::Conser conser;
-static Evaluators::HeadGetter headGetter;
-static Evaluators::TailGetter tailGetter;
-static Evaluators::ConsP consP;
-static Evaluators::SmallIntegerP smallIntegerP;
-static Evaluators::SmallRealP smallRealP;
-void REPL_add_builtins(struct REPL* self);
 void REPL_init(struct REPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
 	GError* error = NULL;
@@ -319,11 +339,12 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	gtk_container_add(GTK_CONTAINER(self->fWidget), GTK_WIDGET(self->fMainBox));
 	gtk_widget_show(GTK_WIDGET(self->fMainBox));
 	self->fEnvironmentView = (GtkTreeView*) gtk_tree_view_new();
+	g_signal_connect_swapped(G_OBJECT(self->fEnvironmentView), "row-activated", G_CALLBACK(REPL_handle_environment_row_activation), self);
 	GtkTreeViewColumn* fNameColumn;
 	fNameColumn = gtk_tree_view_column_new_with_attributes("Name", gtk_cell_renderer_text_new(), "text", 0, NULL);
 	gtk_tree_view_append_column(self->fEnvironmentView, fNameColumn);
-	self->fEnvironmentStore = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
-	gtk_tree_view_set_model(self->fEnvironmentView, gtk_tree_model_sort_new_with_model(GTK_TREE_MODEL(self->fEnvironmentStore)));
+	self->fEnvironmentStore2 = gtk_list_store_new(1, G_TYPE_STRING);
+	gtk_tree_view_set_model(self->fEnvironmentView, gtk_tree_model_sort_new_with_model(GTK_TREE_MODEL(self->fEnvironmentStore2)));
 	gtk_widget_show(GTK_WIDGET(self->fEnvironmentView));
 	self->fEnvironmentScroller = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
 	gtk_scrolled_window_set_policy(self->fEnvironmentScroller, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -370,13 +391,10 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	gtk_box_pack_start(GTK_BOX(self->fCommandBox), GTK_WIDGET(self->fExecuteButton), FALSE, FALSE, 0);
 	/*g_signal_connect_swapped(GTK_DIALOG(self->fWidget), "response", G_CALLBACK(REPL_handle_response), (void*) self);*/
 	gtk_window_set_focus(GTK_WINDOW(self->fWidget), GTK_WIDGET(self->fCommandEntry));
-	/*
 	gtk_tree_view_column_set_sort_column_id(fNameColumn, 0);
 	gtk_tree_view_column_set_sort_indicator(fNameColumn, TRUE);
-	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(self->fEnvironmentStore), 0, GTK_SORT_ASCENDING);
-	*/
-	/* just to make sure */
-	REPL_add_builtins(self);
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(self->fEnvironmentStore2), 0, GTK_SORT_ASCENDING);
+	REPL_init_builtins(self);
 	self->fConfig = load_Config();
 	{
 		gtk_window_resize(GTK_WINDOW(self->fWidget), Config_get_main_window_width(self->fConfig), Config_get_main_window_height(self->fConfig));
@@ -423,19 +441,16 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 		g_signal_connect(G_OBJECT(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)), "owner-change", G_CALLBACK(handle_clipboard_change), self);
 	}
 }
-void REPL_add_builtins(struct REPL* self) {
-	REPL_add_to_environment_simple(self, AST::intern("quote"), &quoter); /* keep at the beginning */
-	REPL_add_to_environment_simple(self, AST::intern("loadFromLibrary"), &libraryLoader);
-	REPL_add_to_environment_simple(self, AST::intern("nil"), NULL);
-	REPL_add_to_environment_simple(self, AST::intern("cons"), &conser);
-	REPL_add_to_environment_simple(self, AST::intern("cons?"), &consP);
-	REPL_add_to_environment_simple(self, AST::intern("head"), &headGetter);
-	REPL_add_to_environment_simple(self, AST::intern("tail"), &tailGetter);
-	REPL_add_to_environment_simple(self, AST::intern("smallInteger?"), &smallIntegerP);
-	REPL_add_to_environment_simple(self, AST::intern("smallReal?"), &smallRealP);
-}
-void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value) {
-	REPL_add_to_environment(self, cons(AST::intern("define"), cons(name, cons(value, NULL))));
+void REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value) {
+	GtkTreeIter iter;
+	gpointer hvalue;
+	if(!g_hash_table_lookup_extended(self->fEnvironmentKeys, name, NULL, &hvalue))
+		gtk_list_store_append(self->fEnvironmentStore2, &iter);
+	else
+		iter = * (GtkTreeIter*) hvalue;
+	gtk_list_store_set(self->fEnvironmentStore2, &iter, 0, name->name, -1);
+	g_hash_table_replace(self->fEnvironmentKeys, name, gtk_tree_iter_copy(&iter));
+	REPL_set_file_modified(self, true);
 }
 GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));
@@ -462,21 +477,6 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? strdup(nodeText) : NULL, alt_text, destination);
 	}
 }
-static AST::Node* follow_tail(AST::Cons* list) {
-	if(!list)
-		return(NULL);
-	while(list->tail)
-		list = list->tail;
-	return(list->head);
-}
-static AST::Node* close_environment(AST::Node* node, struct AST::Cons* entries) {
-	if(!entries)
-		return(node);
-	else {
-		AST::Cons* entry = dynamic_cast<AST::Cons*>(entries->head);
-		return(Evaluators::close(dynamic_cast<AST::Symbol*>(entry->head), follow_tail(dynamic_cast<AST::Cons*>(entry->tail->head)), close_environment(node, entries->tail)));
-	}
-}
 void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destination) {
 	Scanners::MathParser parser;
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
@@ -485,7 +485,7 @@ void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destinati
 			try {
 				AST::Node* result = parser.parse(input_file);
 				if(!result || dynamic_cast<AST::Cons*>(result) == NULL || ((AST::Cons*)result)->head != AST::intern("define")) {
-					result = close_environment(result, REPL_get_environment(self));
+					result = REPL_close_environment(self, result);
 					result = Evaluators::provide_dynamic_builtins(result);
 					result = Evaluators::annotate(result);
 					result = Evaluators::reduce(result);
@@ -515,39 +515,16 @@ void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destinati
 	}
 	REPL_queue_scroll_down(self);
 }
-AST::Cons* REPL_box_tree_nodes(struct REPL* self, GtkTreeIter* iter) {
-	using namespace AST;
-	char* name;
-	AST::Node* value; /* FIXME test */
-	Scanners::MathParser parser;
-	//FILE* input_file;
-	AST::Cons* tail;
-	gtk_tree_model_get(GTK_TREE_MODEL(self->fEnvironmentStore), iter, 0, &name, 1, &value, -1);
-	if(!gtk_tree_model_iter_next(GTK_TREE_MODEL(self->fEnvironmentStore), iter))
-		tail = NULL;
-	else
-		tail = REPL_box_tree_nodes(self, iter);
-	/*input_file = fmemopen(value, strlen(value), "r");
-	if(!input_file)
-		abort();
-	return(cons(cons(AST::intern(name), cons(parser.parse_S_Expression(input_file), NULL)), tail));*/
-	return(cons(cons(AST::intern(name), cons(value, NULL)), tail));
-	//g_free(name);
-	//g_free(value);
-}
-AST::Cons* REPL_get_environment(struct REPL* self) {
-	GtkTreeIter iter;
-	return((gtk_tree_model_get_iter_first(GTK_TREE_MODEL(self->fEnvironmentStore), &iter)) ? REPL_box_tree_nodes(self, &iter) : NULL);
-}
 void REPL_clear(struct REPL* self) {
 	GtkTextIter text_start;
 	GtkTextIter text_end;
 	gtk_text_buffer_get_start_iter(self->fOutputBuffer, &text_start);
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);
 	gtk_text_buffer_delete(self->fOutputBuffer, &text_start, &text_end);
-	gtk_list_store_clear(GTK_LIST_STORE(self->fEnvironmentStore));
+	gtk_list_store_clear(GTK_LIST_STORE(self->fEnvironmentStore2));
 	g_hash_table_remove_all(self->fEnvironmentKeys);
-	REPL_add_builtins(self);
+	self->fTailEnvironment = self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier = NULL;
+	REPL_init_builtins(self);
 }
 char* REPL_get_absolute_path(const char* name) {
 	if(g_path_is_absolute(name))
@@ -635,32 +612,6 @@ void REPL_set_current_environment_name(struct REPL* self, const char* absolute_n
 	Config_set_environment_name(self->fConfig, absolute_name);
 	Config_save(self->fConfig);
 }
-void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
-	using namespace AST;
-	AST::Cons* definitionCons;
-	GtkTreeIter iter;
-	if(!definition)
-		return;
-	definitionCons = dynamic_cast<AST::Cons*>(definition);
-	if(!definitionCons || !definitionCons->head || !definitionCons->tail || definitionCons->head != intern("define"))
-		return;
-	definitionCons = definitionCons->tail;
-	AST::Symbol* procedureName = dynamic_cast<AST::Symbol*>(definitionCons->head);
-	if(!procedureName || !definitionCons->tail)
-		return;
-	std::string procedureNameString = procedureName->str();
-	//(apply (apply define x 2))
-	AST::Node* value = definitionCons->tail;
-	//std::string body = definitionCons->tail->str();
-	gpointer hvalue;
-	if(!g_hash_table_lookup_extended(self->fEnvironmentKeys, procedureName, NULL, &hvalue))
-		gtk_list_store_append(self->fEnvironmentStore, &iter);
-	else
-		iter = * (GtkTreeIter*) hvalue;
-	gtk_list_store_set(self->fEnvironmentStore, &iter, 0, procedureNameString.c_str(), 1, value, -1);
-	g_hash_table_replace(self->fEnvironmentKeys, procedureName, gtk_tree_iter_copy(&iter));
-	REPL_set_file_modified(self, true);
-}
 bool REPL_get_file_modified(struct REPL* self) {
 	return(self->fFileModified);
 }
@@ -680,6 +631,7 @@ bool REPL_confirm_close(struct REPL* self) {
 		GtkDialog* dialog;
 		dialog = (GtkDialog*) gtk_message_dialog_new(GTK_WINDOW(REPL_get_widget(self)), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, (GtkButtonsType) 0, "Environment has been modified. Save?");
 		gtk_dialog_add_buttons(dialog, GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE, GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
+		gtk_dialog_set_default_response(dialog, GTK_RESPONSE_OK);
 		{
 			int result;
 			result = gtk_dialog_run(dialog);

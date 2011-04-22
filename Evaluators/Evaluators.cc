@@ -46,20 +46,6 @@ void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames) {
 	std::set<AST::Symbol*> boundNames;
 	get_free_variables_impl(root, boundNames, freeNames);
 }
-static bool abstraction_P(AST::Node* root) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
-	if(!consNode)
-		return(false);
-	else
-		return(consNode->head == intern("\\") && consNode->tail);
-}
-static AST::Cons* follow_tail(AST::Cons* root) {
-	if(!root)
-		return(NULL);
-	while(root->tail)
-		root = root->tail;
-	return(root);
-}
 static AST::Node* get_abstraction_body(AST::Node* root) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	if(consNode && consNode->head == intern("\\") && consNode->tail && consNode->tail->tail) {
@@ -68,7 +54,14 @@ static AST::Node* get_abstraction_body(AST::Node* root) {
 	} else
 		return(NULL);
 }
-static bool application_P(AST::Node* root) {
+bool abstraction_P(AST::Node* root) {
+	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
+	if(!consNode)
+		return(false);
+	else
+		return(consNode->head == intern("\\") && consNode->tail);
+}
+bool application_P(AST::Node* root) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	if(!consNode)
 		return(false);

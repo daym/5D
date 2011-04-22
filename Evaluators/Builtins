@@ -8,28 +8,29 @@ typedef float NativeReal; /* TODO use double for 64 bits? */
 AST::Node* internNative(int value);
 AST::Node* internNative(bool value);
 AST::Node* internNative(NativeReal value);
-struct Quoter : Operation {
+struct Quoter : BuiltinOperation {
 	virtual bool eager_P(void) const;
 	virtual AST::Node* execute(AST::Node* argument);
 	virtual std::string str(void) const {
-		return("<Quoter>");
+		return("quote");
 	}
 };
-#define DECLARE_SIMPLE_OPERATION(P) \
-struct P : Operation { \
+#define DECLARE_SIMPLE_OPERATION(P, N) \
+struct P : BuiltinOperation { \
 	virtual AST::Node* execute(AST::Node* argument); \
 	virtual std::string str(void) const { \
-		return("<" ""#P ">"); \
+		return(N); \
 	} \
 };
-DECLARE_SIMPLE_OPERATION(ProcedureP)
-DECLARE_SIMPLE_OPERATION(Conser)
-DECLARE_SIMPLE_OPERATION(HeadGetter)
-DECLARE_SIMPLE_OPERATION(TailGetter)
-DECLARE_SIMPLE_OPERATION(ConsP)
-DECLARE_SIMPLE_OPERATION(SmallIntegerP)
-DECLARE_SIMPLE_OPERATION(SmallRealP)
-struct Conser2 : Operation {
+DECLARE_SIMPLE_OPERATION(ProcedureP, "procedure?")
+DECLARE_SIMPLE_OPERATION(Conser, "cons")
+DECLARE_SIMPLE_OPERATION(HeadGetter, "head")
+DECLARE_SIMPLE_OPERATION(TailGetter, "tail")
+DECLARE_SIMPLE_OPERATION(ConsP, "cons?")
+DECLARE_SIMPLE_OPERATION(SmallIntegerP, "smallInteger?")
+DECLARE_SIMPLE_OPERATION(SmallRealP, "smallReal?")
+DECLARE_SIMPLE_OPERATION(StringP, "string?")
+struct Conser2 : BuiltinOperation {
 private:
 	AST::Node* head;
 public:
@@ -50,6 +51,7 @@ struct P : AST::Node { \
 	} \
 };
 DECLARE_SMALL_VALUE(SmallInteger, int)
+/* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
 DECLARE_SMALL_VALUE(SmallReal, NativeReal)
 AST::Node* provide_dynamic_builtins(AST::Node* body);
 

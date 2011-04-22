@@ -28,7 +28,7 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);
 	if(node == NULL)
-		print_text(output, position, "()");
+		print_text(output, position, "nil");
 	else if(symbolNode)
 		print_text(output, position, symbolNode->name);
 	else if(consNode) {
@@ -55,6 +55,7 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		output << ')';
 		++position;
 	} else { /* literal etc */
+		/* this especially matches BuiltinOperators which will return their builtin name */
 		std::string value = node->str();
 		print_text(output, position, value.c_str());
 	}

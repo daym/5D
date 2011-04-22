@@ -27,9 +27,11 @@ LibraryLoader::LibraryLoader(void) {
 	p = new LibraryLoaderP();
 }
 std::string LibraryLoader::str(void) const {
-	return("loadFromLibrary");
+	return("fromLibrary");
 }
 AST::Node* LibraryLoader::executeLowlevel(AST::Node* libraryName) {
+	if(string_P(libraryName))
+		libraryName = AST::intern(((AST::String*)libraryName)->text.c_str());
 	AST::Symbol* libraryNameSymbol = dynamic_cast<AST::Symbol*>(libraryName);
 	if(libraryNameSymbol == NULL)
 		return(NULL);
@@ -50,9 +52,14 @@ CLibrary::CLibrary(const char* name) {
 	p = new CLibraryP();
 	p->name = name;
 	p->library = dlopen(name, RTLD_LAZY);
+	if(!p->library) {
+		perror(name);
+	}
 }
 AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 	/* argument is the name (symbol). Result is a CProcedure */
+	if(string_P(argument))
+		argument = AST::intern(((AST::String*)argument)->text.c_str());
 	AST::Symbol* nameSymbol = dynamic_cast<AST::Symbol*>(argument);
 	if(nameSymbol == NULL)
 		return(NULL);
@@ -60,12 +67,18 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 	if(iter != p->knownProcedures.end())
 		return(iter->second);
 	else {
-		p->knownProcedures[nameSymbol] = new CProcedure(dlsym(p->library, nameSymbol->name));
+		void* sym = dlsym(p->library, nameSymbol->name);
+		if(!sym) {
+			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", p->name.c_str(), nameSymbol->name);
+			return(NULL);
+		}
+		p->knownProcedures[nameSymbol] = new CProcedure(sym);
 		return(p->knownProcedures[nameSymbol]);
 	}
 }
 std::string CLibrary::str(void) const {
-	return(std::string("(loadFromLibrary '") + p->name + ")"); // FIXME nicer
+	return(AST::cons(AST::intern("fromLibrary"), AST::cons(new AST::String(p->name), NULL)))->str();
+	//return(std::string("(fromLibrary '") + p->name + ")"); // FIXME nicer
 }
 CProcedure::CProcedure(void* native) : 
 	AST::Box(native)

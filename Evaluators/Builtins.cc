@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sstream>
 #include <assert.h>
 #include "AST/AST"
 #include "Evaluators/Evaluators"
@@ -316,6 +317,11 @@ AST::Node* SmallRealP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<SmallReal*>(argument) != NULL;
 	return(internNative(result));
 }
+AST::Node* StringP::execute(AST::Node* argument) {
+	using namespace AST;
+	bool result = dynamic_cast<String*>(argument) != NULL;
+	return(internNative(result));
+}
 AST::Node* HeadGetter::execute(AST::Node* argument) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
 	if(consNode)
@@ -340,10 +346,11 @@ static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 		value = strtol(name, &endptr, 10);
 		if(endptr || *endptr) { /* maybe a real */
 			NativeReal value;
-			value = strtof(name, &endptr); /* FIXME depend on NativeReal's type */
-			if(endptr || *endptr) /* ??? */
+			std::istringstream sst(name);
+			if(sst >> value)
+				return(internNative(value));
+			else
 				return(NULL);
-			return(internNative(value));
 		}
 		assert(sizeof(long int) == sizeof(int));
 		return(internNative((int) value));

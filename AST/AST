@@ -21,10 +21,13 @@ struct Cons : Node {
 };
 std::string str(const Cons& a);
 struct Atom : Node {
-	const char* text;
+	std::string text; // char* text;
 	virtual std::string str(void) const;
 };
 struct String : Atom {
+	String(const std::string& value) {
+		text = value;
+	}
 	virtual std::string str(void) const;
 };
 struct Box : Atom {
@@ -39,6 +42,8 @@ std::string str(const Atom& a);
 Cons* cons(Node* head, Cons* tail);
 Atom* literal(const char* text);
 String* string_literal(const char* text);
+AST::Cons* follow_tail(AST::Cons* list);
+bool string_P(AST::Node* node);
 
 }; /* namespace AST */
 #endif /* __AST_H */

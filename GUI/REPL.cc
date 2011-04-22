@@ -6,6 +6,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <stdlib.h>
+#include <assert.h>
 #include <errno.h>
 #include <string.h>
 #include "AST/AST"
@@ -13,6 +14,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/MathParser"
 #include "Formatters/SExpression"
 #include "Evaluators/FFI"
+#include "Evaluators/Evaluators"
+#include "Evaluators/Builtins"
 
 namespace GUI {
 
@@ -38,7 +41,7 @@ const char* load_string(const char*& string_iter) {
 	return(result);
 }
 #endif
-AST::Cons* REPL_get_environment(struct REPL* self);
+AST::Cons* REPL_get_user_environment(struct REPL* self);
 bool REPL_get_file_modified(struct REPL* self);
 char* REPL_get_output_buffer_text(struct REPL* self);
 bool REPL_confirm_close(struct REPL* self);
@@ -47,12 +50,17 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* text);
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition);
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 void REPL_set_file_modified(struct REPL* self, bool value);
+void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value);
+void REPL_set_environment(struct REPL* self, AST::Cons* environment);
+static AST::Node* REPL_filter_environment(struct REPL* self, AST::Node* environment) {
+	return(environment);
+}
 bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
 	using namespace AST;
 	char* buffer_text;
 	buffer_text = REPL_get_output_buffer_text(self);
 	AST::Cons* buffer_text_box = AST::cons(AST::intern("text_buffer_text"), AST::cons(string_literal(buffer_text), NULL));
-	AST::Cons* environment_box = AST::cons(AST::intern("environment"), REPL_get_environment(self));
+	AST::Cons* environment_box = AST::cons(AST::intern("environment"), AST::cons(dynamic_cast<AST::Cons*>(REPL_filter_environment(self, REPL_get_user_environment(self))), NULL));
 	AST::Cons* content_box = AST::cons(AST::intern("REPL_V1"), AST::cons(buffer_text_box, AST::cons(environment_box, NULL)));
 	Formatters::print_S_Expression(output_file, 0, 0, content_box);
 	return(true);
@@ -66,7 +74,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 		Scanners::MathParser parser;
 		input_file = fopen(name, "r");
 		if(!input_file) {
-			fprintf(stderr, "could not open \"%s\": %s", name, strerror(errno)); // FIXME nicer logging
+			fprintf(stderr, "could not open \"%s\": %s\n", name, strerror(errno)); // FIXME nicer logging
 			return(false);
 		}
 		content = parser.parse_S_Expression(input_file);
@@ -89,29 +97,28 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 				AST::Cons* environment = dynamic_cast<AST::Cons*>(entry->tail->head);
 				if(!environment)
 					continue;
-				for(AST::Cons* definition = environment; definition; definition = definition->tail) {
-					AST::Node* nameNode = definition->head;
-					AST::Symbol* nameSymbol = dynamic_cast<AST::Symbol*>(nameNode);
-					AST::Cons* value = definition->tail ? dynamic_cast<AST::Cons*>(definition->tail->head) : NULL;
-					if(!nameSymbol || !value || !value->head)
-						continue;
-					REPL_add_to_environment(self, AST::cons(AST::intern("define"), AST::cons(nameSymbol, AST::cons(value->head, NULL))));
-					/*key = nameSymbol->name;
-					GtkTreeIter iter;
-					std::string valueString;
-					if(definition->tail && definition->tail->head)
-						valueString = definition->tail->head->str();
-					value = valueString.c_str();
-					gtk_list_store_append(self->fEnvironmentStore, &iter);
-					gtk_list_store_set(self->fEnvironmentStore, &iter, 0, key, 1, value, -1);
-					g_hash_table_replace(self->fEnvironmentKeys, AST::intern(key), gtk_tree_iter_copy(&iter));*/
-				}
+				REPL_set_environment(self, environment);
 			}
 		}
 		fclose(input_file);
 	}
 	REPL_set_file_modified(self, false);
 	return(true);
+}
+void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
+	using namespace AST;
+	AST::Cons* definitionCons;
+	if(!definition)
+		return;
+	definitionCons = dynamic_cast<AST::Cons*>(definition);
+	if(!definitionCons || !definitionCons->head || !definitionCons->tail || definitionCons->head != intern("define"))
+		return;
+	definitionCons = definitionCons->tail;
+	AST::Symbol* procedureName = dynamic_cast<AST::Symbol*>(definitionCons->head);
+	if(!procedureName || !definitionCons->tail)
+		return;
+	AST::Node* value = follow_tail(definitionCons->tail)->head;
+	REPL_add_to_environment_simple(self, procedureName, value);
 }
 
 }; // end namespace GUI

@@ -32,7 +32,7 @@ bool get_native_boolean(AST::Node* root) {
 char* get_native_string(AST::Node* root) {
 	AST::String* rootString = dynamic_cast<AST::String*>(root);
 	if(rootString)
-		return(strdup(rootString->text));
+		return(strdup(rootString->text.c_str()));
 	else {
 		std::string value = root->str(); /* FIXME */
 		return(strdup(value.c_str()));
@@ -55,6 +55,7 @@ AST::Node* FFIClosure::execute(AST::Node* state) {
 }
 std::string FFIClosure::str(void) const {
 	return(std::string("(FFIClosure ") + (argument ? argument->str() : "nil") + ")"); // FIXME nicer
+	//return(AST::cons(AST::intern("loadFromLibrary"), AST::cons(new AST::String(p->name), NULL)))->str();
 }
 AST::Node* SymArgCacheFFI::executeLowlevel(AST::Node* argument) {
 	/* TODO for non-pure, this doesn't make a whole lot of sense. */

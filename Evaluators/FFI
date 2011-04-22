@@ -21,7 +21,7 @@ char* get_native_string(AST::Node* root);
 struct FFI : Operation {
 	bool B_pure;
 	FFI(void) {
-		B_pure = false;
+		B_pure = true; /* FIXME false;*/
 	}
 	virtual AST::Node* execute(AST::Node* argument);
 	virtual AST::Node* executeLowlevel(AST::Node* argument) = 0;

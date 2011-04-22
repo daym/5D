@@ -16,11 +16,14 @@ struct Operation : AST::Node {
 	virtual bool eager_P() const;
 	virtual AST::Node* execute(AST::Node* argument) = 0;
 };
+typedef Operation BuiltinOperation;
 
 void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames);
 AST::Node* annotate(AST::Node* root);
 AST::Node* reduce(AST::Node* term);
 AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body);
+bool abstraction_P(AST::Node* root);
+bool application_P(AST::Node* root);
 };
 
 #endif /*ndef __EVALUATORS_H*/

@@ -1,0 +1,123 @@
+#ifndef __GUI_REPLENVIRONMENT_H
+#define __GUI_REPLENVIRONMENT_H
+#include "Evaluators/FFI"
+#include "Evaluators/Builtins"
+#include "Evaluators/Evaluators"
+#include "FFIs/ResultMarshaller"
+
+namespace GUI {
+static FFIs::LibraryLoader libraryLoader;
+static Evaluators::Quoter quoter;
+static Evaluators::Conser conser;
+static Evaluators::HeadGetter headGetter;
+static Evaluators::TailGetter tailGetter;
+static Evaluators::ConsP consP;
+static Evaluators::SmallIntegerP smallIntegerP;
+static Evaluators::SmallRealP smallRealP;
+static Evaluators::StringP stringP;
+static FFIs::ResultMarshaller resultMarshaller;
+
+/*      [ ->!]            [ ->!]                  [ ->!]
+        ^                 ^                       ^
+    fTailEnvironment  fTailUserEnvironment   fTailUserEnvironmentFrontier
+
+   entry = ((\x B) a)
+*/
+
+//fTailEnvironment
+//fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */
+//fTailUserEnvironmentFrontier
+void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value);
+static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::Node* value) {
+	REPL_add_to_environment_simple(self, name, value);
+}
+static void REPL_init_builtins(struct REPL* self) {
+	if(self->fTailUserEnvironment && self->fTailUserEnvironment->tail) {
+		fprintf(stderr, "warning: There is user environment, so not clobbering it by builtins.\n");
+		return;
+	}
+	if(!self->fTailEnvironment) { /* first init */
+		self->fTailEnvironment = AST::cons(AST::intern("environment"), NULL/*mutable*/);
+		self->fTailUserEnvironment = self->fTailEnvironment;
+		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
+	}
+	REPL_add_builtin_binding(self, AST::intern("quote"), &quoter); /* keep at the beginning */
+	REPL_add_builtin_binding(self, AST::intern("fromLibrary"), &libraryLoader);
+	REPL_add_builtin_binding(self, AST::intern("nil"), NULL);
+	REPL_add_builtin_binding(self, AST::intern("cons"), &conser);
+	REPL_add_builtin_binding(self, AST::intern("cons?"), &consP);
+	REPL_add_builtin_binding(self, AST::intern("head"), &headGetter);
+	REPL_add_builtin_binding(self, AST::intern("tail"), &tailGetter);
+	REPL_add_builtin_binding(self, AST::intern("smallInteger?"), &smallIntegerP);
+	REPL_add_builtin_binding(self, AST::intern("smallReal?"), &smallRealP);
+	REPL_add_builtin_binding(self, AST::intern("string?"), &stringP);
+	REPL_add_builtin_binding(self, AST::intern("translateFFI"), &resultMarshaller);
+	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
+	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
+}
+void REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value);
+void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value) {
+	using namespace AST;
+	AST::Cons* node;
+	AST::Cons* nodeTail;
+	REPL_add_to_environment_simple_GUI(self, name, value);
+	nodeTail = cons(name, cons(NULL, NULL));
+	node = cons(cons(AST::intern("\\"), nodeTail), cons(value, NULL));
+	/* node = ((\x B) a) 
+	nodeTail =    ^ */
+	if(self->fTailUserEnvironmentFrontier)
+		self->fTailUserEnvironmentFrontier->tail = AST::cons(node, NULL);
+	else
+		abort();
+	self->fTailUserEnvironmentFrontier = nodeTail;
+}
+static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node) {
+	if(self->fTailUserEnvironmentFrontier) {
+		self->fTailUserEnvironmentFrontier->tail = AST::cons(node, NULL);
+		return(self->fTailEnvironment->tail->head);
+	} else
+		return(node);
+}
+static void REPL_unfilter_environment(struct REPL* self, AST::Node* environment) {
+	/* filters out Builtins */
+	using namespace AST;
+	AST::Cons* environmentCons = dynamic_cast<AST::Cons*>(environment);
+	if(Evaluators::application_P(environment)) {
+		AST::Cons* fn;
+		AST::Node* parameter;
+		AST::Node* argument;
+		argument = environmentCons && environmentCons->tail ? environmentCons->tail->head : NULL;
+		fn = dynamic_cast<AST::Cons*>(environmentCons->head);
+		parameter = fn->tail->head;
+		assert(fn && Evaluators::abstraction_P(fn));
+		REPL_add_to_environment_simple_GUI(self, dynamic_cast<AST::Symbol*>(parameter), argument);
+		REPL_unfilter_environment(self, environmentCons->head);
+	} else if(Evaluators::abstraction_P(environment)) {
+		AST::Node* body;
+		AST::Node* parameter;
+		parameter = environmentCons->tail->head;
+		if(!environmentCons->tail->tail) {
+			/* (\b) used as tail marker */
+			self->fTailUserEnvironmentFrontier = environmentCons->tail;
+			self->fTailUserEnvironmentFrontier->tail = NULL;
+		} else {
+			body = follow_tail(environmentCons->tail->tail)->head;
+			REPL_unfilter_environment(self, body);
+		}
+	}
+}
+void REPL_set_environment(struct REPL* self, AST::Cons* environment) {
+	self->fTailUserEnvironment->tail = NULL;
+	self->fTailUserEnvironmentFrontier->tail = NULL;
+	self->fTailUserEnvironmentFrontier = NULL;
+	self->fTailUserEnvironment->tail = AST::cons(environment, NULL);
+	REPL_unfilter_environment(self, environment);
+}
+AST::Cons* REPL_get_user_environment(struct REPL* self) {
+	if(self->fTailUserEnvironmentFrontier)
+		self->fTailUserEnvironmentFrontier->tail = NULL; /* clear the last command from the environment, nobody cares. */
+	return(self->fTailUserEnvironment->tail ? dynamic_cast<AST::Cons*>(self->fTailUserEnvironment->tail->head) : NULL);
+}
+
+}; /* end namespace */
+#endif /* __GUI_REPLENVIRONMENT_H */

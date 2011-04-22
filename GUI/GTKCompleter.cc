@@ -9,16 +9,16 @@
 namespace GUI {
 struct Completer {
 	GtkEntry* fEntry;
-	GHashTable* fHaystack;
-	const char* fEntryNeedle;
+	GHashTable* fHaystack; /* hash table's entry's value is unused */
+	char* fEntryNeedle;
 	GHashTable* fMatches;
 	int fEntryNeedlePos;
 };
-static void match_entry(AST::Symbol* key, AST::Node* value, struct Completer* self) {
+static void match_entry(AST::Symbol* key, void* value, struct Completer* self) {
 	const char* possible_text;
 	possible_text = key->name;
 	if(!self->fEntryNeedle || strncmp(possible_text, self->fEntryNeedle, strlen(self->fEntryNeedle)) == 0) /* match */
-		g_hash_table_insert(self->fMatches, key, value);
+		g_hash_table_insert(self->fMatches, key, NULL);
 }
 static void Completer_accept_match(struct Completer* self, const char* match, bool B_automatic_space) {
 	const char* entry_text;
@@ -34,11 +34,11 @@ static void Completer_accept_match(struct Completer* self, const char* match, bo
 	/* i = self->fEntryNeedlePos */
 	new_text[i] = 0;
 	strcat(new_text, match);
-	if(B_automatic_space)
-		strcat(new_text, " "); /* TODO remove? */
-	pos = strlen(new_text);
 	while(entry_text[i] && Scanners::symbol_char_P(entry_text[i]))
 		++i;
+	if(B_automatic_space && entry_text[i] != ' ')
+		strcat(new_text, " "); /* TODO remove? */
+	pos = strlen(new_text);
 	strcat(new_text, &entry_text[i]);
 	gtk_entry_set_text(self->fEntry, new_text);
 	/*if(gtk_editable_get_selection_bounds(GTK_EDITABLE(entry), &beginning, &end)) {*/
@@ -53,28 +53,37 @@ static bool in_all_keys_P(GList* keys, int i, char c) {
 	}
 	return(true);
 }
-static const char* strrchrset(const char* haystack, const char* needles) {
+static const char* strrchrset(const char* haystack, const char* needles, const char* frontier) {
 	const char* match = NULL;
-	for(; *haystack; ++haystack)
+	for(; *haystack && haystack < frontier; ++haystack)
 		if(strchr(needles, *haystack))
 			match = haystack;
 	return(match);
 }
 void Completer_complete(struct Completer* self) {
 	const char* entry_text;
+	int pos;
 	entry_text = gtk_entry_get_text(self->fEntry);
-	const gchar* entry_needle;
-	if(self->fMatches)
+	pos = gtk_editable_get_position(GTK_EDITABLE(self->fEntry));
+	const char* entry_needle;
+	if(self->fMatches) {
 		g_hash_table_destroy(self->fMatches);
+		self->fMatches = NULL;
+	}
+	if(self->fEntryNeedle) {
+		g_free(self->fEntryNeedle);
+		self->fEntryNeedle = NULL;
+	}
 	self->fMatches = g_hash_table_new(g_direct_hash, g_direct_equal);
 	/* TODO take caret position into account */
-	entry_needle = strrchrset(entry_text, " ()\"");
+	entry_needle = strrchrset(entry_text, " ()\"", entry_text + pos); /* TODO only the stuff BEFORE the cursor */
 	if(!entry_needle)
 		entry_needle = entry_text;
 	else
 		++entry_needle;
-	self->fEntryNeedle = entry_needle;
-	self->fEntryNeedlePos = self->fEntryNeedle - entry_text;
+	self->fEntryNeedle = g_strdup(entry_needle);
+	self->fEntryNeedle[pos] = 0;
+	self->fEntryNeedlePos = entry_needle - entry_text;
 	g_hash_table_foreach(self->fHaystack, (GHFunc) match_entry, self);
 	GList* keys;
 	keys = g_hash_table_get_keys(self->fMatches);

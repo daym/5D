@@ -20,7 +20,20 @@ std::string Atom::str(void) const {
 	return(text);
 }
 std::string String::str(void) const {
-	return(std::string("\"") + text + "\""); // FIXME escape.
+	std::stringstream sst;
+	const char* item;
+	char c;
+	sst << "\"";
+	for(item = text.c_str(); c = *item; ++item) {
+		if(c == '"')
+			sst << '\\';
+		else if(c == '\\')
+			sst << '\\';
+		/* TODO escape other things? not that useful... */
+		sst << c;
+	}
+	sst << "\"";
+	return(sst.str());
 }
 std::string Box::str(void) const {
 	return("box"); // TODO nicer?
@@ -49,9 +62,18 @@ Atom* literal(const char* text) {
 	return(result);
 }
 String* string_literal(const char* text) {
-	String* result = new String;
-	result->text = strdup(text);
+	String* result = new String(text);
 	return(result);
+}
+bool string_P(AST::Node* node) {
+	return(dynamic_cast<AST::String*>(node) != NULL);
+}
+AST::Cons* follow_tail(AST::Cons* list) {
+	if(!list)
+		return(NULL);
+	while(list->tail)
+		list = list->tail;
+	return(list);
 }
 
 }; /* end namespace AST */
