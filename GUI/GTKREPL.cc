@@ -5,8 +5,6 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* gtk_text_buffer_get_slice */
-/* TODO GdkPixbuf* gtk_text_iter_get_pixbuf( const GtkTextIter *iter ); */
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
@@ -113,6 +111,55 @@ static gboolean g_clear_output_selection(GtkWidget* widget, GdkEventFocus* event
 	}
 	return(FALSE);
 }
+char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIter* end) {
+	/* complicated version of:
+	return(gtk_text_buffer_get_text(self->fOutputBuffer, beginning, end, FALSE));
+	*/
+	gchar* result;
+	gchar* text;
+	gchar* orig_text;
+	gchar* image_match;
+	gchar* next_text;
+	gchar* temp_result;
+	result = g_strdup("");
+	text = gtk_text_buffer_get_slice(self->fOutputBuffer, beginning, end, FALSE);
+	orig_text = text;
+	/* 0xFFFC = \xef\xbf\xbc */
+	while(*text) {
+		image_match = strstr(text, "\xef\xbf\xbc");
+		if(!image_match) {
+			image_match = text + strlen(text);
+			next_text = image_match;
+		} else {
+			next_text = image_match + 3;
+			*image_match = 0;
+		}
+		temp_result = g_strdup_printf("%s%s", result, text);
+		g_free(result);
+		result = temp_result;
+		// actually handle the image match:
+		{
+			int offset;
+			GdkPixbuf* pixbuf;
+			GtkTextIter iter;
+			offset = g_utf8_pointer_to_offset(orig_text, image_match);
+			gtk_text_buffer_get_iter_at_offset(self->fOutputBuffer, &iter, offset);
+			pixbuf = gtk_text_iter_get_pixbuf(&iter);
+			if(pixbuf) {
+				const char* alt_text;
+				alt_text = gdk_pixbuf_get_option(pixbuf, "alt_text");
+				if(alt_text) {
+					temp_result = g_strdup_printf("%s%s", result, alt_text);
+					g_free(result);
+					result = temp_result;
+				}
+			}
+		}
+		text = next_text;
+	}
+	/*g_utf8_pointer_to_offset(str, str+byte_index)*/
+	return(result);
+}
 static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 	GtkTextIter beginning;
 	GtkTextIter end;
@@ -127,7 +174,7 @@ static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 		gtk_text_buffer_insert(self->fOutputBuffer, &end, v.c_str(), -1);
 		B_from_entry = true;
 	} else {
-		text = gtk_text_buffer_get_text(self->fOutputBuffer, &beginning, &end, FALSE);
+		text = REPL_get_output_text(self, &beginning, &end);
 	}
 	if(text && text[0]) {
 		bool B_ok = REPL_execute(self, text, &end);
@@ -593,7 +640,7 @@ char* REPL_get_output_buffer_text(struct REPL* self) {
 	GtkTextIter end;
 	gtk_text_buffer_get_start_iter(self->fOutputBuffer, &start);
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-	return(gtk_text_buffer_get_text(self->fOutputBuffer, &start, &end, FALSE));
+	return(REPL_get_output_text(self, &start, &end));
 }
 bool REPL_load_contents_by_name(struct REPL* self, const char* file_name) {
 	if(!REPL_load_contents_from(self, file_name))
