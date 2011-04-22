@@ -292,7 +292,7 @@ static bool symbol1_char_P(int input) {
 	    || (input >= 'a' && input <= 'z')
 	    || (input >= 128 && input != 0xE2 /* operators */);
 }
-static bool symbol_char_P(int input) {
+bool symbol_char_P(int input) {
 	return symbol1_char_P(input) 
 	    || (input >= '0' && input <= '9') 
 	    || input == '_' || input == '?';

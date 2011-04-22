@@ -27,6 +27,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "FFIs/POSIX"
+#include "GUI/Completer"
 
 #define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(REPL_handle_##name), self)
@@ -53,7 +54,7 @@ struct REPL {
 	GtkFileChooser* fSaveDialog;
 	GtkFileChooser* fOpenDialog;
 	struct Config* fConfig;
-	GtkEntryCompletion* fCommandCompletion;
+	struct Completer* fCommandCompleter;
 	bool fFileModified;
 	GtkBuilder* UI_builder;
 	GtkAccelGroup* accelerator_group;
@@ -103,34 +104,6 @@ static gboolean g_clear_output_selection(GtkWidget* widget, GdkEventFocus* event
 	}
 	return(FALSE);
 }
-static gboolean accept_prefix(GtkEntryCompletion* completion, gchar* prefix, GtkEntry* entry) {
-	return(FALSE);
-}
-static gboolean accept_match(GtkEntryCompletion* completion, GtkTreeModel* model, GtkTreeIter* iter, GtkEntry* entry) {
-	return(FALSE);
-}
-static gboolean complete_command(GtkEntry* entry, GdkEventKey* key, GtkEntryCompletion* completion) {
-	if((key->state & (GDK_SHIFT_MASK|GDK_CONTROL_MASK|GDK_MOD1_MASK|GDK_MOD2_MASK|GDK_MOD3_MASK|GDK_MOD4_MASK|GDK_MOD5_MASK)) == 0 && key->keyval == GDK_Tab) {
-		gtk_entry_completion_set_popup_completion(completion, TRUE);
-		g_signal_emit_by_name(entry, "changed", NULL); // GTK bug 584402
-		gtk_entry_completion_complete(completion);
-		gtk_entry_completion_set_popup_completion(completion, FALSE);
-		{
-			gint beginning;
-			gint end;
-			if(gtk_editable_get_selection_bounds(GTK_EDITABLE(entry), &beginning, &end)) {
-				gtk_editable_select_region(GTK_EDITABLE(entry), end, end);
-				gtk_editable_set_position(GTK_EDITABLE(entry), end);
-			}
-		}
-		return(TRUE);
-	}
-	return(FALSE);
-}
-/*static gboolean g_hide_window(GtkWidget* widget, GdkEvent* event, gpointer user_data) {
-	gtk_widget_hide(GTK_WIDGET(widget));
-	return(TRUE);
-}*/
 static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 	GtkTextIter beginning;
 	GtkTextIter end;
@@ -303,6 +276,13 @@ static void track_changes(struct REPL* self, GtkTextBuffer* buffer) {
 	if(!self->fFileModified)
 		REPL_set_file_modified(self, true);
 }
+static gboolean complete_command(GtkEntry* entry, GdkEventKey* key, struct Completer* completer) {
+	if((key->state & (GDK_SHIFT_MASK|GDK_CONTROL_MASK|GDK_MOD1_MASK|GDK_MOD2_MASK|GDK_MOD3_MASK|GDK_MOD4_MASK|GDK_MOD5_MASK)) == 0 && key->keyval == GDK_Tab) {
+		Completer_complete(completer);
+		return(TRUE);
+	}
+	return(FALSE);
+}
 static FFIs::LibraryLoader libraryLoader;
 static Evaluators::Quoter quoter;
 static Evaluators::Conser conser;
@@ -359,17 +339,8 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	self->fCommandBox = (GtkBox*) gtk_hbox_new(FALSE, 7);
 	gtk_widget_show(GTK_WIDGET(self->fCommandBox));
 	self->fCommandEntry = (GtkEntry*) gtk_entry_new();
-	self->fCommandCompletion = gtk_entry_completion_new();
-	g_signal_connect(G_OBJECT(self->fCommandEntry), "key-press-event", G_CALLBACK(complete_command), self->fCommandCompletion);
-	g_signal_connect(G_OBJECT(self->fCommandCompletion), "match-selected", G_CALLBACK(accept_match), self->fCommandEntry);
-	g_signal_connect(G_OBJECT(self->fCommandCompletion), "insert-prefix", G_CALLBACK(accept_prefix), self->fCommandEntry);
-	gtk_entry_completion_set_model(self->fCommandCompletion, GTK_TREE_MODEL(self->fEnvironmentStore));
-	gtk_entry_completion_set_text_column(self->fCommandCompletion, 0);
-	gtk_entry_completion_set_popup_completion(self->fCommandCompletion, FALSE);
-	gtk_entry_completion_set_inline_completion(self->fCommandCompletion, TRUE); // TRUE); // XXX
-	//gtk_entry_completion_set_inline_selection(self->fCommandCompletion, TRUE); // XXX
-	gtk_entry_completion_set_popup_single_match(self->fCommandCompletion, FALSE);
-	gtk_entry_set_completion(self->fCommandEntry, self->fCommandCompletion);
+	self->fCommandCompleter = Completer_new(self->fCommandEntry, self->fEnvironmentKeys);
+	g_signal_connect(G_OBJECT(self->fCommandEntry), "key-press-event", G_CALLBACK(complete_command), self->fCommandCompleter);
 	gtk_entry_set_activates_default(self->fCommandEntry, TRUE);
 	gtk_widget_show(GTK_WIDGET(self->fCommandEntry));
 	self->fOutputArea = (GtkTextView*) gtk_text_view_new();
