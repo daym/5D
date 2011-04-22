@@ -34,6 +34,7 @@ static void get_free_variables_impl(AST::Node* root, std::set<AST::Symbol*>& bou
 			} else // already bound to something else: make sure not to get rid of it.
 				get_free_variables_impl(consNode->tail->tail, boundNames, freeNames);
 		} else { // application etc.
+			get_free_variables_impl(consNode->head, boundNames, freeNames);
 			get_free_variables_impl(consNode->tail, boundNames, freeNames);
 		}
 	} else if(symbolNode) {

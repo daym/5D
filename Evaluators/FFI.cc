@@ -7,12 +7,17 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #include <string.h>
 #include "Evaluators/FFI"
+#include "Evaluators/Builtins"
 #include "AST/AST"
 
 namespace Evaluators {
 using namespace AST;
 
 int get_native_integer(AST::Node* root) {
+	SmallInteger* rootSmallInteger = dynamic_cast<SmallInteger*>(root);
+	if(rootSmallInteger) {
+		return(rootSmallInteger->value);
+	}
 	/* FIXME */
 	return(0);
 }

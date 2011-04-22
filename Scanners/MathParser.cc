@@ -146,8 +146,11 @@ void MathParser::parse_number(int input) {
 		}
 	}
 	ungetc(input, input_file);
-	input_token = intern("<number>");
-	input_value = literal(strdup(matchtext.str().c_str()));
+	/*input_token = intern("<number>");
+	input_value = literal(strdup(matchtext.str().c_str()));*/
+	input_token = intern("<symbol>");
+	input_value = AST::intern(matchtext.str().c_str());
+	/* actual value will be provided by provide_dynamic_builtins */
 }
 void MathParser::parse_unicode(int input) {
 	using namespace AST;

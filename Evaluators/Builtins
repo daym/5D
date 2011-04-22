@@ -1,5 +1,6 @@
 #ifndef __4D_BUILTINS_H
 #define __4D_BUILTINS_H
+#include <sstream>
 
 namespace Evaluators {
 struct Quoter;
@@ -26,6 +27,19 @@ public:
 	Conser2(AST::Node* head);
 	virtual AST::Node* execute(AST::Node* argument);
 };
+/* use internNative to create. */
+struct SmallInteger : AST::Node {
+	int value;
+	SmallInteger(int value) {
+		this->value = value;
+	}
+	virtual std::string str(void) const {
+		std::stringstream sst;
+		sst << this->value;
+		return(sst.str());
+	}
+};
+AST::Node* provide_dynamic_builtins(AST::Node* body);
 
 };
 

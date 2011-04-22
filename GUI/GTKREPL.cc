@@ -511,6 +511,7 @@ void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destinati
 				AST::Node* result = parser.parse(input_file);
 				if(!result || dynamic_cast<AST::Cons*>(result) == NULL || ((AST::Cons*)result)->head != AST::intern("define")) {
 					result = close_environment(result, REPL_get_environment(self));
+					result = Evaluators::provide_dynamic_builtins(result);
 					result = Evaluators::annotate(result);
 					result = Evaluators::reduce(result);
 				}
