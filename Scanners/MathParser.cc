@@ -335,6 +335,7 @@ AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 	previous_value = input_value;
 	if(expected_token && expected_token != input_token)
 		raise_error(expected_token->name, input_token ? input_token->name : "<nothing>");
+	previous_position = position;
 	parse_token();
 	return(previous_value);
 }
