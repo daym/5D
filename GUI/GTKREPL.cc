@@ -80,12 +80,19 @@ static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer
 	}
 	return(FALSE);
 }
-static gboolean g_confirm_close(GtkWindow* dialog, GdkEvent* event, REPL* REPL) {
-	if(REPL_confirm_close(REPL))
+static gboolean g_confirm_close(GtkWindow* dialog, GdkEvent* event, REPL* self) {
+	if(REPL_confirm_close(self)) {
+		{
+			gint width;
+			gint height;
+			gtk_window_get_size(self->fWidget, &width, &height);
+			Config_set_main_window_width(self->fConfig, width);
+			Config_set_main_window_height(self->fConfig, height);
+		}
+		Config_save(self->fConfig);
 		return(FALSE);
-		//gtk_widget_hide(GTK_WIDGET(dialog));
+	}
 	return(TRUE);
-	//return(!REPL->confirm_close());
 }
 /*  the GdkWindow associated to the widget needs to enable the GDK_FOCUS_CHANGE_MASK mask. */
 static gboolean g_clear_output_selection(GtkWidget* widget, GdkEventFocus* event, GtkTextBuffer* buffer) {
@@ -302,6 +309,7 @@ static Evaluators::Conser conser;
 static Evaluators::HeadGetter headGetter;
 static Evaluators::TailGetter tailGetter;
 static Evaluators::ConsP consP;
+void REPL_add_builtins(struct REPL* self);
 void REPL_init(struct REPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
 	GError* error = NULL;
@@ -389,12 +397,16 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	gtk_box_pack_start(GTK_BOX(self->fCommandBox), GTK_WIDGET(self->fExecuteButton), FALSE, FALSE, 0);
 	/*g_signal_connect_swapped(GTK_DIALOG(self->fWidget), "response", G_CALLBACK(REPL_handle_response), (void*) self);*/
 	gtk_window_set_focus(GTK_WINDOW(self->fWidget), GTK_WIDGET(self->fCommandEntry));
+	/*
 	gtk_tree_view_column_set_sort_column_id(fNameColumn, 0);
 	gtk_tree_view_column_set_sort_indicator(fNameColumn, TRUE);
-	//gtk_tree_view_column_set_sort_order(fNameColumn, GTK_SORT_ASCENDING);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(self->fEnvironmentStore), 0, GTK_SORT_ASCENDING);
+	*/
+	/* just to make sure */
+	REPL_add_builtins(self);
 	self->fConfig = load_Config();
 	{
+		gtk_window_resize(GTK_WINDOW(self->fWidget), Config_get_main_window_width(self->fConfig), Config_get_main_window_height(self->fConfig));
 		char* environment_name;
 		environment_name = Config_get_environment_name(self->fConfig);
 		if(environment_name && environment_name[0]) {
@@ -437,9 +449,10 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 		gtk_action_set_sensitive(get_action(paste), gtk_clipboard_wait_is_text_available(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)));
 		g_signal_connect(G_OBJECT(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)), "owner-change", G_CALLBACK(handle_clipboard_change), self);
 	}
-	/* just to make sure */
+}
+void REPL_add_builtins(struct REPL* self) {
+	REPL_add_to_environment_simple(self, AST::intern("quote"), &quoter); /* keep at the beginning */
 	REPL_add_to_environment_simple(self, AST::intern("loadFromLibrary"), &libraryLoader);
-	REPL_add_to_environment_simple(self, AST::intern("quote"), &quoter);
 	REPL_add_to_environment_simple(self, AST::intern("nil"), NULL);
 	REPL_add_to_environment_simple(self, AST::intern("cons"), &conser);
 	REPL_add_to_environment_simple(self, AST::intern("cons?"), &consP);
@@ -496,9 +509,11 @@ void REPL_execute(struct REPL* self, const char* command, GtkTextIter* destinati
 		try {
 			try {
 				AST::Node* result = parser.parse(input_file);
-				result = close_environment(result, REPL_get_environment(self));
-				result = Evaluators::annotate(result);
-				result = Evaluators::reduce(result);
+				if(!result || dynamic_cast<AST::Cons*>(result) == NULL || ((AST::Cons*)result)->head != AST::intern("define")) {
+					result = close_environment(result, REPL_get_environment(self));
+					result = Evaluators::annotate(result);
+					result = Evaluators::reduce(result);
+				}
 				/*std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
 				gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
@@ -529,7 +544,7 @@ AST::Cons* REPL_box_tree_nodes(struct REPL* self, GtkTreeIter* iter) {
 	char* name;
 	AST::Node* value; /* FIXME test */
 	Scanners::MathParser parser;
-	FILE* input_file;
+	//FILE* input_file;
 	AST::Cons* tail;
 	gtk_tree_model_get(GTK_TREE_MODEL(self->fEnvironmentStore), iter, 0, &name, 1, &value, -1);
 	if(!gtk_tree_model_iter_next(GTK_TREE_MODEL(self->fEnvironmentStore), iter))
@@ -556,6 +571,7 @@ void REPL_clear(struct REPL* self) {
 	gtk_text_buffer_delete(self->fOutputBuffer, &text_start, &text_end);
 	gtk_list_store_clear(GTK_LIST_STORE(self->fEnvironmentStore));
 	g_hash_table_remove_all(self->fEnvironmentKeys);
+	REPL_add_builtins(self);
 }
 char* REPL_get_absolute_path(const char* name) {
 	if(g_path_is_absolute(name))

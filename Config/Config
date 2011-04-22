@@ -5,4 +5,8 @@ struct Config* load_Config(void);
 bool Config_save(struct Config* config);
 char* Config_get_environment_name(struct Config* config);
 void Config_set_environment_name(struct Config* config, const char* value);
+int Config_get_main_window_width(struct Config* config);
+int Config_get_main_window_height(struct Config* config);
+void Config_set_main_window_width(struct Config* config, int value);
+void Config_set_main_window_height(struct Config* config, int value);
 #endif /* ndef __4D_CONFIG_H */

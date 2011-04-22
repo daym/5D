@@ -6,6 +6,7 @@
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "AST/AST"
+#include "Scanners/MathParser"
 
 namespace Evaluators {
 using namespace AST;
@@ -121,7 +122,6 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 		} else { // application etc.
 			// headNode
 			AST::Node* newHeadNode = annotate_impl(headNode, boundNames, boundNamesSet);
-			//AST::Node* newTailNode = (dynamic_cast<Quoter*>(newHeadNode) == NULL) ? annotate_impl(consNode->tail, boundNames, boundNamesSet) : consNode->tail;
 			AST::Node* newTailNode = annotate_impl(consNode->tail, boundNames, boundNamesSet);
 			AST::Cons* newTailCons = dynamic_cast<AST::Cons*>(newTailNode);
 			if(newHeadNode == headNode && newTailNode == consNode->tail)

@@ -8,6 +8,8 @@
 struct Config {
 	GKeyFile* key_file;
 	std::string environment_name;
+	int main_window_width;
+	int main_window_height;
 };
 struct Config* load_Config(void) {
 	const char** system_config_dirs;
@@ -21,6 +23,8 @@ struct Config* load_Config(void) {
 	config_dir_name = g_get_user_config_dir();
 	system_config_dirs = (const char**) g_get_system_config_dirs();
 	config = new Config;
+	config->main_window_width = 400;
+	config->main_window_height = 400;
 	config->key_file = g_key_file_new();
 	g_key_file_set_list_separator(config->key_file, ':');
 	system_config_dir_count = g_strv_length((gchar**) system_config_dirs);
@@ -40,6 +44,10 @@ struct Config* load_Config(void) {
 	g_free(full_name);
 	environment_name = g_key_file_get_string(config->key_file, "Global", "Environment", &error);
 	config->environment_name = environment_name ? environment_name : "";
+	config->main_window_width = g_key_file_get_integer(config->key_file, "MainWindow", "Width", NULL);
+	config->main_window_height = g_key_file_get_integer(config->key_file, "MainWindow", "Height", NULL);
+	if(!config->main_window_width || !config->main_window_height)
+		config->main_window_height = config->main_window_width = 400;
 	g_free(environment_name);
 	g_key_file_free(config->key_file);
 	return(config);
@@ -55,6 +63,8 @@ bool Config_save(struct Config* config) {
 	g_mkdir_with_parents(g_strdup_printf("%s%s", config_dir_name, "4D"), 0775);
 	full_name = g_strdup_printf("%s%s", config_dir_name, CONFIG_NAME);
 	g_key_file_set_string(config->key_file, "Global", "Environment", config->environment_name.c_str());
+	g_key_file_set_integer(config->key_file, "MainWindow", "Width", config->main_window_width);
+	g_key_file_set_integer(config->key_file, "MainWindow", "Height", config->main_window_height);
 	key_file_contents = g_key_file_to_data(config->key_file, &size, &error);
 	if(!key_file_contents || !size || !g_file_set_contents(full_name, key_file_contents, size, &error)) {
 		g_warning("could not save config \"%s\": %s", full_name, error ? error->message : "unknown error");
@@ -71,4 +81,16 @@ char* Config_get_environment_name(struct Config* config) {
 }
 void Config_set_environment_name(struct Config* config, const char* value) {
 	config->environment_name = value ? value : "";
+}
+int Config_get_main_window_width(struct Config* config) {
+	return(config->main_window_width);
+}
+int Config_get_main_window_height(struct Config* config) {
+	return(config->main_window_height);
+}
+void Config_set_main_window_width(struct Config* config, int value) {
+	config->main_window_width = value;
+}
+void Config_set_main_window_height(struct Config* config, int value) {
+	config->main_window_height = value;
 }

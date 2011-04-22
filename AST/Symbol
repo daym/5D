@@ -8,6 +8,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "AST/AST"
+#define G_4D_GNUC_PURE __attribute__ ((pure))
 
 namespace AST {
 
@@ -24,7 +25,7 @@ public:
 	SymbolReference(struct Symbol* symbol, int index);
 	virtual std::string str(void) const;
 };
-Symbol* intern(const char* name);
+Symbol* intern(const char* name) G_4D_GNUC_PURE;
 
 };
 #endif /* ndef __AST_SYMBOL_H */

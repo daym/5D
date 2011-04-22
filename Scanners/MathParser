@@ -50,6 +50,7 @@ public:
 int get_operator_precedence(AST::Symbol* symbol);
 
 extern int apply_precedence_level;
+bool macro_operator_P(AST::Node* operator_);
 
 }; /* end namespace Scanners */
 

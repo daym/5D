@@ -292,7 +292,7 @@ static bool symbol1_char_P(int input) {
 static bool symbol_char_P(int input) {
 	return symbol1_char_P(input) 
 	    || (input >= '0' && input <= '9') 
-	    || input == '_';
+	    || input == '_' || input == '?';
 	  /*  || input == '^' not really part of the symbol name any more. */
 }
 void MathParser::parse_symbol(int input, int special_prefix) {
@@ -381,8 +381,8 @@ AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 	else
 		return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
 }
-static bool macro_operator_P(AST::Node* operator_) {
-	return(operator_ == intern("define"));
+bool macro_operator_P(AST::Node* operator_) {
+	return(operator_ == intern("define") || operator_ == intern("quote"));
 }
 AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 	if(macro_operator_P(node))
@@ -404,6 +404,8 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 	// TODO subst, include, cond, make-list, quote, case.
 	if(operand_1 == intern("define")) {
 		return(parse_define(operand_1));
+	} else if(operand_1 == intern("quote")) {
+		return(cons(operand_1, cons(parse_expression(), NULL)));
 	} else {
 		raise_error("<known_macro>", "<unknown_macro>");
 		return(NULL);
