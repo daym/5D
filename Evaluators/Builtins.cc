@@ -9,8 +9,11 @@ bool Quoter::eager_P(void) const {
 	return(false);
 }
 AST::Node* Quoter::execute(AST::Node* argument) {
+	/* there's a special case in the annotator, so this cannot happen:
 	AST::SymbolReference* ref = dynamic_cast<AST::SymbolReference*>(argument);
-	return(ref ? ref->symbol : argument); /* prevent evaluation by destroying the symbol reference */
+	return(ref ? ref->symbol : argument);
+	*/
+	return(argument);
 }
 AST::Node* ProcedureP::execute(AST::Node* argument) {
 	if(argument != NULL && (dynamic_cast<Operation*>(argument) != NULL))

@@ -96,6 +96,14 @@ static int get_variable_index(AST::Node* root) {
 	else
 		return(-1);
 }
+static bool quote_P(AST::Node* root) {
+	if(root == AST::intern("quote"))
+		return(true);
+	else {
+		AST::SymbolReference* ref = dynamic_cast<AST::SymbolReference*>(root);
+		return(ref && ref->symbol == AST::intern("quote"));
+	}
+}
 AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& boundNamesSet) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(root);
@@ -122,7 +130,8 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 		} else { // application etc.
 			// headNode
 			AST::Node* newHeadNode = annotate_impl(headNode, boundNames, boundNamesSet);
-			AST::Node* newTailNode = annotate_impl(consNode->tail, boundNames, boundNamesSet);
+			//AST::Node* newTailNode = annotate_impl(consNode->tail, boundNames, boundNamesSet);
+			AST::Node* newTailNode = quote_P(newHeadNode) ? consNode->tail : annotate_impl(consNode->tail, boundNames, boundNamesSet);
 			AST::Cons* newTailCons = dynamic_cast<AST::Cons*>(newTailNode);
 			if(newHeadNode == headNode && newTailNode == consNode->tail)
 				return(consNode);
