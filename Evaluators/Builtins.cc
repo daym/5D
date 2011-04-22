@@ -317,14 +317,23 @@ AST::Node* TailGetter::execute(AST::Node* argument) {
 	else
 		return(NULL); // FIXME proper error message!
 }
+static std::map<AST::Symbol*, AST::Node*> cachedDynamicBuiltins;
+static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
+	const char* name;
+	name = symbol->name;
+	if(name[0] >= '0' && name[0] <= '9') { /* hello, number */
+		int value = atoi(name); /* FIXME error checking */
+		return(internNative(value));
+	} else
+		return(NULL);
+}
 AST::Node* provide_dynamic_builtins_impl(AST::Node* body, std::set<AST::Symbol*>::const_iterator end_iter, std::set<AST::Symbol*>::const_iterator iter) {
 	if(iter == end_iter)
 		return(body);
 	else {
 		AST::Symbol* name = *iter;
-		AST::Node* value = NULL;
+		AST::Node* value = get_dynamic_builtin(name);
 		++iter;
-		printf("unknown %s\n", name->name);
 		return(value ? Evaluators::close(name, value, provide_dynamic_builtins_impl(body, end_iter, iter)) : provide_dynamic_builtins_impl(body, end_iter, iter));
 	}
 }
