@@ -1,3 +1,4 @@
 ((\x quote x) 3)
 => x
-
+(quote quote)
+=> quote
