@@ -72,7 +72,7 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			limited_to_LATEX(consNode->head, output, operator_precedence); /* operator */
 			if(!consNode->tail->tail || consNode->tail->tail->tail)
 				throw std::runtime_error("invalid binary math operation");
-			limited_to_LATEX(consNode->tail->tail->head, output, operator_precedence);
+			limited_to_LATEX(consNode->tail->tail->head, output, operator_precedence-1);
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\right)";
 		} else { /* function call, maybe */
@@ -80,10 +80,10 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\left(";
 			AST::Cons* args;
-			limited_to_LATEX(consNode->head, output, operator_precedence_limit); /* FIXME precedence */
+			limited_to_LATEX(consNode->head, output, operator_precedence); /* FIXME precedence */
 			output << " ";
-			for(args = consNode->tail; args; args = args->tail) {
-				limited_to_LATEX(args->head, output, operator_precedence_limit); /* FIXME precedence */
+			for(args = consNode->tail; args; args = args->tail) { /* actually just one, so didn't pay much attention to operator precedence limit below */
+				limited_to_LATEX(args->head, output, operator_precedence-1); /* FIXME precedence */
 				if(args->tail)
 					output << " ";
 			}
@@ -94,7 +94,7 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 	} else if(node)
 		output << "\\mathrm{" << node->str() << "}";
 	else
-		output << "()";
+		output << "nil";
 }
 void to_LATEX(AST::Node* node, std::ostream& output) {
 	int operator_precedence_limit = 1000;
