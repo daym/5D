@@ -45,6 +45,8 @@ struct LATEXChildData {
 };
 static void get_cached_file_name(struct GTKLATEXGenerator* self, const char* document, char* destination, size_t destination_size) {
 	int i;
+	if(!document)
+		abort();
 	if(strlen(document) > 100) {
 		GChecksum* checksum;
 		checksum = g_checksum_new(G_CHECKSUM_MD5);
@@ -68,8 +70,9 @@ static void get_cached_file_name(struct GTKLATEXGenerator* self, const char* doc
 static void GTKLATEXGenerator_handle_LATEX_image(struct GTKLATEXGenerator* self, GtkTextIter* iter, const char* document, const char* alt_text) {
 	GdkPixbuf* pixbuf;
 	char name[PATH_MAX];
-	get_cached_file_name(self, document, name, PATH_MAX);
-	pixbuf = gdk_pixbuf_new_from_file(name, NULL);
+	if(document)
+		get_cached_file_name(self, document, name, PATH_MAX);
+	pixbuf = document ? gdk_pixbuf_new_from_file(name, NULL) : NULL;
 	if(pixbuf) {
 		gtk_text_buffer_insert_pixbuf(gtk_text_iter_get_buffer(iter), iter, pixbuf);
 		g_object_unref(G_OBJECT(pixbuf));
@@ -98,14 +101,16 @@ struct GTKLATEXGenerator* GTKLATEXGenerator_new(void) {
 void GTKLATEXGenerator_enqueue(struct GTKLATEXGenerator* self, const char* document, const char* alt_text, GtkTextIter* destination) {
 	GError* error;
 	char name[PATH_MAX];
-	get_cached_file_name(self, document, name, PATH_MAX);
-	if(g_file_test(name, G_FILE_TEST_EXISTS)) {
-		GTKLATEXGenerator_handle_LATEX_image(self, destination, document, alt_text);
-		return;
-	}
 	if(!document) {
 		GTKLATEXGenerator_handle_LATEX_image(self, destination, NULL, alt_text);
 		return;
+	}
+	{
+		get_cached_file_name(self, document, name, PATH_MAX);
+		if(g_file_test(name, G_FILE_TEST_EXISTS)) {
+			GTKLATEXGenerator_handle_LATEX_image(self, destination, document, alt_text);
+			return;
+		}
 	}
 	const char* argv[] = {
 		"l2p",
