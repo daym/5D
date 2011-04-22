@@ -81,11 +81,11 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 				output << "\\left(";
 			AST::Cons* args;
 			limited_to_LATEX(consNode->head, output, operator_precedence); /* FIXME precedence */
-			output << " ";
+			//output << "\\:";
 			for(args = consNode->tail; args; args = args->tail) { /* eew */
 				limited_to_LATEX(args->head, output, operator_precedence); /* FIXME precedence */
 				if(args->tail)
-					output << " ";
+					output << "\\:";
 			}
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\right)";
@@ -95,11 +95,11 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 				output << "\\left(";
 			AST::Cons* args;
 			limited_to_LATEX(consNode->head, output, operator_precedence); /* FIXME precedence */
-			output << " ";
+			output << "\\:";
 			for(args = consNode->tail; args; args = args->tail) { /* actually just one, so didn't pay much attention to operator precedence limit below */
 				limited_to_LATEX(args->head, output, operator_precedence-1); /* FIXME precedence */
 				if(args->tail)
-					output << " ";
+					output << "\\:";
 			}
 			/* TODO what to do with more arguments, if that's even possible? */
 			if(operator_precedence > operator_precedence_limit)
