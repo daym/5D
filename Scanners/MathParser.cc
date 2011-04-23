@@ -92,7 +92,7 @@ void MathParser::parse_operator(int input) {
 		}
 		break;
 	case '%':
-		input_value = input_token = intern("/");
+		input_value = input_token = intern("%");
 		break;
 	case '=':
 		input_value = input_token = intern("=");
