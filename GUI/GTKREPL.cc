@@ -121,6 +121,7 @@ char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIte
 	gchar* image_match;
 	gchar* next_text;
 	gchar* temp_result;
+	int jitter = 0;
 	result = g_strdup("");
 	text = gtk_text_buffer_get_slice(self->fOutputBuffer, beginning, end, FALSE);
 	orig_text = text;
@@ -143,7 +144,9 @@ char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIte
 			GdkPixbuf* pixbuf;
 			GtkTextIter iter;
 			offset = g_utf8_pointer_to_offset(orig_text, image_match);
-			gtk_text_buffer_get_iter_at_offset(self->fOutputBuffer, &iter, offset);
+			g_warning("offset %d", offset);
+			gtk_text_buffer_get_iter_at_offset(self->fOutputBuffer, &iter, gtk_text_iter_get_offset(beginning) + offset - jitter);
+			jitter += 2; /* FIXME */
 			pixbuf = gtk_text_iter_get_pixbuf(&iter);
 			if(pixbuf) {
 				const char* alt_text;
@@ -153,6 +156,9 @@ char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIte
 					g_free(result);
 					result = temp_result;
 				}
+			} else {
+				if(image_match != text + strlen(text))
+					g_warning("oops");
 			}
 		}
 		text = next_text;
@@ -655,11 +661,18 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* o_text) {
 			try {
 				input_file = fmemopen((void*) next_text, strlen(next_text), "r");
 				content = parser.parse_S_Expression(input_file);
-				printf("PARSED: %s\n", content->str().c_str());
 				fclose(input_file);
 				gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);
 				REPL_enqueue_LATEX(self, content, &text_end);
 				next_text += parser.get_position();
+				/* backtrack whitespace we skipped over */
+				for(int i = 0; i < parser.get_position(); ++i) {
+					char c = *(next_text - 1);
+					if(c == '\n' || c == '\t' || c == ' ')
+						--next_text;
+					else
+						break;
+				}
 			} catch(Scanners::ParseException& e) {
 				fclose(input_file);
 				continue;
