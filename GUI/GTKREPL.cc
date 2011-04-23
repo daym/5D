@@ -144,7 +144,7 @@ char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIte
 			GdkPixbuf* pixbuf;
 			GtkTextIter iter;
 			offset = g_utf8_pointer_to_offset(orig_text, image_match);
-			g_warning("offset %d", offset);
+			//g_warning("offset %d", offset);
 			gtk_text_buffer_get_iter_at_offset(self->fOutputBuffer, &iter, gtk_text_iter_get_offset(beginning) + offset - jitter);
 			jitter += 2; /* FIXME */
 			pixbuf = gtk_text_iter_get_pixbuf(&iter);
@@ -158,7 +158,7 @@ char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIte
 				}
 			} else {
 				if(image_match != text + strlen(text))
-					g_warning("oops");
+					g_warning("oops... could not find LATEX image in text buffer");
 			}
 		}
 		text = next_text;
