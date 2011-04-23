@@ -389,10 +389,10 @@ AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 		return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
 }
 bool macro_operator_P(AST::Node* operator_) {
-	return(operator_ == intern("define")); //  || operator_ == intern("quote"));
+	return(operator_ == intern("define") || operator_ == intern("quote"));
 }
 AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
-	if(macro_operator_P(node))
+	if(B_process_macros && macro_operator_P(node))
 		return(parse_macro(node));
 	else
 		return(NULL);
@@ -410,14 +410,18 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 	//return(cons(operand_1, cons(parse_expression(), NULL)));
 }
 AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
-	return(cons(operand_1, cons(parse_expression(), NULL)));
+	AST::Node* result;
+	B_process_macros = false; /* to make (quote define) work; TODO do this in a nicer way? How? */
+	result = cons(operand_1, cons(parse_expression(), NULL));
+	B_process_macros = true;
+	return(result);
 }
 AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 	// TODO subst, include, cond, make-list, quote, case.
 	if(operand_1 == intern("define")) {
 		return(parse_define(operand_1));
-	//} else if(operand_1 == intern("quote")) {
-	//	return(parse_quote(operand_1));
+	} else if(operand_1 == intern("quote")) {
+		return(parse_quote(operand_1));
 	} else {
 		raise_error("<known_macro>", "<unknown_macro>");
 		return(NULL);

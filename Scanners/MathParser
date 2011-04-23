@@ -17,6 +17,7 @@ namespace Scanners {
 class MathParser : public Scanner {
 protected:
 	AST::Node* input_value;
+	bool B_process_macros;
 private:
 	bool allow_args;
 	virtual void parse_token(void);

@@ -190,6 +190,7 @@ static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 	g_free(text);
 }
 static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePath* path, GtkTreeViewColumn* column, GtkTreeView* view) {
+	using namespace AST;
 	char* command;
 	bool B_ok = false;
 	GtkTreeModel* model;
@@ -201,14 +202,15 @@ static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePat
 		gtk_tree_model_get(model, &iter, 0, &command, -1);
 		if(!command)
 			return;
-		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+		/*gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
 		gtk_text_buffer_insert(self->fOutputBuffer, &end, "\ndefine ", -1);
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
 		gtk_text_buffer_insert(self->fOutputBuffer, &end, command, -1);
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-		gtk_text_buffer_insert(self->fOutputBuffer, &end, " ", -1);
+		gtk_text_buffer_insert(self->fOutputBuffer, &end, " ", -1);*/
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
 		/* TODO ensure newline */
+		command = g_strdup_printf("(cons (quote define) (cons (quote %s) (cons %s nil)))", command, command);
 		B_ok = REPL_execute(self, command, &end);
 		g_free(command);
 	}
