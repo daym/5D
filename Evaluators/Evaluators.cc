@@ -213,9 +213,13 @@ AST::Node* reduce(AST::Node* term) {
 		} else {
 			// TODO better error message.
 			AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(fn);
-			if(fnName)
-				throw EvaluationException(std::string(std::string("unknown operation \"") + fnName->name + "\"").c_str());
-			else {
+			if(fnName){
+				if(get_application_operator(term) == fn && get_application_operand(term) == argument)
+					return(term);
+				else
+					return(AST::cons(fn, AST::cons(argument, NULL)));
+				//throw EvaluationException(std::string(std::string("unknown operation \"") + fnName->name + "\"").c_str());
+			} else {
 				Evaluators::Operation* fnOperation = dynamic_cast<Evaluators::Operation*>(fn);
 				if(fnOperation) {
 					return(fnOperation->execute(argument));
