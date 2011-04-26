@@ -70,12 +70,12 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 	if(iter != p->knownProcedures.end())
 		return(iter->second);
 	else {
-		void* sym = GetProcAddress(p->library, nameSymbol->name);
+		FARPROC sym = GetProcAddress(p->library, nameSymbol->name);
 		if(!sym) {
 			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", p->name.c_str(), nameSymbol->name);
 			return(NULL);
 		}
-		p->knownProcedures[nameSymbol] = new CProcedure(sym);
+		p->knownProcedures[nameSymbol] = new CProcedure((void*) sym);
 		return(p->knownProcedures[nameSymbol]);
 	}
 }
