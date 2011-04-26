@@ -188,6 +188,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\FFIs\ArgumentMarshaller.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\AST\AST.cc"
 				>
 			</File>
@@ -201,6 +205,10 @@
 			</File>
 			<File
 				RelativePath="..\Compilers\CallGen.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\FFIs\CallMarshaller.cc"
 				>
 			</File>
 			<File
@@ -237,6 +245,10 @@
 			</File>
 			<File
 				RelativePath="..\GUI\REPL.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\FFIs\ResultMarshaller.cc"
 				>
 			</File>
 			<File
@@ -333,6 +345,10 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath="..\FFIs\ArgumentMarshaller"
+			>
+		</File>
+		<File
 			RelativePath="..\AST\AST"
 			>
 		</File>
@@ -346,6 +362,10 @@
 		</File>
 		<File
 			RelativePath="..\Compilers\CallGen"
+			>
+		</File>
+		<File
+			RelativePath="..\FFIs\CallMarshaller"
 			>
 		</File>
 		<File
@@ -394,6 +414,10 @@
 		</File>
 		<File
 			RelativePath="..\GUI\REPL"
+			>
+		</File>
+		<File
+			RelativePath="..\FFIs\ResultMarshaller"
 			>
 		</File>
 		<File

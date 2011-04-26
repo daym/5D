@@ -1,5 +1,6 @@
 #include <string>
 #include <stdio.h>
+#include <assert.h>
 #include "stdafx.h"
 #include "resource.h"
 #define WIN32_LEAN_AND_MEAN
@@ -13,9 +14,11 @@
 #include "AST/AST"
 #include "Evaluators/Evaluators"
 #include "Config/Config"
+#include "FFIs/WIN32"
 
 namespace GUI {
 void REPL_append_to_output_buffer(struct REPL* self, const char* text);
+
 
 static void ShowWIN32Diagnostics(void) {
 	LPVOID lpMsgBuf;
@@ -142,6 +145,9 @@ struct REPL {
 	std::wstring fSearchTerm;
 	bool fBSearchUpwards;
 	bool fBSearchCaseSensitive;
+	AST::Cons* fTailEnvironment;
+	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::Cons* fTailUserEnvironmentFrontier;
 };
 
 HWND REPL_get_window(struct REPL* self) {
@@ -533,18 +539,9 @@ void REPL_init(struct REPL* self, HWND parent) {
 bool REPL_get_file_modified(struct REPL* self) {
 	return(self->B_file_modified);
 }
-void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
-	AST::Cons* definitionCons = dynamic_cast<AST::Cons*>(definition);
-	if(!definitionCons || definitionCons->head != AST::intern("define") || !definitionCons->tail)
-		return;
-	AST::Symbol* parameter = dynamic_cast<AST::Symbol*>(definitionCons->tail->head);
-	if(!parameter)
-		return;
-	AST::Node* body = definitionCons->tail->tail;
-	if(!body)
-		return;
+void REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::Node* value) {
 	//std::string bodyString = body->str();
-	EnsureInEnvironment(self->dialog, FromUTF8(parameter->name), body);
+	EnsureInEnvironment(self->dialog, FromUTF8(parameter->name), value);
 	REPL_set_file_modified(self, true);
 }
 /* TODO abstract into common place */
@@ -582,6 +579,7 @@ char* REPL_get_output_buffer_text(struct REPL* self) {
 	return(ToUTF8(value));
 }
 void REPL_clear(struct REPL* self) {
+	self->fTailEnvironment = self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier = NULL;
 	SetDlgItemTextCXX(self->dialog, IDC_OUTPUT, _T(""));
 	while(SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LB_DELETESTRING, 0, 0) > 0)
 		;
@@ -607,3 +605,5 @@ AST::Cons* REPL_get_environment(struct REPL* self) {
 }
 
 }; // end namespace GUI
+
+#include "GUI/REPLEnvironment"

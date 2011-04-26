@@ -48,6 +48,7 @@ BEGIN
         MENUITEM "&Execute\tF5",                IDM_FILE_EXECUTE
         MENUITEM "&Open...\tF3",                IDM_FILE_OPEN
         MENUITEM "&Save\tF2",                   IDM_FILE_SAVE
+        MENUITEM "Save &as...",                 IDM_FILE_SAVE_AS
         MENUITEM "E&xit\tAlt+X",                IDM_EXIT
     END
     POPUP "&Edit"

@@ -5,58 +5,90 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <windows.h>
 #include "stdafx.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <stdio.h>
+#include <assert.h>
+#include <string.h>
+#include <sstream>
+#include <map>
+#include "AST/Symbol"
 #include "Evaluators/FFI"
-#include "FFIs/WIN32"
-#include "FFIs/Trampoline"
+#include "Evaluators/Builtins"
+#include "FFIs/POSIX"
+//#include "FFIs/Trampoline"
+
 namespace FFIs {
 using namespace Evaluators;
-struct CP {
-	AST::Symbol* fn_name;
-	AST::Symbol* library_name;
-	AST::Symbol* signature;
-	HMODULE library;
-	FARPROC value;
-	NativeBaseType result_type;
-	NativeBaseType argument_types[16];
-	/* TODO int minimum_argument_count; */
+
+struct LibraryLoaderP {
+	std::map<AST::Symbol*, CLibrary*> knownLibraries;
 };
-C::C(AST::Symbol* fn, AST::Symbol* result_signature, AST::Symbol* signature, AST::Symbol* library, bool B_pure) {
-	this->p = new CP();
-	this->B_pure = B_pure;
-	p->fn_name = fn;
-	p->library_name = library;
-	std::wstring library_W = FromUTF8(library->name);
-	p->library = LoadLibrary(library_W.c_str()); /* TODO cache */
-	p->value = GetProcAddress(p->library, fn->name);
-	p->signature = signature;
-	p->result_type = BT_NONE; /* TODO */
-	for(int i = 0; i < 16; ++i)
-		p->argument_types[i] = BT_NONE;
+LibraryLoader::LibraryLoader(void) {
+	p = new LibraryLoaderP();
 }
-/* TODO Make this FPU-safe, X8664-safe. Long term, use the Compiler (see "Compilers").  */
-static void* use_main_trampoline(void* fn, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6, void* a7, void* a8, void* a9, void* a10, void* a11, void *a12, void* a13, void* a14, void* a15, void* a16) {
-	__asm {
-		pop eax
-		call eax
-		push eax
+std::string LibraryLoader::str(void) const {
+	return("fromLibrary");
+}
+AST::Node* LibraryLoader::executeLowlevel(AST::Node* libraryName) {
+	if(string_P(libraryName))
+		libraryName = AST::intern(((AST::String*)libraryName)->text.c_str());
+	AST::Symbol* libraryNameSymbol = dynamic_cast<AST::Symbol*>(libraryName);
+	if(libraryNameSymbol == NULL)
+		return(NULL);
+	std::map<AST::Symbol*, CLibrary*>::const_iterator iter = p->knownLibraries.find(libraryNameSymbol);
+	if(iter != p->knownLibraries.end())
+		return(iter->second);
+	else {
+		p->knownLibraries[libraryNameSymbol] = new CLibrary(libraryNameSymbol->name);
+		return(p->knownLibraries[libraryNameSymbol]);
 	}
 }
-AST::Node* C::executeLowlevel(AST::Node* argument) {
-	void* result;
-	void* a[16] = {0};
-	AST::Cons* args = dynamic_cast<AST::Cons*>(argument);
-	if(args) {
-		int i;
-		for(i = 0; i < 16; ++i, args = args->tail) {
-			a[i] = get_native(p->argument_types[i], args->head);
+struct CLibraryP {
+	HMODULE library;
+	std::string name;
+	std::map<AST::Symbol*, CProcedure*> knownProcedures;
+};
+CLibrary::CLibrary(const char* name) {
+	p = new CLibraryP();
+	p->name = name;
+	std::wstring nameW = FromUTF8(name);
+	p->library = LoadLibraryW(nameW.c_str());
+	if(!p->library) {
+		// FIXME GetWindowsErrorBlah(name);
+	}
+}
+AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
+	/* argument is the name (symbol). Result is a CProcedure */
+	if(string_P(argument))
+		argument = AST::intern(((AST::String*)argument)->text.c_str());
+	AST::Symbol* nameSymbol = dynamic_cast<AST::Symbol*>(argument);
+	if(nameSymbol == NULL)
+		return(NULL);
+	std::map<AST::Symbol*, CProcedure*>::const_iterator iter = p->knownProcedures.find(nameSymbol);
+	if(iter != p->knownProcedures.end())
+		return(iter->second);
+	else {
+		void* sym = GetProcAddress(p->library, nameSymbol->name);
+		if(!sym) {
+			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", p->name.c_str(), nameSymbol->name);
+			return(NULL);
 		}
-	} else 
-		a[0] = get_native(p->argument_types[0], argument);
-	/* TODO minimum_argument_count */
-	result = use_main_trampoline(p->value, a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]);
-	return(NULL); /* FIXME */
+		p->knownProcedures[nameSymbol] = new CProcedure(sym);
+		return(p->knownProcedures[nameSymbol]);
+	}
+}
+std::string CLibrary::str(void) const {
+	return(AST::cons(AST::intern("fromLibrary"), AST::cons(new AST::String(p->name), NULL)))->str();
+	//return(std::string("(fromLibrary '") + p->name + ")"); // FIXME nicer
+}
+CProcedure::CProcedure(void* native) : 
+	AST::Box(native)
+{
+}
+std::string CProcedure::str(void) const {
+	return("<CProcedure>"); // FIXME nicer
 }
 
 };

@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/MathParser"
 #include "AST/Symbol"
 #include "AST/AST"
+#include "stdafx.h"
 
 namespace Scanners {
 using namespace AST;
