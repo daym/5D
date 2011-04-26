@@ -224,7 +224,8 @@ AST::Node* reduce(AST::Node* term) {
 				if(fnOperation) {
 					return(fnOperation->execute(argument));
 				} else
-					throw EvaluationException("evaluation error");
+					return(term);
+					//throw EvaluationException("evaluation error");
 			}
 			return(term);
 		}

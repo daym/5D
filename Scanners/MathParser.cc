@@ -389,7 +389,8 @@ AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 	} else if(operator_ == intern("apply"))
 		return(cons(operand_1, cons(operand_2, NULL)));
 	else
-		return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
+		return(cons(cons(operator_, cons(operand_1, NULL)), cons(operand_2, NULL)));
+		//return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
 }
 bool macro_operator_P(AST::Node* operator_) {
 	return(operator_ == intern("define") || operator_ == intern("quote"));
