@@ -1,0 +1,2 @@
+semmel 2+3
+(+ (semmel 2) 3)
