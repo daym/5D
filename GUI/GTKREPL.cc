@@ -340,7 +340,8 @@ static void REPL_handle_find(struct REPL* self, GtkAction* action) {
 	REPL_find_text(self, text, self->fBSearchUpwards, self->fBSearchCaseSensitive);
 }
 static void REPL_handle_find_next(struct REPL* self, GtkAction* action) {
-	REPL_find_text(self, self->fSearchTerm, self->fBSearchUpwards, self->fBSearchCaseSensitive);
+	if(self->fSearchTerm)
+		REPL_find_text(self, self->fSearchTerm, self->fBSearchUpwards, self->fBSearchCaseSensitive);
 }
 static void handle_about_response(GtkDialog* dialog, gint response_id, gpointer user_data) {
 	gtk_widget_hide(GTK_WIDGET(dialog));
