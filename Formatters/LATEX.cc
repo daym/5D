@@ -55,7 +55,7 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 		// TODO output << "\\operatorname{" << node->str() << "}"; // "\\math{" << node->str() << "}";
 	} else if(consNode) {
 		/* ((- 3) 2)   => 3-2
-		 or (- 3)      => -3 */
+		 or (0- 3)      => -3 */
 		AST::Cons* innerCons = dynamic_cast<AST::Cons*>(consNode->head);
 		operator_precedence = get_operator_precedence(dynamic_cast<AST::Symbol*>(innerCons ? innerCons->head : NULL));
 		/*if(operator_precedence == -1)
@@ -116,6 +116,7 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 void to_LATEX(AST::Node* node, std::ostream& output) {
 	int operator_precedence_limit = 1000;
 	limited_to_LATEX(node, output, operator_precedence_limit);
+	limited_to_LATEX(node, std::cout, operator_precedence_limit);
 }
 
 }; // end namespace Formatters
