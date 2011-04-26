@@ -36,6 +36,7 @@ private:
 public:
 	Conser2(AST::Node* head);
 	virtual AST::Node* execute(AST::Node* argument);
+	virtual std::string str(void) const;
 };
 #define DECLARE_SMALL_VALUE(P, T) \
 /* use internNative to create. */ \
