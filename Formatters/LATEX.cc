@@ -21,6 +21,7 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);
 	if(symbolNode) {
+		output << "\\mathrm{";
 		std::string text = symbolNode->str();
 		const unsigned char* inputString = (const unsigned char*) text.c_str();
 		if(inputString[0] == '\\') {
@@ -53,6 +54,7 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 		} /*else
 			output << text;*/
 		// TODO output << "\\operatorname{" << node->str() << "}"; // "\\math{" << node->str() << "}";
+		output << "}";
 	} else if(consNode) {
 		/* ((- 3) 2)   => 3-2
 		 or (0- 3)      => -3 */
@@ -60,13 +62,13 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 		operator_precedence = get_operator_precedence(dynamic_cast<AST::Symbol*>(innerCons ? innerCons->head : NULL));
 		/*if(operator_precedence == -1)
 			operator_precedence = apply_precedence_level;*/
-		if(operator_precedence != -1 && consNode->head == AST::intern("/")) { /* fraction */
+		if(operator_precedence != -1 && innerCons && innerCons->head == AST::intern("/")) { /* fraction */
 			output << "{\\frac{";
-			limited_to_LATEX(consNode->tail->head, output, operator_precedence);
+			limited_to_LATEX(innerCons->tail->head, output, operator_precedence);
 			output << "}{";
-			if(!consNode->tail->tail || consNode->tail->tail->tail)
+			if(!consNode->tail || !innerCons->tail)
 				throw std::runtime_error("invalid fraction");
-			limited_to_LATEX(consNode->tail->tail->head, output, operator_precedence);
+			limited_to_LATEX(consNode->tail->head, output, operator_precedence);
 			output << "}}";
 		} else if(operator_precedence != -1) { /* actual binary math operator */
 			if(operator_precedence > operator_precedence_limit)
