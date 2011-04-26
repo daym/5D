@@ -110,7 +110,16 @@ void ClearRichTextSelection(HWND control) {
 	iTotalTextLength = GetWindowTextLength(control); // FIXME W
 	SendMessage(control, EM_SETSEL, (WPARAM)(int)iTotalTextLength, (LPARAM)(int)iTotalTextLength);
 }
-
+static std::wstring GetListBoxEntryStringCXX(HWND control, int index) {
+	std::wstring result;
+	int length = SendMessageW(control, LB_GETTEXTLEN, (WPARAM) index, (LPARAM) 0);
+	TCHAR* buffer = new TCHAR[length + 1];
+	buffer[0] = 0;
+	SendMessageW(control, LB_GETTEXT, (WPARAM) index, (LPARAM) buffer);
+	result = buffer;
+	delete buffer;
+	return(result);
+}
 /** ensures that an entry exists in the environment. */
 void EnsureInEnvironment(HWND dialog, const std::wstring& name, AST::Node* value) {
 	int index = SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_ADDSTRING, 0, (LPARAM) name.c_str());
@@ -332,6 +341,27 @@ void REPL_handle_find(struct REPL* self) {
 	const char* text = NULL;
 	REPL_show_search_dialog(self);
 }
+static void REPL_handle_environment_row_activation(struct REPL* self, HWND list, int index) {
+	using namespace AST;
+	char* command;
+	bool B_ok = false;
+	if(index > -1) {
+		command = NULL;
+		std::wstring name = GetListBoxEntryStringCXX(GetDlgItem(self->dialog, IDC_ENVIRONMENT), index);
+		command = ToUTF8(name);
+		if(!command)
+			return;
+		/* TODO ensure newline */
+		std::stringstream sst;
+		std::string escapedName = AST::intern(command)->str();
+		sst << "(cons (quote define) (cons (quote " << escapedName << ") (cons " << escapedName << " nil)))";
+		std::string commandStr = sst.str();
+		//command = g_strdup_printf("(cons (quote define) (cons (quote %s) (cons %s nil)))", command, command);
+		B_ok = REPL_execute(self, commandStr.c_str());
+	}
+	if(B_ok)
+		SendMessageW(list, LB_SETCURSEL, (WPARAM) -1, 0);
+}
 INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
 	UNREFERENCED_PARAMETER(lParam);
 	struct REPL* self;
@@ -454,9 +484,11 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		case IDC_ENVIRONMENT:
 			{
 				if(HIWORD(wParam) == LBN_DBLCLK) {
-					/*
-					ListIndex = SendMessage(hListe, LB_GETCURSEL, 0, 0);
-					*/
+					HWND list = GetDlgItem(self->dialog, IDC_ENVIRONMENT);
+					int rowIndex = (int) SendMessage((HWND)lParam, LB_GETCURSEL, 0,0);
+					if(rowIndex == LB_ERR)
+						rowIndex = -1;
+					REPL_handle_environment_row_activation(self, list, rowIndex);
 				}
 				break;
 			}
@@ -602,11 +634,8 @@ static AST::Cons* box_environment_elements(HWND dialog, int index, int count) {
 	else {
 		// FIXME Ptr
 		AST::Node* value = (AST::Node*) SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_GETITEMDATA, (WPARAM) index, (LPARAM) 0);
-		int length = SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_GETTEXTLEN, (WPARAM) index, (LPARAM) 0);
-		TCHAR* buffer = new TCHAR[length + 1];
-		SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_GETTEXT, (WPARAM) index, (LPARAM) buffer);
-		AST::Symbol* nameSymbol = AST::intern(ToUTF8(buffer));
-		delete buffer;
+		std::wstring name = GetListBoxEntryStringCXX(GetDlgItem(dialog, IDC_ENVIRONMENT), index);
+		AST::Symbol* nameSymbol = AST::intern(ToUTF8(name));
 		return(cons(cons(nameSymbol, cons(value, NULL)), box_environment_elements(dialog, index + 1, count)));
 	}
 }
