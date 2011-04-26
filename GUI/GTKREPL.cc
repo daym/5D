@@ -75,7 +75,7 @@ namespace GUI {
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 void REPL_set_file_modified(struct REPL* self, bool value);
 bool REPL_save_content_to(struct REPL* self, FILE* output_file);
-bool REPL_execute(struct REPL* self, const char* command, GtkTextIter* destination);
+bool REPL_execute(struct REPL* self, AST::Node* input, GtkTextIter* destination);
 bool REPL_load_contents_by_name(struct REPL* self, const char* file_name);
 
 static void handle_clipboard_change(GtkClipboard* clipboard, GdkEvent* event, struct REPL* self) {
@@ -166,28 +166,36 @@ char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIte
 	/*g_utf8_pointer_to_offset(str, str+byte_index)*/
 	return(result);
 }
+static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* destination);
 static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 	GtkTextIter beginning;
 	GtkTextIter end;
 	gboolean B_from_entry = false;
 	gchar* text;
+	AST::Node* input;
 	if(!gtk_text_buffer_get_selection_bounds(self->fOutputBuffer, &beginning, &end)) {
 		gtk_text_buffer_get_start_iter(self->fOutputBuffer, &beginning);
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
 		text = strdup(gtk_entry_get_text(self->fCommandEntry));
 		/*std::string v = text;*/
-		std::string v = "\n";
-		gtk_text_buffer_insert(self->fOutputBuffer, &end, v.c_str(), -1);
 		B_from_entry = true;
 	} else {
 		text = REPL_get_output_text(self, &beginning, &end);
 	}
-	if(text && text[0]) {
-		bool B_ok = REPL_execute(self, text, &end);
+	input = REPL_parse(self, text, &end);
+	g_free(text);
+	if(input) {
+		if(B_from_entry) {
+			std::string v = "\n";
+			gtk_text_buffer_insert(self->fOutputBuffer, &end, v.c_str(), -1);
+			gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+			REPL_enqueue_LATEX(self, input, &end);
+		}
+		gtk_text_buffer_insert(self->fOutputBuffer, &end, "=>", -1);
+		bool B_ok = REPL_execute(self, input, &end);
 		if(B_from_entry && B_ok)
 			gtk_entry_set_text(self->fCommandEntry, "");
 	}
-	g_free(text);
 }
 static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePath* path, GtkTreeViewColumn* column, GtkTreeView* view) {
 	using namespace AST;
@@ -214,7 +222,11 @@ static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePat
 		escapedCommand = AST::intern(command)->str(); /* escaped */
 		g_free(command);
 		command = g_strdup_printf("(cons (quote define) (cons (quote %s) (cons %s nil)))", escapedCommand.c_str(), escapedCommand.c_str());
-		B_ok = REPL_execute(self, command, &end);
+		AST::Node* getter = REPL_parse(self, command, &end);
+		//((cons (quote define)) ((cons (quote cons)) ((cons cons) nil)))
+		gtk_text_buffer_insert(self->fOutputBuffer, &end, "\n", -1);
+		/* automatic gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end); */
+		B_ok = REPL_execute(self, getter, &end);
 		g_free(command);
 	}
 	if(B_ok)
@@ -581,29 +593,17 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? strdup(nodeText) : NULL, alt_text, destination);
 	}
 }
-bool REPL_execute(struct REPL* self, const char* command, GtkTextIter* destination) {
-	bool B_ok = false;
+AST::Node* REPL_parse(struct REPL* self, const char* command, GtkTextIter* destination/*for errors*/) {
+	/* is not allowed to both print stuff AND return non-null, except when it updates the destination iter */
+	AST::Node* result = NULL;
 	Scanners::MathParser parser;
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
 	if(input_file) {
 		try {
 			try {
 				AST::Node* result = parser.parse(input_file);
-				if(!result || dynamic_cast<AST::Cons*>(result) == NULL || ((AST::Cons*)result)->head != AST::intern("define")) {
-					result = REPL_close_environment(self, result);
-					result = Evaluators::provide_dynamic_builtins(result);
-					result = Evaluators::annotate(result);
-					result = Evaluators::reduce(result);
-				}
-				/*std::string v = result ? result->str() : "OK";
-				v = " => " + v + "\n";
-				gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
-				Formatters::print_S_Expression(stdout, 0, 0, result);
-				fprintf(stdout, "\n");
-				fflush(stdout);
-				REPL_enqueue_LATEX(self, result, destination);
-				REPL_add_to_environment(self, result);
-				B_ok = true;
+				fclose(input_file);
+				return(result);
 			} catch(...) {
 				fclose(input_file);
 				throw;
@@ -612,16 +612,38 @@ bool REPL_execute(struct REPL* self, const char* command, GtkTextIter* destinati
 			std::string v = e.what() ? e.what() : "error";
 			v = " => " + v + "\n";
 			gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
-			B_ok = false;
-		} catch(Evaluators::EvaluationException e) {
-			std::string v = e.what() ? e.what() : "error";
-			v = " => " + v + "\n";
-			gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
-			B_ok = false;
+			result = NULL;
 		}
 		REPL_set_file_modified(self, true);
 	}
 	REPL_queue_scroll_down(self);
+	return(NULL);
+}
+bool REPL_execute(struct REPL* self, AST::Node* input, GtkTextIter* destination) {
+	bool B_ok = false;
+	try {
+		AST::Node* result = input;
+		if(!input || dynamic_cast<AST::Cons*>(input) == NULL || ((AST::Cons*)input)->head != AST::intern("define")) {
+			result = REPL_close_environment(self, result);
+			result = Evaluators::provide_dynamic_builtins(result);
+			result = Evaluators::annotate(result);
+			result = Evaluators::reduce(result);
+		}
+		/*std::string v = result ? result->str() : "OK";
+		v = " => " + v + "\n";
+		gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
+		Formatters::print_S_Expression(stdout, 0, 0, result);
+		fprintf(stdout, "\n");
+		fflush(stdout);
+		REPL_enqueue_LATEX(self, result, destination);
+		REPL_add_to_environment(self, result);
+		B_ok = true;
+	} catch(Evaluators::EvaluationException e) {
+		std::string v = e.what() ? e.what() : "error";
+		v = " => " + v + "\n";
+		gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
+	}
+	REPL_set_file_modified(self, true);
 	return(B_ok);
 }
 void REPL_clear(struct REPL* self) {
