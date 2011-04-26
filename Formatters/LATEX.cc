@@ -116,7 +116,7 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 void to_LATEX(AST::Node* node, std::ostream& output) {
 	int operator_precedence_limit = 1000;
 	limited_to_LATEX(node, output, operator_precedence_limit);
-	limited_to_LATEX(node, std::cout, operator_precedence_limit);
+	//limited_to_LATEX(node, std::cout, operator_precedence_limit);
 }
 
 }; // end namespace Formatters
