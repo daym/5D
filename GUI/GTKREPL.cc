@@ -221,12 +221,16 @@ static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePat
 		/* TODO ensure newline */
 		escapedCommand = AST::intern(command)->str(); /* escaped */
 		g_free(command);
-		command = g_strdup_printf("(cons (quote define) (cons (quote %s) (cons %s nil)))", escapedCommand.c_str(), escapedCommand.c_str());
+		command = g_strdup_printf("(cons (quote define) (cons (quote %s) ((cons %s) nil)))", escapedCommand.c_str(), escapedCommand.c_str());
+		//command = g_strdup_printf("(cons (quote define) (cons (quote quote) ((cons quote) nil)))", escapedCommand.c_str(), escapedCommand.c_str());
+		// EXEC:                  ((cons (quote define)) ((cons (quote quote)) (cons (quote nil))))
 		AST::Node* getter = REPL_parse(self, command, &end);
-		//((cons (quote define)) ((cons (quote cons)) ((cons cons) nil)))
-		gtk_text_buffer_insert(self->fOutputBuffer, &end, "\n", -1);
-		/* automatic gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end); */
-		B_ok = REPL_execute(self, getter, &end);
+		if(getter) {
+			//((cons (quote define)) ((cons (quote cons)) ((cons cons) nil)))
+			gtk_text_buffer_insert(self->fOutputBuffer, &end, "\n", -1);
+			/* automatic gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end); */
+			B_ok = REPL_execute(self, getter, &end);
+		}
 		g_free(command);
 	}
 	if(B_ok)

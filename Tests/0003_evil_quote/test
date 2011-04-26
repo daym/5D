@@ -1,0 +1,2 @@
+(cons (quote define) (cons (quote quote) ((cons quote) nil)))
+(define quote quote)
