@@ -47,6 +47,7 @@ struct P : AST::Node { \
 	} \
 	virtual std::string str(void) const { \
 		std::stringstream sst; \
+		sst.precision(17); \
 		sst << this->value; \
 		return(sst.str()); \
 	} \
