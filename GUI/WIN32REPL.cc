@@ -15,6 +15,7 @@
 #include "Evaluators/Evaluators"
 #include "Config/Config"
 #include "FFIs/FFIs"
+#include "Evaluators/Builtins"
 
 namespace GUI {
 void REPL_append_to_output_buffer(struct REPL* self, const char* text);
@@ -507,6 +508,7 @@ static ATOM registerMyClass(HINSTANCE hInstance)
 
 	return RegisterClassEx(&wcex);
 }
+static void REPL_init_builtins(struct REPL* self);
 void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
 	self->fBSearchUpwards = true;
@@ -528,6 +530,8 @@ void REPL_init(struct REPL* self, HWND parent) {
 	}
 	SetWindowLongPtr(self->fSearchDialog, GWLP_USERDATA, (LONG) self);
 	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY4D));
+	REPL_init_builtins(self);
+
 	self->fConfig = load_Config();
 	{
 		char* environment_name;
@@ -544,6 +548,7 @@ void REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* p
 	EnsureInEnvironment(self->dialog, FromUTF8(parameter->name), value);
 	REPL_set_file_modified(self, true);
 }
+static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node);
 /* TODO abstract into common place */
 bool REPL_execute(struct REPL* self, const char* command) {
 	Scanners::MathParser parser;
@@ -553,7 +558,13 @@ bool REPL_execute(struct REPL* self, const char* command) {
 			try {
 				AST::Node* result = parser.parse(input_file);
 				REPL_add_to_environment(self, result);
-				result = Evaluators::annotate(result);
+				if(!result || dynamic_cast<AST::Cons*>(result) == NULL || ((AST::Cons*)result)->head != AST::intern("define")) {
+					result = REPL_close_environment(self, result);
+					result = Evaluators::provide_dynamic_builtins(result);
+					result = Evaluators::annotate(result);
+					result = Evaluators::reduce(result);
+				}
+				//result = Evaluators::annotate(result);
 				std::string v = result ? result->str() : "OK";
 				v = " => " + v + "\n";
 				REPL_append_to_output_buffer(self, v.c_str());
