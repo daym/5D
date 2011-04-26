@@ -1,0 +1,40 @@
+#ifndef __4D_FFIs_FFIs_H
+#define __4D_FFIs_FFIs_H
+/*
+4D vector analysis program
+Copyright (C) 2011  Danny Milosavljevic
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#include "Evaluators/FFI"
+
+namespace AST {
+	struct Symbol;
+};
+
+namespace FFIs {
+
+struct LibraryLoader : Evaluators::FFI {
+private:
+	struct LibraryLoaderP* p;
+public:
+	LibraryLoader(void);
+	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the library to be loaded. Result is a CLibrary */
+	virtual std::string str(void) const;
+};
+struct CLibrary : Evaluators::FFI { /* routine loader */
+private:
+	struct CLibraryP* p;
+public:
+	CLibrary(const char* name);
+	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the name (symbol). Result is a CProcedure */
+	virtual std::string str(void) const;
+};
+struct CProcedure : AST::Box {
+	CProcedure(void* native);
+	virtual std::string str(void) const;
+};
+
+};
+#endif /* ndef __4D_FFIs_FFIs_H */

@@ -373,11 +373,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Compilers\CodeGen"
+			RelativePath="..\Compilers\X86\CodeGen"
 			>
 		</File>
 		<File
-			RelativePath="..\Compilers\X86\CodeGen"
+			RelativePath="..\Compilers\CodeGen"
 			>
 		</File>
 		<File
@@ -390,6 +390,10 @@
 		</File>
 		<File
 			RelativePath="..\Evaluators\FFI"
+			>
+		</File>
+		<File
+			RelativePath="..\FFIs\FFIs"
 			>
 		</File>
 		<File

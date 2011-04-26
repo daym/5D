@@ -14,7 +14,7 @@
 #include "AST/AST"
 #include "Evaluators/Evaluators"
 #include "Config/Config"
-#include "FFIs/WIN32"
+#include "FFIs/FFIs"
 
 namespace GUI {
 void REPL_append_to_output_buffer(struct REPL* self, const char* text);

@@ -6,7 +6,7 @@
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "Scanners/MathParser"
-#include "FFIs/POSIX"
+#include "FFIs/FFIs"
 
 namespace Evaluators {
 

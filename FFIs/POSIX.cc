@@ -14,7 +14,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/Symbol"
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
-#include "FFIs/POSIX"
+#include "FFIs/FFIs"
 #include "FFIs/Trampoline"
 
 namespace FFIs {
