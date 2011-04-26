@@ -13,8 +13,10 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/MathParser"
 #include "AST/Symbol"
 #include "AST/AST"
+#ifdef _WIN32
+/* for fmemopen used in parse_simple... */
 #include "stdafx.h"
-
+#endif
 namespace Scanners {
 using namespace AST;
 

@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
 #include "FFIs/FFIs"
-#include "FFIs/Trampoline"
+/*include "FFIs/Trampoline"*/
 
 namespace FFIs {
 using namespace Evaluators;

@@ -27,7 +27,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/FFI"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
-#include "FFIs/POSIX"
+#include "FFIs/FFIs"
 #include "GUI/Completer"
 #include "FFIs/ResultMarshaller"
 #include "GUI/WindowIcon"

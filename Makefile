@@ -53,9 +53,9 @@ Scanners/test-Scanner.o: Scanners/test-Scanner.cc Scanners/Scanner
 Scanners/MathParser.o: Scanners/MathParser.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol
 Scanners/test-MathParser.o: Scanners/test-MathParser.cc Scanners/MathParser Scanners/Scanner
 Evaluators/Evaluators.o: Evaluators/Evaluators.cc Evaluators/Evaluators AST/AST AST/Symbol Evaluators/Builtins Scanners/MathParser
-Evaluators/Builtins.o: Evaluators/Builtins.cc Scanners/MathParser Evaluators/Builtins AST/AST AST/Symbol FFIs/ResultMarshaller FFIs/POSIX
+Evaluators/Builtins.o: Evaluators/Builtins.cc Scanners/MathParser Evaluators/Builtins AST/AST AST/Symbol FFIs/ResultMarshaller FFIs/FFIs
 Evaluators/FFI.o: Evaluators/FFI.cc Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins
-FFIs/POSIX.o: FFIs/POSIX.cc FFIs/POSIX Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators
+FFIs/POSIX.o: FFIs/POSIX.cc FFIs/FFIs Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators
 FFIs/ArgumentMarshaller.o: FFIs/ArgumentMarshaller.cc FFIs/ArgumentMarshaller Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators FFIs/CallMarshaller
 FFIs/ResultMarshaller.o: FFIs/ResultMarshaller.cc FFIs/ResultMarshaller Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators FFIs/ArgumentMarshaller
 FFIs/CallMarshaller.o: FFIs/CallMarshaller.cc FFIs/CallMarshaller Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators
