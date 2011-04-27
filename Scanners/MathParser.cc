@@ -455,13 +455,13 @@ AST::Node* MathParser::parse_value(void) {
 	if(input_token == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());
-	} else if(input_token == intern("-") || input_token == intern("+") || input_token == intern("~")) {
+	} else if(input_token == intern("-") || input_token == intern("+")) {
 		AST::Node* operator_ = consume();
 		AST::Node* argument = parse_value();
 		if(argument == NULL)
 			raise_error("<operand>", "<nothing>");
 		return((operator_ == intern("+")) ? argument :
-		       (operator_ == intern("-")) ? cons(intern("0-"), cons(argument, NULL)) :
+		       (operator_ == intern("-")) ? cons(cons(intern("-"), cons(intern("0"), NULL)), cons(argument, NULL)) :
 		       cons(operator_, cons(argument, NULL)));
 	/*} else if(input_token == intern("<string>")) {
 		return(consume());*/
