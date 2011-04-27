@@ -53,13 +53,29 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	if (!InitInstance(hInstance, nCmdShow))
 		return(FALSE);
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MY4D));
-	while(GetMessage(&msg, NULL, 0, 0)) {
-		// TODO IsWindow ? 
-		if (!REPL || 
-			((!TranslateAccelerator(REPL_get_window(REPL), hAccelTable, &msg) && !IsDialogMessage(REPL_get_window(REPL), &msg)) &&
-			(!TranslateAccelerator(REPL_get_search_window(REPL), hAccelTable, &msg) && !IsDialogMessage(REPL_get_search_window(REPL), &msg)))) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+	DWORD reason = WAIT_TIMEOUT;
+	while(1) {
+		DWORD handleCount = 0;
+		PHANDLE handles = REPL ? REPL_get_waiting_handles(REPL, &handleCount) : NULL;
+		reason = MsgWaitForMultipleObjects(handleCount, handles, FALSE, INFINITE, QS_ALLEVENTS);
+		if(reason >= WAIT_OBJECT_0 && reason < WAIT_OBJECT_0 + handleCount) {
+			/* notify waiter of handle */
+			/*DWORD dwExitCode;
+			 if ( ! ::GetExitCodeProcess( hProcess, &dwExitCode)||dwExitCode!=STILL_ACTIVE)
+			childHandle = NULL;*/
+			PostMessage(REPL_get_window(REPL), FM_NOTIFY_SYSTEM, (WPARAM) handles[reason - WAIT_OBJECT_0], NULL);
+		} else { /* WAIT_OBJECT_0 + x */
+			while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+				if(msg.message == WM_QUIT)
+					return((int) msg.wParam);
+				// TODO IsWindow ? 
+				if (!REPL || 
+					((!TranslateAccelerator(REPL_get_window(REPL), hAccelTable, &msg) && !IsDialogMessage(REPL_get_window(REPL), &msg)) &&
+					(!TranslateAccelerator(REPL_get_search_window(REPL), hAccelTable, &msg) && !IsDialogMessage(REPL_get_search_window(REPL), &msg)))) {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
+			}
 		}
 	}
 	return((int) msg.wParam);

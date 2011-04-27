@@ -22,6 +22,7 @@
 #ifdef _MSC_VER
 typedef DWORD uint32_t; /* FIXME */
 #endif
+#define FM_NOTIFY_SYSTEM (WM_USER + 42)
 
 // TODO: reference additional headers your program requires here
 FILE* fmemopen(void* contents, size_t contents_length, const char* mode);

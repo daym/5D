@@ -643,6 +643,10 @@ AST::Cons* REPL_get_environment(struct REPL* self) {
 	int count = SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LB_GETCOUNT, (WPARAM) 0, (LPARAM) 0);
 	return(box_environment_elements(self->dialog, 0, count));
 }
+PHANDLE REPL_get_waiting_handles(struct REPL* REPL, DWORD* handleCount) {
+	*handleCount = 0;
+	return(NULL);
+}
 
 }; // end namespace GUI
 
