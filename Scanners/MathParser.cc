@@ -210,13 +210,16 @@ void MathParser::parse_unicode(int input) {
 		input_token = intern(">=");
 		input_value = intern("≥");
 		return;
+#if 0
 	case 0x88: /* approx. */
 		input_token = intern("<symbol>");
 		input_value = intern("≈");
 		/* TODO just pass that to the symbol processor in the general case. */
 		return;
+#endif
 	default:
-		raise_error("<operator>", input);
+		return(parse_symbol(input, 0xE2, 0x89));
+		//raise_error("<operator>", input);
 		return;
 	}
 }
@@ -312,10 +315,13 @@ bool symbol_char_P(int input) {
 	    || /*input == '_' || */input == '?';
 	  /*  || input == '^' not really part of the symbol name any more. */
 }
-void MathParser::parse_symbol(int input, int special_prefix) {
+void MathParser::parse_symbol(int input, int special_prefix, int special_prefix_2) {
 	std::stringstream matchtext;
 	if(special_prefix) {
 		matchtext << (char) special_prefix;
+	}
+	if(special_prefix_2) {
+		matchtext << (char) special_prefix_2;
 	}
 	if(!symbol1_char_P(input)) {
 		raise_error("<expression>", input);

@@ -27,7 +27,7 @@ private:
 	void parse_anglebracket(int input);
 	void parse_unicode(int input);
 	void parse_structural(int input);
-	void parse_symbol(int input, int special_prefix = 0);
+	void parse_symbol(int input, int special_prefix = 0, int special_prefix_2 = 0);
 	void parse_string(int input);
 	AST::Node* parse_value(void);
 	AST::Node* parse_binary_operation(int precedence_level);
