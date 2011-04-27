@@ -37,6 +37,8 @@ void MathParser::parse_string(int input) {
 	std::stringstream matchtext;
 	bool B_escaped = false;
 	for(++position, input = fgetc(input_file); input != EOF && (input != '"' || B_escaped); ++position, input = fgetc(input_file)) {
+		if(input == '\n')
+			++line_number;
 		if(!B_escaped) {
 			if(input == '\\') {
 				B_escaped = true;
