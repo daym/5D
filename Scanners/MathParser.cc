@@ -210,6 +210,11 @@ void MathParser::parse_unicode(int input) {
 		input_token = intern(">=");
 		input_value = intern("≥");
 		return;
+	case 0x88: /* approx. */
+		input_token = intern("<symbol>");
+		input_value = intern("≈");
+		/* TODO just pass that to the symbol processor in the general case. */
+		return;
 	default:
 		raise_error("<operator>", input);
 		return;
