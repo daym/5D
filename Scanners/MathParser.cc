@@ -295,7 +295,8 @@ void MathParser::parse_token(void) {
 static bool symbol1_char_P(int input) {
 	return (input >= '@' && input <= 'Z')
 	    || (input >= 'a' && input <= 'z')
-	    || input == '#' 
+	    || input == '#'
+	    || input == '$'
 	    || (input >= 128 && input != 0xE2 /* operators */);
 }
 bool symbol_char_P(int input) {
