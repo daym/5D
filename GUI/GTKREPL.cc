@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <unistd.h>
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
+#include <glib/gi18n.h>
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -817,7 +818,7 @@ bool REPL_confirm_close(struct REPL* self) {
 	if(REPL_get_file_modified(self)) {
 		GtkDialog* dialog;
 		dialog = (GtkDialog*) gtk_message_dialog_new(GTK_WINDOW(REPL_get_widget(self)), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, (GtkButtonsType) 0, "Environment has been modified. Save?");
-		gtk_dialog_add_buttons(dialog, GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE, GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
+		gtk_dialog_add_buttons(dialog, GTK_STOCK_GO_BACK, GTK_RESPONSE_CANCEL, gettext("Don't Save"), GTK_RESPONSE_CLOSE, GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
 		gtk_dialog_set_default_response(dialog, GTK_RESPONSE_OK);
 		{
 			int result;
@@ -825,7 +826,9 @@ bool REPL_confirm_close(struct REPL* self) {
 			gtk_widget_destroy(GTK_WIDGET(dialog));
 			if(result == GTK_RESPONSE_CLOSE)
 				return(true);
-			return(REPL_save(self, TRUE));
+			else if(result == GTK_RESPONSE_CANCEL)
+				return(false);
+			return(REPL_save(self, FALSE));
 		}
 	}
 	return(true);
