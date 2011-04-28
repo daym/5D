@@ -1,5 +1,5 @@
 (tips4DV1 "You can complete text by pressing the Tabulator (Tab) key on your keyboard"
           "You can define new functionals by (define sinc \x (sin x)/x)"
           "You can chain I/O actions by appending the character ';', followed by a continuation functional. (a;\\input b)"
-          "You can add a comment to the top of a functional by (rem \"comment\" <body>)"
+          "You can add a comment by (rem \"comment\" <body>) where <body> is the non-comment part"
 )
