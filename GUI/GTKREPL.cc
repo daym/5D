@@ -168,6 +168,23 @@ char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIte
 	return(result);
 }
 static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* destination);
+static gboolean REPL_scroll_down(struct REPL* self) {
+	GtkTextIter iter;
+	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
+	gtk_text_view_scroll_to_iter(self->fOutputArea, &iter, 0.1, TRUE, 0.0, 1.0);
+	//printf("DU\n");
+	return(FALSE);
+}
+void REPL_queue_scroll_down(struct REPL* self) {
+	// TODO check whether we were at the bottom before...
+	g_idle_add((GSourceFunc) REPL_scroll_down, self);
+}
+void REPL_insert_error_message(struct REPL* self, GtkTextIter* destination, const std::string& prefix, const std::string& errorText) {
+	std::string v = prefix + " => " + errorText; // + "\n";
+	gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
+	REPL_set_file_modified(self, true);
+	REPL_queue_scroll_down(self);
+}
 static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 	GtkTextIter beginning;
 	GtkTextIter end;
@@ -183,7 +200,13 @@ static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 	} else {
 		text = REPL_get_output_text(self, &beginning, &end);
 	}
-	input = REPL_parse(self, text, &end);
+	try {
+		input = REPL_parse(self, text, &end);
+	} catch(Scanners::ParseException& e) {
+		std::string v = e.what() ? e.what() : "error";
+		REPL_insert_error_message(self, &end, B_from_entry ? (std::string("\n") + text) : std::string(), v);
+		input = NULL;
+	}
 	g_free(text);
 	if(input) {
 		printf("%s\n", input->str().c_str());
@@ -226,12 +249,16 @@ static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePat
 		command = g_strdup_printf("(cons (quote define) (cons (quote %s) ((cons %s) nil)))", escapedCommand.c_str(), escapedCommand.c_str());
 		//command = g_strdup_printf("(cons (quote define) (cons (quote quote) ((cons quote) nil)))", escapedCommand.c_str(), escapedCommand.c_str());
 		// EXEC:                  ((cons (quote define)) ((cons (quote quote)) (cons (quote nil))))
-		AST::Node* getter = REPL_parse(self, command, &end);
-		if(getter) {
+		/* TODO if an parse error happens here, it can happen that the actual text that was the culprit is nowhere to be found in the output buffer. Add it. */
+		try {
+			AST::Node* getter = REPL_parse(self, command, &end);
 			//((cons (quote define)) ((cons (quote cons)) ((cons cons) nil)))
 			gtk_text_buffer_insert(self->fOutputBuffer, &end, "\n", -1);
 			/* automatic gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end); */
 			B_ok = REPL_execute(self, getter, &end);
+		} catch(Scanners::ParseException& e) {
+			std::string v = e.what() ? e.what() : "error";
+			REPL_insert_error_message(self, &end, std::string("\n") + command, v);
 		}
 		g_free(command);
 	}
@@ -391,17 +418,6 @@ static void save_accelerators(struct REPL* self, GtkObject* widget) {
 	g_mkdir_with_parents(user_config_dir, 0744);
 	g_mkdir_with_parents(g_build_filename(user_config_dir, "4D", NULL), 0744);
 	gtk_accel_map_save(g_build_filename(user_config_dir, "4D", "accelerators", NULL));
-}
-static gboolean REPL_scroll_down(struct REPL* self) {
-	GtkTextIter iter;
-	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
-	gtk_text_view_scroll_to_iter(self->fOutputArea, &iter, 0.1, TRUE, 0.0, 1.0);
-	//printf("DU\n");
-	return(FALSE);
-}
-void REPL_queue_scroll_down(struct REPL* self) {
-	// TODO check whether we were at the bottom before...
-	g_idle_add((GSourceFunc) REPL_scroll_down, self);
 }
 static void track_changes(struct REPL* self, GtkTextBuffer* buffer) {
 	if(!gtk_widget_is_focus(GTK_WIDGET(self->fOutputArea)) && !gtk_widget_is_focus(GTK_WIDGET(self->fOutputScroller)))
@@ -602,24 +618,16 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 }
 AST::Node* REPL_parse(struct REPL* self, const char* command, GtkTextIter* destination/*for errors*/) {
 	/* is not allowed to both print stuff AND return non-null, except when it updates the destination iter */
-	AST::Node* result = NULL;
 	Scanners::MathParser parser;
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
 	if(input_file) {
 		try {
-			try {
-				AST::Node* result = parser.parse(input_file);
-				fclose(input_file);
-				return(result);
-			} catch(...) {
-				fclose(input_file);
-				throw;
-			}
-		} catch(Scanners::ParseException e) {
-			std::string v = e.what() ? e.what() : "error";
-			v = " => " + v + "\n";
-			gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
-			result = NULL;
+			AST::Node* result = parser.parse(input_file);
+			fclose(input_file);
+			return(result);
+		} catch(...) {
+			fclose(input_file);
+			throw;
 		}
 		REPL_set_file_modified(self, true);
 	}
