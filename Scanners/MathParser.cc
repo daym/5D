@@ -359,6 +359,7 @@ AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 using namespace AST;
 /* keep apply_precedence_level in sync with operator_precedence below */
 int apply_precedence_level = 3;
+int minus_precedence_level = 4;
 static int precedence_level_R_1 = 9;
 static int precedence_level_R_2 = 1;
 static Symbol* operator_precedence[][7] = {
@@ -416,7 +417,9 @@ AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 		return(NULL);
 }
 AST::Node* MathParser::parse_define(AST::Node* operand_1) {
-	AST::Node* parameter = any_operator_P(input_token, 0, sizeof(operator_precedence)/sizeof(operator_precedence[0])) ? consume() : input_token == AST::intern("~") ? consume() : consume(intern("<symbol>"));
+	AST::Node* parameter = any_operator_P(input_token, 0, sizeof(operator_precedence)/sizeof(operator_precedence[0])) ? consume()
+	                  : input_token == AST::intern("~") ? consume() 
+	                  : consume(intern("<symbol>"));
 
 	//AST::Node* parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
 	AST::Node* body = parse_expression();
@@ -468,7 +471,8 @@ AST::Node* MathParser::parse_value(void) {
 		return(parse_abstraction());
 	} else if(input_token == intern("-") || input_token == intern("+")) {
 		AST::Node* operator_ = consume();
-		AST::Node* argument = parse_value();
+		AST::Node* argument = parse_binary_operation(minus_precedence_level - 1);
+		//AST::Node* argument = parse_value();
 		if(argument == NULL)
 			raise_error("<operand>", "<nothing>");
 		return((operator_ == intern("+")) ? argument :

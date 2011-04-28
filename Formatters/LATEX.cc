@@ -20,8 +20,13 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 	int operator_precedence;
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);
+	AST::SymbolReference* symbolReference = dynamic_cast<AST::SymbolReference*>(node);
+	if(symbolReference)
+		symbolNode = symbolReference->symbol;
 	if(symbolNode) {
-		output << "\\mathrm{";
+		bool B_mathrm = symbolNode != AST::intern("**") && symbolNode != AST::intern("^") && symbolNode != AST::intern("_");
+		if(B_mathrm)
+			output << "\\mathrm{";
 		std::string text = symbolNode->str();
 		const unsigned char* inputString = (const unsigned char*) text.c_str();
 		if(inputString[0] == '\\') {
@@ -54,7 +59,8 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 		} /*else
 			output << text;*/
 		// TODO output << "\\operatorname{" << node->str() << "}"; // "\\math{" << node->str() << "}";
-		output << "}";
+		if(B_mathrm)
+			output << "}";
 	} else if(consNode) {
 		/* ((- 3) 2)   => 3-2
 		 or (0- 3)      => -3 */
