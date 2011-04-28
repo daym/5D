@@ -87,7 +87,7 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\right)";
 		} else if(consNode->head == AST::intern("\\")) {
-			operator_precedence = apply_precedence_level; /* TODO do not hardcode. */
+			operator_precedence = lambda_precedence_level;
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\left(";
 			AST::Cons* args;

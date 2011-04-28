@@ -52,7 +52,8 @@ public:
 };
 int get_operator_precedence(AST::Symbol* symbol);
 
-extern int apply_precedence_level;
+extern const int apply_precedence_level;
+extern const int lambda_precedence_level;
 bool macro_operator_P(AST::Node* operator_);
 bool symbol_char_P(int input);
 

@@ -358,10 +358,12 @@ AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 }
 using namespace AST;
 /* keep apply_precedence_level in sync with operator_precedence below */
-int apply_precedence_level = 3;
-int minus_precedence_level = 4;
-static int precedence_level_R_1 = 9;
-static int precedence_level_R_2 = 1;
+const int apply_precedence_level = 3;
+const int minus_precedence_level = 4;
+const int negation_precedence_level = -1;
+static const int precedence_level_R_1 = 9;
+static const int precedence_level_R_2 = 1;
+const int lambda_precedence_level = 9;
 static Symbol* operator_precedence[][7] = {
 	{intern("."), intern("^")},
 	{intern("**")},
@@ -469,15 +471,16 @@ AST::Node* MathParser::parse_value(void) {
 	if(input_token == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());
-	} else if(input_token == intern("-") || input_token == intern("+")) {
+	} else if(input_token == intern("-") || input_token == intern("+") || input_token == intern("~")) {
 		AST::Node* operator_ = consume();
-		AST::Node* argument = parse_binary_operation(minus_precedence_level - 1);
+		AST::Node* argument = parse_binary_operation(input_token == intern("~") ? negation_precedence_level : minus_precedence_level - 1);
 		//AST::Node* argument = parse_value();
 		if(argument == NULL)
-			raise_error("<operand>", "<nothing>");
-		return((operator_ == intern("+")) ? argument :
-		       (operator_ == intern("-")) ? cons(cons(intern("-"), cons(intern("0"), NULL)), cons(argument, NULL)) :
-		       cons(operator_, cons(argument, NULL)));
+			return(operator_);
+		else
+			return((operator_ == intern("+")) ? argument :
+			       (operator_ == intern("-")) ? cons(cons(intern("-"), cons(intern("0"), NULL)), cons(argument, NULL)) :
+			       cons(operator_, cons(argument, NULL)));
 	/*} else if(input_token == intern("<string>")) {
 		return(consume());*/
 	} else {
