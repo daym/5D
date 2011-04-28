@@ -35,6 +35,7 @@ private:
 	void parse_optional_whitespace(void);
 	void parse_S_optional_whitespace(void);
 	AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2);
+	AST::Cons* unary_operation(AST::Node* operator_, AST::Node* operand_1);
 	AST::Node* parse_macro(AST::Node* operand_1);
 	AST::Node* parse_define(AST::Node* operand_1);
 	AST::Node* parse_quote(AST::Node* operand_1);
@@ -49,6 +50,7 @@ public:
 	AST::Node* parse(FILE* input_file);
 	AST::Node* parse_S_Expression(FILE* input_file);
 	static AST::Node* parse_simple(const char* text); /* I've had it by now... */
+	MathParser(void);
 };
 int get_operator_precedence(AST::Symbol* symbol);
 

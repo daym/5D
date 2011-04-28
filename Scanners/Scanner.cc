@@ -19,6 +19,13 @@ const char* ParseException::what() const throw() {
 	return message; //message.c_str();
 };
 
+Scanner::Scanner(void) {
+	input_file = NULL;
+	input_token = NULL;
+	position = 0;
+	previous_position = 0;
+	line_number = 0;
+}
 void Scanner::parse_token(void) {
 }
 

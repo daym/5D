@@ -38,6 +38,7 @@ public:
 	}
 	void raise_error(const std::string& expected_text, int got_text);
 	void raise_error(const std::string& expected_text, std::string got_text);
+	Scanner(void);
 };
 
 }; /* end namespace Scanners */

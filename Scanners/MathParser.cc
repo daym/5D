@@ -20,6 +20,10 @@ You should have received a copy of the GNU General Public License along with thi
 namespace Scanners {
 using namespace AST;
 
+MathParser::MathParser(void) : Scanner() {
+	B_process_macros = true;
+	input_value = NULL;
+}
 void MathParser::parse_structural(int input) {
 	switch(input) {
 	case '(':
@@ -450,7 +454,7 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 		return(NULL);
 	}
 }
-static AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1) {
+AST::Cons* MathParser::unary_operation(AST::Node* operator_, AST::Node* operand_1) {
 	assert(operator_);
 	return(cons(operator_, cons(operand_1, NULL)));
 }
@@ -487,8 +491,8 @@ AST::Node* MathParser::parse_value(void) {
 			return(operator_);
 		else
 			return((operator_ == intern("+")) ? argument :
-			       (operator_ == intern("-")) ? cons(cons(intern("-"), cons(intern("0"), NULL)), cons(argument, NULL)) :
-			       cons(operator_, cons(argument, NULL)));
+			       (operator_ == intern("-")) ? operation(intern("-"), intern("0"), argument) :
+			       unary_operation(operator_, argument));
 	/*} else if(input_token == intern("<string>")) {
 		return(consume());*/
 	} else {
