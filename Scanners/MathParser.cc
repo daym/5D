@@ -472,6 +472,14 @@ AST::Node* MathParser::parse_value(void) {
 		consume();
 		return(parse_abstraction());
 	} else if(input_token == intern("-") || input_token == intern("+") || input_token == intern("~")) {
+		/* the reason why there is a special-case for "~" at all is so that it will require an argument.
+		   Otherwise stuff like ~~#t would not work as expected. 
+		   If "~" were a normal functional, there would be no reason to expect this to be a call.
+		   Hence, ~~#t would mean "(~ ~) whatsthatjunk" or in the best case "(~ ~) #t", both of which is NOT how it is usually meant.
+		   It is usually meant ~ (~ #t). Hence the following special-case forcing it to read the argument if there is one after it.
+		   The same can be said for all unary operators, so there should be special cases for all of them.
+		   In the long term, maybe have our own table of what is a unary operator and what isn't? (like for the binary operators)
+		 */
 		AST::Node* operator_ = consume();
 		AST::Node* argument = parse_binary_operation(input_token == intern("~") ? negation_precedence_level : minus_precedence_level - 1);
 		//AST::Node* argument = parse_value();
