@@ -375,7 +375,23 @@ static void REPL_handle_find_next(struct REPL* self, GtkAction* action) {
 static void handle_about_response(GtkDialog* dialog, gint response_id, gpointer user_data) {
 	gtk_widget_hide(GTK_WIDGET(dialog));
 }
-static int tip_index = -1;
+static AST::Cons* tips;
+static AST::Cons* current_tip = NULL;
+void REPL_load_tips(struct REPL* self) {
+	FILE* input_file;
+	input_file = fopen("doc/tips", "r"); /* FIXME full path */
+	if(input_file) {
+		Scanners::MathParser parser;
+		AST::Node* contents;
+		contents = parser.parse_S_Expression(input_file);
+		fclose(input_file);
+		AST::Cons* contentsCons = dynamic_cast<AST::Cons*>(contents);
+		if(contentsCons && contentsCons->head == AST::intern("tips4DV1"))
+			tips = dynamic_cast<AST::Cons*>(contentsCons->tail);
+		else
+			tips = NULL;
+	}
+}
 static void handle_tips_response(GtkDialog* dialog, gint response_id, struct REPL* self) {
 	GtkToggleButton* checkButton = (GtkToggleButton*) gtk_builder_get_object(self->UI_builder, "tipsShowAgainButton");
 	GtkTextView* view = (GtkTextView*) gtk_builder_get_object(self->UI_builder, "tipView");
@@ -383,15 +399,28 @@ static void handle_tips_response(GtkDialog* dialog, gint response_id, struct REP
 	Config_set_show_tips(self->fConfig, gtk_toggle_button_get_active(checkButton));
 	Config_save(self->fConfig); /* for the paranoid */
 	if(response_id == 2/*NEXT*/) {
-		++tip_index;
+		if(!current_tip)
+			current_tip = tips;
+		else
+			current_tip = current_tip->tail ? current_tip->tail : current_tip;
 	} else if(response_id == 1/*PREV*/) {
-		--tip_index;
+		if(current_tip) {
+			AST::Cons* previous_tip = NULL;
+			for(AST::Cons* n = tips; n != current_tip; n = n->tail)
+				previous_tip = n;
+			current_tip = previous_tip ? previous_tip : tips;
+		}
 	} else {
 		gtk_widget_hide(GTK_WIDGET(dialog));
 		return;
 	}
-	/* TODO */
-	gtk_text_buffer_set_text(buffer, "You can complete text by pressing the Tabulator (Tab) key on your keyboard", -1);
+	{
+		char* text;
+		text = Evaluators::get_native_string(current_tip->head);
+		if(!text)
+			text = g_strdup("You can complete text by pressing the Tabulator (Tab) key on your keyboard");
+		gtk_text_buffer_set_text(buffer, text, -1);
+	}
 }
 static void REPL_handle_about(struct REPL* self, GtkAction* action) {
 	GtkDialog* dialog;
@@ -436,6 +465,7 @@ static void REPL_show_tips(struct REPL* self) {
 	gtk_widget_realize(GTK_WIDGET(self->fWidget)); /* workaround gtk critical icon_pixmap */
 	GtkDialog* dialog;
 	dialog = (GtkDialog*) gtk_builder_get_object(self->UI_builder, "tipDialog");
+	REPL_load_tips(self);
 	gtk_dialog_set_default_response(dialog, 0);
 	{
 		GtkToggleButton* checkButton = (GtkToggleButton*) gtk_builder_get_object(self->UI_builder, "tipsShowAgainButton");
