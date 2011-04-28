@@ -211,23 +211,14 @@ AST::Node* reduce(AST::Node* term) {
 			body = shift(argument, 1, body);
 			return(reduce(body));
 		} else {
-			// TODO better error message.
-			AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(fn);
-			if(fnName){
-				if(get_application_operator(term) == fn && get_application_operand(term) == argument)
-					return(term);
-				else
-					return(AST::cons(fn, AST::cons(argument, NULL)));
-				//throw EvaluationException(std::string(std::string("unknown operation \"") + fnName->name + "\"").c_str());
-			} else {
-				Evaluators::Operation* fnOperation = dynamic_cast<Evaluators::Operation*>(fn);
-				if(fnOperation) {
-					return(fnOperation->execute(argument));
-				} else
-					return(term);
-					//throw EvaluationException("evaluation error");
-			}
-			return(term);
+			// most of the time, SymbolReference anyway: AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(fn);
+			Evaluators::Operation* fnOperation = dynamic_cast<Evaluators::Operation*>(fn);
+			if(fnOperation) {
+				return(fnOperation->execute(argument));
+			} else if(get_application_operator(term) == fn && get_application_operand(term) == argument)
+				return(term);
+			else
+				return(AST::cons(fn, AST::cons(argument, NULL)));
 		}
 	} else if(abstraction_P(term)) {
 		return(term);
