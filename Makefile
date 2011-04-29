@@ -54,6 +54,7 @@ Scanners/MathParser.o: Scanners/MathParser.cc Scanners/MathParser Scanners/Scann
 Scanners/test-MathParser.o: Scanners/test-MathParser.cc Scanners/MathParser Scanners/Scanner
 Evaluators/Evaluators.o: Evaluators/Evaluators.cc Evaluators/Evaluators AST/AST AST/Symbol Evaluators/Builtins Scanners/MathParser
 Evaluators/Builtins.o: Evaluators/Builtins.cc Scanners/MathParser Evaluators/Builtins AST/AST AST/Symbol FFIs/ResultMarshaller FFIs/FFIs
+Evaluators/Backtracker.o: Evaluators/Backtracker.cc Evaluators/Backtracker
 Evaluators/FFI.o: Evaluators/FFI.cc Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins
 FFIs/POSIX.o: FFIs/POSIX.cc FFIs/FFIs Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators
 FFIs/ArgumentMarshaller.o: FFIs/ArgumentMarshaller.cc FFIs/ArgumentMarshaller Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators FFIs/CallMarshaller
@@ -71,7 +72,7 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 	./Scanners/test-Scanner
 	./Scanners/test-MathParser
 
-REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o FFIs/ResultMarshaller.o FFIs/ArgumentMarshaller.o FFIs/CallMarshaller.o
+REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o FFIs/ResultMarshaller.o FFIs/ArgumentMarshaller.o FFIs/CallMarshaller.o Evaluators/Backtracker.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 GUI/GTKGUI.o: GUI/GTKGUI.cc GUI/GTKREPL GUI/GTKView GUI/REPL
@@ -92,7 +93,7 @@ GUI/GTKLATEXGenerator.o: GUI/GTKLATEXGenerator.cc GUI/GTKLATEXGenerator
 GUI/GTKView.o: GUI/GTKView.cc
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/4D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Formatters/SExpression.o GUI/REPL.o FFIs/ArgumentMarshaller.o FFIs/ResultMarshaller.o FFIs/CallMarshaller.o FFIs/ArgumentMarshaller.o GUI/GTKCompleter.o
+GUI/4D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Formatters/SExpression.o GUI/REPL.o FFIs/ArgumentMarshaller.o FFIs/ResultMarshaller.o FFIs/CallMarshaller.o FFIs/ArgumentMarshaller.o GUI/GTKCompleter.o Evaluators/Backtracker.o
 	g++ -o $@ $^ $(GUI_LDFLAGS)
 
 clean:
