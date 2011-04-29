@@ -158,6 +158,7 @@ struct REPL {
 	AST::Cons* fTailEnvironment;
 	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
 	AST::Cons* fTailUserEnvironmentFrontier;
+	WNDPROC oldEditBoxProc;
 };
 
 HWND REPL_get_window(struct REPL* self) {
@@ -362,6 +363,28 @@ static void REPL_handle_environment_row_activation(struct REPL* self, HWND list,
 	if(B_ok)
 		SendMessageW(list, LB_SETCURSEL, (WPARAM) -1, 0);
 }
+static LRESULT CALLBACK HandleEditTabMessage(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	struct REPL* self;
+	self = (struct REPL*) GetWindowLongPtr(hwnd, GWLP_USERDATA);
+	switch(message) {
+	case WM_GETDLGCODE:
+		return(DLGC_WANTALLKEYS | CallWindowProc(self->oldEditBoxProc, hwnd, message, wParam, lParam));
+	case WM_CHAR:
+		if(wParam == VK_TAB)
+			return(0);
+		else
+			break;
+	case WM_KEYDOWN:
+		if(wParam == VK_TAB) {
+			printf("Hello\n");
+			return(0);
+		}
+	case WM_KEYUP:
+		if(wParam == VK_TAB)
+			return(0);
+	}
+	return(CallWindowProc(self->oldEditBoxProc, hwnd, message, wParam, lParam));
+}
 INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
 	UNREFERENCED_PARAMETER(lParam);
 	struct REPL* self;
@@ -378,7 +401,20 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		if(!self->B_file_modified || REPL_confirm_close(self))
 				PostQuitMessage(0);
 		break;
-
+	case WM_KEYDOWN:
+		printf("Hi\n");
+		break;
+	/*case WM_GETDLGCODE:
+		{
+			if(wParam) {
+				printf("WPARAM %d\n", (int) wParam);
+			}
+			if(lParam) {
+				LPMSG msg = (LPMSG) lParam;
+				printf("%d\n", msg->message);
+			}
+			return(DLGC_WANTALLKEYS); //TAB);
+		}*/
 	case WM_SIZE:
 		{
 			RECT clientRect;
@@ -520,6 +556,9 @@ struct REPL* REPL_new(HWND parent) {
 	REPL_init(result, parent);
 	return(result);
 }
+static LRESULT CALLBACK HandleREPLMessage2(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	return(::DefWindowProc(hwnd, msg, wParam, lParam));
+}
 static ATOM registerMyClass(HINSTANCE hInstance)
 {
 	WNDCLASSEX wcex;
@@ -527,7 +566,7 @@ static ATOM registerMyClass(HINSTANCE hInstance)
 	ZeroMemory(&wcex, sizeof(wcex));
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style			= CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_GLOBALCLASS | CS_NOCLOSE | /*CS_OWNDC |*/ CS_PARENTDC;
-	wcex.lpfnWndProc	= ::DefWindowProc; // HandleREPLMessage2;
+	wcex.lpfnWndProc	= HandleREPLMessage2;
 	wcex.cbClsExtra		= 0;
 	wcex.cbWndExtra		= 0;
 	wcex.hInstance		= hInstance;
@@ -555,6 +594,8 @@ void REPL_init(struct REPL* self, HWND parent) {
 	if(self->dialog == NULL) {
 		ShowWIN32Diagnostics();
 	}
+	self->oldEditBoxProc = (WNDPROC) SetWindowLong(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), GWL_WNDPROC, (LONG) HandleEditTabMessage);
+	SetWindowLongPtr(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), GWLP_USERDATA, (LONG) self);
 	SetWindowLongPtr(self->dialog, GWLP_USERDATA, (LONG) self);
 	self->fSearchDialog = CreateDialog(hinstance, MAKEINTRESOURCE(IDD_SEARCH), self->dialog, HandleSearchDialogMessage);
 	if(self->fSearchDialog == NULL) {
