@@ -199,8 +199,10 @@ static bool wants_its_argument_reduced_P(AST::Node* fn) {
 }
 static int recursionLevel = 0; /* anti-endless-loop */
 AST::Node* reduce(AST::Node* term) {
-	if(recursionLevel > 1000)
+	if(recursionLevel > 1000) {
+		recursionLevel = 0;
 		throw EvaluationException("recursion was too deep");
+	}
 	if(application_P(term)) {
 		AST::Node* fn;
 		AST::Node* argument;
