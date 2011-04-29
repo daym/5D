@@ -14,56 +14,21 @@ struct Completer {
 	GHashTable* fMatches;
 	int fEntryNeedlePos;
 };
-static void match_entry(AST::Symbol* key, void* value, struct Completer* self) {
-	const char* possible_text;
-	possible_text = key->name;
-	if(!self->fEntryNeedle || strncmp(possible_text, self->fEntryNeedle, strlen(self->fEntryNeedle)) == 0) /* match */
-		g_hash_table_insert(self->fMatches, key, NULL);
-}
-static void Completer_accept_match(struct Completer* self, const char* match, bool B_automatic_space) {
-	const char* entry_text;
-	char* new_text;
-	int i;
-	int pos;
-	entry_text = gtk_entry_get_text(self->fEntry);
-	if(!self->fEntryNeedle || !entry_text || !match) /* huh */
-		return;
-	new_text = (char*) g_malloc0(strlen(entry_text) + strlen(match) + 2); /* too much */
-	for(i = 0; i < self->fEntryNeedlePos; ++i)
-		new_text[i] = entry_text[i];
-	/* i = self->fEntryNeedlePos */
-	new_text[i] = 0;
-	strcat(new_text, match);
-	while(entry_text[i] && Scanners::symbol_char_P(entry_text[i]))
-		++i;
-	if(B_automatic_space && entry_text[i] != ' ')
-		strcat(new_text, " "); /* TODO remove? */
-	pos = strlen(new_text);
-	strcat(new_text, &entry_text[i]);
+void Completer_accept_match_GUI(struct Completer* self, const char* new_text, int pos) {
 	gtk_entry_set_text(self->fEntry, new_text);
 	/*if(gtk_editable_get_selection_bounds(GTK_EDITABLE(entry), &beginning, &end)) {*/
 	gtk_editable_select_region(GTK_EDITABLE(self->fEntry), pos, pos);
 	gtk_editable_set_position(GTK_EDITABLE(self->fEntry), pos);
 }
-static bool in_all_keys_P(GList* keys, int i, char c) {
-	for(; keys; keys = keys->next) {
-		AST::Symbol* key = (AST::Symbol*) keys->data;
-		if(key->name[i] != c)
-			return(false);
-	}
-	return(true);
-}
-static const char* strrchrset(const char* haystack, const char* needles, const char* frontier) {
-	const char* match = NULL;
-	for(; *haystack && haystack < frontier; ++haystack)
-		if(strchr(needles, *haystack))
-			match = haystack;
-	return(match);
-}
+
+};
+#include "GUI/CommonCompleter"
+namespace GUI {
 void Completer_complete(struct Completer* self) {
 	const char* entry_text;
 	int pos;
 	entry_text = gtk_entry_get_text(self->fEntry);
+	self->fEntryText = entry_text;
 	pos = gtk_editable_get_position(GTK_EDITABLE(self->fEntry));
 	const char* entry_needle;
 	if(self->fMatches) {

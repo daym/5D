@@ -1,0 +1,48 @@
+namespace GUI {
+
+static void match_entry(AST::Symbol* key, void* value, struct Completer* self) {
+	const char* possible_text;
+	possible_text = key->name;
+	if(!self->fEntryNeedle || strncmp(possible_text, self->fEntryNeedle, strlen(self->fEntryNeedle)) == 0) /* match */
+		self->fMatches->insert(key);
+}
+static void Completer_accept_match(struct Completer* self, const char* match, bool B_automatic_space) {
+	const char* entry_text;
+	char* new_text;
+	int i;
+	int pos;
+	entry_text = self->fEntryText.c_str();
+	if(!self->fEntryNeedle || !entry_text || !match) /* huh */
+		return;
+	new_text = (char*) calloc(1, strlen(entry_text) + strlen(match) + 2); /* too much */
+	for(i = 0; i < self->fEntryNeedlePos; ++i)
+		new_text[i] = entry_text[i];
+	/* i = self->fEntryNeedlePos */
+	new_text[i] = 0;
+	strcat(new_text, match);
+	while(entry_text[i] && Scanners::symbol_char_P(entry_text[i]))
+		++i;
+	if(B_automatic_space && entry_text[i] != ' ')
+		strcat(new_text, " "); /* TODO remove? */
+	pos = strlen(new_text);
+	strcat(new_text, &entry_text[i]);
+	Completer_accept_match_GUI(self, new_text, pos);
+}
+static bool in_all_keys_P(std::set<AST::Symbol*>& keys, int i, char c) {
+	std::set<AST::Symbol*>::const_iterator end_iter = keys.end();
+	for(std::set<AST::Symbol*>::const_iterator iter = keys.begin(); iter != keys.end(); ++iter) {
+		AST::Symbol* key = *iter;
+		if(key->name[i] != c)
+			return(false);
+	}
+	return(true);
+}
+static const char* strrchrset(const char* haystack, const char* needles, const char* frontier) {
+	const char* match = NULL;
+	for(; *haystack && haystack < frontier; ++haystack)
+		if(strchr(needles, *haystack))
+			match = haystack;
+	return(match);
+}
+
+}; /* end namespace GUI */
