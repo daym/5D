@@ -16,6 +16,7 @@
 #include "Config/Config"
 #include "FFIs/FFIs"
 #include "Evaluators/Builtins"
+#include "GUI/WIN32Completer"
 
 namespace GUI {
 void REPL_append_to_output_buffer(struct REPL* self, const char* text);

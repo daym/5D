@@ -3,7 +3,7 @@
 #include <gtk/gtk.h>
 #include "AST/AST"
 #include "AST/Symbol"
-#include "GUI/Completer"
+#include "GUI/GTKCompleter"
 #include "Scanners/MathParser"
 
 namespace GUI {
