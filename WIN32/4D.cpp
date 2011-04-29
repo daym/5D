@@ -63,7 +63,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			/*DWORD dwExitCode;
 			 if ( ! ::GetExitCodeProcess( hProcess, &dwExitCode)||dwExitCode!=STILL_ACTIVE)
 			childHandle = NULL;*/
-			PostMessage(REPL_get_window(REPL), FM_NOTIFY_SYSTEM, (WPARAM) handles[reason - WAIT_OBJECT_0], NULL);
+			PostMessage(REPL_get_window(REPL), FM_NOTIFY_SYSTEM, (WPARAM) handles[reason - WAIT_OBJECT_0], 0);
 		} else { /* WAIT_OBJECT_0 + x */
 			while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 				if(msg.message == WM_QUIT)

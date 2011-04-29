@@ -300,6 +300,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\GUI\WIN32Completer.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\Config\WIN32Config.cc"
 				>
 			</File>
@@ -381,11 +385,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Compilers\CodeGen"
+			RelativePath="..\Compilers\X86\CodeGen"
 			>
 		</File>
 		<File
-			RelativePath="..\Compilers\X86\CodeGen"
+			RelativePath="..\Compilers\CodeGen"
 			>
 		</File>
 		<File
@@ -458,6 +462,10 @@
 		</File>
 		<File
 			RelativePath="..\FFIs\WIN32"
+			>
+		</File>
+		<File
+			RelativePath="..\GUI\WIN32Completer"
 			>
 		</File>
 		<File

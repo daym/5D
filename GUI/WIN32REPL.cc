@@ -160,6 +160,8 @@ struct REPL {
 	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
 	AST::Cons* fTailUserEnvironmentFrontier;
 	WNDPROC oldEditBoxProc;
+	struct Completer* completer;
+	struct std::set<AST::Symbol*>* fEnvironmentKeys;
 };
 
 HWND REPL_get_window(struct REPL* self) {
@@ -583,6 +585,7 @@ static ATOM registerMyClass(HINSTANCE hInstance)
 static void REPL_init_builtins(struct REPL* self);
 void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
+	self->fEnvironmentKeys = new std::set<AST::Symbol*>;
 	self->fBSearchUpwards = true;
 	self->fBSearchCaseSensitive = true;
 	hinstance = GetModuleHandle(NULL);
@@ -596,6 +599,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 		ShowWIN32Diagnostics();
 	}
 	self->oldEditBoxProc = (WNDPROC) SetWindowLong(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), GWL_WNDPROC, (LONG) HandleEditTabMessage);
+	self->completer = Completer_new(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), self->fEnvironmentKeys);
 	SetWindowLongPtr(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), GWLP_USERDATA, (LONG) self);
 	SetWindowLongPtr(self->dialog, GWLP_USERDATA, (LONG) self);
 	self->fSearchDialog = CreateDialog(hinstance, MAKEINTRESOURCE(IDD_SEARCH), self->dialog, HandleSearchDialogMessage);
@@ -620,6 +624,7 @@ bool REPL_get_file_modified(struct REPL* self) {
 void REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::Node* value) {
 	//std::string bodyString = body->str();
 	EnsureInEnvironment(self->dialog, FromUTF8(parameter->name), value);
+	self->fEnvironmentKeys->insert(parameter);
 	REPL_set_file_modified(self, true);
 }
 static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node);

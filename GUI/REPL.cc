@@ -9,6 +9,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
+#include "Scanners/Scanner"
 #include "AST/AST"
 #include "AST/Symbol"
 #include "Scanners/MathParser"

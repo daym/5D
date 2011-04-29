@@ -1,13 +1,15 @@
 #ifndef __4D_GUI_WIN32COMPLETER_H
 #define __4D_GUI_WIN32COMPLETER_H
-#include <map>
-#include <string>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <set>
+#include "AST/AST"
+#include "AST/Symbol"
 
 namespace GUI {
 struct Completer;
-/* note that haystack's values are unused. Only the keys are used and assumed to be AST::Symbol* */
-void Completer_init(struct Completer* self, HWND entry, std::map<std::string, AST::Node*>* haystack);
-struct Completer* Completer_new(HWND entry, std::map<std::string, AST::Node*>* haystack);
+void Completer_init(struct Completer* self, HWND entry, std::set<AST::Symbol*>* haystack);
+struct Completer* Completer_new(HWND entry, std::set<AST::Symbol*>* haystack);
 void Completer_complete(struct Completer* self);
 };
 #endif /* ndef __4D_GUI_WIN32COMPLETER_H */
