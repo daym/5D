@@ -196,6 +196,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Evaluators\Backtracker.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\Compilers\X86\BorlandFastCallGen.cc"
 				>
 			</File>
@@ -216,11 +220,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\CodeGen.cc"
+				RelativePath="..\Compilers\X86\CodeGen.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\X86\CodeGen.cc"
+				RelativePath="..\Compilers\CodeGen.cc"
 				>
 			</File>
 			<File
@@ -353,6 +357,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\Evaluators\Backtracker"
+			>
+		</File>
+		<File
 			RelativePath="..\Compilers\X86\BorlandFastCallGen"
 			>
 		</File>
@@ -373,11 +381,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Compilers\X86\CodeGen"
+			RelativePath="..\Compilers\CodeGen"
 			>
 		</File>
 		<File
-			RelativePath="..\Compilers\CodeGen"
+			RelativePath="..\Compilers\X86\CodeGen"
 			>
 		</File>
 		<File
