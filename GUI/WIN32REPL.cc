@@ -160,7 +160,7 @@ struct REPL {
 	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
 	AST::Cons* fTailUserEnvironmentFrontier;
 	WNDPROC oldEditBoxProc;
-	struct Completer* completer;
+	struct Completer* fCompleter;
 	struct std::set<AST::Symbol*>* fEnvironmentKeys;
 };
 
@@ -379,7 +379,7 @@ static LRESULT CALLBACK HandleEditTabMessage(HWND hwnd, UINT message, WPARAM wPa
 			break;
 	case WM_KEYDOWN:
 		if(wParam == VK_TAB) {
-			printf("Hello\n");
+			Completer_complete(self->fCompleter);
 			return(0);
 		}
 	case WM_KEYUP:
@@ -599,7 +599,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 		ShowWIN32Diagnostics();
 	}
 	self->oldEditBoxProc = (WNDPROC) SetWindowLong(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), GWL_WNDPROC, (LONG) HandleEditTabMessage);
-	self->completer = Completer_new(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), self->fEnvironmentKeys);
+	self->fCompleter = Completer_new(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), self->fEnvironmentKeys);
 	SetWindowLongPtr(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), GWLP_USERDATA, (LONG) self);
 	SetWindowLongPtr(self->dialog, GWLP_USERDATA, (LONG) self);
 	self->fSearchDialog = CreateDialog(hinstance, MAKEINTRESOURCE(IDD_SEARCH), self->dialog, HandleSearchDialogMessage);
