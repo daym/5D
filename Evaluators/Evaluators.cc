@@ -197,19 +197,30 @@ static bool wants_its_argument_reduced_P(AST::Node* fn) {
 	Operation* fnOperation = dynamic_cast<Operation*>(fn);
 	return(fnOperation ? fnOperation->eager_P() : true);
 }
+static int recursionLevel = 0; /* anti-endless-loop */
 AST::Node* reduce(AST::Node* term) {
+	if(recursionLevel > 1000)
+		throw EvaluationException("recursion was too deep");
 	if(application_P(term)) {
 		AST::Node* fn;
 		AST::Node* argument;
+		++recursionLevel;
 		fn = reduce(get_application_operator(term));
+		--recursionLevel;
 		argument = get_application_operand(term);
-		if(wants_its_argument_reduced_P(fn))
+		if(wants_its_argument_reduced_P(fn)) {
+			++recursionLevel;
 			argument = reduce(argument);
+			--recursionLevel;
+		}
 		if(abstraction_P(fn)) {
 			AST::Node* body;
 			body = get_abstraction_body(fn);
 			body = shift(argument, 1, body);
-			return(reduce(body));
+			++recursionLevel;
+			body = reduce(body);
+			--recursionLevel;
+			return(body);
 		} else {
 			// most of the time, SymbolReference anyway: AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(fn);
 			Evaluators::Operation* fnOperation = dynamic_cast<Evaluators::Operation*>(fn);
