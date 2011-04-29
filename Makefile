@@ -78,10 +78,10 @@ REPL/REPL: REPL/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Sca
 GUI/GTKGUI.o: GUI/GTKGUI.cc GUI/GTKREPL GUI/GTKView GUI/REPL
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKREPL.o: GUI/GTKREPL.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol Config/Config Formatters/LATEX GUI/UI_definition.UI GUI/GTKLATEXGenerator Formatters/SExpression Evaluators/FFI Evaluators/Evaluators GUI/REPL GUI/Completer FFIs/ResultMarshaller GUI/REPLEnvironment GUI/WindowIcon
+GUI/GTKREPL.o: GUI/GTKREPL.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol Config/Config Formatters/LATEX GUI/UI_definition.UI GUI/GTKLATEXGenerator Formatters/SExpression Evaluators/FFI Evaluators/Evaluators GUI/REPL GUI/CommonCompleter GUI/GTKCompleter FFIs/ResultMarshaller GUI/REPLEnvironment GUI/WindowIcon
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKCompleter.o: GUI/GTKCompleter.cc GUI/Completer AST/AST AST/Symbol Scanners/MathParser
+GUI/GTKCompleter.o: GUI/GTKCompleter.cc GUI/CommonCompleter GUI/GTKCompleter AST/AST AST/Symbol Scanners/MathParser
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 GUI/REPL.o: GUI/REPL.cc GUI/REPL AST/AST AST/Symbol Scanners/Scanner Scanners/MathParser Formatters/SExpression Evaluators/FFI Evaluators/Evaluators Evaluators/Builtins

@@ -11,7 +11,7 @@ static void Completer_accept_match(struct Completer* self, const char* match, bo
 	char* new_text;
 	int i;
 	int pos;
-	entry_text = self->fEntryText.c_str();
+	entry_text = self->fEntryText;
 	if(!self->fEntryNeedle || !entry_text || !match) /* huh */
 		return;
 	new_text = (char*) calloc(1, strlen(entry_text) + strlen(match) + 2); /* too much */
@@ -43,6 +43,53 @@ static const char* strrchrset(const char* haystack, const char* needles, const c
 		if(strchr(needles, *haystack))
 			match = haystack;
 	return(match);
+}
+static void Completer_complete_internal(struct Completer* self, const char* entry_text, int pos) {
+	const char* entry_needle;
+	self->fMatches->clear();
+	if(self->fEntryNeedle) {
+		free(self->fEntryNeedle);
+		self->fEntryNeedle = NULL;
+	}
+	/* TODO take caret position into account */
+	entry_needle = strrchrset(entry_text, " ()\"", entry_text + pos); /* TODO only the stuff BEFORE the cursor */
+	if(!entry_needle)
+		entry_needle = entry_text;
+	else
+		++entry_needle;
+	self->fEntryNeedle = strdup(entry_needle);
+	self->fEntryNeedle[pos] = 0;
+	self->fEntryNeedlePos = entry_needle - entry_text;
+#ifdef _WIN32
+	{
+		std::set<AST::Symbol*>::const_iterator end_iter = self->fHaystack->end();
+		for(std::set<AST::Symbol*>::const_iterator iter = self->fHaystack->begin(); iter != end_iter; ++iter)
+			match_entry(*iter, NULL, self);
+	}
+#else
+	g_hash_table_foreach(self->fHaystack, (GHFunc) match_entry, self);
+#endif
+	if(self->fMatches->size() <= 1) { /* unambiguous match or non-match */
+		AST::Symbol* key = !self->fMatches->empty() ? *self->fMatches->begin() : NULL;
+		if(key)
+			Completer_accept_match(self, key->name, TRUE);
+	} else { /* ambiguous */
+		/*assert(g_hash_table_size(self->fMatches) >= 2);*/
+		char common_prefix[100];
+		AST::Symbol* firstKey = !self->fMatches->empty() ? *self->fMatches->begin() : NULL;
+		const char* firstKeyName = firstKey->name;
+		int i;
+		/* TODO show combo box, if that's actually needed... */
+		for(i = 0; i < 100 - 1 && firstKeyName[i]; ++i) {
+			if(in_all_keys_P(*self->fMatches, i, firstKeyName[i]))
+				common_prefix[i] = firstKeyName[i];
+			else
+				break;
+		}
+		common_prefix[i] = 0;
+		if(common_prefix[0])
+			Completer_accept_match(self, common_prefix, FALSE);
+	}
 }
 
 }; /* end namespace GUI */

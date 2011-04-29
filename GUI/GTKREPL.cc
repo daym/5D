@@ -29,7 +29,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "FFIs/FFIs"
-#include "GUI/Completer"
+#include "GUI/GTKCompleter"
 #include "FFIs/ResultMarshaller"
 #include "GUI/WindowIcon"
 

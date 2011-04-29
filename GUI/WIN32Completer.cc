@@ -64,48 +64,7 @@ void Completer_complete(struct Completer* self) {
 	self->fEntryText = ToUTF8(entryTextW);
 	entry_text = self->fEntryText.c_str();
 	pos = GetTextCursorPositionCXX(self->fEntry);
-	const char* entry_needle;
-	self->fMatches->clear();
-	if(self->fEntryNeedle) {
-		free(self->fEntryNeedle);
-		self->fEntryNeedle = NULL;
-	}
-	/* TODO take caret position into account */
-	entry_needle = strrchrset(entry_text, " ()\"", entry_text + pos); /* TODO only the stuff BEFORE the cursor */
-	if(!entry_needle)
-		entry_needle = entry_text;
-	else
-		++entry_needle;
-	self->fEntryNeedle = strdup(entry_needle);
-	self->fEntryNeedle[pos] = 0;
-	self->fEntryNeedlePos = entry_needle - entry_text;
-	/*g_hash_table_foreach(self->fHaystack, (GHFunc) match_entry, self);*/
-	{
-		std::set<AST::Symbol*>::const_iterator end_iter = self->fHaystack->end();
-		for(std::set<AST::Symbol*>::const_iterator iter = self->fHaystack->begin(); iter != end_iter; ++iter)
-			match_entry(*iter, NULL, self);
-	}
-	if(self->fMatches->size() <= 1) { /* unambiguous match or non-match */
-		AST::Symbol* key = !self->fMatches->empty() ? *self->fMatches->begin() : NULL;
-		if(key)
-			Completer_accept_match(self, key->name, TRUE);
-	} else { /* ambiguous */
-		/*assert(g_hash_table_size(self->fMatches) >= 2);*/
-		char common_prefix[100];
-		AST::Symbol* firstKey = !self->fMatches->empty() ? *self->fMatches->begin() : NULL;
-		const char* firstKeyName = firstKey->name;
-		int i;
-		/* TODO show combo box, if that's actually needed... */
-		for(i = 0; i < 100 - 1 && firstKeyName[i]; ++i) {
-			if(in_all_keys_P(*self->fMatches, i, firstKeyName[i]))
-				common_prefix[i] = firstKeyName[i];
-			else
-				break;
-		}
-		common_prefix[i] = 0;
-		if(common_prefix[0])
-			Completer_accept_match(self, common_prefix, FALSE);
-	}
+	Completer_complete_internal(self, entry_text, pos);
 }
 
 }; /* end namespace */
