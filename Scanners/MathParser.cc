@@ -104,7 +104,13 @@ void MathParser::parse_operator(int input) {
 		input_value = input_token = intern("%");
 		break;
 	case '=':
-		input_value = input_token = intern("=");
+		++position, input = fgetc(input_file);
+		if(input == '>')
+			input_value = input_token = intern("=>");
+		else {
+			ungetc(input, input_file), --position;  
+			input_value = input_token = intern("=");
+		}
 		break;
 	case '<':
 		++position, input = fgetc(input_file);
