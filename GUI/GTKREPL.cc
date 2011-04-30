@@ -497,7 +497,7 @@ static gboolean REPL_discover_output_pixbuf(struct REPL* self, GdkEventButton* e
 	gint x = 0;
 	gint y = 0;
 	gtk_text_view_window_to_buffer_coords(view, GTK_TEXT_WINDOW_WIDGET, event->x, event->y, &x, &y);
-	gtk_text_view_get_iter_at_location(view, &iter, x, y);
+	gtk_text_view_get_iter_at_position(view, &iter, NULL, x, y);
 	pixbuf = gtk_text_iter_get_pixbuf(&iter);
 	if(pixbuf) {
 		const char* alt_text;
