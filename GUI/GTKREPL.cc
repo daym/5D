@@ -500,7 +500,6 @@ static gboolean REPL_discover_output_pixbuf(struct REPL* self, GdkEventButton* e
 	gtk_text_view_get_iter_at_location(view, &iter, x, y);
 	pixbuf = gtk_text_iter_get_pixbuf(&iter);
 	if(pixbuf) {
-		g_warning("hello");
 		const char* alt_text;
 		alt_text = gdk_pixbuf_get_option(pixbuf, "alt_text");
 		if(alt_text) {
