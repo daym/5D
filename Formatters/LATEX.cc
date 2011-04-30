@@ -91,13 +91,24 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\left(";
 			AST::Cons* args;
-			limited_to_LATEX(consNode->head, output, operator_precedence); /* FIXME precedence */
-			//output << "\\:";
-			for(args = consNode->tail; args; args = args->tail) { /* eew */
+			output << "\\frac{";
+			args = consNode->tail;
+			while(args) /* parameter etc; should be */ {
+				limited_to_LATEX(consNode->head, output, operator_precedence); /* lambda */
+				/* parameter */
 				limited_to_LATEX(args->head, output, operator_precedence); /* FIXME precedence */
-				if(args->tail)
-					output << "\\:";
+				args = args->tail;
+				if(dynamic_cast<AST::Cons*>(args->head) && dynamic_cast<AST::Cons*>(args->head)->head == AST::intern("\\"))
+					args = (AST::Cons*)args->head;
+				else
+					break;
+				args = args->tail;
 			}
+			output << "}{";
+			/* body */
+			limited_to_LATEX(args->head, output, operator_precedence); /* FIXME precedence */
+			//output << "\\:";
+			output << "}";
 			if(operator_precedence > operator_precedence_limit)
 				output << "\\right)";
 		} else { /* function call, maybe */

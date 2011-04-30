@@ -54,6 +54,13 @@ static AST::Node* get_abstraction_body(AST::Node* root) {
 	} else
 		return(NULL);
 }
+static AST::Node* get_abstraction_parameter(AST::Node* root) {
+	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
+	if(consNode && consNode->head == intern("\\") && consNode->tail)
+		return(consNode->tail->head);
+	else
+		return(NULL);
+}
 bool abstraction_P(AST::Node* root) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	if(!consNode)
@@ -182,7 +189,7 @@ static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
 		AST::Node* new_body;
 		body = get_abstraction_body(term);
 		if(body) {
-			parameter = dynamic_cast<AST::Cons*>(term)->tail->head;
+			parameter = get_abstraction_parameter(term);
 			new_body = shift(argument, index + 1, body);
 		} else
 			new_body = NULL;
@@ -234,7 +241,25 @@ AST::Node* reduce(AST::Node* term) {
 				return(AST::cons(fn, AST::cons(argument, NULL)));
 		}
 	} else if(abstraction_P(term)) {
-		return(term);
+		/* this isn't strictly necessary, but nicer */
+		AST::Node* body;
+		AST::Node* parameter;
+		AST::Node* new_body;
+		new_body = body = get_abstraction_body(term);
+		parameter = get_abstraction_parameter(term);
+#if 0
+		try {
+			new_body = reduce(body);
+		} catch (Evaluators::EvaluationException e) {
+			/* recursion too deep etc */
+			/* FIXME this is WAY slow, so remove it again? */
+			new_body = body;
+		}
+#endif
+		if(new_body == body)
+			return(term);
+		else
+			return(AST::cons(AST::intern("\\"), AST::cons(parameter, AST::cons(new_body, NULL))));
 	} else
 		return(term);
 }
