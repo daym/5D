@@ -376,6 +376,7 @@ static void handle_about_response(GtkDialog* dialog, gint response_id, gpointer 
 	gtk_widget_hide(GTK_WIDGET(dialog));
 }
 static AST::Cons* tips;
+static int current_tip_index = -1;
 static AST::Cons* current_tip = NULL;
 void REPL_load_tips(struct REPL* self) {
 	FILE* input_file;
@@ -396,23 +397,30 @@ static void handle_tips_response(GtkDialog* dialog, gint response_id, struct REP
 	GtkToggleButton* checkButton = (GtkToggleButton*) gtk_builder_get_object(self->UI_builder, "tipsShowAgainButton");
 	GtkTextView* view = (GtkTextView*) gtk_builder_get_object(self->UI_builder, "tipView");
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(view);
-	Config_set_show_tips(self->fConfig, gtk_toggle_button_get_active(checkButton));
-	Config_save(self->fConfig); /* for the paranoid */
 	if(response_id == 2/*NEXT*/) {
 		if(!current_tip)
 			current_tip = tips;
-		else
+		else {
+			if(current_tip->tail)
+				++current_tip_index;
 			current_tip = current_tip->tail ? current_tip->tail : current_tip;
+		}
 	} else if(response_id == 1/*PREV*/) {
 		if(current_tip) {
 			AST::Cons* previous_tip = NULL;
 			for(AST::Cons* n = tips; n != current_tip; n = n->tail)
 				previous_tip = n;
+			if(previous_tip)
+				--current_tip_index;
 			current_tip = previous_tip ? previous_tip : tips;
 		}
 	} else {
 		gtk_widget_hide(GTK_WIDGET(dialog));
-		return;
+	}
+	{
+		Config_set_show_tips(self->fConfig, gtk_toggle_button_get_active(checkButton));
+		Config_set_current_tip(self->fConfig, current_tip_index);
+		Config_save(self->fConfig); /* for the paranoid */
 	}
 	{
 		char* text;
@@ -474,8 +482,32 @@ static void REPL_show_tips(struct REPL* self) {
 	g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(handle_tips_response), self);
 	/*g_signal_connect(G_OBJECT(dialog), "delete-event", G_CALLBACK(handle_tips_delete_event), NULL);*/
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), self->fWidget);
+	{
+		current_tip_index = Config_get_current_tip(self->fConfig);
+		current_tip = tips;
+		for(int i = 0; i < current_tip_index - 1 && current_tip; ++i)
+			current_tip = current_tip->tail;
+	}
 	handle_tips_response(dialog, 2/*NEXT*/, self);
 	gtk_widget_show(GTK_WIDGET(dialog));
+}
+static gboolean REPL_discover_output_pixbuf(struct REPL* self, GdkEventButton* event, GtkTextView* view) {
+	GtkTextIter iter;
+	GdkPixbuf* pixbuf;
+	gint x = 0;
+	gint y = 0;
+	gtk_text_view_window_to_buffer_coords(view, GTK_TEXT_WINDOW_WIDGET, event->x, event->y, &x, &y);
+	gtk_text_view_get_iter_at_location(view, &iter, x, y);
+	pixbuf = gtk_text_iter_get_pixbuf(&iter);
+	if(pixbuf) {
+		g_warning("hello");
+		const char* alt_text;
+		alt_text = gdk_pixbuf_get_option(pixbuf, "alt_text");
+		if(alt_text) {
+			gtk_entry_set_text(self->fCommandEntry, alt_text);
+		}
+	}
+	return(FALSE);
 }
 void REPL_init(struct REPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
@@ -534,6 +566,9 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	gtk_widget_show(GTK_WIDGET(self->fCommandEntry));
 	self->fOutputArea = (GtkTextView*) gtk_text_view_new();
 	self->fOutputScroller = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
+	g_signal_connect_swapped(G_OBJECT(self->fOutputArea), "button-press-event", G_CALLBACK(REPL_discover_output_pixbuf), self);
+	gtk_text_view_set_pixels_below_lines(self->fOutputArea, 7);
+	gtk_text_view_set_wrap_mode(self->fOutputArea, GTK_WRAP_WORD_CHAR);
 	gtk_scrolled_window_set_policy(self->fOutputScroller, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	// TODO set wrap mode
 	gtk_text_view_set_accepts_tab(self->fOutputArea, FALSE);

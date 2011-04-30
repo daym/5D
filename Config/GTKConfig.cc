@@ -11,6 +11,7 @@ struct Config {
 	int main_window_width;
 	int main_window_height;
 	bool show_tips;
+	int current_tip;
 };
 struct Config* load_Config(void) {
 	const char** system_config_dirs;
@@ -25,6 +26,7 @@ struct Config* load_Config(void) {
 	system_config_dirs = (const char**) g_get_system_config_dirs();
 	config = new Config;
 	config->show_tips = true;
+	config->current_tip = 0;
 	config->main_window_width = 400;
 	config->main_window_height = 400;
 	config->key_file = g_key_file_new();
@@ -56,6 +58,7 @@ struct Config* load_Config(void) {
 			g_error_free(error);
 		}
 	}
+	config->current_tip = g_key_file_get_integer(config->key_file, "Global", "CurrentTip", NULL);
 	if(!config->main_window_width || !config->main_window_height)
 		config->main_window_height = config->main_window_width = 400;
 	g_free(environment_name);
@@ -76,6 +79,7 @@ bool Config_save(struct Config* config) {
 	g_key_file_set_integer(config->key_file, "MainWindow", "Width", config->main_window_width);
 	g_key_file_set_integer(config->key_file, "MainWindow", "Height", config->main_window_height);
 	g_key_file_set_boolean(config->key_file, "Global", "ShowTips", config->show_tips);
+	g_key_file_set_integer(config->key_file, "Global", "CurrentTip", config->current_tip);
 	key_file_contents = g_key_file_to_data(config->key_file, &size, &error);
 	if(!key_file_contents || !size || !g_file_set_contents(full_name, key_file_contents, size, &error)) {
 		g_warning("could not save config \"%s\": %s", full_name, error ? error->message : "unknown error");
@@ -111,4 +115,9 @@ void Config_set_show_tips(struct Config* config, bool value) {
 bool Config_get_show_tips(struct Config* config) {
 	return(config->show_tips);
 }
-
+int Config_get_current_tip(struct Config* config) {
+	return(config->current_tip);
+}
+void Config_set_current_tip(struct Config* config, int index) {
+	config->current_tip = index;
+}
