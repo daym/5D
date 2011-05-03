@@ -12,7 +12,7 @@ struct Completer {
 	std::set<AST::Symbol*>* fHaystack;
 	int fEntryNeedlePos;
 	char* fEntryNeedle;
-	std::string fEntryText;
+	char* fEntryText;
 	std::set<AST::Symbol*>* fMatches;
 };
 
@@ -62,7 +62,7 @@ void Completer_complete(struct Completer* self) {
 	int pos;
 	std::wstring entryTextW = GetTextCXX(self->fEntry);
 	self->fEntryText = ToUTF8(entryTextW);
-	entry_text = self->fEntryText.c_str();
+	entry_text = self->fEntryText;
 	pos = GetTextCursorPositionCXX(self->fEntry);
 	Completer_complete_internal(self, entry_text, pos);
 }
