@@ -320,6 +320,19 @@ AST::Node* SmallRealP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<SmallReal*>(argument) != NULL;
 	return(internNative(result));
 }
+AST::Node* SmallInteger0::execute(AST::Node* argument) {
+	return(internNative(0)); /* i.e. integers[0] */
+}
+AST::Node* SmallIntegerSucc::execute(AST::Node* argument) {
+	SmallInteger* smallInteger = dynamic_cast<SmallInteger*>(argument);
+	if(smallInteger) {
+		int value = smallInteger->value;
+		if(value + 1 < value) /* overflow */
+			return(NULL); /* FIXME bigger numbers */
+		return(internNative(value + 1));
+	} else
+		return(NULL);
+}
 AST::Node* StringP::execute(AST::Node* argument) {
 	using namespace AST;
 	bool result = dynamic_cast<String*>(argument) != NULL;

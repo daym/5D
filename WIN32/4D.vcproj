@@ -220,11 +220,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\X86\CodeGen.cc"
+				RelativePath="..\Compilers\CodeGen.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\CodeGen.cc"
+				RelativePath="..\Compilers\X86\CodeGen.cc"
 				>
 			</File>
 			<File
@@ -385,11 +385,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Compilers\X86\CodeGen"
+			RelativePath="..\Compilers\CodeGen"
 			>
 		</File>
 		<File
-			RelativePath="..\Compilers\CodeGen"
+			RelativePath="..\Compilers\X86\CodeGen"
 			>
 		</File>
 		<File
@@ -430,6 +430,10 @@
 		</File>
 		<File
 			RelativePath="..\GUI\REPL"
+			>
+		</File>
+		<File
+			RelativePath="..\GUI\REPLEnvironment"
 			>
 		</File>
 		<File
