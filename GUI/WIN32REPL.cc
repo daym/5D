@@ -420,9 +420,6 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			PostQuitMessage(0);
 		}
 		break;
-	case WM_KEYDOWN:
-		printf("Hi\n");
-		break;
 	/*case WM_GETDLGCODE:
 		{
 			if(wParam) {
