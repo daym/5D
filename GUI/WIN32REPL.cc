@@ -122,9 +122,9 @@ static std::wstring GetListBoxEntryStringCXX(HWND control, int index) {
 	return(result);
 }
 /** ensures that an entry exists in the environment. */
-void EnsureInEnvironment(HWND dialog, const std::wstring& name, AST::Node* value) {
+void EnsureInEnvironment(HWND dialog, const std::wstring& name) {
 	int index = SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_ADDSTRING, 0, (LPARAM) name.c_str());
-	SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_SETITEMDATA, (WPARAM)index, (LPARAM)value);
+	SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_SETITEMDATA, (WPARAM)index, NULL);
 }
 /*    AST::Node* hData = (AST::Node*) SendMessage(hList, LB_GETITEMDATA, (WPARAM)index, 0); */
 /*
@@ -632,9 +632,11 @@ bool REPL_get_file_modified(struct REPL* self) {
 }
 void REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::Node* value) {
 	//std::string bodyString = body->str();
-	EnsureInEnvironment(self->dialog, FromUTF8(parameter->name), value);
-	self->fEnvironmentKeys->insert(parameter);
-	REPL_set_file_modified(self, true);
+	if(self->fEnvironmentKeys->find(parameter) == self->fEnvironmentKeys->end()) {
+		EnsureInEnvironment(self->dialog, FromUTF8(parameter->name));
+		self->fEnvironmentKeys->insert(parameter);
+		REPL_set_file_modified(self, true);
+	}
 }
 static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node);
 /* TODO abstract into common place */
@@ -683,6 +685,7 @@ void REPL_clear(struct REPL* self) {
 	while(SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LB_DELETESTRING, 0, 0) > 0)
 		;
 	// or just LB_RESETCONTENT
+	self->fEnvironmentKeys->clear();
 	REPL_init_builtins(self);
 	REPL_set_file_modified(self, false);
 }
