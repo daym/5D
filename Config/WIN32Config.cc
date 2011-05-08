@@ -75,18 +75,16 @@ void Config_set_environment_name(struct Config* config, const char* value) {
 	config->fEnvironment = strdup(value);
 }
 int Config_get_main_window_width(struct Config* config) {
-	// FIXME
-	return(400);
+	return(config->fMainWindowWidth);
 }
 int Config_get_main_window_height(struct Config* config) {
-	// FIXME
-	return(400);
+	return(config->fMainWindowHeight);
 }
 void Config_set_main_window_width(struct Config* config, int value) {
-	// FIXME
+	config->fMainWindowWidth = value;
 }
 void Config_set_main_window_height(struct Config* config, int value) {
-	// FIXME
+	config->fMainWindowHeight = value;
 }
 void Config_set_show_tips(struct Config* config, bool value) {
 	// FIXME
