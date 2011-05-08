@@ -183,9 +183,13 @@ void REPL_set_file_modified(struct REPL* self, bool value) {
 	self->B_file_modified = value;
 }
 bool REPL_save(struct REPL* self, bool B_force_save_dialog) {
-	/* FIXME honor B_force_save_dialog */
+	const char* environmentName;
 	std::wstring file_name;
-	file_name = GetUsualSaveFileName(self->dialog);
+	environmentName = Config_get_environment_name(self->fConfig);
+	if(!environmentName || B_force_save_dialog)
+		file_name = GetUsualSaveFileName(self->dialog);
+	else
+		file_name = FromUTF8(environmentName);
 	if(file_name.length() > 0) {
 		bool B_OK = false;
 		// FIXME save into temp file first.
