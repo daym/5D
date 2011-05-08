@@ -609,6 +609,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 	SetWindowLongPtr(self->fSearchDialog, GWLP_USERDATA, (LONG) self);
 	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY4D));
 	REPL_init_builtins(self);
+	REPL_set_file_modified(self, false);
 
 	self->fConfig = load_Config();
 	{
@@ -674,6 +675,7 @@ void REPL_clear(struct REPL* self) {
 	while(SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LB_DELETESTRING, 0, 0) > 0)
 		;
 	// or just LB_RESETCONTENT
+	REPL_init_builtins(self);
 }
 static AST::Cons* box_environment_elements(HWND dialog, int index, int count) {
 	if(index >= count)

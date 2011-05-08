@@ -48,7 +48,7 @@ static void Completer_complete_internal(struct Completer* self, const char* entr
 	const char* entry_needle;
 	self->fMatches->clear();
 	if(self->fEntryNeedle) {
-		free(self->fEntryNeedle);
+		//free(self->fEntryNeedle);
 		self->fEntryNeedle = NULL;
 	}
 	/* TODO take caret position into account */

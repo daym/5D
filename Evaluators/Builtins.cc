@@ -320,9 +320,11 @@ AST::Node* SmallRealP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<SmallReal*>(argument) != NULL;
 	return(internNative(result));
 }
+#if 0
 AST::Node* SmallInteger0::execute(AST::Node* argument) {
 	return(internNative(0)); /* i.e. integers[0] */
 }
+#endif
 AST::Node* SmallIntegerSucc::execute(AST::Node* argument) {
 	SmallInteger* smallInteger = dynamic_cast<SmallInteger*>(argument);
 	if(smallInteger) {

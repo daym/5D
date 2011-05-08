@@ -16,7 +16,7 @@ static Evaluators::SmallIntegerP smallIntegerP;
 static Evaluators::SmallRealP smallRealP;
 static Evaluators::StringP stringP;
 static FFIs::ResultMarshaller resultMarshaller;
-static Evaluators::SmallInteger0 smallInteger0;
+/*static Evaluators::SmallInteger0 smallInteger0;*/
 static Evaluators::SmallIntegerSucc smallIntegerSucc;
 
 /*      [ ->!]            [ ->!]                  [ ->!]
@@ -51,7 +51,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_binding(self, AST::intern("head"), &headGetter);
 	REPL_add_builtin_binding(self, AST::intern("tail"), &tailGetter);
 	REPL_add_builtin_binding(self, AST::intern("smallInteger?"), &smallIntegerP);
-	REPL_add_builtin_binding(self, AST::intern("smallInteger0"), &smallInteger0);
+	REPL_add_builtin_binding(self, AST::intern("smallInteger0"), Evaluators::internNative(0));
 	REPL_add_builtin_binding(self, AST::intern("smallIntegerSucc"), &smallIntegerSucc);
 	REPL_add_builtin_binding(self, AST::intern("smallReal?"), &smallRealP);
 	REPL_add_builtin_binding(self, AST::intern("string?"), &stringP);

@@ -30,7 +30,7 @@ DECLARE_SIMPLE_OPERATION(ConsP, "cons?")
 DECLARE_SIMPLE_OPERATION(SmallIntegerP, "smallInteger?")
 DECLARE_SIMPLE_OPERATION(SmallRealP, "smallReal?")
 DECLARE_SIMPLE_OPERATION(StringP, "string?")
-DECLARE_SIMPLE_OPERATION(SmallInteger0, "smallInteger0")
+/*DECLARE_SIMPLE_OPERATION(SmallInteger0, "smallInteger0")*/
 DECLARE_SIMPLE_OPERATION(SmallIntegerSucc, "smallIntegerSucc")
 struct Conser2 : BuiltinOperation {
 private:
