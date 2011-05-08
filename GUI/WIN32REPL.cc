@@ -124,7 +124,7 @@ static std::wstring GetListBoxEntryStringCXX(HWND control, int index) {
 /** ensures that an entry exists in the environment. */
 void EnsureInEnvironment(HWND dialog, const std::wstring& name) {
 	int index = SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_ADDSTRING, 0, (LPARAM) name.c_str());
-	SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_SETITEMDATA, (WPARAM)index, NULL);
+	SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_SETITEMDATA, (WPARAM)index, (LPARAM)0);
 }
 /*    AST::Node* hData = (AST::Node*) SendMessage(hList, LB_GETITEMDATA, (WPARAM)index, 0); */
 /*
