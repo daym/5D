@@ -408,8 +408,16 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		//EndDialog(dialog, IDCLOSE); /* or rather HideWindows */
 		// save work.
 		if(!self->B_file_modified || REPL_confirm_close(self)) {
-				Config_save(self->fConfig);
-				PostQuitMessage(0);
+			{
+				RECT rect;
+				GetWindowRect(dialog, &rect);
+				int height = rect.bottom - rect.top;
+				int width = rect.right - rect.left;
+				Config_set_main_window_width(self->fConfig, width);
+				Config_set_main_window_height(self->fConfig, height);
+			}
+			Config_save(self->fConfig);
+			PostQuitMessage(0);
 		}
 		break;
 	case WM_KEYDOWN:
@@ -625,6 +633,11 @@ void REPL_init(struct REPL* self, HWND parent) {
 		environment_name = Config_get_environment_name(self->fConfig);
 		if(environment_name && environment_name[0])
 			REPL_load_contents_by_name(self, environment_name);
+	}
+	{
+		int width = Config_get_main_window_width(self->fConfig);
+		int height = Config_get_main_window_height(self->fConfig);
+		SetWindowPos(self->dialog, NULL, 0, 0, width, height, SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 	}
 }
 bool REPL_get_file_modified(struct REPL* self) {
