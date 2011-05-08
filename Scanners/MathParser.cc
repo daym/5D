@@ -429,10 +429,14 @@ AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 		return(NULL);
 }
 AST::Node* MathParser::parse_define(AST::Node* operand_1) {
+	bool B_extended = (input_token == AST::intern("("));
+	if(B_extended)
+		consume();
 	AST::Node* parameter = any_operator_P(input_token, 0, sizeof(operator_precedence)/sizeof(operator_precedence[0])) ? consume()
 	                  : input_token == AST::intern("~") ? consume() 
 	                  : consume(intern("<symbol>"));
-
+	if(B_extended)
+		consume(AST::intern(")"));
 	//AST::Node* parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
 	AST::Node* body = parse_expression();
 	if(!parameter||!body||!operand_1) {
