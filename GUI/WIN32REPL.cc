@@ -212,10 +212,12 @@ bool REPL_load_contents_by_name(struct REPL* self, const char* name) {
 		return(true);
 	}
 }
+bool REPL_confirm_close(struct REPL* self);
 void REPL_load(struct REPL* self) {
-	if(self->B_file_modified)
-		if(!REPL_save(self, TRUE))
+	if(self->B_file_modified) {
+		if(!REPL_confirm_close(self))
 			return;
+	}
 	std::wstring file_name;
 	file_name = GetUsualOpenFileName(self->dialog);
 	REPL_load_contents_by_name(self, ToUTF8(file_name));
@@ -268,7 +270,7 @@ static INT_PTR CALLBACK HandleConfirmCloseDialogMessage(HWND dialog, UINT messag
 bool REPL_confirm_close(struct REPL* self) {
 	switch(DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_CONFIRM_CLOSE), self->dialog, HandleConfirmCloseDialogMessage)) {
 	case IDYES:
-		  return(REPL_save(self, TRUE));
+		  return(REPL_save(self, FALSE));
 	case IDNO:
 		  return(true);
 	default:
@@ -676,6 +678,7 @@ void REPL_clear(struct REPL* self) {
 		;
 	// or just LB_RESETCONTENT
 	REPL_init_builtins(self);
+	REPL_set_file_modified(self, false);
 }
 static AST::Cons* box_environment_elements(HWND dialog, int index, int count) {
 	if(index >= count)
