@@ -403,8 +403,10 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	case WM_DESTROY:
 		//EndDialog(dialog, IDCLOSE); /* or rather HideWindows */
 		// save work.
-		if(!self->B_file_modified || REPL_confirm_close(self))
+		if(!self->B_file_modified || REPL_confirm_close(self)) {
+				Config_save(self->fConfig);
 				PostQuitMessage(0);
+		}
 		break;
 	case WM_KEYDOWN:
 		printf("Hi\n");
