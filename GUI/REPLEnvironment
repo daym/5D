@@ -18,6 +18,7 @@ static Evaluators::StringP stringP;
 static FFIs::ResultMarshaller resultMarshaller;
 /*static Evaluators::SmallInteger0 smallInteger0;*/
 static Evaluators::SmallIntegerSucc smallIntegerSucc;
+static Evaluators::Interner interner;
 
 /*      [ ->!]            [ ->!]                  [ ->!]
         ^                 ^                       ^
@@ -56,6 +57,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_binding(self, AST::intern("smallReal?"), &smallRealP);
 	REPL_add_builtin_binding(self, AST::intern("string?"), &stringP);
 	REPL_add_builtin_binding(self, AST::intern("translateFFI"), &resultMarshaller);
+	REPL_add_builtin_binding(self, AST::intern("intern"), &interner);
 	REPL_add_builtin_binding(self, AST::intern("#t"), Evaluators::churchTrue);
 	REPL_add_builtin_binding(self, AST::intern("#f"), Evaluators::churchFalse);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;

@@ -354,6 +354,13 @@ AST::Node* TailGetter::execute(AST::Node* argument) {
 	else
 		return(NULL); // FIXME proper error message!
 }
+AST::Node* Interner::execute(AST::Node* argument) {
+	AST::String* stringNode = dynamic_cast<AST::String*>(argument);
+	if(stringNode && false)
+		return(AST::intern(stringNode->text.c_str()));
+	else
+		return(NULL);
+}
 static std::map<AST::Symbol*, AST::Node*> cachedDynamicBuiltins;
 static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 	const char* name;

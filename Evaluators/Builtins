@@ -32,6 +32,7 @@ DECLARE_SIMPLE_OPERATION(SmallRealP, "smallReal?")
 DECLARE_SIMPLE_OPERATION(StringP, "string?")
 /*DECLARE_SIMPLE_OPERATION(SmallInteger0, "smallInteger0")*/
 DECLARE_SIMPLE_OPERATION(SmallIntegerSucc, "smallIntegerSucc")
+DECLARE_SIMPLE_OPERATION(Interner, "intern")
 struct Conser2 : BuiltinOperation {
 private:
 	AST::Node* head;
