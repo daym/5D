@@ -16,8 +16,15 @@ struct Operation : AST::Node {
 	virtual bool eager_P() const;
 	virtual AST::Node* execute(AST::Node* argument) = 0;
 };
-typedef Operation BuiltinOperation;
+/*typedef Operation BuiltinOperation;*/
+struct BuiltinOperation : Operation {
+	Operation* fallback;
+	BuiltinOperation(Operation* fallback) {
+		this->fallback = fallback;
+	}
+};
 struct Reducer : BuiltinOperation {
+	Reducer(Operation* fallback) : BuiltinOperation(fallback) {}
 	virtual bool eager_P(void) const {
 		return(true);
 	}
