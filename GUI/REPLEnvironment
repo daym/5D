@@ -6,22 +6,6 @@
 #include "FFIs/ResultMarshaller"
 
 namespace GUI {
-static FFIs::LibraryLoader libraryLoader;
-static Evaluators::Quoter quoter;
-static Evaluators::Conser conser;
-static Evaluators::HeadGetter headGetter;
-static Evaluators::TailGetter tailGetter;
-static Evaluators::ConsP consP;
-static Evaluators::SmallIntegerP smallIntegerP;
-static Evaluators::SmallRealP smallRealP;
-static Evaluators::StringP stringP;
-static Evaluators::SymbolP symbolP;
-static Evaluators::KeywordP keywordP;
-static FFIs::ResultMarshaller resultMarshaller;
-/*static Evaluators::SmallInteger0 smallInteger0;*/
-static Evaluators::SmallIntegerSucc smallIntegerSucc;
-static Evaluators::Interner interner;
-static Evaluators::KeywordFromStringGetter keywordFromStringGetter;
 
 /*      [ ->!]            [ ->!]                  [ ->!]
         ^                 ^                       ^
@@ -37,24 +21,33 @@ void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::N
 static void REPL_add_static_builtin_binding(struct REPL* self, AST::Symbol* name, AST::Node* value) {
 	REPL_add_to_environment_simple(self, name, value);
 }
+template<class T>
 struct SuperAwareOperation : Evaluators::BuiltinOperation { /* will be immediately executed, returns actualOperation but has mutable data which is the super. */
-	Evaluators::Operation* actualOperation;
 	virtual bool eager_P(void) const {
 		return(false);
 	}
-	SuperAwareOperation(AST::Node* actualOperation) {
-		this->actualOperation = dynamic_cast<Evaluators::Operation*>(actualOperation);
+	SuperAwareOperation(void) {
 	}
 	virtual AST::Node* execute(AST::Node* argument) {
-		return(this->actualOperation);
+		Evaluators::Operation* actualOperation = new T;
+		return(actualOperation);
 	}
 	virtual std::string str(void) const {
 		return("superAwareOperation");
 	}
 };
-static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::Node* value) { /* allows chaining */
-	REPL_add_to_environment_simple(self, name, AST::cons(AST::intern("reduce"), AST::cons(AST::cons(new SuperAwareOperation(value), AST::cons(name, NULL)), NULL)));
+template<class T>
+static AST::Node* buildSuperAwareOperation(AST::Symbol* name) {
+	return(AST::cons(AST::intern("reduce"), AST::cons(AST::cons(new SuperAwareOperation<T>(), AST::cons(name, NULL)), NULL)));
 }
+#if 0
+static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::Node* value) { /* allows chaining */
+	REPL_add_to_environment_simple(self, name, buildSuperAwareOperation(value));
+}
+#endif
+static Evaluators::Quoter quoter;
+
+#define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, buildSuperAwareOperation<v>(n))
 static void REPL_init_builtins(struct REPL* self) {
 	if(self->fTailUserEnvironment && self->fTailUserEnvironment->tail) {
 		fprintf(stderr, "warning: There is user environment, so not clobbering it by builtins.\n");
@@ -67,22 +60,22 @@ static void REPL_init_builtins(struct REPL* self) {
 	}
 	REPL_add_static_builtin_binding(self, AST::intern("quote"), &quoter); /* keep at the beginning */
 	REPL_add_static_builtin_binding(self, AST::intern("reduce"), &Evaluators::reducer);
-	REPL_add_builtin_binding(self, AST::intern("fromLibrary"), &libraryLoader);
+	REPL_add_builtin_method(self, AST::intern("fromLibrary"), FFIs::LibraryLoader);
 	REPL_add_static_builtin_binding(self, AST::intern("nil"), NULL);
-	REPL_add_builtin_binding(self, AST::intern("cons"), &conser);
-	REPL_add_builtin_binding(self, AST::intern("cons?"), &consP);
-	REPL_add_builtin_binding(self, AST::intern("head"), &headGetter);
-	REPL_add_builtin_binding(self, AST::intern("tail"), &tailGetter);
-	REPL_add_builtin_binding(self, AST::intern("smallInteger?"), &smallIntegerP);
+	REPL_add_builtin_method(self, AST::intern("cons"), Evaluators::Conser);
+	REPL_add_builtin_method(self, AST::intern("cons?"), Evaluators::ConsP);
+	REPL_add_builtin_method(self, AST::intern("head"), Evaluators::HeadGetter);
+	REPL_add_builtin_method(self, AST::intern("tail"), Evaluators::TailGetter);
+	REPL_add_builtin_method(self, AST::intern("smallInteger?"), Evaluators::SmallIntegerP);
 	REPL_add_static_builtin_binding(self, AST::intern("smallInteger0"), Evaluators::internNative(0));
-	REPL_add_builtin_binding(self, AST::intern("smallIntegerSucc"), &smallIntegerSucc);
-	REPL_add_builtin_binding(self, AST::intern("smallReal?"), &smallRealP);
-	REPL_add_builtin_binding(self, AST::intern("string?"), &stringP);
-	REPL_add_builtin_binding(self, AST::intern("symbol?"), &symbolP);
-	REPL_add_builtin_binding(self, AST::intern("keyword?"), &keywordP);
-	REPL_add_builtin_binding(self, AST::intern("translateFFI"), &resultMarshaller);
-	REPL_add_builtin_binding(self, AST::intern("intern"), &interner);
-	REPL_add_builtin_binding(self, AST::intern("keywordFromString"), &keywordFromStringGetter);
+	REPL_add_builtin_method(self, AST::intern("smallIntegerSucc"), Evaluators::SmallIntegerSucc);
+	REPL_add_builtin_method(self, AST::intern("smallReal?"), Evaluators::SmallRealP);
+	REPL_add_builtin_method(self, AST::intern("string?"), Evaluators::StringP);
+	REPL_add_builtin_method(self, AST::intern("symbol?"), Evaluators::SymbolP);
+	REPL_add_builtin_method(self, AST::intern("keyword?"), Evaluators::KeywordP);
+	REPL_add_builtin_method(self, AST::intern("translateFFI"), FFIs::ResultMarshaller);
+	REPL_add_builtin_method(self, AST::intern("intern"), Evaluators::Interner);
+	REPL_add_builtin_method(self, AST::intern("keywordFromString"), Evaluators::KeywordFromStringGetter);
 	REPL_add_static_builtin_binding(self, AST::intern("#t"), Evaluators::churchTrue);
 	REPL_add_static_builtin_binding(self, AST::intern("#f"), Evaluators::churchFalse);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
