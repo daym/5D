@@ -1,0 +1,11 @@
+#ifndef __4D_EVALUATORS_KEYWORDS_H
+#define __4D_EVALUATORS_KEYWORDS_H
+#include "AST/AST"
+
+namespace Evaluators {
+
+struct Keyword : AST::Node {
+};
+}; /* end namespace */
+
+#endif /* ndef __4D_EVALUATORS_KEYWORDS_H */

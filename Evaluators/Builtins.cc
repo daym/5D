@@ -3,6 +3,8 @@
 #include <sstream>
 #include <assert.h>
 #include "AST/AST"
+#include "AST/Symbol"
+#include "AST/Keyword"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "Scanners/MathParser"
@@ -320,6 +322,14 @@ AST::Node* SmallRealP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<SmallReal*>(argument) != NULL;
 	return(internNative(result));
 }
+AST::Node* SymbolP::execute(AST::Node* argument) {
+	bool result = dynamic_cast<Symbol*>(argument) != NULL || dynamic_cast<SymbolReference*>(argument) != NULL;
+	return(internNative(result)); /* TODO SymbolReference? */
+}
+AST::Node* KeywordP::execute(AST::Node* argument) {
+	bool result = dynamic_cast<Keyword*>(argument) != NULL;
+	return(internNative(result));
+}
 #if 0
 AST::Node* SmallInteger0::execute(AST::Node* argument) {
 	return(internNative(0)); /* i.e. integers[0] */
@@ -356,8 +366,15 @@ AST::Node* TailGetter::execute(AST::Node* argument) {
 }
 AST::Node* Interner::execute(AST::Node* argument) {
 	AST::String* stringNode = dynamic_cast<AST::String*>(argument);
-	if(stringNode && false)
+	if(stringNode)
 		return(AST::intern(stringNode->text.c_str()));
+	else
+		return(NULL);
+}
+AST::Node* KeywordFromStringGetter::execute(AST::Node* argument) {
+	AST::String* stringNode = dynamic_cast<AST::String*>(argument);
+	if(stringNode)
+		return(AST::keywordFromString(stringNode->text.c_str()));
 	else
 		return(NULL);
 }

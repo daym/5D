@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/MathParser"
 #include "AST/Symbol"
 #include "AST/AST"
+#include "AST/Keyword"
 #ifdef _WIN32
 /* for fmemopen used in parse_simple... */
 #include "stdafx.h"
@@ -306,6 +307,9 @@ void MathParser::parse_token(void) {
 	case EOF:
 		input_value = input_token = NULL;
 		break;
+	case ':':
+		parse_keyword(input);
+		break;
 	default:
 		parse_symbol(input);
 		break;
@@ -355,6 +359,32 @@ void MathParser::parse_symbol(int input, int special_prefix, int special_prefix_
 		ungetc(input, input_file), --position;
 	input_token = intern("<symbol>");
 	input_value = intern(matchtext.str().c_str());
+}
+void MathParser::parse_keyword(int input) {
+	std::stringstream matchtext;
+	++position, input = fgetc(input_file);
+	if(!symbol1_char_P(input)) {
+		raise_error("<expression>", input);
+		return;
+	}
+	while(symbol_char_P(input)) {
+		matchtext << (char) input;
+		++position, input = fgetc(input_file);
+	}
+	if(input == 0xE2) {
+		++position, input = fgetc(input_file);
+		if(input == 0x83) { // vector arrow etc.
+			++position, input = fgetc(input_file);
+			matchtext << (char) 0xE2 << (char) 0x83 << (char) input; // usually 0x97
+		} else {
+			ungetc(input, input_file), --position;
+			ungetc(0xE2, input_file), --position; // FIXME it is actually unsupported to unget more than 1 character :-(
+			//raise_error("<unicode_operator>", "<unknown>");
+		}
+	} else
+		ungetc(input, input_file), --position;
+	input_token = intern("<symbol>");
+	input_value = keywordFromString(matchtext.str().c_str());
 }
 /* returns the PREVIOUS value */
 AST::Node* MathParser::consume(AST::Symbol* expected_token) {

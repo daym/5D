@@ -32,7 +32,7 @@ Keyword* keywordFromString(const char* name) {
 }
 
 std::string Keyword::str(void) const {
-	return(name);
+	return std::string(":") + (name);
 }
 
 }; /* end namespace AST */
