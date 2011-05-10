@@ -17,7 +17,7 @@ struct Quoter : Operation {
 };
 #define DECLARE_SIMPLE_OPERATION(P, N) \
 struct P : BuiltinOperation { \
-	P(Operation* fallback) : BuiltinOperation(fallback) {} \
+	P(AST::Node* fallback) : BuiltinOperation(fallback) {} \
 	virtual AST::Node* execute(AST::Node* argument); \
 	virtual std::string str(void) const { \
 		return(N); \

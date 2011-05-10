@@ -2,7 +2,8 @@
 #define __4D_FFIS_RESULTMARSHALLER_H
 #include "Evaluators/FFI"
 namespace FFIs {
-class ResultMarshaller : public Evaluators::SymArgCacheFFI {
+struct ResultMarshaller : Evaluators::SymArgCacheFFI {
+	ResultMarshaller(AST::Node* fallback) : Evaluators::SymArgCacheFFI(fallback) {}
 	virtual std::string str(void) const;
 	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the result type signature. Result is a ArgumentMarshaller */
 };

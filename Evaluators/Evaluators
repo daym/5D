@@ -18,13 +18,13 @@ struct Operation : AST::Node {
 };
 /*typedef Operation BuiltinOperation;*/
 struct BuiltinOperation : Operation {
-	Operation* fallback;
-	BuiltinOperation(Operation* fallback) {
+	AST::Node* fallback;
+	BuiltinOperation(AST::Node* fallback) {
 		this->fallback = fallback;
 	}
 };
 struct Reducer : BuiltinOperation {
-	Reducer(Operation* fallback) : BuiltinOperation(fallback) {}
+	Reducer(AST::Node* fallback) : BuiltinOperation(fallback) {}
 	virtual bool eager_P(void) const {
 		return(true);
 	}

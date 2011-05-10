@@ -3,7 +3,7 @@
 #include "Evaluators/FFI"
 namespace FFIs {
 
-struct ArgumentMarshaller : public Evaluators::FFI {
+struct ArgumentMarshaller : Evaluators::FFI {
 private:
 	AST::Symbol* resultSignature;
 public:

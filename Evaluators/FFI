@@ -40,11 +40,12 @@ struct FFIClosure : Operation {
 	virtual AST::Node* execute(AST::Node* state);
 	virtual std::string str(void) const;
 };
-struct SymArgCacheFFI : FFI {
+struct SymArgCacheFFI : BuiltinOperation {
 private:
 	std::map<AST::Symbol*, AST::Node*> knownResults;
 public:
-	virtual AST::Node* executeLowlevel(AST::Node* argument);
+	SymArgCacheFFI(AST::Node* fallback);
+	virtual AST::Node* execute(AST::Node* argument);
 };
 
 };

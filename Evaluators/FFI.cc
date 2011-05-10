@@ -57,7 +57,9 @@ std::string FFIClosure::str(void) const {
 	return(std::string("(FFIClosure ") + (argument ? argument->str() : "nil") + ")"); // FIXME nicer
 	//return(AST::cons(AST::intern("loadFromLibrary"), AST::cons(new AST::String(p->name), NULL)))->str();
 }
-AST::Node* SymArgCacheFFI::executeLowlevel(AST::Node* argument) {
+SymArgCacheFFI::SymArgCacheFFI(AST::Node* fallback) : BuiltinOperation(fallback) {
+}
+AST::Node* SymArgCacheFFI::execute(AST::Node* argument) {
 	/* TODO for non-pure, this doesn't make a whole lot of sense. */
 /*	AST::Symbol* argumentSymbol = dynamic_cast<AST::Symbol*>(argument);
 	if(argumentSymbol == NULL)

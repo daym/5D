@@ -22,7 +22,7 @@ static void REPL_add_static_builtin_binding(struct REPL* self, AST::Symbol* name
 	REPL_add_to_environment_simple(self, name, value);
 }
 template<class T>
-struct SuperAwareOperation : Evaluators::BuiltinOperation { /* will be immediately executed, returns actualOperation but has mutable data which is the super. */
+struct SuperAwareOperation : Evaluators::Operation { /* will be immediately executed, returns actualOperation but has mutable data which is the super. */
 	virtual bool eager_P(void) const {
 		return(false);
 	}
@@ -45,7 +45,7 @@ static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::
 	REPL_add_to_environment_simple(self, name, buildSuperAwareOperation(value));
 }
 #endif
-static Evaluators::Quoter quoter(NULL/*no fallback*/);
+static Evaluators::Quoter quoter;
 
 #define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, buildSuperAwareOperation<v>(n))
 static void REPL_init_builtins(struct REPL* self) {
