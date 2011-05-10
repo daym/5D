@@ -34,8 +34,26 @@ static Evaluators::KeywordFromStringGetter keywordFromStringGetter;
 //fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */
 //fTailUserEnvironmentFrontier
 void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value);
-static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::Node* value) {
+static void REPL_add_static_builtin_binding(struct REPL* self, AST::Symbol* name, AST::Node* value) {
 	REPL_add_to_environment_simple(self, name, value);
+}
+struct SuperAwareOperation : Evaluators::BuiltinOperation { /* will be immediately executed, returns actualOperation but has mutable data which is the super. */
+	Evaluators::Operation* actualOperation;
+	virtual bool eager_P(void) const {
+		return(false);
+	}
+	SuperAwareOperation(AST::Node* actualOperation) {
+		this->actualOperation = dynamic_cast<Evaluators::Operation*>(actualOperation);
+	}
+	virtual AST::Node* execute(AST::Node* argument) {
+		return(this->actualOperation);
+	}
+	virtual std::string str(void) const {
+		return("superAwareOperation");
+	}
+};
+static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::Node* value) { /* allows chaining */
+	REPL_add_to_environment_simple(self, name, AST::cons(AST::intern("reduce"), AST::cons(AST::cons(new SuperAwareOperation(value), AST::cons(name, NULL)), NULL)));
 }
 static void REPL_init_builtins(struct REPL* self) {
 	if(self->fTailUserEnvironment && self->fTailUserEnvironment->tail) {
@@ -47,8 +65,8 @@ static void REPL_init_builtins(struct REPL* self) {
 		self->fTailUserEnvironment = self->fTailEnvironment;
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
 	}
-	REPL_add_builtin_binding(self, AST::intern("quote"), &quoter); /* keep at the beginning */
-	REPL_add_builtin_binding(self, AST::intern("reduce"), &Evaluators::reducer);
+	REPL_add_static_builtin_binding(self, AST::intern("quote"), &quoter); /* keep at the beginning */
+	REPL_add_static_builtin_binding(self, AST::intern("reduce"), &Evaluators::reducer);
 	REPL_add_builtin_binding(self, AST::intern("fromLibrary"), &libraryLoader);
 	REPL_add_builtin_binding(self, AST::intern("nil"), NULL);
 	REPL_add_builtin_binding(self, AST::intern("cons"), &conser);

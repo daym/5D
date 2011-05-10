@@ -378,7 +378,6 @@ AST::Node* KeywordFromStringGetter::execute(AST::Node* argument) {
 	else
 		return(NULL);
 }
-
 static std::map<AST::Symbol*, AST::Node*> cachedDynamicBuiltins;
 static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 	const char* name;
