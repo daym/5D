@@ -68,13 +68,13 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, AST::intern("quote"), &quoter); /* keep at the beginning */
 	REPL_add_static_builtin_binding(self, AST::intern("reduce"), &Evaluators::reducer);
 	REPL_add_builtin_binding(self, AST::intern("fromLibrary"), &libraryLoader);
-	REPL_add_builtin_binding(self, AST::intern("nil"), NULL);
+	REPL_add_static_builtin_binding(self, AST::intern("nil"), NULL);
 	REPL_add_builtin_binding(self, AST::intern("cons"), &conser);
 	REPL_add_builtin_binding(self, AST::intern("cons?"), &consP);
 	REPL_add_builtin_binding(self, AST::intern("head"), &headGetter);
 	REPL_add_builtin_binding(self, AST::intern("tail"), &tailGetter);
 	REPL_add_builtin_binding(self, AST::intern("smallInteger?"), &smallIntegerP);
-	REPL_add_builtin_binding(self, AST::intern("smallInteger0"), Evaluators::internNative(0));
+	REPL_add_static_builtin_binding(self, AST::intern("smallInteger0"), Evaluators::internNative(0));
 	REPL_add_builtin_binding(self, AST::intern("smallIntegerSucc"), &smallIntegerSucc);
 	REPL_add_builtin_binding(self, AST::intern("smallReal?"), &smallRealP);
 	REPL_add_builtin_binding(self, AST::intern("string?"), &stringP);
@@ -83,8 +83,8 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_binding(self, AST::intern("translateFFI"), &resultMarshaller);
 	REPL_add_builtin_binding(self, AST::intern("intern"), &interner);
 	REPL_add_builtin_binding(self, AST::intern("keywordFromString"), &keywordFromStringGetter);
-	REPL_add_builtin_binding(self, AST::intern("#t"), Evaluators::churchTrue);
-	REPL_add_builtin_binding(self, AST::intern("#f"), Evaluators::churchFalse);
+	REPL_add_static_builtin_binding(self, AST::intern("#t"), Evaluators::churchTrue);
+	REPL_add_static_builtin_binding(self, AST::intern("#f"), Evaluators::churchFalse);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }
