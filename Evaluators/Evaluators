@@ -17,6 +17,16 @@ struct Operation : AST::Node {
 	virtual AST::Node* execute(AST::Node* argument) = 0;
 };
 typedef Operation BuiltinOperation;
+struct Reducer : BuiltinOperation {
+	virtual bool eager_P(void) const {
+		return(true);
+	}
+	virtual AST::Node* execute(AST::Node* argument);
+	virtual std::string str(void) const {
+		return("reduce");
+	}
+};
+extern Reducer reducer; /* never EVER make your own instance */
 
 void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames);
 AST::Node* annotate(AST::Node* root);

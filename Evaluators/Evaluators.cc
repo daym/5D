@@ -200,9 +200,13 @@ static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
 	} else 
 		return(term);
 }
+AST::Node* Reducer::execute(AST::Node* argument) {
+	return(argument);
+}
+Reducer reducer;
 static bool wants_its_argument_reduced_P(AST::Node* fn) {
 	Operation* fnOperation = dynamic_cast<Operation*>(fn);
-	return(fnOperation ? fnOperation->eager_P() : true);
+	return(fnOperation ? fnOperation->eager_P() : fn == &reducer);
 }
 static int recursionLevel = 0; /* anti-endless-loop */
 AST::Node* reduce(AST::Node* term) {
