@@ -440,7 +440,7 @@ static bool any_operator_P(AST::Node* input_token, int first_precedence_level, i
 	return(false);
 }
 AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
-	if(operator_ == NULL || operand_1 == NULL || operand_2 == NULL) {
+	if(operator_ == NULL || operand_1 == NULL/* || operand_2 == NULL*/) {
 		raise_error("<second_operand>", "<nothing>");
 		return(NULL);
 	} else if(operator_ == intern("apply"))
@@ -542,7 +542,10 @@ AST::Node* MathParser::parse_value(void) {
 			allow_args = true;
 			AST::Node* opening_brace = input_value;
 			consume();
-			result = parse_expression();
+			if(input_token == intern(")"))
+				result = NULL;
+			else
+				result = parse_expression();
 			if(opening_brace != intern("(") || input_value != intern(")")) {
 				raise_error(")", input_value ? input_value->str() : "<nothing>");
 				allow_args = previous_allow_args;
