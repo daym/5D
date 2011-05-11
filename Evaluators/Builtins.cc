@@ -305,7 +305,7 @@ AST::Node* Conser2::execute(AST::Node* argument) {
 	return(cons(head, dynamic_cast<AST::Cons*>(argument)));
 }
 std::string Conser2::str(void) const {
-	return("(cons " + head->str() + ")");
+	return("(cons " + (head ? head->str() : "()") + ")");
 }
 AST::Node* Conser::execute(AST::Node* argument) {
 	return(new Conser2(argument));
