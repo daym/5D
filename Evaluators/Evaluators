@@ -18,6 +18,7 @@ struct BuiltinOperation : AST::Operation { /* FIXME make this string out the fal
 	BuiltinOperation(AST::Node* fallback) {
 		this->fallback = fallback;
 	}
+	virtual bool eager_P() const;
 };
 struct Reducer : AST::Operation {
 	Reducer(void) {}
