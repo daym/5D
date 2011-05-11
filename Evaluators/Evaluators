@@ -17,14 +17,14 @@ struct Operation : AST::Node {
 	virtual AST::Node* execute(AST::Node* argument) = 0;
 };
 /*typedef Operation BuiltinOperation;*/
-struct BuiltinOperation : Operation {
+struct BuiltinOperation : Operation { /* FIXME make this string out the fallback, too */
 	AST::Node* fallback;
 	BuiltinOperation(AST::Node* fallback) {
 		this->fallback = fallback;
 	}
 };
-struct Reducer : BuiltinOperation {
-	Reducer(AST::Node* fallback) : BuiltinOperation(fallback) {}
+struct Reducer : Operation {
+	Reducer(void) {}
 	virtual bool eager_P(void) const {
 		return(true);
 	}

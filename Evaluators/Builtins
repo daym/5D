@@ -20,7 +20,8 @@ struct P : BuiltinOperation { \
 	P(AST::Node* fallback) : BuiltinOperation(fallback) {} \
 	virtual AST::Node* execute(AST::Node* argument); \
 	virtual std::string str(void) const { \
-		return(N); \
+		/* FIXME make this a nice repr */ \
+		return(std::string("(N ") + (fallback ? fallback->str() : std::string("()")) + ")"); \
 	} \
 };
 DECLARE_SIMPLE_OPERATION(ProcedureP, "procedure?")

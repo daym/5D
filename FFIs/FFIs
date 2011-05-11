@@ -21,7 +21,7 @@ private:
 public:
 	LibraryLoader(AST::Node* fallback);
 	virtual AST::Node* execute(AST::Node* argument); /* argument is the library to be loaded. Result is a CLibrary */
-	virtual std::string str(void) const;
+	virtual std::string str(void) const; /* FIXME str for fallback */
 };
 struct CLibrary : Evaluators::FFI { /* routine loader */
 private:

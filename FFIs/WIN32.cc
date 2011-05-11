@@ -29,7 +29,7 @@ LibraryLoader::LibraryLoader(AST::Node* fallback) : Evaluators::BuiltinOperation
 	p = new LibraryLoaderP();
 }
 std::string LibraryLoader::str(void) const {
-	return("fromLibrary");
+	return(std::string("(fromLibrary ") + (fallback ? fallback->str() : std::string("()")) + ")");
 }
 AST::Node* LibraryLoader::execute(AST::Node* libraryName) {
 	if(string_P(libraryName))

@@ -46,6 +46,7 @@ private:
 public:
 	SymArgCacheFFI(AST::Node* fallback);
 	virtual AST::Node* execute(AST::Node* argument);
+	/* FIXME str for fallback */
 };
 
 };
