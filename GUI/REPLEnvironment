@@ -22,14 +22,14 @@ static void REPL_add_static_builtin_binding(struct REPL* self, AST::Symbol* name
 	REPL_add_to_environment_simple(self, name, value);
 }
 template<class T>
-struct SuperAwareOperation : Evaluators::Operation { /* will be immediately executed, returns actualOperation but has mutable data which is the super. */
+struct SuperAwareOperation : AST::Operation { /* will be immediately executed, returns actualOperation but has mutable data which is the super. */
 	virtual bool eager_P(void) const {
 		return(false);
 	}
 	SuperAwareOperation(void) {
 	}
 	virtual AST::Node* execute(AST::Node* argument) {
-		Evaluators::Operation* actualOperation = new T(argument);
+		AST::Operation* actualOperation = new T(argument);
 		return(actualOperation);
 	}
 	virtual std::string str(void) const {

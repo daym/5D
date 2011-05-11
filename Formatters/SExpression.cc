@@ -25,8 +25,14 @@ static void print_indentation(std::ostream& output, int indentation) {
 }
 void print_S_Expression_CXX(std::ostream& output, int& position, int indentation, AST::Node* node) {
 	bool B_split_cons_items = true;
+	AST::Operation* operation = dynamic_cast<AST::Operation*>(node);
+	if(operation) {
+		AST::Node* n = operation->repr(NULL/*FIXME*/);
+		if(n)
+			node = n;
+	}
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
-	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);
+	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);	
 	if(node == NULL)
 		print_text(output, position, "nil");
 	else if(symbolNode)

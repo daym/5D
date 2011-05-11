@@ -273,10 +273,6 @@ AST::Node* reduce(AST::Node* term) {
 		return(term);
 }
 
-// Operation
-bool Operation::eager_P(void) const {
-	return(true);
-}
 AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body) {
 	return(cons(cons(AST::intern("\\"), cons(parameter, cons(body, NULL))), cons(argument, NULL)));
 }

@@ -30,6 +30,11 @@ struct String : Atom {
 	}
 	virtual std::string str(void) const;
 };
+struct Operation : Node {
+	virtual bool eager_P() const;
+	virtual AST::Node* execute(AST::Node* argument) = 0;
+	virtual AST::Node* repr(AST::Node* selfName) const;
+};
 struct Box : Atom {
 	void* native;
 	Box(void* native) {

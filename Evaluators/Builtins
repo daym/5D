@@ -8,7 +8,7 @@ typedef float NativeReal; /* TODO use double for 64 bits? */
 AST::Node* internNative(int value);
 AST::Node* internNative(bool value);
 AST::Node* internNative(NativeReal value);
-struct Quoter : Operation {
+struct Quoter : AST::Operation {
 	virtual bool eager_P(void) const;
 	virtual AST::Node* execute(AST::Node* argument);
 	virtual std::string str(void) const {
@@ -38,7 +38,7 @@ DECLARE_SIMPLE_OPERATION(KeywordP, "keyword?")
 DECLARE_SIMPLE_OPERATION(SmallIntegerSucc, "smallIntegerSucc")
 DECLARE_SIMPLE_OPERATION(Interner, "intern")
 DECLARE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromString")
-struct Conser2 : Operation {
+struct Conser2 : AST::Operation {
 private:
 	AST::Node* head;
 public:

@@ -10,6 +10,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <stdlib.h>
 #include <map>
 #include "Evaluators/Evaluators"
+#include "AST/AST"
 
 namespace Evaluators {
 
@@ -18,7 +19,7 @@ void* get_native_pointer(AST::Node* root);
 bool get_native_boolean(AST::Node* root);
 char* get_native_string(AST::Node* root);
 
-struct FFI : Operation {
+struct FFI : AST::Operation {
 	bool B_pure;
 	FFI(void) {
 		B_pure = true; /* FIXME false;*/
@@ -26,7 +27,7 @@ struct FFI : Operation {
 	virtual AST::Node* execute(AST::Node* argument);
 	virtual AST::Node* executeLowlevel(AST::Node* argument) = 0;
 };
-struct FFIClosure : Operation {
+struct FFIClosure : AST::Operation {
 	AST::Node* argument;
 	FFI* routine;
 	AST::Node* result;

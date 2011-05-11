@@ -76,5 +76,13 @@ AST::Cons* follow_tail(AST::Cons* list) {
 	return(list);
 }
 
+// Operation
+AST::Node* Operation::repr(AST::Node* selfName) const {
+	return(NULL);
+}
+bool Operation::eager_P(void) const {
+	return(false);
+}
+
 }; /* end namespace AST */
 

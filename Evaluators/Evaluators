@@ -12,18 +12,14 @@ public:
 	virtual const char* what() const throw();
 };
 
-struct Operation : AST::Node {
-	virtual bool eager_P() const;
-	virtual AST::Node* execute(AST::Node* argument) = 0;
-};
 /*typedef Operation BuiltinOperation;*/
-struct BuiltinOperation : Operation { /* FIXME make this string out the fallback, too */
+struct BuiltinOperation : AST::Operation { /* FIXME make this string out the fallback, too */
 	AST::Node* fallback;
 	BuiltinOperation(AST::Node* fallback) {
 		this->fallback = fallback;
 	}
 };
-struct Reducer : Operation {
+struct Reducer : AST::Operation {
 	Reducer(void) {}
 	virtual bool eager_P(void) const {
 		return(true);
