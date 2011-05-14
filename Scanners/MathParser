@@ -24,10 +24,12 @@ private:
 	void parse_operator(int input);
 	void parse_star(int input);
 	void parse_number(int input);
+	void parse_number_with_base(int input, int base);
 	void parse_anglebracket(int input);
 	void parse_unicode(int input);
 	void parse_structural(int input);
 	void parse_symbol(int input, int special_prefix = 0, int special_prefix_2 = 0);
+	void parse_special_coding(int input);
 	void parse_keyword(int input);
 	void parse_string(int input);
 	AST::Node* parse_value(void);

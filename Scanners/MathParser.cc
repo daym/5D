@@ -148,6 +148,28 @@ void MathParser::parse_star(int input) {
 void MathParser::parse_anglebracket(int input) {
 	parse_operator(input);
 }
+void MathParser::parse_number_with_base(int input, int base) {
+	int value = 0; /* TODO make this more general? */
+	while(true) {
+		int digit = (input >= '0' && input <= '9') ? (input - '0') :
+		            (input >= 'A' && input <= 'Z') ? 10 + (input - 'A') :
+		            (input >= 'a' && input <= 'z') ? 10 + (input - 'a') :
+		            -1;
+		if(digit == -1) {
+			ungetc(input, input_file), --position;
+			break;
+		}
+		if(digit < 0 || digit >= base)
+			raise_error("<number>", input);
+		value = value * base + digit;
+		++position, input = fgetc(input_file);
+	}
+	//input_token = intern("<number>");
+	input_token = intern("<symbol>");
+	std::stringstream sst;
+	sst << value; /* decimal */
+	input_value = AST::intern(sst.str().c_str());
+}
 void MathParser::parse_number(int input) {
 	using namespace AST;
 	std::stringstream matchtext;
@@ -310,6 +332,9 @@ void MathParser::parse_token(void) {
 	case ':':
 		parse_keyword(input);
 		break;
+	case '#':
+		parse_special_coding(input);
+		break;
 	default:
 		parse_symbol(input);
 		break;
@@ -328,6 +353,30 @@ bool symbol_char_P(int input) {
 	    || (input >= '0' && input <= '9') 
 	    || /*input == '_' || */input == '?';
 	  /*  || input == '^' not really part of the symbol name any more. */
+}
+void MathParser::parse_special_coding(int input) {
+	assert(input == '#');
+	++position, input = fgetc(input_file);
+	switch(input) {
+	case 'o':
+	case 'x':
+	case '0'...'9': /* & "r" */
+		{
+			int base = input == 'o' ? 8 : input == 'x' ? 16 : 0;
+			while(input >= '0' && input <= '9') {
+				base = base * 10 + (input - '0');
+				++position, input = fgetc(input_file);
+			}
+			/* TODO is #or1 valid? */
+			if(input == 'r' || input == 'o' || input == 'x')
+				++position, input = fgetc(input_file);
+			parse_number_with_base(input, base);
+		}
+		break;
+	default:
+		parse_symbol(input, '#');
+		break;
+	}
 }
 void MathParser::parse_symbol(int input, int special_prefix, int special_prefix_2) {
 	std::stringstream matchtext;
