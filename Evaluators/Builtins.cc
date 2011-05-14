@@ -283,7 +283,7 @@ static SmallInteger integers[256] = {
 	SmallInteger(254),
 	SmallInteger(255),
 }; /* TODO ptr */
-AST::Node* internNative(int value) {
+AST::Node* internNative(NativeInt value) {
 	if(value < 256)
 		return(&integers[value]);
 	return(new SmallInteger(value));
@@ -394,8 +394,7 @@ static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 			else
 				return(NULL);
 		}
-		assert(sizeof(long int) == sizeof(int));
-		return(internNative((int) value));
+		return(internNative((NativeInt) value));
 	} else
 		return(NULL);
 }

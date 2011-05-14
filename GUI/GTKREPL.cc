@@ -868,7 +868,7 @@ bool REPL_save(struct REPL* self, bool B_force_dialog) {
 	return(B_OK);
 }
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name) {
-	gtk_window_set_title(self->fWidget, absolute_name);
+	gtk_window_set_title(self->fWidget, absolute_name ? absolute_name : "(4D)");
 	Config_set_environment_name(self->fConfig, absolute_name);
 	Config_save(self->fConfig);
 }

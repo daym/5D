@@ -24,7 +24,7 @@ std::string String::str(void) const {
 	const char* item;
 	char c;
 	sst << "\"";
-	for(item = text.c_str(); c = *item; ++item) {
+	for(item = text.c_str(); (c = *item); ++item) {
 		if(c == '"')
 			sst << '\\';
 		else if(c == '\\')

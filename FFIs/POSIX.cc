@@ -23,13 +23,13 @@ using namespace Evaluators;
 struct LibraryLoaderP {
 	std::map<AST::Symbol*, CLibrary*> knownLibraries;
 };
-LibraryLoader::LibraryLoader(AST::Node* fallback) : Evaluators::FFI(fallback) {
+LibraryLoader::LibraryLoader(AST::Node* fallback) : Evaluators::BuiltinOperation(fallback) {
 	p = new LibraryLoaderP();
 }
 std::string LibraryLoader::str(void) const {
 	return("fromLibrary");
 }
-AST::Node* LibraryLoader::executeLowlevel(AST::Node* libraryName) {
+AST::Node* LibraryLoader::execute(AST::Node* libraryName) {
 	if(string_P(libraryName))
 		libraryName = AST::intern(((AST::String*)libraryName)->text.c_str());
 	AST::Symbol* libraryNameSymbol = dynamic_cast<AST::Symbol*>(libraryName);

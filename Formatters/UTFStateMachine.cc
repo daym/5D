@@ -11,10 +11,10 @@ UTFStateMachine::UTFStateMachine(void) {
 unsigned int get_transition(unsigned int state, int input) {
 	struct State* result;
 	result = &state_table[state];
-	for(unsigned int i = 0; i < result->choice_count; ++i)
+	for(int i = 0; i < (int) result->choice_count; ++i)
 		if(result->inputs[i] == input && input != 0)
 			return(result->new_states[i]);
-	for(unsigned int i = result->choice_count - 1; i >= 0; --i)
+	for(int i = (int) result->choice_count - 1; i >= 0; --i)
 		if(result->inputs[i] == 0)
 			return(result->new_states[i]);
 	return(0);

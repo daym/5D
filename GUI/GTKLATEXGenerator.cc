@@ -109,7 +109,7 @@ struct GTKLATEXGenerator* GTKLATEXGenerator_new(void) {
 	return(result);
 }
 void GTKLATEXGenerator_enqueue(struct GTKLATEXGenerator* self, const char* document, const char* alt_text, GtkTextIter* destination) {
-	GError* error;
+	GError* error = NULL;
 	char name[PATH_MAX];
 	if(!document) {
 		GTKLATEXGenerator_handle_LATEX_image(self, destination, NULL, alt_text);
@@ -143,6 +143,11 @@ void GTKLATEXGenerator_enqueue(struct GTKLATEXGenerator* self, const char* docum
 		data->document = document;
 		data->mark = gtk_text_buffer_create_mark(gtk_text_iter_get_buffer(destination), NULL, destination, TRUE);
 		g_child_watch_add(pid, (GChildWatchFunc) g_LATEX_child_died, data);
+	} else {
+		GTKLATEXGenerator_print_fallback_at_iter(self, alt_text, destination);
+		//g_LATEX_child_died(0, 0, data);
+		//GTKLATEXGenerator_handle_LATEX_image_at_mark(data->generator, data->mark, data->document, data->alt_text);
+		//g_free(data);
 	}
 }
 void GTKLATEXGenerator_set_failure_callback(struct GTKLATEXGenerator* self, GTKLATEXGeneratorFailure_t* value) {

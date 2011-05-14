@@ -1,5 +1,6 @@
 #include <glib.h>
 #include <string>
+#include <stdlib.h>
 #include <string.h>
 #include "Config/Config"
 
@@ -32,7 +33,7 @@ struct Config* load_Config(void) {
 	config->key_file = g_key_file_new();
 	g_key_file_set_list_separator(config->key_file, ':');
 	system_config_dir_count = g_strv_length((gchar**) system_config_dirs);
-	config_dirs = (const char**) g_malloc0_n(system_config_dir_count + 2, sizeof(char*));
+	config_dirs = (const char**) calloc(system_config_dir_count + 2, sizeof(char*));
 	for(int i = 0; i < system_config_dir_count; ++i)
 		config_dirs[i] = system_config_dirs[i];
 	config_dirs[system_config_dir_count] = config_dir_name;
@@ -73,6 +74,8 @@ bool Config_save(struct Config* config) {
 	gchar* key_file_contents;
 	config->key_file = g_key_file_new();
 	config_dir_name = g_get_user_config_dir();
+	if(!g_str_has_suffix(config_dir_name, "/"))
+		config_dir_name = g_strdup_printf("%s/", config_dir_name);
 	g_mkdir_with_parents(g_strdup_printf("%s%s", config_dir_name, "4D"), 0775);
 	full_name = g_strdup_printf("%s%s", config_dir_name, CONFIG_NAME);
 	g_key_file_set_string(config->key_file, "Global", "Environment", config->environment_name.c_str());
