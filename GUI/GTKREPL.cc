@@ -484,9 +484,10 @@ static void REPL_show_tips(struct REPL* self) {
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), self->fWidget);
 	{
 		current_tip_index = Config_get_current_tip(self->fConfig);
-		current_tip = tips;
+		current_tip = current_tip_index > 0 ? tips : NULL;
 		for(int i = 0; i < current_tip_index - 1 && current_tip; ++i)
 			current_tip = current_tip->tail;
+		--current_tip_index;
 	}
 	handle_tips_response(dialog, 2/*NEXT*/, self);
 	gtk_widget_show(GTK_WIDGET(dialog));
