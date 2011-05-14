@@ -8,7 +8,7 @@
 
 struct Config {
 	GKeyFile* key_file;
-	std::string environment_name;
+	char* environment_name;
 	int main_window_width;
 	int main_window_height;
 	bool show_tips;
@@ -48,7 +48,7 @@ struct Config* load_Config(void) {
 	g_free((gchar**) config_dirs);
 	g_free(full_name);
 	environment_name = g_key_file_get_string(config->key_file, "Global", "Environment", &error);
-	config->environment_name = environment_name ? environment_name : "";
+	config->environment_name = environment_name && environment_name[0] ? environment_name : NULL;
 	config->main_window_width = g_key_file_get_integer(config->key_file, "MainWindow", "Width", NULL);
 	config->main_window_height = g_key_file_get_integer(config->key_file, "MainWindow", "Height", NULL);
 	{
@@ -78,7 +78,7 @@ bool Config_save(struct Config* config) {
 		config_dir_name = g_strdup_printf("%s/", config_dir_name);
 	g_mkdir_with_parents(g_strdup_printf("%s%s", config_dir_name, "4D"), 0775);
 	full_name = g_strdup_printf("%s%s", config_dir_name, CONFIG_NAME);
-	g_key_file_set_string(config->key_file, "Global", "Environment", config->environment_name.c_str());
+	g_key_file_set_string(config->key_file, "Global", "Environment", config->environment_name ? config->environment_name : "");
 	g_key_file_set_integer(config->key_file, "MainWindow", "Width", config->main_window_width);
 	g_key_file_set_integer(config->key_file, "MainWindow", "Height", config->main_window_height);
 	g_key_file_set_boolean(config->key_file, "Global", "ShowTips", config->show_tips);
@@ -95,10 +95,10 @@ bool Config_save(struct Config* config) {
 	return(true);
 }
 char* Config_get_environment_name(struct Config* config) {
-	return(strdup(config->environment_name.c_str()));
+	return(config->environment_name ? strdup(config->environment_name) : NULL);
 }
 void Config_set_environment_name(struct Config* config, const char* value) {
-	config->environment_name = value ? value : "";
+	config->environment_name = value ? strdup(value) : NULL;
 }
 int Config_get_main_window_width(struct Config* config) {
 	return(config->main_window_width);

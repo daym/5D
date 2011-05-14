@@ -527,6 +527,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	self->fFileModified = false;
 	self->fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
 	self->fWidget = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
+        gtk_window_set_title(self->fWidget, "(4D)");
 	gtk_window_set_icon(self->fWidget, gdk_pixbuf_new_from_inline(-1, window_icon, FALSE, NULL));
 	gtk_window_add_accel_group(self->fWidget, self->accelerator_group);
 	/*dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_EXECUTE, GTK_RESPONSE_OK, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, GTK_STOCK_OPEN, GTK_RESPONSE_REJECT, NULL);*/
@@ -594,16 +595,17 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	gtk_tree_view_column_set_sort_column_id(fNameColumn, 0);
 	gtk_tree_view_column_set_sort_indicator(fNameColumn, TRUE);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(self->fEnvironmentStore2), 0, GTK_SORT_ASCENDING);
+	self->fConfig = load_Config();
 	REPL_init_builtins(self);
 	self->fLATEXGenerator = GTKLATEXGenerator_new();
-	self->fConfig = load_Config();
 	{
 		gtk_window_resize(GTK_WINDOW(self->fWidget), Config_get_main_window_width(self->fConfig), Config_get_main_window_height(self->fConfig));
 		char* environment_name;
 		environment_name = Config_get_environment_name(self->fConfig);
 		if(environment_name && environment_name[0]) {
 			REPL_load_contents_by_name(self, environment_name);
-		}
+		} else
+			REPL_set_file_modified(self, false);
 	}
 	g_signal_connect(G_OBJECT(self->fWidget), "delete-event", G_CALLBACK(g_confirm_close), self);
 	//g_signal_connect(G_OBJECT(self->fWidget), "delete-event", G_CALLBACK(g_hide_window), NULL);
@@ -868,7 +870,7 @@ bool REPL_save(struct REPL* self, bool B_force_dialog) {
 	return(B_OK);
 }
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name) {
-	gtk_window_set_title(self->fWidget, absolute_name ? absolute_name : "(4D)");
+	gtk_window_set_title(self->fWidget, g_strdup_printf("%s%s", absolute_name ? absolute_name : "(4D)", self->fFileModified ? " *" : ""));
 	Config_set_environment_name(self->fConfig, absolute_name);
 	Config_save(self->fConfig);
 }
@@ -879,11 +881,10 @@ void REPL_set_file_modified(struct REPL* self, bool value) {
 	if(self->fFileModified == value)
 		return;
 	self->fFileModified = value;
-	if(value) {
-		const char* title = gtk_window_get_title(self->fWidget);
-		char* new_title = g_strdup_printf("%s *", title);
-		gtk_window_set_title(self->fWidget, new_title);
-		g_free(new_title);
+	{
+		const char* absolute_name;
+		absolute_name = Config_get_environment_name(self->fConfig);
+		gtk_window_set_title(self->fWidget, g_strdup_printf("%s%s", absolute_name ? absolute_name : "(4D)", self->fFileModified ? " *" : ""));
 	}
 }
 bool REPL_confirm_close(struct REPL* self) {
