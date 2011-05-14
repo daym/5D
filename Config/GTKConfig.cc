@@ -48,7 +48,7 @@ struct Config* load_Config(void) {
 	g_free((gchar**) config_dirs);
 	g_free(full_name);
 	environment_name = g_key_file_get_string(config->key_file, "Global", "Environment", &error);
-	config->environment_name = environment_name && environment_name[0] ? environment_name : NULL;
+	config->environment_name = environment_name && environment_name[0] ? strdup(environment_name) : NULL;
 	config->main_window_width = g_key_file_get_integer(config->key_file, "MainWindow", "Width", NULL);
 	config->main_window_height = g_key_file_get_integer(config->key_file, "MainWindow", "Height", NULL);
 	{
