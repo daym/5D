@@ -574,6 +574,9 @@ AST::Node* MathParser::parse_value(void) {
 		   In the long term, maybe have our own table of what is a unary operator and what isn't? (like for the binary operators)
 		 */
 		AST::Node* operator_ = consume();
+		if(input_token == AST::intern(")") || input_token == NULL) {
+			return(operator_);
+		}
 		AST::Node* argument = parse_binary_operation(input_token == intern("~") ? negation_precedence_level : minus_precedence_level - 1);
 		//AST::Node* argument = parse_value();
 		if(argument == NULL)
@@ -602,8 +605,16 @@ AST::Node* MathParser::parse_value(void) {
 			}
 			consume(intern(")"));
 			allow_args = previous_allow_args;
-		} else
+		} else {
+#if 0
+			if(input_token == AST::intern(")")) { /* oops! */
+				raise_error("<value>", ")");
+			} else if(input_token == NULL) {
+				raise_error("<value>", "<EOF>");
+			}
+#endif
 			result = consume();
+		}
 		{
 			AST::Node* macro_result;
 			macro_result = maybe_parse_macro(result);
