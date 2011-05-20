@@ -1,0 +1,149 @@
+#ifndef __REPL_REPLENVIRONMENT_H
+#define __REPL_REPLENVIRONMENT_H
+#include "Evaluators/FFI"
+#include "Evaluators/Builtins"
+#include "Evaluators/Evaluators"
+#include "FFIs/ResultMarshaller"
+
+namespace REPLX {
+
+/*      [ ->!]            [ ->!]                  [ ->!]
+        ^                 ^                       ^
+    fTailEnvironment  fTailUserEnvironment   fTailUserEnvironmentFrontier
+
+   entry = ((\x B) a)
+*/
+
+//fTailEnvironment
+//fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */
+//fTailUserEnvironmentFrontier
+void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value);
+static void REPL_add_static_builtin_binding(struct REPL* self, AST::Symbol* name, AST::Node* value) {
+	REPL_add_to_environment_simple(self, name, value);
+}
+template<class T>
+struct SuperAwareOperation : AST::Operation { /* will be immediately executed, returns actualOperation but has mutable data which is the super. */
+	virtual bool eager_P(void) const {
+		return(false);
+	}
+	SuperAwareOperation(void) {
+	}
+	virtual AST::Node* execute(AST::Node* argument) {
+		AST::Operation* actualOperation = new T(argument);
+		return(actualOperation);
+	}
+	virtual std::string str(void) const {
+		return("superAwareOperation");
+	}
+};
+template<class T>
+static AST::Node* buildSuperAwareOperation(AST::Symbol* name) {
+	return(AST::cons(AST::intern("reduce"), AST::cons(AST::cons(new SuperAwareOperation<T>(), AST::cons(name, NULL)), NULL)));
+}
+#if 0
+static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::Node* value) { /* allows chaining */
+	REPL_add_to_environment_simple(self, name, buildSuperAwareOperation(value));
+}
+#endif
+static Evaluators::Quoter quoter;
+
+#define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, buildSuperAwareOperation<v>(n))
+static void REPL_init_builtins(struct REPL* self) {
+	if(self->fTailUserEnvironment && self->fTailUserEnvironment->tail) {
+		fprintf(stderr, "warning: There is a user environment, so not clobbering it by builtins.\n");
+		return;
+	}
+	if(!self->fTailEnvironment) { /* first init */
+		self->fTailEnvironment = AST::cons(AST::intern("environment"), NULL/*mutable*/);
+		self->fTailUserEnvironment = self->fTailEnvironment;
+		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
+	}
+	REPL_add_static_builtin_binding(self, AST::intern("quote"), &quoter); /* keep at the beginning */
+	REPL_add_static_builtin_binding(self, AST::intern("reduce"), &Evaluators::reducer);
+	REPL_add_builtin_method(self, AST::intern("fromLibrary"), FFIs::LibraryLoader);
+	REPL_add_static_builtin_binding(self, AST::intern("nil"), NULL);
+	REPL_add_builtin_method(self, AST::intern("cons"), Evaluators::Conser);
+	REPL_add_builtin_method(self, AST::intern("cons?"), Evaluators::ConsP);
+	REPL_add_builtin_method(self, AST::intern("head"), Evaluators::HeadGetter);
+	REPL_add_builtin_method(self, AST::intern("tail"), Evaluators::TailGetter);
+	REPL_add_builtin_method(self, AST::intern("smallInteger?"), Evaluators::SmallIntegerP);
+	REPL_add_static_builtin_binding(self, AST::intern("smallInteger0"), Evaluators::internNative(0));
+	REPL_add_builtin_method(self, AST::intern("smallIntegerSucc"), Evaluators::SmallIntegerSucc);
+	REPL_add_builtin_method(self, AST::intern("smallReal?"), Evaluators::SmallRealP);
+	REPL_add_builtin_method(self, AST::intern("string?"), Evaluators::StringP);
+	REPL_add_builtin_method(self, AST::intern("symbol?"), Evaluators::SymbolP);
+	REPL_add_builtin_method(self, AST::intern("keyword?"), Evaluators::KeywordP);
+	REPL_add_builtin_method(self, AST::intern("translateFFI"), FFIs::ResultMarshaller);
+	REPL_add_builtin_method(self, AST::intern("intern"), Evaluators::Interner);
+	REPL_add_builtin_method(self, AST::intern("keywordFromString"), Evaluators::KeywordFromStringGetter);
+	REPL_add_static_builtin_binding(self, AST::intern("#t"), Evaluators::churchTrue);
+	REPL_add_static_builtin_binding(self, AST::intern("#f"), Evaluators::churchFalse);
+	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
+	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
+}
+void REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value);
+void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value) {
+	using namespace AST;
+	AST::Cons* node;
+	AST::Cons* nodeTail;
+	REPL_add_to_environment_simple_GUI(self, name, value);
+	nodeTail = cons(name, cons(NULL, NULL));
+	node = cons(cons(AST::intern("\\"), nodeTail), cons(value, NULL));
+	/* node = ((\x B) a) 
+	nodeTail =    ^ */
+	if(self->fTailUserEnvironmentFrontier)
+		self->fTailUserEnvironmentFrontier->tail = AST::cons(node, NULL);
+	else
+		abort();
+	self->fTailUserEnvironmentFrontier = nodeTail;
+}
+static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node) {
+	if(self->fTailUserEnvironmentFrontier) {
+		self->fTailUserEnvironmentFrontier->tail = AST::cons(node, NULL);
+		return(self->fTailEnvironment->tail->head);
+	} else
+		return(node);
+}
+static void REPL_unfilter_environment(struct REPL* self, AST::Node* environment) {
+	/* filters out Builtins */
+	using namespace AST;
+	AST::Cons* environmentCons = dynamic_cast<AST::Cons*>(environment);
+	if(Evaluators::application_P(environment)) {
+		AST::Cons* fn;
+		AST::Node* parameter;
+		AST::Node* argument;
+		argument = environmentCons && environmentCons->tail ? environmentCons->tail->head : NULL;
+		fn = dynamic_cast<AST::Cons*>(environmentCons->head);
+		parameter = fn->tail->head;
+		assert(fn && Evaluators::abstraction_P(fn));
+		REPL_add_to_environment_simple_GUI(self, dynamic_cast<AST::Symbol*>(parameter), argument);
+		REPL_unfilter_environment(self, environmentCons->head);
+	} else if(Evaluators::abstraction_P(environment)) {
+		AST::Node* body;
+		AST::Node* parameter;
+		parameter = environmentCons->tail->head;
+		if(!environmentCons->tail->tail) {
+			/* (\b) used as tail marker */
+			self->fTailUserEnvironmentFrontier = environmentCons->tail;
+			self->fTailUserEnvironmentFrontier->tail = NULL;
+		} else {
+			body = follow_tail(environmentCons->tail->tail)->head;
+			REPL_unfilter_environment(self, body);
+		}
+	}
+}
+void REPL_set_environment(struct REPL* self, AST::Cons* environment) {
+	self->fTailUserEnvironment->tail = NULL;
+	self->fTailUserEnvironmentFrontier->tail = NULL;
+	self->fTailUserEnvironmentFrontier = NULL;
+	self->fTailUserEnvironment->tail = AST::cons(environment, NULL);
+	REPL_unfilter_environment(self, environment);
+}
+AST::Cons* REPL_get_user_environment(struct REPL* self) {
+	if(self->fTailUserEnvironmentFrontier)
+		self->fTailUserEnvironmentFrontier->tail = NULL; /* clear the last command from the environment, nobody cares. */
+	return(self->fTailUserEnvironment->tail ? dynamic_cast<AST::Cons*>(self->fTailUserEnvironment->tail->head) : NULL);
+}
+
+}; /* end namespace */
+#endif /* __REPL_REPLENVIRONMENT_H */
