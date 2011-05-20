@@ -30,6 +30,7 @@ struct Config* load_Config(void) {
 	config->current_tip = 0;
 	config->main_window_width = 400;
 	config->main_window_height = 400;
+	config->environment_name = NULL;
 	config->key_file = g_key_file_new();
 	g_key_file_set_list_separator(config->key_file, ':');
 	system_config_dir_count = g_strv_length((gchar**) system_config_dirs);
