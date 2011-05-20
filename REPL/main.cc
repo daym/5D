@@ -1,73 +1,117 @@
 #include <stdio.h>
+#include <assert.h>
 #include <sys/types.h>
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/errno.h>
-#include <readline/readline.h>
-#include <readline/history.h>
 #include "Scanners/MathParser"
+#include "FFIs/FFIs"
+#include "Formatters/SExpression"
 
-const char* commands[] = {
-	"\\",
-	"if",
-	"cond",
-	"define",
-	"display",
-	"newline",
-	"begin",
-	NULL,
+namespace REPLX {
+
+struct REPL {
+	AST::Cons* fTailEnvironment;
+	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::Cons* fTailUserEnvironmentFrontier;
 };
-static char** completion_matches(const char* text, rl_compentry_func_t* callback) {
-	return(rl_completion_matches(text, callback));
+
+void REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
 }
-static char* command_generator(const char* text, int state) {
-	static int len;
-	static int list_index;
-	const char* name;
-	if(state == 0) {
-		list_index = 0;
-		len = strlen(text);
+
+};
+
+#include "REPL/REPLEnvironment"
+
+namespace REPLX {
+
+void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
+	using namespace AST;
+	AST::Cons* definitionCons;
+	if(!definition)
+		return;
+	definitionCons = dynamic_cast<AST::Cons*>(definition);
+	if(!definitionCons || !definitionCons->head || !definitionCons->tail || definitionCons->head != intern("define"))
+		return;
+	definitionCons = definitionCons->tail;
+	AST::Symbol* procedureName = dynamic_cast<AST::Symbol*>(definitionCons->head);
+	if(!procedureName || !definitionCons->tail)
+		return;
+	AST::Node* value = follow_tail(definitionCons->tail)->head;
+	REPL_add_to_environment_simple(self, procedureName, value);
+}
+
+void REPL_clear(struct REPL* self) {
+	self->fTailEnvironment = self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier = NULL;
+	REPL_init_builtins(self);
+}
+void REPL_init(struct REPL* self) {
+	REPL_clear(self);
+}
+bool REPL_execute(struct REPL* self, AST::Node* input) {
+	bool B_ok = false;
+	try {
+		AST::Node* result = input;
+		if(!input || dynamic_cast<AST::Cons*>(input) == NULL || ((AST::Cons*)input)->head != AST::intern("define")) {
+			result = REPL_close_environment(self, result);
+			result = Evaluators::provide_dynamic_builtins(result);
+			result = Evaluators::annotate(result);
+			result = Evaluators::reduce(result);
+		}
+		/*std::string v = result ? result->str() : "OK";
+		v = " => " + v + "\n";
+		gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
+		Formatters::print_S_Expression(stdout, 0, 0, result);
+		fprintf(stdout, "\n");
+		fflush(stdout);
+		/*REPL_enqueue_LATEX(self, result, destination);*/
+		REPL_add_to_environment(self, result);
+		B_ok = true;
+	} catch(Evaluators::EvaluationException e) {
+		std::string v = e.what() ? e.what() : "error";
+		v = " => " + v + "\n";
+		// FIXME gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
 	}
-	while((name = commands[list_index])) {
-		++list_index;
-		if(strncmp(name, text, len) == 0)
-			return(strdup(name));
-	}
-	return(NULL);
+	return(B_ok);
 }
-static char** complete(const char* text, int start, int end) {
-	char** matches = NULL;
-	//if(start == 0) // or after a brace.
-		matches = completion_matches(text, command_generator);
-	return(matches);
+struct REPL* REPL_new(void) {
+	struct REPL* result;
+	result = (struct REPL*) calloc(1, sizeof(struct REPL));
+	REPL_init(result);
+	return(result);
 }
-static void initialize_readline(void) {
-	rl_readline_name = "4D";
-	rl_attempted_completion_function = complete;
-	rl_sort_completion_matches = 1;
-}
+
+}; /* end namespace */
 int main() {
-	const char* line;
 	Scanners::MathParser parser;
-	initialize_readline();
-	while((line = readline("λ> "))) {
-		if(!line)
-			break;
-		if(!line[0])
-			continue;
-		FILE* input_file = fmemopen((void*) line, strlen(line), "r");
+	int status = 0;
+	bool B_first = true;
+	FILE* input_file;
+	using namespace REPLX;
+	struct REPL* REPL = REPL_new();
+	input_file = stdin;
+	parser.push(input_file, 0);
+	while(!parser.EOFP()) {
 		try {
-			try {
-				AST::Node* result = parser.parse(input_file);
-				if(result)
-					printf("%s\n", result->str().c_str());
-			} catch(...) {
-				fclose(input_file);
-				throw;
-			}
-		} catch(Scanners::ParseException e) {
-			fprintf(stderr, "error: %s\n", e.what());
+			if(B_first)
+				B_first = false;
+			else
+				parser.parse_closing_brace();
+			AST::Node* source = parser.parse_S_list(false);
+			// TODO parse left-over ")"
+			REPL_execute(REPL, source);
+		} catch(Scanners::ParseException exception) {
+			AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::String(exception.what()), NULL));
+			std::string errStr = err->str();
+			fprintf(stderr, "%s\n", errStr.c_str());
+			status = 1;
+			parser.consume();
+		} catch(Evaluators::EvaluationException exception) {
+			AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::String(exception.what()), NULL));
+			std::string errStr = err->str();
+			fprintf(stderr, "%s\n", errStr.c_str());
+			status = 2;
 		}
 	}
-	return(0);
+	return(status);
 }

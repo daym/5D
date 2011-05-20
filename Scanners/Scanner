@@ -30,9 +30,9 @@ protected:
 	int previous_position;
 	int line_number;
 	virtual void parse_token(void);
-	void push(FILE* input_file, int line_number);
-	void pop(void);
 public:
+	virtual void push(FILE* input_file, int line_number, bool B_consume = true);
+	void pop(void);
 	int get_position(void) const {
 		return(previous_position);
 	}

@@ -79,7 +79,8 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 			return(false);
 		}
 		try {
-			content = parser.parse_S_Expression(input_file);
+			parser.push(input_file, 0);
+			content = parser.parse_S_Expression();
 		} catch(Scanners::ParseException exception) {
 			fprintf(stderr, "error: failed to load file: \"%s\"\n", name);
 			fclose(input_file);
@@ -112,6 +113,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 	REPL_set_file_modified(self, false);
 	return(true);
 }
+/* FIXME remove */
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 	using namespace AST;
 	AST::Cons* definitionCons;

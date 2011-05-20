@@ -24,6 +24,7 @@ using namespace AST;
 MathParser::MathParser(void) : Scanner() {
 	B_process_macros = true;
 	input_value = NULL;
+	allow_args = true;
 }
 void MathParser::parse_structural(int input) {
 	switch(input) {
@@ -40,7 +41,9 @@ void MathParser::parse_structural(int input) {
 }
 void MathParser::parse_string(int input) {
 	std::stringstream matchtext;
+	// assert input == '"'
 	bool B_escaped = false;
+	parse_optional_whitespace();
 	for(++position, input = fgetc(input_file); input != EOF && (input != '"' || B_escaped); ++position, input = fgetc(input_file)) {
 		if(input == '\n')
 			++line_number;
@@ -59,7 +62,6 @@ void MathParser::parse_string(int input) {
 			}
 		}
 	}
-	parse_optional_whitespace();
 	input_token = AST::intern("<string>");
 	std::string value = matchtext.str();
 	input_value = AST::string_literal(value.c_str());
@@ -265,16 +267,8 @@ void MathParser::parse_optional_whitespace(void) {
 	}
 	ungetc(input, input_file), --position;
 }
-void MathParser::parse_S_optional_whitespace(void) {
-	int input;
-	// skip whitespace...
-	while(++position, input = fgetc(input_file), input == ' ' || input == '\t' || input == '\n' || input == '\r') {
-		if(input == '\n')
-			++line_number;
-	}
-	ungetc(input, input_file), --position;
-}
 void MathParser::parse_token(void) {
+	parse_optional_whitespace();
 	int input;
 	++position, input = fgetc(input_file);
 	switch(input) {
@@ -339,7 +333,6 @@ void MathParser::parse_token(void) {
 		parse_symbol(input);
 		break;
 	}
-	parse_optional_whitespace();
 }
 static bool symbol1_char_P(int input) {
 	return (input >= '@' && input <= 'Z')
@@ -440,7 +433,7 @@ AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 	AST::Node* previous_value;
 	previous_value = input_value;
 	if(expected_token && expected_token != input_token)
-		raise_error(expected_token->name, input_token ? input_token->name : "<nothing>");
+		raise_error(expected_token->name, input_value ? input_value->str() : input_token ? input_token->name : "<nothing>");
 	previous_position = position;
 	parse_token();
 	return(previous_value);
@@ -669,35 +662,32 @@ AST::Node* MathParser::parse_expression(void) {
 AST::Node* MathParser::parse_argument(void) {
 	return parse_binary_operation(apply_precedence_level);
 }
-AST::Node* MathParser::parse(FILE* input_file) {
-	push(input_file, 0);
-	allow_args = true;
-	consume();
+AST::Node* MathParser::parse(void) {
 	AST::Node* result = parse_expression();
-	pop();
 	return(result);
 }
-
-AST::Cons* MathParser::parse_S_list(void) {
+AST::Cons* MathParser::parse_S_list_body(void) {
 	if(input_token == intern(")"))
 		return(NULL);
 	else {
 		AST::Node* head;
-		head = parse_S_Expression_inline();
-		return(cons(head, parse_S_list()));
+		head = parse_S_Expression();
+		return(cons(head, parse_S_list_body()));
 	}
 }
-
-AST::Node* MathParser::parse_S_Expression_inline(void) {
+AST::Cons* MathParser::parse_S_list(bool B_consume_closing_brace) {
+	AST::Cons* result = NULL;
+	consume(intern("("));
+	/* TODO macros (if we want) */
+	result = parse_S_list_body();
+	if(B_consume_closing_brace)
+		consume(intern(")"));
+	return(result);
+}
+AST::Node* MathParser::parse_S_Expression(void) {
 	/* TODO do this without tokenizing? How? */
 	if(input_token == intern("(")) {
-		AST::Cons* result = NULL;
-		consume();
-		/* TODO macros (if we want) */
-		result = parse_S_list();
-		consume(intern(")"));
-		parse_S_optional_whitespace();
-		return(result);
+		return(parse_S_list(true));
 	} else if(input_token == intern("<symbol>")) {
 		return(consume()); // & whitespace.
 	} else {
@@ -711,29 +701,31 @@ AST::Node* MathParser::parse_S_Expression_inline(void) {
 		//parse_S_optional_whitespace();
 	}
 }
-
-AST::Node* MathParser::parse_S_Expression(FILE* input_file) {
-	push(input_file, 0);
-	allow_args = true;
-	consume();
-	AST::Node* result = parse_S_Expression_inline();
-	pop();
-	return(result);
-}
-
 AST::Node* MathParser::parse_simple(const char* text) {
 	AST::Node* result;
 	MathParser parser;
 	FILE* input_file;
 	try {
 		input_file = fmemopen((void*) text, strlen(text), "r");
-		result = parser.parse(input_file);
+		parser.push(input_file, 0);
+		result = parser.parse();
 		fclose(input_file);
 		return(result);
 	} catch(ParseException& exception) {
 		fprintf(stderr, "could not parse \"%s\" because: %s\n", text, exception.what());
 		abort();
 	}
+}
+void MathParser::push(FILE* input_file, int line_number, bool B_consume) {
+	Scanner::push(input_file, line_number, B_consume);
+	if(B_consume)
+		consume();
+}
+void MathParser::parse_closing_brace(void) {
+	consume(AST::intern(")"));
+}
+bool MathParser::EOFP(void) const {
+	return(input_token == NULL);
 }
 
 };

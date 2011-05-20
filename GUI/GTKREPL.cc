@@ -384,7 +384,8 @@ void REPL_load_tips(struct REPL* self) {
 	if(input_file) {
 		Scanners::MathParser parser;
 		AST::Node* contents;
-		contents = parser.parse_S_Expression(input_file);
+		parser.push(input_file, 0);
+		contents = parser.parse_S_Expression();
 		fclose(input_file);
 		AST::Cons* contentsCons = dynamic_cast<AST::Cons*>(contents);
 		if(contentsCons && contentsCons->head == AST::intern("tips4DV1"))
@@ -689,7 +690,8 @@ AST::Node* REPL_parse(struct REPL* self, const char* command, GtkTextIter* desti
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
 	if(input_file) {
 		try {
-			AST::Node* result = parser.parse(input_file);
+			parser.push(input_file, 0);
+			AST::Node* result = parser.parse();
 			fclose(input_file);
 			return(result);
 		} catch(...) {
@@ -769,7 +771,8 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* o_text) {
 			gtk_text_buffer_insert(self->fOutputBuffer, &text_end, text, -1);
 			try {
 				input_file = fmemopen((void*) next_text, strlen(next_text), "r");
-				content = parser.parse_S_Expression(input_file);
+				parser.push(input_file, 0);
+				content = parser.parse_S_Expression();
 				fclose(input_file);
 				gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);
 				REPL_enqueue_LATEX(self, content, &text_end);
