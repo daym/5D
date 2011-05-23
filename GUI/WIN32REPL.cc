@@ -656,7 +656,8 @@ bool REPL_execute(struct REPL* self, const char* command) {
 	if(input_file) {
 		try {
 			try {
-				AST::Node* result = parser.parse(input_file);
+				parser.push(input_file, 0);
+				AST::Node* result = parser.parse();
 				REPL_add_to_environment(self, result);
 				if(!result || dynamic_cast<AST::Cons*>(result) == NULL || ((AST::Cons*)result)->head != AST::intern("define")) {
 					result = REPL_close_environment(self, result);
