@@ -506,6 +506,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				if(text.length() == 0) {
 					text = GetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY);
 					B_used_entry = true;
+					REPL_append_to_output_buffer(self, ToUTF8(text));
 				}
 				std::string UTF8_text = ToUTF8(text);
 				try {
