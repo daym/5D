@@ -323,6 +323,10 @@ void MathParser::parse_token(void) {
 	case EOF:
 		input_value = input_token = NULL;
 		break;
+	case '\'':
+		input_token = AST::intern("<symbol>");
+		input_value = AST::intern("quote");
+		break;
 	case ':':
 		parse_keyword(input);
 		break;
