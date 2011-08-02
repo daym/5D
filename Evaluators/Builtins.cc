@@ -292,8 +292,8 @@ AST::Node* internNative(NativeReal value) {
 	return(new SmallReal(value)); /* TODO cache 0, 1. */
 }
 using namespace AST;
-AST::Node* churchTrue = Scanners::MathParser::parse_simple("(\\t (\\f t))");
-AST::Node* churchFalse = Scanners::MathParser::parse_simple("(\\t (\\f f))");
+AST::Node* churchTrue = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f t))"));
+AST::Node* churchFalse = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f f))"));
 AST::Node* internNative(bool value) {
 	return(value ? churchTrue : churchFalse);
 }
