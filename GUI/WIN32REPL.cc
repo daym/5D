@@ -32,6 +32,12 @@ static void ShowWIN32Diagnostics(void) {
 	}
 	//ExitProcess(dw); 
 }
+int GetRichTextCaretPosition(HWND control) {
+	WPARAM beginning = 0;
+	LPARAM end = 0;
+	SendMessage(control, EM_GETSEL, (WPARAM) &beginning, (LPARAM) &end);
+	return(beginning);
+}
 std::wstring GetRichTextSelectedText(HWND control) {
 	WPARAM beginning = 0;
 	LPARAM end = 0;
@@ -285,8 +291,8 @@ static void REPL_find_text(struct REPL* self, const std::wstring& text, bool upw
 	int index;
 	FINDTEXTEXW range;
 	if(upwards) {
-		range.chrg.cpMin = 0;
-		range.chrg.cpMax = -1; // GetWindowTextLengthW(GetDlgItem(self->fSearchDialog, IDC_OUTPUT)); // FIXME curstart, W
+		range.chrg.cpMin = GetRichTextCaretPosition(GetDlgItem(self->dialog, IDC_OUTPUT)); // FIXME curstart, W;
+		range.chrg.cpMax = 0;
 	} else {
 		range.chrg.cpMin = 0;
 		range.chrg.cpMax = -1;
@@ -294,9 +300,9 @@ static void REPL_find_text(struct REPL* self, const std::wstring& text, bool upw
 	range.chrgText.cpMax = -1;
 	range.chrgText.cpMin = -1;
 	range.lpstrText = (WCHAR*) text.c_str();
-	index = SendMessage(GetDlgItem(self->fSearchDialog, IDC_OUTPUT), EM_FINDTEXTEXW, (!upwards ? FR_DOWN : 0) | (case_sensitive ? FR_MATCHCASE : 0), (LPARAM) &range);
+	index = SendMessage(GetDlgItem(self->dialog, IDC_OUTPUT), EM_FINDTEXTEXW, (!upwards ? FR_DOWN : 0) | (case_sensitive ? FR_MATCHCASE : 0), (LPARAM) &range);
 	if(index != -1 && range.chrgText.cpMax != -1 && range.chrgText.cpMin != -1) { // found
-		SendMessage(GetDlgItem(self->fSearchDialog, IDC_OUTPUT), EM_SETSEL,(WPARAM) range.chrgText.cpMin,(LPARAM) range.chrgText.cpMax);
+		SendMessage(GetDlgItem(self->dialog, IDC_OUTPUT), EM_SETSEL, (WPARAM) range.chrgText.cpMin,(LPARAM) range.chrgText.cpMax);
 	}
 	// TODO search in selection?
 	// TODO FR_WHOLEWORD
