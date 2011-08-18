@@ -539,7 +539,7 @@ AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
 	return(result);
 }
 AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
-	// TODO subst, include, cond, make-list, quote, case.
+	// TODO let|where, include, cond, make-list, quote, case.
 	if(operand_1 == intern("define")) {
 		return(parse_define(operand_1));
 	} else if(operand_1 == intern("quote")) {
