@@ -45,6 +45,8 @@ static void SetRegistryDWORDValueCXX(HKEY key, const std::wstring& valueKey, DWO
 struct Config* load_Config(void) {
 	struct Config* config;
 	config = (struct Config*) calloc(1, sizeof(struct Config));
+	config->fMainWindowWidth = 400;
+	config->fMainWindowHeight = 400;
 	HKEY nativeConfig;
 	if(RegOpenKey(HKEY_CURRENT_USER, _T("SOFTWARE\\4D"), &nativeConfig) != ERROR_SUCCESS)
 		if(RegOpenKey(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\4D"), &nativeConfig) != ERROR_SUCCESS)
