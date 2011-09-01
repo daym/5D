@@ -259,6 +259,9 @@ static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePat
 		} catch(Scanners::ParseException& e) {
 			std::string v = e.what() ? e.what() : "error";
 			REPL_insert_error_message(self, &end, std::string("\n") + command, v);
+		} catch(Evaluators::EvaluationException& e) {
+			std::string v = e.what() ? e.what() : "error";
+			REPL_insert_error_message(self, &end, std::string("\n") + command, v);
 		}
 		g_free(command);
 	}

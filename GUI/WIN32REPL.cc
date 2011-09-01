@@ -686,6 +686,12 @@ bool REPL_execute(struct REPL* self, const char* command) {
 			REPL_append_to_output_buffer(self, v.c_str());
 			REPL_set_file_modified(self, true);
 			throw;
+		} catch(Evaluators::EvaluationException e) {
+			std::string v = e.what() ? e.what() : "error";
+			v = " => " + v + "\n";
+			REPL_append_to_output_buffer(self, v.c_str());
+			REPL_set_file_modified(self, true);
+			throw;
 		}
 		REPL_set_file_modified(self, true);
 	}
