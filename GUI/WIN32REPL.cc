@@ -39,7 +39,7 @@ struct REPL {
 	struct std::set<AST::Symbol*>* fEnvironmentKeys;
 	HMENU fEnvironmentMenu;
 };
-};
+}; /* end namespace REPLX */
 namespace GUI {
 	using namespace REPLX;
 void REPL_append_to_output_buffer(struct REPL* self, const char* text);
@@ -235,7 +235,7 @@ SendMessage(hwnd, EM_SETSEL, (WPARAM)(int)iStartPos, (LPARAM)(int)iEndPos);
 
  */
 
-HWND REPL_get_window(struct REPLX::REPL* self) {
+HWND REPL_get_window(struct REPL* self) {
 	return(self->dialog);
 }
 HWND REPL_get_search_window(struct REPL* self) {

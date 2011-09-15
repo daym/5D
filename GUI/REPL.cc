@@ -17,12 +17,15 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/FFI"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
-#include "REPL/REPLEnvironment"
 
 namespace REPLX {
 struct REPL;
+void REPL_set_environment(struct REPL* self, AST::Cons* environment);
+AST::Cons* REPL_get_user_environment(struct REPL* self);
+void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value);
 };
 namespace GUI {
+using namespace REPLX;
 
 #if 0
 static bool save_integer(FILE* output_file, long value) {
@@ -46,7 +49,6 @@ const char* load_string(const char*& string_iter) {
 	return(result);
 }
 #endif
-AST::Cons* REPL_get_user_environment(struct REPL* self);
 bool REPL_get_file_modified(struct REPL* self);
 char* REPL_get_output_buffer_text(struct REPL* self);
 bool REPL_confirm_close(struct REPL* self);
@@ -55,8 +57,6 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* text);
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition);
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 void REPL_set_file_modified(struct REPL* self, bool value);
-void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value);
-void REPL_set_environment(struct REPL* self, AST::Cons* environment);
 static AST::Node* REPL_filter_environment(struct REPL* self, AST::Node* environment) {
 	return(environment);
 }
