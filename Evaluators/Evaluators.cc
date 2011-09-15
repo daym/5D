@@ -46,7 +46,7 @@ void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames) {
 	std::set<AST::Symbol*> boundNames;
 	get_free_variables_impl(root, boundNames, freeNames);
 }
-static AST::Node* get_abstraction_body(AST::Node* root) {
+AST::Node* get_abstraction_body(AST::Node* root) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	if(consNode && consNode->head == intern("\\") && consNode->tail && consNode->tail->tail) {
 		/* take the trailing item as body */
@@ -54,7 +54,7 @@ static AST::Node* get_abstraction_body(AST::Node* root) {
 	} else
 		return(NULL);
 }
-static AST::Node* get_abstraction_parameter(AST::Node* root) {
+AST::Node* get_abstraction_parameter(AST::Node* root) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	if(consNode && consNode->head == intern("\\") && consNode->tail)
 		return(consNode->tail->head);
@@ -75,11 +75,11 @@ bool application_P(AST::Node* root) {
 	else
 		return(consNode->head != intern("\\"));
 }
-static AST::Node* get_application_operator(AST::Node* root) {
+AST::Node* get_application_operator(AST::Node* root) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	return(consNode ? consNode->head : NULL);
 }
-static AST::Node* get_application_operand(AST::Node* root) {
+AST::Node* get_application_operand(AST::Node* root) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	return((consNode && consNode->tail) ? consNode->tail->head : NULL);
 }
@@ -273,8 +273,14 @@ AST::Node* reduce(AST::Node* term) {
 		return(term);
 }
 
+AST::Node* application(AST::Node* fn, AST::Node* argument) {
+	return(cons(fn, cons(argument, NULL)));
+}
+AST::Node* abstraction(AST::Node* parameter, AST::Node* body) {
+	return(cons(AST::intern("\\"), cons(parameter, cons(body, NULL))));
+}
 AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body) {
-	return(cons(cons(AST::intern("\\"), cons(parameter, cons(body, NULL))), cons(argument, NULL)));
+	return(application(abstraction(parameter, body), argument));
 }
 bool BuiltinOperation::eager_P() const {
 	return(true);

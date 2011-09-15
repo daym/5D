@@ -6,8 +6,11 @@
 #include "AST/AST"
 #include "AST/Symbol"
 
-namespace GUI {
+namespace REPLX {
 struct Completer;
+};
+namespace GUI {
+using namespace REPLX;
 void Completer_init(struct Completer* self, HWND entry, std::set<AST::Symbol*>* haystack);
 struct Completer* Completer_new(HWND entry, std::set<AST::Symbol*>* haystack);
 void Completer_complete(struct Completer* self);

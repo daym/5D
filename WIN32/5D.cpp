@@ -9,7 +9,7 @@
 
 #define MAX_LOADSTRING 100
 
-static struct GUI::REPL* REPL;
+static struct REPLX::REPL* REPL;
 
 // Global Variables:
 static HINSTANCE hInst;								// current instance

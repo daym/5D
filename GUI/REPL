@@ -12,8 +12,11 @@ namespace AST {
 struct Cons;
 struct Node;
 }; /* end namespace */
-namespace GUI {
+namespace REPLX {
 struct REPL;
+};
+namespace GUI {
+using namespace REPLX;
 bool REPL_save_contents_to(struct REPL* self, FILE* output_file);
 bool REPL_load_contents_from(struct REPL* self, const char* name);
 AST::Cons* REPL_get_environment(struct REPL* self);

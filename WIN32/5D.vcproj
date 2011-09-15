@@ -441,7 +441,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\GUI\REPLEnvironment"
+			RelativePath="..\REPL\REPLEnvironment"
 			>
 		</File>
 		<File

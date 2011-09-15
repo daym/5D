@@ -5,8 +5,7 @@
 #include "Scanners/Scanner"
 #include "Scanners/MathParser"
 
-namespace GUI {
-
+namespace REPLX {
 struct Completer {
 	HWND fEntry;
 	std::set<AST::Symbol*>* fHaystack;
@@ -15,6 +14,10 @@ struct Completer {
 	char* fEntryText;
 	std::set<AST::Symbol*>* fMatches;
 };
+
+};
+namespace GUI {
+using namespace REPLX;
 
 void Completer_accept_match_GUI(struct Completer* self, const char* new_text, int pos) {
 	std::wstring textU;

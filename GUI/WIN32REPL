@@ -1,12 +1,15 @@
-#ifndef __WIN32REPL_H
-#define __WIN32REPL_H
+#ifndef __WIN32REPL_A_H
+#define __WIN32REPL_A_H
 #include <string>
 #include <windows.h>
 #include "AST/AST"
 
-namespace GUI {
-
+namespace REPLX {
 struct REPL;
+};
+
+namespace GUI {
+using namespace REPLX;
 void REPL_init(struct REPL* self, HWND parent);
 struct REPL* REPL_new(HWND parent);
 bool REPL_execute(struct REPL* self, const char* command);
@@ -19,4 +22,4 @@ PHANDLE REPL_get_waiting_handles(struct REPL* REPL, DWORD* handleCount);
 
 }
 
-#endif /* ndef __WIN32REPL_H */
+#endif /* ndef __WIN32REPL_A_H */

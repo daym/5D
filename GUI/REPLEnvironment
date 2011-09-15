@@ -86,7 +86,10 @@ void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::N
 	using namespace AST;
 	AST::Cons* node;
 	AST::Cons* nodeTail;
-	REPL_add_to_environment_simple_GUI(self, name, value);
+	int index = REPL_add_to_environment_simple_GUI(self, name, value);
+	/* index is the index of the entry that is "not as important as the new one" */
+	self->f	
+	
 	nodeTail = cons(name, cons(NULL, NULL));
 	node = cons(cons(AST::intern("\\"), nodeTail), cons(value, NULL));
 	/* node = ((\x B) a) 

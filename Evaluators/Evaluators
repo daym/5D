@@ -38,6 +38,13 @@ AST::Node* reduce(AST::Node* term);
 AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body);
 bool abstraction_P(AST::Node* root);
 bool application_P(AST::Node* root);
+AST::Node* get_application_operator(AST::Node* root);
+AST::Node* get_application_operand(AST::Node* root);
+AST::Node* get_abstraction_body(AST::Node* root);
+AST::Node* get_abstraction_parameter(AST::Node* root);
+AST::Node* application(AST::Node* fn, AST::Node* argument);
+AST::Node* abstraction(AST::Node* parameter, AST::Node* body);
+
 };
 
 #endif /*ndef __EVALUATORS_H*/

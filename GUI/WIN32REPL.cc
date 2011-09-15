@@ -19,8 +19,29 @@
 #include "FFIs/FFIs"
 #include "Evaluators/Builtins"
 #include "GUI/WIN32Completer"
-
+namespace REPLX {
+	static void REPL_init_builtins(struct REPL* self);
+	static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node);
+struct REPL {
+	HWND dialog;
+	bool B_file_modified;
+	struct Config* fConfig;
+	HWND fSearchDialog;
+	//HACCEL accelerators;
+	std::wstring fSearchTerm;
+	bool fBSearchUpwards;
+	bool fBSearchCaseSensitive;
+	AST::Cons* fTailEnvironment;
+	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::Cons* fTailUserEnvironmentFrontier;
+	WNDPROC oldEditBoxProc;
+	struct Completer* fCompleter;
+	struct std::set<AST::Symbol*>* fEnvironmentKeys;
+	HMENU fEnvironmentMenu;
+};
+};
 namespace GUI {
+	using namespace REPLX;
 void REPL_append_to_output_buffer(struct REPL* self, const char* text);
 
 
@@ -214,25 +235,7 @@ SendMessage(hwnd, EM_SETSEL, (WPARAM)(int)iStartPos, (LPARAM)(int)iEndPos);
 
  */
 
-struct REPL {
-	HWND dialog;
-	bool B_file_modified;
-	struct Config* fConfig;
-	HWND fSearchDialog;
-	//HACCEL accelerators;
-	std::wstring fSearchTerm;
-	bool fBSearchUpwards;
-	bool fBSearchCaseSensitive;
-	AST::Cons* fTailEnvironment;
-	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::Cons* fTailUserEnvironmentFrontier;
-	WNDPROC oldEditBoxProc;
-	struct Completer* fCompleter;
-	struct std::set<AST::Symbol*>* fEnvironmentKeys;
-	HMENU fEnvironmentMenu;
-};
-
-HWND REPL_get_window(struct REPL* self) {
+HWND REPL_get_window(struct REPLX::REPL* self) {
 	return(self->dialog);
 }
 HWND REPL_get_search_window(struct REPL* self) {
@@ -686,7 +689,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	//return(DefDlgProc(dialog, message, wParam, lParam));
 	return (INT_PTR)FALSE;
 }
-struct REPL* REPL_new(HWND parent) {
+struct REPLX::REPL* REPL_new(HWND parent) {
 	struct REPL* result;
 	result = (struct REPL*) calloc(1, sizeof(struct REPL));
 	REPL_init(result, parent);
@@ -731,7 +734,6 @@ static HWND createToolTip(HWND hDlg, int itemID, PTSTR pszText)
 	//SendMessage(item, LVM_SETTOOLTIPS, (WPARAM) hwndTip, 0);
     return hwndTip;
 }
-static void REPL_init_builtins(struct REPL* self);
 void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
 	self->fEnvironmentMenu = GetSubMenu(LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDM_ENVIRONMENT)), 0); /* FIXME global? */ /* TODO DestroyMenu */
@@ -791,7 +793,6 @@ int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* pa
 	REPL_set_file_modified(self, true);
 	return(index);
 }
-static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node);
 /* TODO abstract into common place */
 bool REPL_execute(struct REPL* self, const char* command) {
 	Scanners::MathParser parser;
@@ -870,4 +871,5 @@ PHANDLE REPL_get_waiting_handles(struct REPL* REPL, DWORD* handleCount) {
 
 }; // end namespace GUI
 
-#include "GUI/REPLEnvironment"
+using namespace GUI;
+#include "REPL/REPLEnvironment"
