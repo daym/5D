@@ -1,16 +1,16 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by 4D.rc
+// Used by 5D.rc
 //
 #define IDC_MYICON                      2
-#define IDD_MY4D_DIALOG                 102
+#define IDD_MY5D_DIALOG                 102
 #define IDS_APP_TITLE                   103
 #define IDD_ABOUTBOX                    103
 #define IDM_ABOUT                       104
 #define IDM_EXIT                        105
-#define IDI_MY4D                        107
+#define IDI_MY5D                        107
 #define IDI_SMALL                       108
-#define IDC_MY4D                        109
+#define IDC_MY5D                        109
 #define IDR_MAINFRAME                   128
 #define IDD_REPL                        129
 #define IDD_CONFIRM_CLOSE               131
