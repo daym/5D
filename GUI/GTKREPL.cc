@@ -283,6 +283,13 @@ static void REPL_environment_show_popup_menu(struct REPL* self, GdkEventButton* 
 	/*gtk_widget_show_all(GTK_WIDGET(menu));*/
 	gtk_menu_popup(menu, NULL, NULL, NULL, NULL, (event != NULL) ? event->button : 0, gdk_event_get_time((GdkEvent*) event));
 }
+static gboolean REPL_handle_environment_key_press(struct REPL* self, GdkEventKey* event, GtkWidget* view) {
+	if(event->keyval == GDK_Delete && (event->state & GDK_MODIFIER_MASK) == 0) {
+		gtk_action_activate(get_action(delete_environment_item));
+		return(TRUE);
+	}
+	return(FALSE);
+}
 static gboolean REPL_handle_environment_button_press(struct REPL* self, GdkEventButton* event, GtkWidget* view) {
 	if (event->type == GDK_BUTTON_PRESS && event->button == 3) {
 		{
@@ -582,6 +589,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	g_signal_connect_swapped(G_OBJECT(self->fEnvironmentView), "row-activated", G_CALLBACK(REPL_handle_environment_row_activation), self);
 	g_signal_connect_swapped(G_OBJECT(self->fEnvironmentView), "popup-menu", G_CALLBACK(REPL_handle_environment_popup_menu), self);
 	g_signal_connect_swapped(G_OBJECT(self->fEnvironmentView), "button-press-event", G_CALLBACK(REPL_handle_environment_button_press), self);
+	g_signal_connect_swapped(G_OBJECT(self->fEnvironmentView), "key-release-event", G_CALLBACK(REPL_handle_environment_key_press), self);
 	GtkTreeViewColumn* fNameColumn;
 	fNameColumn = gtk_tree_view_column_new_with_attributes("Name", gtk_cell_renderer_text_new(), "text", 0, NULL);
 	gtk_tree_view_append_column(self->fEnvironmentView, fNameColumn);
