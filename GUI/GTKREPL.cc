@@ -552,7 +552,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	fNameColumn = gtk_tree_view_column_new_with_attributes("Name", gtk_cell_renderer_text_new(), "text", 0, NULL);
 	gtk_tree_view_append_column(self->fEnvironmentView, fNameColumn);
 	self->fEnvironmentStore2 = gtk_list_store_new(1, G_TYPE_STRING);
-	gtk_tree_view_set_model(self->fEnvironmentView, gtk_tree_model_sort_new_with_model(GTK_TREE_MODEL(self->fEnvironmentStore2)));
+	gtk_tree_view_set_model(self->fEnvironmentView, (GtkTreeModel*) self->fEnvironmentStore2);
 	gtk_widget_show(GTK_WIDGET(self->fEnvironmentView));
 	self->fEnvironmentScroller = (GtkScrolledWindow*) gtk_scrolled_window_new(NULL, NULL);
 	gtk_scrolled_window_set_policy(self->fEnvironmentScroller, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -602,9 +602,9 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	gtk_box_pack_start(GTK_BOX(self->fCommandBox), GTK_WIDGET(self->fExecuteButton), FALSE, FALSE, 0);
 	/*g_signal_connect_swapped(GTK_DIALOG(self->fWidget), "response", G_CALLBACK(REPL_handle_response), (void*) self);*/
 	gtk_window_set_focus(GTK_WINDOW(self->fWidget), GTK_WIDGET(self->fCommandEntry));
-	gtk_tree_view_column_set_sort_column_id(fNameColumn, 0);
+	/*gtk_tree_view_column_set_sort_column_id(fNameColumn, 0);
 	gtk_tree_view_column_set_sort_indicator(fNameColumn, TRUE);
-	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(self->fEnvironmentStore2), 0, GTK_SORT_ASCENDING);
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(self->fEnvironmentStore2), 0, GTK_SORT_ASCENDING);*/
 	self->fConfig = load_Config();
 	REPL_init_builtins(self);
 	self->fLATEXGenerator = GTKLATEXGenerator_new();
@@ -658,14 +658,13 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 }
 int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value) {
 	GtkTreeIter iter;
-	gpointer hvalue;
-	/* FIXME insert at the proper position */
-	if(!g_hash_table_lookup_extended(self->fEnvironmentKeys, name, NULL, &hvalue))
-		gtk_list_store_append(self->fEnvironmentStore2, &iter);
-	else
-		iter = * (GtkTreeIter*) hvalue;
-	gtk_list_store_set(self->fEnvironmentStore2, &iter, 0, name->name, -1);
+	GtkTreeIter siblingIter;
 	g_hash_table_replace(self->fEnvironmentKeys, name, gtk_tree_iter_copy(&iter));
+	if(gtk_tree_selection_get_selected(gtk_tree_view_get_selection(self->fEnvironmentView), NULL, &siblingIter))
+		gtk_list_store_insert_after(self->fEnvironmentStore2, &iter, &siblingIter);
+	else
+		gtk_list_store_append(self->fEnvironmentStore2, &iter);
+	gtk_list_store_set(self->fEnvironmentStore2, &iter, 0, name->name, -1);
 	REPL_set_file_modified(self, true);
 	return(gtk_tree_model_iter_n_children((GtkTreeModel*) self->fEnvironmentStore2, NULL) - 1);
 }
