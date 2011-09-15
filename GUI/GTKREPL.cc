@@ -658,6 +658,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 }
 int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value) {
 	GtkTreeIter iter;
+	GtkTreePath* path;
 	GtkTreeIter siblingIter;
 	g_hash_table_replace(self->fEnvironmentKeys, name, gtk_tree_iter_copy(&iter));
 	if(gtk_tree_selection_get_selected(gtk_tree_view_get_selection(self->fEnvironmentView), NULL, &siblingIter))
@@ -666,6 +667,9 @@ int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST
 		gtk_list_store_append(self->fEnvironmentStore2, &iter);
 	gtk_list_store_set(self->fEnvironmentStore2, &iter, 0, name->name, -1);
 	REPL_set_file_modified(self, true);
+	path = gtk_tree_model_get_path(GTK_TREE_MODEL(self->fEnvironmentStore2), &iter);
+	gtk_tree_view_scroll_to_cell(self->fEnvironmentView, path, NULL, FALSE, 0.0f, 0.0f);
+	gtk_tree_path_free(path);
 	return(gtk_tree_model_iter_n_children((GtkTreeModel*) self->fEnvironmentStore2, NULL) - 1);
 }
 GtkWidget* REPL_get_widget(struct REPL* self) {
