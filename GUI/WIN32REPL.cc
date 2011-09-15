@@ -740,7 +740,8 @@ void REPL_init(struct REPL* self, HWND parent) {
 		ShowWIN32Diagnostics();
 	}
 	AddListViewColumn(GetDlgItem(self->dialog, IDC_ENVIRONMENT), _T("Name"));
-	SendMessage(GetDlgItem(self->dialog, IDC_ENVIRONMENT), LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_INFOTIP|LVS_EX_FULLROWSELECT, LVS_EX_INFOTIP|LVS_EX_FULLROWSELECT);
+	/*  LVS_EX_DOUBLEBUFFER */
+	SendMessage(GetDlgItem(self->dialog, IDC_ENVIRONMENT), LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_INFOTIP|LVS_EX_FULLROWSELECT|LVS_EX_AUTOSIZECOLUMNS, LVS_EX_INFOTIP|LVS_EX_FULLROWSELECT|LVS_EX_AUTOSIZECOLUMNS);
 	/*createToolTip(self->dialog, IDC_ENVIRONMENT, _T("test"));*/
 	self->oldEditBoxProc = (WNDPROC) SetWindowLong(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), GWL_WNDPROC, (LONG) HandleEditTabMessage);
 	self->fCompleter = Completer_new(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), self->fEnvironmentKeys);
