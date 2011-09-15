@@ -65,6 +65,15 @@ BEGIN
     END
 END
 
+IDM_ENVIRONMENT MENU 
+BEGIN
+    POPUP "Dummy"
+    BEGIN
+        MENUITEM "&Print",                      ID_ENVITEM_PRINT
+        MENUITEM "&Delete",                     ID_ENVITEM_DELETE
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

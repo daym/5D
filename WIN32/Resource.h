@@ -15,6 +15,7 @@
 #define IDD_REPL                        129
 #define IDD_CONFIRM_CLOSE               131
 #define IDD_SEARCH                      132
+#define IDM_ENVIRONMENT                 133
 #define IDC_OUTPUT                      1000
 #define IDC_ENVIRONMENT                 1001
 #define IDC_EXECUTE                     1002
@@ -31,6 +32,8 @@
 #define IDM_EDIT_FIND                   32793
 #define IDM_EDIT_FINDNEXT               32799
 #define IDM_FILE_SAVE_AS                32805
+#define ID_ENVITEM_PRINT                32808
+#define ID_ENVITEM_DELETE               32809
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -38,8 +41,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        133
-#define _APS_NEXT_COMMAND_VALUE         32806
+#define _APS_NEXT_RESOURCE_VALUE        134
+#define _APS_NEXT_COMMAND_VALUE         32810
 #define _APS_NEXT_CONTROL_VALUE         1011
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

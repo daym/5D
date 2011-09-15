@@ -5,6 +5,8 @@
 #include "resource.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <windowsx.h>
+#include <Commctrl.h>
 #include <tchar.h>
 #include <Commdlg.h>
 #include <Richedit.h>
@@ -170,6 +172,7 @@ struct REPL {
 	WNDPROC oldEditBoxProc;
 	struct Completer* fCompleter;
 	struct std::set<AST::Symbol*>* fEnvironmentKeys;
+	HMENU fEnvironmentMenu;
 };
 
 HWND REPL_get_window(struct REPL* self) {
@@ -253,8 +256,6 @@ static INT_PTR CALLBACK HandleAboutMessages(HWND hDlg, UINT message, WPARAM wPar
 	}
 	return (INT_PTR)FALSE;
 }
-
-
 static void ScreenToClientRect(HWND hwnd, RECT& rect) {
 	POINT p;
 	p.x = rect.left;
@@ -266,6 +267,20 @@ static void ScreenToClientRect(HWND hwnd, RECT& rect) {
 	p.x = rect.right;
 	p.y = rect.bottom;
 	ScreenToClient(hwnd, &p);
+	rect.right = p.x;
+	rect.bottom = p.y;
+}
+static void ClientToScreenRect(HWND hwnd, RECT& rect) {
+	POINT p;
+	p.x = rect.left;
+	p.y = rect.top;
+	ClientToScreen(hwnd, &p);
+	rect.left = p.x;
+	rect.top = p.y;
+
+	p.x = rect.right;
+	p.y = rect.bottom;
+	ClientToScreen(hwnd, &p);
 	rect.right = p.x;
 	rect.bottom = p.y;
 }
@@ -402,6 +417,8 @@ static LRESULT CALLBACK HandleEditTabMessage(HWND hwnd, UINT message, WPARAM wPa
 	}
 	return(CallWindowProc(self->oldEditBoxProc, hwnd, message, wParam, lParam));
 }
+#define GET_X_LPARAM LOWORD
+#define GET_Y_LPARAM HIWORD
 INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
 	UNREFERENCED_PARAMETER(lParam);
 	struct REPL* self;
@@ -484,6 +501,35 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		{
 			if(self && self->dialog)
 				ClearRichTextSelection(GetDlgItem(self->dialog, IDC_OUTPUT));
+		}
+		break;
+	case WM_CONTEXTMENU:
+		{
+			HWND environmentListBox = GetDlgItem(self->dialog, IDC_ENVIRONMENT);
+			if((HWND) wParam == environmentListBox) { /* clicked inside the environment list box */
+				unsigned x = GET_X_LPARAM(lParam);
+				unsigned y = GET_Y_LPARAM(lParam);
+				if(x == 65535 && y == 65535) { /* used keyboard shortcut "Shift-F10" or "Menu" */
+					int itemIndex = ListBox_GetCurSel(environmentListBox);
+					RECT rect;
+					if(itemIndex != LB_ERR && ListBox_GetItemRect(environmentListBox, itemIndex, &rect) != LB_ERR) {
+						ClientToScreenRect(environmentListBox, rect);
+						x = rect.left;
+						y = rect.top;
+					}
+				} else { /* used the mouse: make sure the item is shown as selected. */
+					POINT p;
+					p.x = x;
+					p.y = y;
+					int itemIndex = LBItemFromPt(environmentListBox, p, FALSE);
+					if(itemIndex != -1) {
+						PostMessage(environmentListBox, LB_SELITEMRANGEEX, 99999/*TODO*/, 0);
+						PostMessage(environmentListBox, LB_SELITEMRANGEEX, itemIndex, itemIndex + 1);
+						PostMessage(environmentListBox, LB_SELITEMRANGEEX, itemIndex + 1, itemIndex + 1);
+					}
+				}
+				/*BOOL FIXME*/TrackPopupMenu(self->fEnvironmentMenu, TPM_LEFTALIGN|TPM_TOPALIGN/*|TPM_RETURNCMD*/|TPM_RIGHTBUTTON, x, y, 0, (HWND) wParam, NULL);
+			}
 		}
 		break;
 	case WM_COMMAND:
@@ -607,6 +653,7 @@ static ATOM registerMyClass(HINSTANCE hInstance)
 static void REPL_init_builtins(struct REPL* self);
 void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
+	self->fEnvironmentMenu = GetSubMenu(LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDM_ENVIRONMENT)), 0); /* FIXME global? */
 	self->fEnvironmentKeys = new std::set<AST::Symbol*>;
 	self->fBSearchUpwards = true;
 	self->fBSearchCaseSensitive = true;
