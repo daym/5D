@@ -523,9 +523,10 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 					p.y = y;
 					int itemIndex = LBItemFromPt(environmentListBox, p, FALSE);
 					if(itemIndex != -1) {
-						PostMessage(environmentListBox, LB_SELITEMRANGEEX, 99999/*TODO*/, 0);
-						PostMessage(environmentListBox, LB_SELITEMRANGEEX, itemIndex, itemIndex + 1);
-						PostMessage(environmentListBox, LB_SELITEMRANGEEX, itemIndex + 1, itemIndex + 1);
+						SendMessage(environmentListBox, LB_SETCARETINDEX, itemIndex, 0);
+						SendMessage(environmentListBox, LB_SELITEMRANGEEX, 99999/*TODO*/, 0);
+						SendMessage(environmentListBox, LB_SELITEMRANGEEX, itemIndex, itemIndex + 1);
+						SendMessage(environmentListBox, LB_SELITEMRANGEEX, itemIndex + 1, itemIndex + 1);
 					}
 				}
 				/*BOOL FIXME*/TrackPopupMenu(self->fEnvironmentMenu, TPM_LEFTALIGN|TPM_TOPALIGN/*|TPM_RETURNCMD*/|TPM_RIGHTBUTTON, x, y, 0, (HWND) wParam, NULL);
