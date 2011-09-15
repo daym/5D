@@ -1,5 +1,5 @@
-#ifndef __4D_GUI_GTKLATEXGenerator_H
-#define __4D_GUI_GTKLATEXGenerator_H
+#ifndef __5D_GUI_GTKLATEXGenerator_H
+#define __5D_GUI_GTKLATEXGenerator_H
 
 namespace GUI {
 
@@ -11,4 +11,4 @@ void GTKLATEXGenerator_enqueue(struct GTKLATEXGenerator* self, const char* docum
 void GTKLATEXGenerator_set_failure_callback(struct GTKLATEXGenerator* self, GTKLATEXGeneratorFailure_t* value);
 }; // end namespace GUI
 
-#endif /* ndef __4D_GUI_GTKLATEXGenerator_H */
+#endif /* ndef __5D_GUI_GTKLATEXGenerator_H */

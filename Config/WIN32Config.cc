@@ -48,8 +48,8 @@ struct Config* load_Config(void) {
 	config->fMainWindowWidth = 400;
 	config->fMainWindowHeight = 400;
 	HKEY nativeConfig;
-	if(RegOpenKey(HKEY_CURRENT_USER, _T("SOFTWARE\\4D"), &nativeConfig) != ERROR_SUCCESS)
-		if(RegOpenKey(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\4D"), &nativeConfig) != ERROR_SUCCESS)
+	if(RegOpenKey(HKEY_CURRENT_USER, _T("SOFTWARE\\5D"), &nativeConfig) != ERROR_SUCCESS)
+		if(RegOpenKey(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\5D"), &nativeConfig) != ERROR_SUCCESS)
 			return(config);
 	config->fEnvironment = ToUTF8(GetRegistryStringValueCXX(nativeConfig, _T("Environment")));
 	config->fMainWindowWidth = (int) GetRegistryDWORDValueCXX(nativeConfig, _T("MainWindowWidth"), 400);
@@ -60,8 +60,8 @@ struct Config* load_Config(void) {
 }
 bool Config_save(struct Config* config) {
 	HKEY nativeConfig;
-	if(RegOpenKey(HKEY_CURRENT_USER, _T("SOFTWARE\\4D"), &nativeConfig) != ERROR_SUCCESS)
-		if(RegCreateKey(HKEY_CURRENT_USER, _T("SOFTWARE\\4D"), &nativeConfig) != ERROR_SUCCESS)
+	if(RegOpenKey(HKEY_CURRENT_USER, _T("SOFTWARE\\5D"), &nativeConfig) != ERROR_SUCCESS)
+		if(RegCreateKey(HKEY_CURRENT_USER, _T("SOFTWARE\\5D"), &nativeConfig) != ERROR_SUCCESS)
 			return(false);
 	SetRegistryStringValueCXX(nativeConfig, _T("Environment"), FromUTF8(config->fEnvironment));
 	SetRegistryDWORDValueCXX(nativeConfig, _T("MainWindowWidth"), config->fMainWindowWidth);

@@ -4,7 +4,7 @@
 #include <string.h>
 #include "Config/Config"
 
-#define CONFIG_NAME "4D/config.INI"
+#define CONFIG_NAME "5D/config.INI"
 
 struct Config {
 	GKeyFile* key_file;
@@ -77,7 +77,7 @@ bool Config_save(struct Config* config) {
 	config_dir_name = g_get_user_config_dir();
 	if(!g_str_has_suffix(config_dir_name, "/"))
 		config_dir_name = g_strdup_printf("%s/", config_dir_name);
-	g_mkdir_with_parents(g_strdup_printf("%s%s", config_dir_name, "4D"), 0775);
+	g_mkdir_with_parents(g_strdup_printf("%s%s", config_dir_name, "5D"), 0775);
 	full_name = g_strdup_printf("%s%s", config_dir_name, CONFIG_NAME);
 	g_key_file_set_string(config->key_file, "Global", "Environment", config->environment_name ? config->environment_name : "");
 	g_key_file_set_integer(config->key_file, "MainWindow", "Width", config->main_window_width);

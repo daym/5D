@@ -1,5 +1,5 @@
-#ifndef __4D_FFIS_RESULTMARSHALLER_H
-#define __4D_FFIS_RESULTMARSHALLER_H
+#ifndef __5D_FFIS_RESULTMARSHALLER_H
+#define __5D_FFIS_RESULTMARSHALLER_H
 #include "Evaluators/FFI"
 namespace FFIs {
 struct ResultMarshaller : Evaluators::SymArgCacheFFI {
@@ -8,4 +8,4 @@ struct ResultMarshaller : Evaluators::SymArgCacheFFI {
 	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the result type signature. Result is a ArgumentMarshaller */
 };
 };
-#endif /*ndef __4D_FFIS_RESULTMARSHALLER_H*/
+#endif /*ndef __5D_FFIS_RESULTMARSHALLER_H*/

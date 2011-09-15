@@ -1,5 +1,5 @@
-#ifndef __4D_BUILTINS_H
-#define __4D_BUILTINS_H
+#ifndef __5D_BUILTINS_H
+#define __5D_BUILTINS_H
 #include <sstream>
 
 namespace Evaluators {
@@ -78,4 +78,4 @@ extern AST::Node* churchTrue;
 
 };
 
-#endif /* ndef __4D_BUILTINS_H */
+#endif /* ndef __5D_BUILTINS_H */

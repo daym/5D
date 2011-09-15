@@ -1,5 +1,5 @@
 /*
-4D vector analysis program
+5D vector analysis program
 Copyright (C) 2011  Danny Milosavljevic
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
@@ -391,7 +391,7 @@ void REPL_load_tips(struct REPL* self) {
 		contents = parser.parse_S_Expression();
 		fclose(input_file);
 		AST::Cons* contentsCons = dynamic_cast<AST::Cons*>(contents);
-		if(contentsCons && contentsCons->head == AST::intern("tips4DV1"))
+		if(contentsCons && contentsCons->head == AST::intern("tips5DV1"))
 			tips = dynamic_cast<AST::Cons*>(contentsCons->tail);
 		else
 			tips = NULL;
@@ -449,7 +449,7 @@ void REPL_connect_accelerator(struct REPL* self, int key, GdkModifierType modifi
 	gtk_action_connect_accelerator(action);
 	gtk_accel_map_add_entry(path, 0, (GdkModifierType) 0);
 	gtk_accel_map_change_entry(path, key, modifiers, TRUE);
-	/*"4D-REPL/File/Execute"*/
+	/*"5D-REPL/File/Execute"*/
 }
 static void save_accelerators(struct REPL* self, GtkObject* widget) {
 	const char* user_config_dir;
@@ -457,8 +457,8 @@ static void save_accelerators(struct REPL* self, GtkObject* widget) {
 	if(!user_config_dir)
 		abort();
 	g_mkdir_with_parents(user_config_dir, 0744);
-	g_mkdir_with_parents(g_build_filename(user_config_dir, "4D", NULL), 0744);
-	gtk_accel_map_save(g_build_filename(user_config_dir, "4D", "accelerators", NULL));
+	g_mkdir_with_parents(g_build_filename(user_config_dir, "5D", NULL), 0744);
+	gtk_accel_map_save(g_build_filename(user_config_dir, "5D", "accelerators", NULL));
 }
 static void track_changes(struct REPL* self, GtkTextBuffer* buffer) {
 	if(!gtk_widget_is_focus(GTK_WIDGET(self->fOutputArea)) && !gtk_widget_is_focus(GTK_WIDGET(self->fOutputScroller)))
@@ -532,7 +532,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	self->fFileModified = false;
 	self->fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
 	self->fWidget = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
-        gtk_window_set_title(self->fWidget, "(4D)");
+        gtk_window_set_title(self->fWidget, "(5D)");
 	gtk_window_set_icon(self->fWidget, gdk_pixbuf_new_from_inline(-1, window_icon, FALSE, NULL));
 	gtk_window_add_accel_group(self->fWidget, self->accelerator_group);
 	/*dialog_new_with_buttons("REPL", parent, (GtkDialogFlags) 0, GTK_STOCK_EXECUTE, GTK_RESPONSE_OK, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, GTK_STOCK_OPEN, GTK_RESPONSE_REJECT, NULL);*/
@@ -636,7 +636,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 		const char* user_config_dir;
 		int FD;
 		user_config_dir = g_get_user_config_dir();
-		FD = user_config_dir ? open(g_build_filename(user_config_dir, "4D", "accelerators", NULL), O_RDONLY, 0) : (-1);
+		FD = user_config_dir ? open(g_build_filename(user_config_dir, "5D", "accelerators", NULL), O_RDONLY, 0) : (-1);
 		if(FD != -1) {
 			gtk_accel_map_load_fd(FD);
 			close(FD);
@@ -877,7 +877,7 @@ bool REPL_save(struct REPL* self, bool B_force_dialog) {
 	return(B_OK);
 }
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name) {
-	gtk_window_set_title(self->fWidget, g_strdup_printf("%s%s", absolute_name ? absolute_name : "(4D)", self->fFileModified ? " *" : ""));
+	gtk_window_set_title(self->fWidget, g_strdup_printf("%s%s", absolute_name ? absolute_name : "(5D)", self->fFileModified ? " *" : ""));
 	Config_set_environment_name(self->fConfig, absolute_name);
 	Config_save(self->fConfig);
 }
@@ -891,7 +891,7 @@ void REPL_set_file_modified(struct REPL* self, bool value) {
 	{
 		const char* absolute_name;
 		absolute_name = Config_get_environment_name(self->fConfig);
-		gtk_window_set_title(self->fWidget, g_strdup_printf("%s%s", absolute_name ? absolute_name : "(4D)", self->fFileModified ? " *" : ""));
+		gtk_window_set_title(self->fWidget, g_strdup_printf("%s%s", absolute_name ? absolute_name : "(5D)", self->fFileModified ? " *" : ""));
 	}
 }
 bool REPL_confirm_close(struct REPL* self) {

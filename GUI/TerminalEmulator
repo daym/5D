@@ -1,5 +1,5 @@
-#ifndef __4D_TERMINAL_EMULATOR_H
-#define __4D_TERMINAL_EMULATOR_H
+#ifndef __5D_TERMINAL_EMULATOR_H
+#define __5D_TERMINAL_EMULATOR_H
 
 namespace GUI {
 struct TerminalEmulator;
@@ -8,4 +8,4 @@ void TerminalEmulator_init(struct TerminalEmulator* emulator, struct REPL* REPL)
 struct TerminalEmulator* TerminalEmulator_new(struct REPL* REPL);
 }; /* end namespace GUI */
 
-#endif /* ndef __4D_TERMINAL_EMULATOR_H */
+#endif /* ndef __5D_TERMINAL_EMULATOR_H */

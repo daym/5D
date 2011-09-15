@@ -43,7 +43,7 @@ static char** complete(const char* text, int start, int end) {
 	return(matches);
 }
 static void initialize_readline(void) {
-	rl_readline_name = "4D";
+	rl_readline_name = "5D";
 	rl_attempted_completion_function = complete;
 	rl_sort_completion_matches = 1;
 }

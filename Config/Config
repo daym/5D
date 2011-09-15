@@ -1,5 +1,5 @@
-#ifndef __4D_CONFIG_H
-#define __4D_CONFIG_H
+#ifndef __5D_CONFIG_H
+#define __5D_CONFIG_H
 struct Config;
 struct Config* load_Config(void);
 bool Config_save(struct Config* config);
@@ -13,4 +13,4 @@ void Config_set_show_tips(struct Config* config, bool value);
 bool Config_get_show_tips(struct Config* config);
 int Config_get_current_tip(struct Config* config);
 void Config_set_current_tip(struct Config* config, int index);
-#endif /* ndef __4D_CONFIG_H */
+#endif /* ndef __5D_CONFIG_H */

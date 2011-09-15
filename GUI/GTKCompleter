@@ -1,5 +1,5 @@
-#ifndef __4D_GUI_GTKCOMPLETER_H
-#define __4D_GUI_GTKCOMPLETER_H
+#ifndef __5D_GUI_GTKCOMPLETER_H
+#define __5D_GUI_GTKCOMPLETER_H
 
 namespace GUI {
 struct Completer;
@@ -8,4 +8,4 @@ void Completer_init(struct Completer* self, GtkEntry* entry, GHashTable* haystac
 struct Completer* Completer_new(GtkEntry* entry, GHashTable* haystack);
 void Completer_complete(struct Completer* self);
 };
-#endif /* ndef __4D_GUI_GTKCOMPLETER_H */
+#endif /* ndef __5D_GUI_GTKCOMPLETER_H */

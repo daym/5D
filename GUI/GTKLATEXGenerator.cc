@@ -1,5 +1,5 @@
 /*
-4D vector analysis program
+5D vector analysis program
 Copyright (C) 2011  Danny Milosavljevic
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
@@ -28,7 +28,7 @@ static char* GTKLATEXGenerator_init_cache_directory(void) {
 	if(!user_cache_dir)
 		abort();
 	g_mkdir_with_parents(user_cache_dir, 0744);
-	result = g_build_filename(user_cache_dir, "4D", NULL);
+	result = g_build_filename(user_cache_dir, "5D", NULL);
 	g_mkdir_with_parents(result, 0744);
 	return(result);
 }

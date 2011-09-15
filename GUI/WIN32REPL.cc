@@ -57,7 +57,7 @@ static void initializeOpenFileNameStruct() {
 	openFileName.lpstrFile = openFileNameName;
 	openFileName.lpstrFile[0] = '\0';
 	openFileName.nMaxFile = sizeof(openFileNameName) / sizeof(openFileNameName[0]);
-	openFileName.lpstrFilter = _T("All Files (*)\0*.*\04D Source Files (*.4D)\0*.4D\0\0");
+	openFileName.lpstrFilter = _T("All Files (*)\0*.*\05D Source Files (*.5D)\0*.5D\0\0");
 	openFileName.nFilterIndex = 2;
 	openFileName.lpstrFileTitle = NULL;
 	openFileName.nMaxFileTitle = 0;
@@ -593,10 +593,10 @@ static ATOM registerMyClass(HINSTANCE hInstance)
 	wcex.cbClsExtra		= 0;
 	wcex.cbWndExtra		= 0;
 	wcex.hInstance		= hInstance;
-	//wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MY4D));
+	//wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MY5D));
 	//wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
 	//wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-	//wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_MY4D);
+	//wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_MY5D);
 	wcex.lpszClassName	= _T("REPL");
 	//wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -627,7 +627,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 		ShowWIN32Diagnostics();
 	}
 	SetWindowLongPtr(self->fSearchDialog, GWLP_USERDATA, (LONG) self);
-	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY4D));
+	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY5D));
 	REPL_init_builtins(self);
 	REPL_set_file_modified(self, false);
 
