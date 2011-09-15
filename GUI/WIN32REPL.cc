@@ -185,13 +185,14 @@ static int SetListViewUserData(HWND control, int index, LPARAM param) {
 	return(SendMessageW(control, LVM_SETITEM, index, (LPARAM) &item));
 }
 /** ensures that an entry exists in the environment. */
-void EnsureInEnvironment(HWND dialog, const std::wstring& name) {
+int EnsureInEnvironment(HWND dialog, const std::wstring& name) {
 	HWND environment = GetDlgItem(dialog, IDC_ENVIRONMENT);
 	int selectedIndex = GetListViewCaretItemIndex(environment);
-	int index = InsertListViewItem(environment, (selectedIndex != -1) ? selectedIndex : 99999/*FIXME*/, (LPWSTR) name.c_str(), 0);
-	if(index == 0 && selectedIndex == -1 && GetListViewCaretItemIndex(environment) != -1) /* undo MAGICAL MAGICAL autoselection. Thanks, Windows. */
-		UnselectAllListViewItems(environment);
+	int index = InsertListViewItem(environment, (selectedIndex != -1) ? (selectedIndex + 1) : 99999/*FIXME*/, (LPWSTR) name.c_str(), 0);
+	/*if(index == 0 && selectedIndex == -1 && GetListViewCaretItemIndex(environment) != -1)
+		UnselectAllListViewItems(environment);*/
 	SetListViewUserData(environment, index, (LPARAM) index);
+	return(index);
 }
 /*
    int iTotalTextLength = GetWindowTextLength(hwnd);
@@ -780,13 +781,15 @@ void REPL_init(struct REPL* self, HWND parent) {
 bool REPL_get_file_modified(struct REPL* self) {
 	return(self->B_file_modified);
 }
-void REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::Node* value) {
+int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::Node* value) {
 	//std::string bodyString = body->str();
 	if(self->fEnvironmentKeys->find(parameter) == self->fEnvironmentKeys->end()) {
-		EnsureInEnvironment(self->dialog, FromUTF8(parameter->name));
+		/* index is the index of the item that is "just not as important as the new one" */
 		self->fEnvironmentKeys->insert(parameter);
-		REPL_set_file_modified(self, true);
 	}
+	int index = EnsureInEnvironment(self->dialog, FromUTF8(parameter->name));
+	REPL_set_file_modified(self, true);
+	return(index);
 }
 static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node);
 /* TODO abstract into common place */
@@ -801,8 +804,6 @@ bool REPL_execute(struct REPL* self, const char* command) {
 				REPL_add_to_environment(self, result);
 				if(!result || dynamic_cast<AST::Cons*>(result) == NULL || ((AST::Cons*)result)->head != AST::intern("define")) {
 					result = REPL_close_environment(self, result);
-					std::string v = result->str();
-					printf("%s\n", v.c_str());
 					result = Evaluators::provide_dynamic_builtins(result);
 					result = Evaluators::annotate(result);
 					result = Evaluators::reduce(result);

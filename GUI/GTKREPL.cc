@@ -651,7 +651,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	if(Config_get_show_tips(self->fConfig))
 		REPL_show_tips(self);
 }
-void REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value) {
+int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value) {
 	GtkTreeIter iter;
 	gpointer hvalue;
 	if(!g_hash_table_lookup_extended(self->fEnvironmentKeys, name, NULL, &hvalue))
@@ -661,6 +661,7 @@ void REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AS
 	gtk_list_store_set(self->fEnvironmentStore2, &iter, 0, name->name, -1);
 	g_hash_table_replace(self->fEnvironmentKeys, name, gtk_tree_iter_copy(&iter));
 	REPL_set_file_modified(self, true);
+	FIXME
 }
 GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));

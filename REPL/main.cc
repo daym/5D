@@ -14,9 +14,11 @@ struct REPL {
 	AST::Cons* fTailEnvironment;
 	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
 	AST::Cons* fTailUserEnvironmentFrontier;
+	int fEnvironmentCount;
 };
 
-void REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
+int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
+	return(self->fEnvironmentCount++);
 }
 
 };

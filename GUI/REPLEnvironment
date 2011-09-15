@@ -81,7 +81,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }
-void REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value);
+int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value);
 void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value) {
 	using namespace AST;
 	AST::Cons* node;
