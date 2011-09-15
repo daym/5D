@@ -144,7 +144,7 @@ static int GetListViewSelectedItemIndex(HWND control) {
 	return(ListView_GetNextItem(control, -1, LVNI_SELECTED));
 }
 static int GetListViewCaretItemIndex(HWND control) {
-	return(SendMessage(control, LB_GETCARETINDEX, 0, 0));
+	return(SendMessage(control, LVM_GETSELECTIONMARK, 0, 0));
 }
 static void SetListViewSelectedItem(HWND control, int itemIndex) {
 	SendMessage(control, LB_SETCARETINDEX, itemIndex, 0);
@@ -189,6 +189,8 @@ void EnsureInEnvironment(HWND dialog, const std::wstring& name) {
 	HWND environment = GetDlgItem(dialog, IDC_ENVIRONMENT);
 	int selectedIndex = GetListViewCaretItemIndex(environment);
 	int index = InsertListViewItem(environment, (selectedIndex != -1) ? selectedIndex : 99999/*FIXME*/, (LPWSTR) name.c_str(), 0);
+	if(index == 0 && selectedIndex == -1 && GetListViewCaretItemIndex(environment) != -1) /* undo MAGICAL MAGICAL autoselection. Thanks, Windows. */
+		UnselectAllListViewItems(environment);
 	SetListViewUserData(environment, index, (LPARAM) index);
 }
 /*
@@ -799,6 +801,8 @@ bool REPL_execute(struct REPL* self, const char* command) {
 				REPL_add_to_environment(self, result);
 				if(!result || dynamic_cast<AST::Cons*>(result) == NULL || ((AST::Cons*)result)->head != AST::intern("define")) {
 					result = REPL_close_environment(self, result);
+					std::string v = result->str();
+					printf("%s\n", v.c_str());
 					result = Evaluators::provide_dynamic_builtins(result);
 					result = Evaluators::annotate(result);
 					result = Evaluators::reduce(result);
