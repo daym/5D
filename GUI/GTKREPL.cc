@@ -273,6 +273,38 @@ static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePat
 	if(B_ok)
 		gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(self->fEnvironmentView));
 }
+static void REPL_environment_show_popup_menu(struct REPL* self, GdkEventButton* event) {
+	GtkMenu* menu;
+	GtkUIManager* UI_manager;
+	UI_manager = (GtkUIManager*) gtk_builder_get_object(self->UI_builder, "uiman");
+	if(!UI_manager)
+		return;
+	menu = (GtkMenu*) gtk_ui_manager_get_widget(UI_manager, "/environmentMenu");
+	/*gtk_widget_show_all(GTK_WIDGET(menu));*/
+	gtk_menu_popup(menu, NULL, NULL, NULL, NULL, (event != NULL) ? event->button : 0, gdk_event_get_time((GdkEvent*) event));
+}
+static gboolean REPL_handle_environment_button_press(struct REPL* self, GdkEventButton* event, GtkWidget* view) {
+	if (event->type == GDK_BUTTON_PRESS && event->button == 3) {
+		{
+			GtkTreeSelection *selection;
+			selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(self->fEnvironmentView));
+			if(gtk_tree_selection_count_selected_rows(selection)  <= 1) {
+				GtkTreePath* path;
+				if (gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(self->fEnvironmentView), (gint) event->x, (gint) event->y, &path, NULL, NULL, NULL)) {
+					gtk_tree_selection_unselect_all(selection);
+					gtk_tree_selection_select_path(selection, path);
+					gtk_tree_path_free(path);
+				}
+			}
+		}
+		REPL_environment_show_popup_menu(self, event);
+	}
+	return(FALSE);
+}
+static gboolean REPL_handle_environment_popup_menu(struct REPL* self, GtkWidget* view) {
+	REPL_environment_show_popup_menu(self, NULL);
+	return(TRUE);
+}
 static void REPL_handle_open_file(struct REPL* self, GtkAction* action) {
 	REPL_load(self);
 }
@@ -548,6 +580,8 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	gtk_widget_show(GTK_WIDGET(self->fMainBox));
 	self->fEnvironmentView = (GtkTreeView*) gtk_tree_view_new();
 	g_signal_connect_swapped(G_OBJECT(self->fEnvironmentView), "row-activated", G_CALLBACK(REPL_handle_environment_row_activation), self);
+	g_signal_connect_swapped(G_OBJECT(self->fEnvironmentView), "popup-menu", G_CALLBACK(REPL_handle_environment_popup_menu), self);
+	g_signal_connect_swapped(G_OBJECT(self->fEnvironmentView), "button-press-event", G_CALLBACK(REPL_handle_environment_button_press), self);
 	GtkTreeViewColumn* fNameColumn;
 	fNameColumn = gtk_tree_view_column_new_with_attributes("Name", gtk_cell_renderer_text_new(), "text", 0, NULL);
 	gtk_tree_view_append_column(self->fEnvironmentView, fNameColumn);
