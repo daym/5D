@@ -339,6 +339,36 @@ static void REPL_handle_paste(struct REPL* self, GtkAction* action) {
 	if(control && g_signal_lookup("paste-clipboard", G_OBJECT_TYPE(control)))
 		g_signal_emit_by_name(control, "paste-clipboard", NULL);
 }
+static void REPL_handle_print_environment_item(struct REPL* self, GtkAction* action) {
+	GtkTreePath* path;
+	GtkTreeIter iter;
+	GtkTreeSelection* selection;
+	selection = gtk_tree_view_get_selection(self->fEnvironmentView);
+	if(gtk_tree_selection_get_selected(selection, NULL, &iter)) {
+		path = gtk_tree_model_get_path(GTK_TREE_MODEL(self->fEnvironmentStore2), &iter);
+		gtk_tree_view_row_activated(self->fEnvironmentView, path, NULL);
+		gtk_tree_path_free(path);
+	}
+}
+static void REPL_run_deletion_dialog(struct REPL* self) {
+	GtkDialog* dialog;
+	int response;
+	dialog = (GtkDialog*) gtk_builder_get_object(self->UI_builder, "envitemDeletionConfirmationDialog");
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), self->fWidget);
+	/*g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(handle_search_response), NULL);*/
+	gtk_dialog_set_default_response(dialog, GTK_RESPONSE_OK);
+	response = gtk_dialog_run(dialog);
+	gtk_widget_hide(GTK_WIDGET(dialog));
+}
+static void REPL_handle_delete_environment_item(struct REPL* self, GtkAction* action) {
+	/* FIXME check multiple rows */
+	GtkTreeIter iter;
+	GtkTreeSelection* selection;
+	selection = gtk_tree_view_get_selection(self->fEnvironmentView);
+	if(gtk_tree_selection_get_selected(selection, NULL, &iter)) {
+		REPL_run_deletion_dialog(self);
+	}
+}
 
 /* Gtk 2 compat; TODO: remove */
 #define GTK_TEXT_SEARCH_CASE_INSENSITIVE ((GtkTextSearchFlags)(1<<2))
@@ -671,6 +701,8 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	add_action_handler(find);
 	add_action_handler(find_next);
 	add_action_handler(about);
+	add_action_handler(delete_environment_item);
+	add_action_handler(print_environment_item);
 	connect_accelerator(GDK_F5, (GdkModifierType) 0, execute);
 	connect_accelerator(GDK_F3, (GdkModifierType) 0, open_file);
 	connect_accelerator(GDK_F2, (GdkModifierType) 0, save_file);
