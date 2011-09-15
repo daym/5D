@@ -143,6 +143,9 @@ static void UnselectAllListViewItems(HWND control) {
 static int GetListViewSelectedItemIndex(HWND control) {
 	return(ListView_GetNextItem(control, -1, LVNI_SELECTED));
 }
+static int GetListViewCaretItemIndex(HWND control) {
+	return(SendMessage(control, LB_GETCARETINDEX, 0, 0));
+}
 static void SetListViewSelectedItem(HWND control, int itemIndex) {
 	SendMessage(control, LB_SETCARETINDEX, itemIndex, 0);
 	SendMessage(control, LB_SELITEMRANGEEX, 99999/*TODO*/, 0);
@@ -167,12 +170,12 @@ static int AddListViewColumn(HWND control, LPWSTR text) {
 	item.cx = 100;
 	return(SendMessageW(control, LVM_INSERTCOLUMN, 0, (LPARAM) &item));
 }
-static int AddListViewItem(HWND control, LPWSTR text, LPARAM param) {
+static int InsertListViewItem(HWND control, int index, LPWSTR text, LPARAM param) {
 	LVITEMW item = {0};
 	item.mask = LVIF_TEXT|LVIF_PARAM;
 	item.pszText = text;
 	item.lParam = param;
-	item.iItem = 9999; /* FIXME */
+	item.iItem = index; /* FIXME */
 	return(SendMessageW(control, LVM_INSERTITEM, 0, (LPARAM) &item));
 }
 static int SetListViewUserData(HWND control, int index, LPARAM param) {
@@ -184,7 +187,8 @@ static int SetListViewUserData(HWND control, int index, LPARAM param) {
 /** ensures that an entry exists in the environment. */
 void EnsureInEnvironment(HWND dialog, const std::wstring& name) {
 	HWND environment = GetDlgItem(dialog, IDC_ENVIRONMENT);
-	int index = AddListViewItem(environment, (LPWSTR) name.c_str(), 0);
+	int selectedIndex = GetListViewCaretItemIndex(environment);
+	int index = InsertListViewItem(environment, (selectedIndex != -1) ? selectedIndex : 99999/*FIXME*/, (LPWSTR) name.c_str(), 0);
 	SetListViewUserData(environment, index, (LPARAM) index);
 }
 /*
@@ -437,13 +441,14 @@ static void REPL_handle_environment_row_activation(struct REPL* self, HWND list,
 		/* TODO ensure newline */
 		std::stringstream sst;
 		std::string escapedName = AST::intern(command)->str();
-		sst << "(cons (quote define) (cons (quote " << escapedName << ") (cons " << escapedName << " nil)))";
+		//sst << "(cons (quote define) (cons (quote " << escapedName << "X) (cons (quote X) nil)))"; /* (makeList 'define 'escapedName escapedName) */
+		sst << "(cons (quote define) (cons (quote " << escapedName << ") (cons " << escapedName << " nil)))"; /* (makeList 'define 'escapedName escapedName) */
 		std::string commandStr = sst.str();
 		//command = g_strdup_printf("(cons (quote define) (cons (quote %s) (cons %s nil)))", command, command);
 		B_ok = REPL_execute(self, commandStr.c_str());
 	}
-	if(B_ok)
-		UnselectAllListViewItems(list);
+	/*if(B_ok)
+		UnselectAllListViewItems(list);*/
 }
 static LRESULT CALLBACK HandleEditTabMessage(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	struct REPL* self;
@@ -564,7 +569,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				case LVN_ITEMACTIVATE:
 					{
 						HWND list = GetDlgItem(self->dialog, IDC_ENVIRONMENT);
-						int rowIndex = GetListViewSelectedItemIndex(list);
+						int rowIndex = GetListViewCaretItemIndex(list);
 						REPL_handle_environment_row_activation(self, list, rowIndex);
 					}
 					break;
@@ -579,7 +584,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				unsigned x = GET_X_LPARAM(lParam);
 				unsigned y = GET_Y_LPARAM(lParam);
 				if(x == 65535 && y == 65535) { /* used keyboard shortcut "Shift-F10" or "Menu" */
-					int itemIndex = GetListViewSelectedItemIndex(environmentListBox);
+					int itemIndex = GetListViewCaretItemIndex(environmentListBox);
 					RECT rect;
 					if(itemIndex != -1 && ListView_GetItemRect(environmentListBox, itemIndex, &rect, LVIR_BOUNDS) != -1) {
 						ClientToScreenRect(environmentListBox, rect);
