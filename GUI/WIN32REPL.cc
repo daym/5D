@@ -51,14 +51,16 @@ std::wstring GetRichTextSelectedText(HWND control) {
 }
 static OPENFILENAMEW openFileName;
 static WCHAR openFileNameName[2049];
+static WCHAR openFileNameFilter[] = _T("All Files (*.*)\0*.*\0\065D Source Files (*.5D)\0*.5D\0\0");
 static void initializeOpenFileNameStruct() {
 	ZeroMemory(&openFileName, sizeof(openFileName));
 	openFileName.lStructSize = sizeof(openFileName);
 	openFileName.lpstrFile = openFileNameName;
 	openFileName.lpstrFile[0] = '\0';
 	openFileName.nMaxFile = sizeof(openFileNameName) / sizeof(openFileNameName[0]);
-	openFileName.lpstrFilter = _T("All Files (*)\0*.*\05D Source Files (*.5D)\0*.5D\0\0");
+	openFileName.lpstrFilter = openFileNameFilter;
 	openFileName.nFilterIndex = 2;
+	openFileName.lpstrCustomFilter = NULL;
 	openFileName.lpstrFileTitle = NULL;
 	openFileName.nMaxFileTitle = 0;
 	openFileName.lpstrInitialDir = NULL;
