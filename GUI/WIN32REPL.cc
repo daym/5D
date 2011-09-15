@@ -121,22 +121,71 @@ void ClearRichTextSelection(HWND control) {
 	iTotalTextLength = GetWindowTextLength(control); // FIXME W
 	SendMessage(control, EM_SETSEL, (WPARAM)(int)iTotalTextLength, (LPARAM)(int)iTotalTextLength);
 }
-static std::wstring GetListBoxEntryStringCXX(HWND control, int index) {
+static std::wstring GetListViewEntryStringCXX(HWND control, int index) {
+	LVITEMW item = {sizeof(item)};
+	int length = 2000; // FIXME
+	item.mask = LVIF_TEXT;
+	item.pszText = new TCHAR[length + 1];
+	item.cchTextMax = length;
 	std::wstring result;
-	int length = SendMessageW(control, LB_GETTEXTLEN, (WPARAM) index, (LPARAM) 0);
-	TCHAR* buffer = new TCHAR[length + 1];
-	buffer[0] = 0;
-	SendMessageW(control, LB_GETTEXT, (WPARAM) index, (LPARAM) buffer);
-	result = buffer;
-	delete buffer;
+	if(SendMessageW(control, LVM_GETITEMW, 0, (LPARAM) &item))
+		result = item.pszText;
+	delete item.pszText;
 	return(result);
+}
+static void UnselectAllListViewItems(HWND control) {
+	LVITEMW item = {0};
+	item.stateMask = LVIS_SELECTED;
+	item.state     = 0;
+	SendMessage(control, LVM_SETITEMSTATE, -1, (LPARAM)&item);
+}
+static int GetListViewSelectedItemIndex(HWND control) {
+	return(ListView_GetNextItem(control, -1, LVNI_SELECTED));
+}
+static void SetListViewSelectedItem(HWND control, int itemIndex) {
+	SendMessage(control, LB_SETCARETINDEX, itemIndex, 0);
+	SendMessage(control, LB_SELITEMRANGEEX, 99999/*TODO*/, 0);
+	SendMessage(control, LB_SELITEMRANGEEX, itemIndex, itemIndex + 1);
+	SendMessage(control, LB_SELITEMRANGEEX, itemIndex + 1, itemIndex + 1);
+}
+static LPARAM GetListViewItemUserData(HWND control, int index) {
+	LVITEMW item = {0};
+	item.mask = LVIF_PARAM;
+	if(SendMessageW(control, LVM_GETITEM, 0, (LPARAM) &item))
+		return(item.lParam);
+	else
+		abort();
+}
+static void ClearListView(HWND control) {
+	ListView_DeleteAllItems(control);
+}
+static int AddListViewColumn(HWND control, LPWSTR text) {
+	LVCOLUMNW item = {0};
+	item.mask = LVCF_TEXT|LVCF_WIDTH;
+	item.pszText = text;
+	item.cx = 100;
+	return(SendMessageW(control, LVM_INSERTCOLUMN, 0, (LPARAM) &item));
+}
+static int AddListViewItem(HWND control, LPWSTR text, LPARAM param) {
+	LVITEMW item = {0};
+	item.mask = LVIF_TEXT|LVIF_PARAM;
+	item.pszText = text;
+	item.lParam = param;
+	item.iItem = 9999; /* FIXME */
+	return(SendMessageW(control, LVM_INSERTITEM, 0, (LPARAM) &item));
+}
+static int SetListViewUserData(HWND control, int index, LPARAM param) {
+	LVITEMW item = {0};
+	item.mask = LVIF_PARAM;
+	item.lParam = param;
+	return(SendMessageW(control, LVM_SETITEM, index, (LPARAM) &item));
 }
 /** ensures that an entry exists in the environment. */
 void EnsureInEnvironment(HWND dialog, const std::wstring& name) {
-	int index = SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_ADDSTRING, 0, (LPARAM) name.c_str());
-	SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_SETITEMDATA, (WPARAM)index, (LPARAM)0);
+	HWND environment = GetDlgItem(dialog, IDC_ENVIRONMENT);
+	int index = AddListViewItem(environment, (LPWSTR) name.c_str(), 0);
+	SetListViewUserData(environment, index, (LPARAM) index);
 }
-/*    AST::Node* hData = (AST::Node*) SendMessage(hList, LB_GETITEMDATA, (WPARAM)index, 0); */
 /*
    int iTotalTextLength = GetWindowTextLength(hwnd);
    
@@ -380,7 +429,7 @@ static void REPL_handle_environment_row_activation(struct REPL* self, HWND list,
 	bool B_ok = false;
 	if(index > -1) {
 		command = NULL;
-		std::wstring name = GetListBoxEntryStringCXX(GetDlgItem(self->dialog, IDC_ENVIRONMENT), index);
+		std::wstring name = GetListViewEntryStringCXX(GetDlgItem(self->dialog, IDC_ENVIRONMENT), index);
 		command = ToUTF8(name);
 		if(!command)
 			return;
@@ -393,7 +442,7 @@ static void REPL_handle_environment_row_activation(struct REPL* self, HWND list,
 		B_ok = REPL_execute(self, commandStr.c_str());
 	}
 	if(B_ok)
-		SendMessageW(list, LB_SETCURSEL, (WPARAM) -1, 0);
+		UnselectAllListViewItems(list);
 }
 static LRESULT CALLBACK HandleEditTabMessage(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	struct REPL* self;
@@ -503,6 +552,25 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				ClearRichTextSelection(GetDlgItem(self->dialog, IDC_OUTPUT));
 		}
 		break;
+	case WM_NOTIFY:
+		{
+			NMHDR* data = (NMHDR*) lParam;
+			if(data->idFrom == IDC_ENVIRONMENT) {
+				switch(data->code) {
+				case LVN_GETINFOTIPW:
+					/* TODO */
+					break;
+				case LVN_ITEMACTIVATE:
+					{
+						HWND list = GetDlgItem(self->dialog, IDC_ENVIRONMENT);
+						int rowIndex = GetListViewSelectedItemIndex((HWND)lParam);
+						REPL_handle_environment_row_activation(self, list, rowIndex);
+					}
+					break;
+				}
+			}
+		}
+		break;
 	case WM_CONTEXTMENU:
 		{
 			HWND environmentListBox = GetDlgItem(self->dialog, IDC_ENVIRONMENT);
@@ -510,9 +578,9 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				unsigned x = GET_X_LPARAM(lParam);
 				unsigned y = GET_Y_LPARAM(lParam);
 				if(x == 65535 && y == 65535) { /* used keyboard shortcut "Shift-F10" or "Menu" */
-					int itemIndex = ListBox_GetCurSel(environmentListBox);
+					int itemIndex = GetListViewSelectedItemIndex(environmentListBox);
 					RECT rect;
-					if(itemIndex != LB_ERR && ListBox_GetItemRect(environmentListBox, itemIndex, &rect) != LB_ERR) {
+					if(itemIndex != -1 && ListView_GetItemRect(environmentListBox, itemIndex, &rect, LVIR_BOUNDS) != -1) {
 						ClientToScreenRect(environmentListBox, rect);
 						x = rect.left;
 						y = rect.top;
@@ -523,12 +591,10 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 					p.y = y;
 					int itemIndex = LBItemFromPt(environmentListBox, p, FALSE);
 					if(itemIndex != -1) {
-						SendMessage(environmentListBox, LB_SETCARETINDEX, itemIndex, 0);
-						SendMessage(environmentListBox, LB_SELITEMRANGEEX, 99999/*TODO*/, 0);
-						SendMessage(environmentListBox, LB_SELITEMRANGEEX, itemIndex, itemIndex + 1);
-						SendMessage(environmentListBox, LB_SELITEMRANGEEX, itemIndex + 1, itemIndex + 1);
+						SetListViewSelectedItem(environmentListBox, itemIndex);
 					}
 				}
+				/* TODO Call GetSystemMetrics with SM_MENUDROPALIGNMENT, asking for the alignment */
 				/*BOOL FIXME*/TrackPopupMenu(self->fEnvironmentMenu, TPM_LEFTALIGN|TPM_TOPALIGN/*|TPM_RETURNCMD*/|TPM_RIGHTBUTTON, x, y, 0, (HWND) wParam, NULL);
 			}
 		}
@@ -589,17 +655,6 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 					REPL_set_file_modified(self, true);
 				break;
 			}
-		case IDC_ENVIRONMENT:
-			{
-				if(HIWORD(wParam) == LBN_DBLCLK) {
-					HWND list = GetDlgItem(self->dialog, IDC_ENVIRONMENT);
-					int rowIndex = (int) SendMessage((HWND)lParam, LB_GETCURSEL, 0,0);
-					if(rowIndex == LB_ERR)
-						rowIndex = -1;
-					REPL_handle_environment_row_activation(self, list, rowIndex);
-				}
-				break;
-			}
 		case IDM_EDIT_FIND:
 			{
 				REPL_handle_find(self);
@@ -651,10 +706,26 @@ static ATOM registerMyClass(HINSTANCE hInstance)
 
 	return RegisterClassEx(&wcex);
 }
+static HWND createToolTip(HWND hDlg, int itemID, PTSTR pszText)
+{
+	HWND item = GetDlgItem(hDlg, itemID);
+	HWND hwndTip = CreateWindowEx(NULL, TOOLTIPS_CLASS, NULL, WS_POPUP |TTS_ALWAYSTIP | TTS_BALLOON, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hDlg, NULL, GetModuleHandle(NULL), NULL);
+	{
+		TOOLINFO toolInfo = { 0 };
+		toolInfo.cbSize = sizeof(toolInfo);
+		toolInfo.hwnd = hDlg;
+		toolInfo.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
+		toolInfo.uId = (UINT_PTR) item;
+		toolInfo.lpszText = pszText;
+		SendMessage(hwndTip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo);
+	}
+	//SendMessage(item, LVM_SETTOOLTIPS, (WPARAM) hwndTip, 0);
+    return hwndTip;
+}
 static void REPL_init_builtins(struct REPL* self);
 void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
-	self->fEnvironmentMenu = GetSubMenu(LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDM_ENVIRONMENT)), 0); /* FIXME global? */
+	self->fEnvironmentMenu = GetSubMenu(LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDM_ENVIRONMENT)), 0); /* FIXME global? */ /* TODO DestroyMenu */
 	self->fEnvironmentKeys = new std::set<AST::Symbol*>;
 	self->fBSearchUpwards = true;
 	self->fBSearchCaseSensitive = true;
@@ -668,6 +739,9 @@ void REPL_init(struct REPL* self, HWND parent) {
 	if(self->dialog == NULL) {
 		ShowWIN32Diagnostics();
 	}
+	AddListViewColumn(GetDlgItem(self->dialog, IDC_ENVIRONMENT), _T("Name"));
+	SendMessage(GetDlgItem(self->dialog, IDC_ENVIRONMENT), LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_INFOTIP|LVS_EX_FULLROWSELECT, LVS_EX_INFOTIP|LVS_EX_FULLROWSELECT);
+	/*createToolTip(self->dialog, IDC_ENVIRONMENT, _T("test"));*/
 	self->oldEditBoxProc = (WNDPROC) SetWindowLong(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), GWL_WNDPROC, (LONG) HandleEditTabMessage);
 	self->fCompleter = Completer_new(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), self->fEnvironmentKeys);
 	SetWindowLongPtr(GetDlgItem(self->dialog, IDC_COMMAND_ENTRY), GWLP_USERDATA, (LONG) self);
@@ -756,9 +830,7 @@ char* REPL_get_output_buffer_text(struct REPL* self) {
 void REPL_clear(struct REPL* self) {
 	self->fTailEnvironment = self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier = NULL;
 	SetDlgItemTextCXX(self->dialog, IDC_OUTPUT, _T(""));
-	while(SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LB_DELETESTRING, 0, 0) > 0)
-		;
-	// or just LB_RESETCONTENT
+	ClearListView(GetDlgItem(self->dialog, IDC_ENVIRONMENT));
 	self->fEnvironmentKeys->clear();
 	REPL_init_builtins(self);
 	REPL_set_file_modified(self, false);
@@ -768,14 +840,15 @@ static AST::Cons* box_environment_elements(HWND dialog, int index, int count) {
 		return(NULL);
 	else {
 		// FIXME Ptr
-		AST::Node* value = (AST::Node*) SendDlgItemMessageW(dialog, IDC_ENVIRONMENT, LB_GETITEMDATA, (WPARAM) index, (LPARAM) 0);
-		std::wstring name = GetListBoxEntryStringCXX(GetDlgItem(dialog, IDC_ENVIRONMENT), index);
+		HWND environmentList = GetDlgItem(dialog, IDC_ENVIRONMENT);
+		AST::Node* value = (AST::Node*) GetListViewItemUserData(environmentList, index);
+		std::wstring name = GetListViewEntryStringCXX(environmentList, index);
 		AST::Symbol* nameSymbol = AST::intern(ToUTF8(name));
 		return(cons(cons(nameSymbol, cons(value, NULL)), box_environment_elements(dialog, index + 1, count)));
 	}
 }
 AST::Cons* REPL_get_environment(struct REPL* self) {
-	int count = SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LB_GETCOUNT, (WPARAM) 0, (LPARAM) 0);
+	int count = SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LVM_GETITEMCOUNT, (WPARAM) 0, (LPARAM) 0);
 	return(box_environment_elements(self->dialog, 0, count));
 }
 PHANDLE REPL_get_waiting_handles(struct REPL* REPL, DWORD* handleCount) {
