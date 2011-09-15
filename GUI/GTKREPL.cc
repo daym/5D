@@ -37,8 +37,9 @@ You should have received a copy of the GNU General Public License along with thi
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(REPL_handle_##name), self)
 #define connect_accelerator(key, modifiers, action_name) REPL_connect_accelerator(self, key, modifiers, get_action(action_name), "<Actions>/actiongroup/"#action_name)
 
-namespace GUI {
+namespace REPLX {
 
+struct Completer;
 struct REPL {
 	GtkWindow* fWidget;
 	GtkBox* fMainBox;
@@ -62,7 +63,7 @@ struct REPL {
 	bool fFileModified;
 	GtkBuilder* UI_builder;
 	GtkAccelGroup* accelerator_group;
-	GTKLATEXGenerator* fLATEXGenerator;
+	GUI::GTKLATEXGenerator* fLATEXGenerator;
 	char* fSearchTerm;
 	bool fBSearchUpwards;
 	bool fBSearchCaseSensitive;
@@ -71,7 +72,11 @@ struct REPL {
 	AST::Cons* fTailUserEnvironmentFrontier;
 };
 };
-#include "GUI/REPLEnvironment"
+namespace GUI {
+int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value);
+};
+using namespace GUI;
+#include "REPL/REPLEnvironment"
 namespace GUI {
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 void REPL_set_file_modified(struct REPL* self, bool value);
@@ -661,7 +666,10 @@ int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST
 	gtk_list_store_set(self->fEnvironmentStore2, &iter, 0, name->name, -1);
 	g_hash_table_replace(self->fEnvironmentKeys, name, gtk_tree_iter_copy(&iter));
 	REPL_set_file_modified(self, true);
-	FIXME
+	if(gtk_tree_model_get_iter_first((GtkTreeModel*) self->fEnvironmentStore2, &iter))
+		return(gtk_tree_model_iter_n_children((GtkTreeModel*) self->fEnvironmentStore2, &iter) - 1);
+	else
+		return(0); /* ??? */
 }
 GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));

@@ -17,7 +17,11 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/FFI"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
+#include "REPL/REPLEnvironment"
 
+namespace REPLX {
+struct REPL;
+};
 namespace GUI {
 
 #if 0

@@ -11,9 +11,11 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/AST"
 #include <gtk/gtk.h>
 struct Config;
+namespace REPLX {
+struct REPL;
+};
 namespace GUI {
 
-struct REPL;
 bool REPL_confirm_close(struct REPL* self);
 bool REPL_get_file_modified(struct REPL* self);
 bool REPL_save(struct REPL* self, bool B_force_save_dialog);

@@ -8,7 +8,7 @@
 #include "GUI/GTKCompleter"
 #include "Scanners/MathParser"
 
-namespace GUI {
+namespace REPLX {
 struct Completer {
 	GtkEntry* fEntry;
 	GHashTable* fHaystack; /* hash table's entry's value is unused */
@@ -17,6 +17,9 @@ struct Completer {
 	int fEntryNeedlePos;
 	const char* fEntryText;
 };
+};
+namespace GUI {
+using namespace REPLX;
 void Completer_accept_match_GUI(struct Completer* self, const char* new_text, int pos) {
 	gtk_entry_set_text(self->fEntry, new_text);
 	/*if(gtk_editable_get_selection_bounds(GTK_EDITABLE(entry), &beginning, &end)) {*/
