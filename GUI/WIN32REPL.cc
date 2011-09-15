@@ -127,6 +127,7 @@ static std::wstring GetListViewEntryStringCXX(HWND control, int index) {
 	item.mask = LVIF_TEXT;
 	item.pszText = new TCHAR[length + 1];
 	item.cchTextMax = length;
+	item.iItem = index;
 	std::wstring result;
 	if(SendMessageW(control, LVM_GETITEMW, 0, (LPARAM) &item))
 		result = item.pszText;
@@ -563,7 +564,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				case LVN_ITEMACTIVATE:
 					{
 						HWND list = GetDlgItem(self->dialog, IDC_ENVIRONMENT);
-						int rowIndex = GetListViewSelectedItemIndex((HWND)lParam);
+						int rowIndex = GetListViewSelectedItemIndex(list);
 						REPL_handle_environment_row_activation(self, list, rowIndex);
 					}
 					break;
