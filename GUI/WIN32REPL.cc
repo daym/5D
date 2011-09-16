@@ -297,7 +297,24 @@ void REPL_load(struct REPL* self) {
 	file_name = GetUsualOpenFileName(self->dialog);
 	REPL_load_contents_by_name(self, ToUTF8(file_name));
 }
+static INT_PTR CALLBACK HandleConfirmDeleteMessages(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
 
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
 static INT_PTR CALLBACK HandleAboutMessages(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -478,6 +495,9 @@ static LRESULT CALLBACK HandleEditTabMessage(HWND hwnd, UINT message, WPARAM wPa
 	}
 	return(CallWindowProc(self->oldEditBoxProc, hwnd, message, wParam, lParam));
 }
+static void REPL_delete_environment_row(struct REPL* self, int index) {
+	DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_CONFIRM_DELETE), self->dialog, HandleConfirmDeleteMessages);
+}
 #define GET_X_LPARAM LOWORD
 #define GET_Y_LPARAM HIWORD
 INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -607,7 +627,15 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 					}
 				}
 				/* TODO Call GetSystemMetrics with SM_MENUDROPALIGNMENT, asking for the alignment */
-				/*BOOL FIXME*/TrackPopupMenu(self->fEnvironmentMenu, TPM_LEFTALIGN|TPM_TOPALIGN/*|TPM_RETURNCMD*/|TPM_RIGHTBUTTON, x, y, 0, (HWND) wParam, NULL);
+				int response = (int)TrackPopupMenu(self->fEnvironmentMenu, TPM_LEFTALIGN|TPM_TOPALIGN|TPM_RETURNCMD|TPM_RIGHTBUTTON, x, y, 0, (HWND) wParam, NULL);
+				switch(response) {
+				case ID_ENVITEM_PRINT:
+					REPL_handle_environment_row_activation(self, environmentListBox, GetListViewSelectedItemIndex(environmentListBox));
+					break;
+				case ID_ENVITEM_DELETE:
+					REPL_delete_environment_row(self, GetListViewSelectedItemIndex(environmentListBox));
+					break;
+				}
 			}
 		}
 		break;

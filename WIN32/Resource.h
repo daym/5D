@@ -16,6 +16,7 @@
 #define IDD_CONFIRM_CLOSE               131
 #define IDD_SEARCH                      132
 #define IDM_ENVIRONMENT                 133
+#define IDD_CONFIRM_DELETE              134
 #define IDC_OUTPUT                      1000
 #define IDC_ENVIRONMENT                 1001
 #define IDC_EXECUTE                     1002
@@ -41,7 +42,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        134
+#define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         32810
 #define _APS_NEXT_CONTROL_VALUE         1011
 #define _APS_NEXT_SYMED_VALUE           110
