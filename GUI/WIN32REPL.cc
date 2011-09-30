@@ -506,8 +506,13 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	self = (struct REPL*) GetWindowLongPtr(dialog, GWLP_USERDATA);
 	switch (message) {
 	case WM_INITDIALOG:
-		SendMessage(GetDlgItem(dialog, IDC_OUTPUT), EM_SETEVENTMASK, 0, SendMessage(GetDlgItem(dialog, IDC_OUTPUT), EM_GETEVENTMASK, 0, 0) | ENM_CHANGE);
-		SetDialogFocus(dialog, IDC_COMMAND_ENTRY);
+		{
+			HICON icon = (HICON) LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_MY5D), IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 0);
+			if(icon)
+				SendMessage(dialog, WM_SETICON, ICON_SMALL, (LPARAM) icon);
+			SendMessage(GetDlgItem(dialog, IDC_OUTPUT), EM_SETEVENTMASK, 0, SendMessage(GetDlgItem(dialog, IDC_OUTPUT), EM_GETEVENTMASK, 0, 0) | ENM_CHANGE);
+			SetDialogFocus(dialog, IDC_COMMAND_ENTRY);
+		}
 		return (INT_PTR)FALSE;
 	case WM_CLOSE:
 	case WM_DESTROY:
