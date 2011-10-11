@@ -91,6 +91,10 @@ void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::N
 	/* the returned index is "just not as important as the new entry" */
 	AST::Cons* prevNode = self->fTailEnvironment && self->fTailEnvironment->tail ? dynamic_cast<AST::Cons*>(self->fTailEnvironment->tail->head) : NULL;
 	for(; index > 0 && prevNode; --index) {
+		if(self->fTailUserEnvironmentFrontier && self->fTailUserEnvironmentFrontier->tail && prevNode == self->fTailUserEnvironmentFrontier->tail->head) { // if it is an user expression (not a definition in the environment)
+			prevNode = NULL;
+			break;
+		}
 		assert(application_P(prevNode));
 		AST::Node* x_fn;
 		AST::Node* x_argument;
