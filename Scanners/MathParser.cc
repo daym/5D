@@ -461,6 +461,7 @@ const int minus_precedence_level = 4;
 const int negation_precedence_level = -1;
 static const int precedence_level_R_1 = 10;
 static const int precedence_level_R_2 = 1;
+static const int precedence_level_R_3 = 5;
 const int lambda_precedence_level = 10;
 static Symbol* operator_precedence[][7] = {
 	{intern("."), intern("^")},
@@ -654,7 +655,7 @@ AST::Node* MathParser::parse_value(void) {
 AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 	if(precedence_level < 0)
 		return(parse_value());
-	if(precedence_level == precedence_level_R_1 || precedence_level == precedence_level_R_2) {
+	if(precedence_level == precedence_level_R_1 || precedence_level == precedence_level_R_2 || precedence_level == precedence_level_R_3) {
 		AST::Node* head = parse_binary_operation(precedence_level - 1);
 		if(AST::Node* actual_token = match_operator(precedence_level, input_token)) {
 			AST::Node* operator_ = actual_token;
