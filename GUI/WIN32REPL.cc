@@ -469,7 +469,7 @@ static void REPL_handle_environment_row_activation(struct REPL* self, HWND list,
 		std::stringstream sst;
 		std::string escapedName = AST::intern(command)->str();
 		//sst << "(cons (quote define) (cons (quote " << escapedName << "X) (cons (quote X) nil)))"; /* (makeList 'define 'escapedName escapedName) */
-		sst << "(cons (quote define) (cons (quote " << escapedName << ") (cons " << escapedName << " nil)))"; /* (makeList 'define 'escapedName escapedName) */
+		sst << "(cons (' define) (cons (' " << escapedName << ") (cons " << escapedName << " nil)))"; /* (makeList 'define 'escapedName escapedName) */
 		std::string commandStr = sst.str();
 		//command = g_strdup_printf("(cons (quote define) (cons (quote %s) (cons %s nil)))", command, command);
 		B_ok = REPL_execute(self, commandStr.c_str());

@@ -539,7 +539,7 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 }
 AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
 	AST::Node* result;
-	B_process_macros = false; /* to make (quote define) work; TODO do this in a nicer way? How? */
+	B_process_macros = false; /* to make (' define) work; TODO do this in a nicer way? How? */
 	result = cons(operand_1, cons(parse_expression(), NULL));
 	B_process_macros = true;
 	return(result);
