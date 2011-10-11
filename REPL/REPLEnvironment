@@ -104,6 +104,8 @@ void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::N
 		/*assert(dynamic_cast<AST::Cons*>(body) != NULL);*/
 		prevNode = dynamic_cast<AST::Cons*>(body);
 	}
+	if(self->fTailUserEnvironmentFrontier && self->fTailUserEnvironmentFrontier->tail && prevNode == self->fTailUserEnvironmentFrontier->tail->head) // if it is an user expression (not a definition in the environment)
+		prevNode = NULL;
 	if(prevNode) {
 		assert(application_P(prevNode));
 		AST::Node* x_fn;
