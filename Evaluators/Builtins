@@ -21,7 +21,7 @@ struct Quoter : AST::Operation {
 	virtual bool eager_P(void) const;
 	virtual AST::Node* execute(AST::Node* argument);
 	virtual std::string str(void) const {
-		return("quote");
+		return("'");
 	}
 };
 #define DECLARE_SIMPLE_OPERATION(P, N) \

@@ -98,11 +98,11 @@ static int get_variable_index(AST::Node* root) {
 		return(-1);
 }
 static bool quote_P(AST::Node* root) {
-	if(root == AST::intern("quote"))
+	if(root == AST::intern("'"))
 		return(true);
 	else {
 		AST::SymbolReference* ref = dynamic_cast<AST::SymbolReference*>(root);
-		return(ref && ref->symbol == AST::intern("quote"));
+		return(ref && ref->symbol == AST::intern("'"));
 	}
 }
 AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& boundNamesSet) {

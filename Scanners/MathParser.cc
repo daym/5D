@@ -295,6 +295,11 @@ void MathParser::parse_token(void) {
 	case '>':
 		parse_anglebracket(input);
 		break;
+	case '\'':
+		input_value = input_token = intern("'");
+		//input_token = AST::intern("<symbol>");
+		//input_value = AST::intern("quote");
+		break;
 	case '~':
 		input_value = input_token = intern("~");
 		break;
@@ -322,10 +327,6 @@ void MathParser::parse_token(void) {
 		break;
 	case EOF:
 		input_value = input_token = NULL;
-		break;
-	case '\'':
-		input_token = AST::intern("<symbol>");
-		input_value = AST::intern("quote");
 		break;
 	case ':': // used for cons (and, later, types).
 		input_value = input_token = intern(":");
@@ -510,7 +511,7 @@ AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 		//return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
 }
 bool macro_operator_P(AST::Node* operator_) {
-	return(operator_ == intern("define") || operator_ == intern("quote"));
+	return(operator_ == intern("define") || operator_ == intern("'"));
 }
 AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 	if(B_process_macros && macro_operator_P(node))
@@ -547,7 +548,7 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 	// TODO let|where, include, cond, make-list, quote, case.
 	if(operand_1 == intern("define")) {
 		return(parse_define(operand_1));
-	} else if(operand_1 == intern("quote")) {
+	} else if(operand_1 == intern("'")) {
 		return(parse_quote(operand_1));
 	} else {
 		raise_error("<known_macro>", "<unknown_macro>");
@@ -575,7 +576,7 @@ AST::Node* MathParser::parse_value(void) {
 	if(input_token == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());
-	} else if(input_token == intern("-") || input_token == intern("+") || input_token == intern("~")) {
+	} else if(input_token == intern("-") || input_token == intern("+") || input_token == intern("~") || input_token == intern("'")) {
 		/* the reason why there is a special-case for "~" at all is so that it will require an argument.
 		   Otherwise stuff like ~~#t would not work as expected. 
 		   If "~" were a normal functional, there would be no reason to expect this to be a call.
