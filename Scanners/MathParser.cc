@@ -327,7 +327,10 @@ void MathParser::parse_token(void) {
 		input_token = AST::intern("<symbol>");
 		input_value = AST::intern("quote");
 		break;
-	case ':':
+	case ':': // used for cons (and, later, types).
+		input_value = input_token = intern(":");
+		break;
+	case '@':
 		parse_keyword(input);
 		break;
 	case '#':
@@ -339,7 +342,7 @@ void MathParser::parse_token(void) {
 	}
 }
 static bool symbol1_char_P(int input) {
-	return (input >= '@' && input <= 'Z')
+	return (input >= 'A' && input <= 'Z')
 	    || (input >= 'a' && input <= 'z')
 	    || input == '#'
 	    || input == '$'
@@ -456,15 +459,16 @@ using namespace AST;
 const int apply_precedence_level = 3;
 const int minus_precedence_level = 4;
 const int negation_precedence_level = -1;
-static const int precedence_level_R_1 = 9;
+static const int precedence_level_R_1 = 10;
 static const int precedence_level_R_2 = 1;
-const int lambda_precedence_level = 9;
+const int lambda_precedence_level = 10;
 static Symbol* operator_precedence[][7] = {
 	{intern("."), intern("^")},
 	{intern("**")},
 	{intern("*"), intern("%"), intern("/")},
 	{intern("⨯")},
 	{intern("+"), intern("-")},
+	{intern(":")},
 	{intern("="), intern("/=")},
 	{intern("<"), intern("<="), intern(">"), intern(">=") /*, intern("≤"), intern("≥")*/},
 	{intern("&")},
