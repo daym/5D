@@ -62,14 +62,18 @@ int GetRichTextCaretPosition(HWND control) {
 	return(beginning);
 }
 std::wstring GetRichTextSelectedText(HWND control) {
-	WPARAM beginning = 0;
-	LPARAM end = 0;
 	WCHAR buffer[20000];
+	/*WPARAM beginning = 0;
+	LPARAM end = 0;
 	SendMessage(control, EM_GETSEL, (WPARAM) &beginning, (LPARAM) &end);
 	if(end <= beginning)
 		return(std::wstring());
 	if(GetWindowTextW(control, buffer, 20000 - 1) < 1) // FIXME error handling
 		return(std::wstring());
+	buffer[end] = 0;
+	*/
+	/* FIXME fix buffer overflow */
+	SendMessage(control, EM_GETSELTEXT, (WPARAM) 0, (LPARAM) buffer);
 	return(buffer);
 }
 static OPENFILENAMEW openFileName;
