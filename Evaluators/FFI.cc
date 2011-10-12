@@ -38,6 +38,9 @@ char* get_native_string(AST::Node* root) {
 		return(strdup(value.c_str()));
 	}
 }
+bool FFI::eager_P() const {
+	return(B_pure);
+}
 AST::Node* FFI::execute(AST::Node* argument) {
 	//lambda state: makeList(executeLowlevel(argument), state);
 	// TODO maybe cache that, makes not a lot of sense to regenerate the intermediate things all the time!

@@ -24,6 +24,7 @@ struct FFI : AST::Operation {
 	FFI(void) {
 		B_pure = true; /* FIXME false;*/
 	}
+	virtual bool eager_P() const;
 	virtual AST::Node* execute(AST::Node* argument);
 	virtual AST::Node* executeLowlevel(AST::Node* argument) = 0;
 };
