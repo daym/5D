@@ -51,6 +51,9 @@ struct CLibraryP {
 	std::string name;
 	std::map<AST::Symbol*, CProcedure*> knownProcedures;
 };
+bool CLibrary::goodP() const {
+	return(p->library != NULL);
+}
 CLibrary::CLibrary(const char* name) {
 	p = new CLibraryP();
 	p->name = name;

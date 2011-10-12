@@ -20,13 +20,14 @@ private:
 	struct LibraryLoaderP* p;
 public:
 	LibraryLoader(AST::Node* fallback);
-	virtual AST::Node* execute(AST::Node* argument); /* argument is the library to be loaded. Result is a CLibrary */
+	virtual AST::Node* execute(AST::Node* argument); /* argument is the library to be loaded. Result is a CLibrary or nil */
 	virtual std::string str(void) const; /* FIXME str for fallback */
 };
 struct CLibrary : Evaluators::FFI { /* routine loader */
 private:
 	struct CLibraryP* p;
 public:
+	bool goodP() const;
 	CLibrary(const char* name);
 	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the name (symbol). Result is a CProcedure */
 	virtual std::string str(void) const;

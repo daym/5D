@@ -39,8 +39,15 @@ AST::Node* LibraryLoader::execute(AST::Node* libraryName) {
 	if(iter != p->knownLibraries.end())
 		return(iter->second);
 	else {
-		p->knownLibraries[libraryNameSymbol] = new CLibrary(libraryNameSymbol->name);
-		return(p->knownLibraries[libraryNameSymbol]);
+		CLibrary* library;
+		library = new CLibrary(libraryNameSymbol->name);
+		if(library->goodP()) {
+			p->knownLibraries[libraryNameSymbol] = library;
+			return(p->knownLibraries[libraryNameSymbol]);
+		} else {
+			// TODO delete instance?
+			return(NULL);
+		}
 	}
 }
 struct CLibraryP {
@@ -48,12 +55,16 @@ struct CLibraryP {
 	std::string name;
 	std::map<AST::Symbol*, CProcedure*> knownProcedures;
 };
+bool CLibrary::goodP() const {
+	return(p->library != NULL);
+}
 CLibrary::CLibrary(const char* name) {
 	p = new CLibraryP();
 	p->name = name;
 	p->library = dlopen(name, RTLD_LAZY);
 	if(!p->library) {
-		perror(name);
+		fprintf(stderr, "(dlopen \"%s\") failed because: %s\n", name, dlerror());
+		//perror(name);
 	}
 }
 AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
