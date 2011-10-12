@@ -69,7 +69,7 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 	else {
 		void* sym = dlsym(p->library, nameSymbol->name);
 		if(!sym) {
-			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", p->name.c_str(), nameSymbol->name);
+			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", nameSymbol->name, p->name.c_str());
 			return(NULL);
 		}
 		p->knownProcedures[nameSymbol] = new CProcedure(sym);
