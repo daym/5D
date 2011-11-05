@@ -66,82 +66,23 @@ void MathParser::parse_string(int input) {
 	std::string value = matchtext.str();
 	input_value = AST::string_literal(value.c_str());
 }
+static bool operatorChar_P(int input) {
+	return((input >= 33 && input < 48) || (input >= 58 && input < 65) || (input == '^') || (input == '|') || (input == '~'));
+}
 void MathParser::parse_operator(int input) {
+	std::stringstream sst;
 	using namespace AST;
-	switch(input) {
-	case '.':
-		input_value = input_token = intern(".");
-		break;
-	case '^':
-		input_value = input_token = intern("^");
-		break;
-	case '+':
-		input_value = input_token = intern("+");
-		break;
-	case '-':
-		input_value = input_token = intern("-");
-		break;
-	case ';':
-		input_value = input_token = intern(";");
-		break;
-	case '*':
-		++position, input = fgetc(input_file);
-		if(input == '*') {
-			// FIXME exponentiation is right-associative.
-			input_value = input_token = intern("**");
-		} else {
-			ungetc(input, input_file), --position;
-			input_value = input_token = intern("*");
-		}
-		break;
-	case '/':
-		++position, input = fgetc(input_file);
-		if(input == '=') { /* not equal */
-			input_value = input_token = intern("/=");
-		} else {
-			ungetc(input, input_file), --position;
-			input_value = input_token = intern("/");
-		}
-		break;
-	case '%':
-		input_value = input_token = intern("%");
-		break;
-	case '=':
-		++position, input = fgetc(input_file);
-		if(input == '>')
-			input_value = input_token = intern("=>");
-		else {
-			ungetc(input, input_file), --position;  
-			input_value = input_token = intern("=");
-		}
-		break;
-	case '<':
-		++position, input = fgetc(input_file);
-		if(input == '=')
-			input_value = input_token = intern("<=");
-		else {
-			ungetc(input, input_file), --position;
-			input_value = input_token = intern("<");
-		}
-		break;
-	case '>':
-		++position, input = fgetc(input_file);
-		if(input == '=')
-			input_value = input_token = intern(">=");
-		else {
-			ungetc(input, input_file), --position;
-			input_value = input_token = intern(">");
-		}
-		break;
-	case '&':
-		input_value = input_token = intern("&");
-		break;
-	case '|':
-		input_value = input_token = intern("|");
-		break;
-	default:
+	// TODO UTF-8 math operators.
+	if(!operatorChar_P(input)) {
 		raise_error("<operator>", input);
+		return;
 	}
+	while(operatorChar_P(input)) {
+		sst << (char) input;
+		++position, input = fgetc(input_file);
+	}
+	ungetc(input, input_file), --position;
+	input_value = input_token = intern(sst.str().c_str());
 }
 
 void MathParser::parse_star(int input) {
