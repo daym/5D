@@ -383,9 +383,9 @@ static Symbol* operator_precedence[][7] = {
 	{intern(":")},
 	{intern("="), intern("/=")},
 	{intern("<"), intern("<="), intern(">"), intern(">=") /*, intern("≤"), intern("≥")*/},
-	{intern("&")},
+	{intern("&&")},
 	//{intern("^")}
-	{intern("|")},
+	{intern("||")},
 	{intern(";")}, // do
 };
 int get_operator_precedence(AST::Symbol* symbol) {
