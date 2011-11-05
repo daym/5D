@@ -48,7 +48,9 @@ void Scanner::raise_error(const std::string& expected_text, std::string got_text
 
 void Scanner::raise_error(const std::string& expected_text, int got_text) {
 	std::string s;
-	if(got_text > 127)
+	if(got_text == -1)
+		s = "<EOF>";
+	else if(got_text > 127)
 		s = "<junk>";
 	else
 		s = (char) got_text;

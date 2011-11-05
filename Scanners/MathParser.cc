@@ -66,18 +66,18 @@ void MathParser::parse_string(int input) {
 	std::string value = matchtext.str();
 	input_value = AST::string_literal(value.c_str());
 }
-static bool operatorChar_P(int input) {
-	return((input >= 33 && input < 48) || (input >= 58 && input < 65) || (input == '^') || (input == '|') || (input == '~'));
+static bool operatorCharP(int input) {
+	// without '#' for now (not sure whether that's good. TODO find out)
+	// without '@' for now (keywords).
+	return((input >= 33 && input < 35) || (input >= 36 && input < 48) || (input >= 58 && input < 64) || (input == '^') || (input == '|') || (input == '~'));
 }
 void MathParser::parse_operator(int input) {
 	std::stringstream sst;
 	using namespace AST;
 	// TODO UTF-8 math operators.
-	if(!operatorChar_P(input)) {
-		raise_error("<operator>", input);
-		return;
-	}
-	while(operatorChar_P(input)) {
+	if(!operatorCharP(input))
+		return(parse_symbol(input));
+	while(operatorCharP(input)) {
 		sst << (char) input;
 		++position, input = fgetc(input_file);
 	}
@@ -85,12 +85,6 @@ void MathParser::parse_operator(int input) {
 	input_value = input_token = intern(sst.str().c_str());
 }
 
-void MathParser::parse_star(int input) {
-	parse_operator('*');
-}
-void MathParser::parse_anglebracket(int input) {
-	parse_operator(input);
-}
 void MathParser::parse_number_with_base(int input, int base) {
 	int value = 0; /* TODO make this more general? */
 	while(true) {
@@ -213,10 +207,6 @@ void MathParser::parse_token(void) {
 	int input;
 	++position, input = fgetc(input_file);
 	switch(input) {
-	case 0xE2: /* part of "≠" */
-	case 0xC2:
-		parse_unicode(input);
-		break;
 	case '0':
 	case '1':
 	case '2':
@@ -229,32 +219,14 @@ void MathParser::parse_token(void) {
 	case '9':
 		parse_number(input);
 		break;
-	case '*':
-		parse_star(input);
-		break;
-	case '<':
-	case '>':
-		parse_anglebracket(input);
+	case 0xE2: /* part of "≠" */
+	case 0xC2:
+		parse_unicode(input);
 		break;
 	case '\'':
 		input_value = input_token = intern("'");
 		//input_token = AST::intern("<symbol>");
 		//input_value = AST::intern("quote");
-		break;
-	case '~':
-		input_value = input_token = intern("~");
-		break;
-	case '+':
-	case '-':
-	case '/':
-	case '%':
-	case '=':
-	case '&':
-	case '|':
-	case '.':
-	case '^':
-	case ';':
-		parse_operator(input);
 		break;
 	case '\\':
 		input_value = input_token = intern("\\");
@@ -269,9 +241,6 @@ void MathParser::parse_token(void) {
 	case EOF:
 		input_value = input_token = NULL;
 		break;
-	case ':': // used for cons (and, later, types).
-		input_value = input_token = intern(":");
-		break;
 	case '@':
 		parse_keyword(input);
 		break;
@@ -279,7 +248,7 @@ void MathParser::parse_token(void) {
 		parse_special_coding(input);
 		break;
 	default:
-		parse_symbol(input);
+		parse_operator(input);
 		break;
 	}
 }
