@@ -1,0 +1,10 @@
+
+define foldl folder initialValue list = Y\foldl
+   (cond
+     (empty? list) initialValue
+     else (folder (foldl folder initialValue (rest list)) (head list)))
+
+define foldr folder initialValue list = Y\foldr
+   (cond
+     (empty? list) initialValue  
+     else (folder (head list) (foldr folder initialValue (rest list))))
