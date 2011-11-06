@@ -87,7 +87,7 @@ struct REPL* REPL_new(void) {
 }; /* end namespace */
 
 
-/* TODO enable history */
+/* TODO enable history file */
 
 const char* commands[] = { /* FIXME un-hardcode */
 	"\\",
@@ -161,6 +161,7 @@ int main() {
 			break;
 		if(!line[0])
 			continue;
+		add_history(line);
 		run(REPL, line);
 	}
 	return(0);
