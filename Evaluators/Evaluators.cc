@@ -220,6 +220,9 @@ AST::Node* reduce(AST::Node* term) {
 		++recursionLevel;
 		fn = reduce(get_application_operator(term));
 		--recursionLevel;
+		if(dynamic_cast<AST::Cons*>(term)->tail == NULL) { // (+) // TODO is this a good idea?
+			return(fn);
+		}
 		argument = get_application_operand(term);
 		if(wants_its_argument_reduced_P(fn)) {
 			++recursionLevel;
