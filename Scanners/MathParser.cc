@@ -388,7 +388,7 @@ AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 		return(NULL);
 }
 static int any_operator_P(AST::Symbol* token) {
-	if(token != AST::intern("<symbol>")) {
+	if(token != AST::intern("<symbol>") && token != AST::intern("<string>")) {
 		std::string name = token->str();
 		assert(name.length() > 0);
 		assert(name[0] != '<' || name.length() == 1);

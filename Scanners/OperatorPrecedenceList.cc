@@ -66,6 +66,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(void) {
 #define L intern("left")
 #define N L
 	cons(19, I("_"), R);
+	cons(19, I("."), R);
 	cons(19, I("^"), R);
 	cons(17, I("**"), R);
 	cons(16, I("⨯"), R);
