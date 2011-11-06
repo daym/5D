@@ -128,8 +128,9 @@ static void initialize_readline(void) {
 	rl_attempted_completion_function = complete;
 	rl_sort_completion_matches = 1;
 }
+using namespace REPLX;
 static Scanners::OperatorPrecedenceList* operator_precedence_list;
-void run(const char* text) {
+void run(struct REPL* REPL, const char* text) {
 	AST::Node* result;
 	Scanners::MathParser parser;
 	FILE* input_file;
@@ -138,6 +139,7 @@ void run(const char* text) {
 		parser.push(input_file, 0);
 		result = parser.parse(operator_precedence_list);
 		fclose(input_file);
+		REPL_execute(REPL, result);
 	} catch(Scanners::ParseException exception) {
 		AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::String(exception.what()), NULL));
 		std::string errStr = err->str();
@@ -149,7 +151,9 @@ void run(const char* text) {
 	}
 }
 int main() {
+	struct REPL* REPL;
 	const char* line;
+	REPL = REPL_new();
 	initialize_readline();
 	operator_precedence_list = new Scanners::OperatorPrecedenceList();
 	while((line = readline("λ> "))) {
@@ -157,7 +161,7 @@ int main() {
 			break;
 		if(!line[0])
 			continue;
-		run(line);
+		run(REPL, line);
 	}
 	return(0);
 }
