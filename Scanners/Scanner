@@ -29,7 +29,6 @@ protected:
 	int position;
 	int previous_position;
 	int line_number;
-	virtual void parse_token(void);
 public:
 	virtual void push(FILE* input_file, int line_number, bool B_consume = true);
 	void pop(void);

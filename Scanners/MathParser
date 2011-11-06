@@ -22,7 +22,7 @@ protected:
 	OperatorPrecedenceList* operator_precedence_list;
 private:
 	bool allow_args;
-	virtual void parse_token(void);
+	void parse_token(void);
 	void parse_operator(int input);
 	void parse_number(int input);
 	void parse_number_with_base(int input, int base);

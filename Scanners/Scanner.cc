@@ -25,9 +25,6 @@ Scanner::Scanner(void) {
 	previous_position = 0;
 	line_number = 0;
 }
-void Scanner::parse_token(void) {
-}
-
 void Scanner::push(FILE* input_file, int line_number, bool B_consume) {
 	this->input_file = input_file;
 	this->line_number = line_number;

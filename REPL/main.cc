@@ -99,6 +99,8 @@ int main() {
 				B_first = false;
 			else
 				parser.parse_closing_brace();
+			if(parser.EOFP())
+				break;
 			AST::Node* source = parser.parse_S_list(false);
 			// TODO parse left-over ")"
 			REPL_execute(REPL, source);
