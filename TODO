@@ -1,0 +1,39 @@
+simplify ((+ a) b) to (+ a b) since it's NOT ambiguous anyway.
+delete environment nodes (includes usage check in the rest of the environment).
+
+translateFFI resulttype argtypes procedure => translator used when calling:
+	translateFFI unmarshalVoidResult (list marshalInt marshal...)
+ONLY implement marshallers and demarshallers in C, let them return stand-in buffers
+function to join buffers (memoryview)
+
+better:
+translateFFI args
+
+define libc fromLibrary "/lib/x86_64-linux-gnu/libc.so.6"
+define writeProc libc 'write
+OK
+
+define translateWrite translateFFI (\result ...) (\args ...)
+define write translateWrite writeProc
+
+runMonad (write (list 1 "hello world")) "world"
+
+pipe a ber = \w
+		c, w2 = a w
+		d, w3 = ber c w2
+		d, w3
+
+Y\parse\args
+	cond
+		(list? args) (let (arg (head args))
+		                  )
+		else nil
+
+
+#| commented out |#
+
+define (&) \a \b = (b a)
+define (#) \a \b = (b o a)
+make it possible to define custom operators
+1+2⋅ => error
+Builtins should somehow note they mean super() on str(). Not sure how? Is that even an issue in practise?
