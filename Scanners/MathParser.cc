@@ -354,7 +354,7 @@ void MathParser::parse_keyword(int input) {
 		}
 	} else
 		ungetc(input, input_file), --position;
-	input_token = intern("<symbol>");
+	input_token = intern("<keyword>");
 	input_value = keywordFromString(matchtext.str().c_str());
 }
 /* returns the PREVIOUS value */
@@ -388,10 +388,10 @@ AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 		return(NULL);
 }
 static int any_operator_P(AST::Symbol* token) {
-	if(token != AST::intern("<symbol>") && token != AST::intern("<string>")) {
+	if(token != AST::intern("<symbol>") && token != AST::intern("<string>") && token != AST::intern("<keyword>")) {
 		std::string name = token->str();
 		assert(name.length() > 0);
-		assert(name[0] != '<' || name.length() == 1);
+		assert(name[0] != '<' || name.length() == 1 || (name.length() >= 2 && name[1] == '='));
 		return(true);
 	} else 
 		return(false);
@@ -537,13 +537,13 @@ AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 	if(operator_precedence_list->empty_P(precedence_level))
 		return(parse_value());
 	AST::Node* result = parse_binary_operation(operator_precedence_list->next_precedence_level(precedence_level));
-	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_token, /*out*/associativity)) {
+	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_token, input_value, /*out*/associativity)) {
 		while(actual_token) {
 			AST::Node* operator_ = actual_token;
 			consume(); /* operator */
 			result = operation(operator_, result, parse_binary_operation(associativity == intern("left") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level));
 			/* for right associative operations, the recursion will have consumed all the operators on that level and by virtue of that, the while loop will always stop after one iteration. */
-			actual_token = operator_precedence_list->match_operator(precedence_level, input_token, /*out*/associativity);
+			actual_token = operator_precedence_list->match_operator(precedence_level, input_token, input_value, /*out*/associativity);
 		}
 		return(result);
 	} else

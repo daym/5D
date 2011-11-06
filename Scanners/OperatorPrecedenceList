@@ -39,7 +39,7 @@ struct OperatorPrecedenceList : AST::Node {
 		return(precedence_level >= MAX_PRECEDENCE_LEVELS || levels[precedence_level] == NULL);
 	}
 	/* for speed reasons, it can happen that the same operator is present multiple times on the same level. */
-	AST::Node* match_operator(int precedence_level, AST::Node* input_token, struct AST::Symbol*& associativity_out) {
+	AST::Node* match_operator(int precedence_level, AST::Node* input_token, AST::Node* input_value, struct AST::Symbol*& associativity_out) {
 		if(precedence_level < 0 || precedence_level >= MAX_PRECEDENCE_LEVELS)
 			return(NULL);
 		struct OperatorPrecedenceItem* precedence = levels[precedence_level];
