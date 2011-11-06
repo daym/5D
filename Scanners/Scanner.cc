@@ -21,7 +21,6 @@ const char* ParseException::what() const throw() {
 
 Scanner::Scanner(void) {
 	input_file = NULL;
-	input_token = NULL;
 	position = 0;
 	previous_position = 0;
 	line_number = 0;

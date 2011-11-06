@@ -34,23 +34,28 @@ struct OperatorPrecedenceList : AST::Node {
 	struct OperatorPrecedenceItem* levels[MAX_PRECEDENCE_LEVELS];
 	OperatorPrecedenceList(void);
 	virtual std::string str(void) const;
-	int get_operator_precedence(AST::Symbol* symbol); /* for LATEX, otherwise DO NOT USE */
+	int get_operator_precedence(AST::Symbol* symbol);
 	int empty_P(int precedence_level) {
 		return(precedence_level >= MAX_PRECEDENCE_LEVELS || levels[precedence_level] == NULL);
 	}
 	/* for speed reasons, it can happen that the same operator is present multiple times on the same level. */
-	AST::Node* match_operator(int precedence_level, AST::Node* input_token, AST::Node* input_value, struct AST::Symbol*& associativity_out) {
+	AST::Node* match_operator(int precedence_level, AST::Node* operator_, struct AST::Symbol*& associativity_out) {
 		if(precedence_level < 0 || precedence_level >= MAX_PRECEDENCE_LEVELS)
 			return(NULL);
 		struct OperatorPrecedenceItem* precedence = levels[precedence_level];
 		for(; precedence; precedence = precedence->next) {
-			if(precedence->operator_ == input_token) {
+			if(precedence->operator_ == operator_) {
 				associativity_out = precedence->associativity;
-				return(input_token);
+				return(operator_);
 			}
 		}
 		associativity_out = NULL;
 		return(NULL);
+	}
+	bool any_operator_P(AST::Node* thingie) {
+		if(!this) // if we don't have OperatorPrecedenceList, no point in checking it
+			return(false);
+		return(get_operator_precedence(dynamic_cast<AST::Symbol*>(thingie)) != -1);
 	}
 	int next_precedence_level(int precedence_level) {
 		++precedence_level;

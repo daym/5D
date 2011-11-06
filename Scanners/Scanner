@@ -24,7 +24,7 @@ public:
 class Scanner {
 protected:
 	FILE* input_file;
-	AST::Symbol* input_token;
+	//AST::Symbol* input_token;
 	//std::stringstream matchtext;
 	int position;
 	int previous_position;

@@ -30,10 +30,10 @@ MathParser::MathParser(void) : Scanner() {
 void MathParser::parse_structural(int input) {
 	switch(input) {
 	case '(':
-		input_value = input_token = intern("(");
+		input_value = intern("(");
 		return;
 	case ')':
-		input_value = input_token = intern(")");
+		input_value = intern(")");
 		return;
 	/* TODO other kind of braces? */
 	default:
@@ -63,7 +63,6 @@ void MathParser::parse_string(int input) {
 			}
 		}
 	}
-	input_token = AST::intern("<string>");
 	std::string value = matchtext.str();
 	input_value = AST::string_literal(value.c_str());
 }
@@ -84,7 +83,7 @@ void MathParser::parse_operator(int input) {
 		++position, input = fgetc(input_file);
 	}
 	ungetc(input, input_file), --position;
-	input_value = input_token = intern(sst.str().c_str());
+	input_value = intern(sst.str().c_str());
 }
 
 void MathParser::parse_number_with_base(int input, int base) {
@@ -103,8 +102,6 @@ void MathParser::parse_number_with_base(int input, int base) {
 		value = value * base + digit;
 		++position, input = fgetc(input_file);
 	}
-	//input_token = intern("<number>");
-	input_token = intern("<symbol>");
 	std::stringstream sst;
 	sst << value; /* decimal */
 	input_value = AST::intern(sst.str().c_str());
@@ -125,9 +122,6 @@ void MathParser::parse_number(int input) {
 		}
 	}
 	ungetc(input, input_file), --position;
-	/*input_token = intern("<number>");
-	input_value = literal(strdup(matchtext.str().c_str()));*/
-	input_token = intern("<symbol>");
 	input_value = AST::intern(matchtext.str().c_str());
 	/* actual value will be provided by provide_dynamic_builtins */
 }
@@ -136,8 +130,7 @@ void MathParser::parse_unicode(int input) {
 	if(input == 0xC2) {
 		++position, input = fgetc(input_file);
 		if(input == 0xAC) { // ¬
-			input_token = intern("~");
-			input_value = intern("¬");
+			input_value = intern("not");
 		} else
 			raise_error("¬", input);
 		return;
@@ -152,14 +145,14 @@ void MathParser::parse_unicode(int input) {
 			++position, input = fgetc(input_file);
 			switch(input) {
 			case 0x85: /* dot */
-				input_value = input_token = intern("*");
+				input_value = intern("*");
 				return;
 			}
 		} else if(input == 0xA8) {
 			++position, input = fgetc(input_file);
 			switch(input) {
 			case 0xAF: /* ⨯ */
-				input_value = input_token = intern("⨯");
+				input_value = intern("⨯");
 				return;
 			}
 		} else { // E2 88 AB integral.
@@ -171,20 +164,16 @@ void MathParser::parse_unicode(int input) {
 		++position, input = fgetc(input_file);
 	switch(input) {
 	case 0xA0:
-		input_token = intern("/=");
-		input_value = input_token;
+		input_value = intern("/=");
 		return;
 	case 0xA4:
-		input_token = intern("<=");
 		input_value = intern("≤");
 		return;
 	case 0xA5:
-		input_token = intern(">=");
 		input_value = intern("≥");
 		return;
 #if 0
 	case 0x88: /* approx. */
-		input_token = intern("<symbol>");
 		input_value = intern("≈");
 		/* TODO just pass that to the symbol processor in the general case. */
 		return;
@@ -226,12 +215,10 @@ void MathParser::parse_token(void) {
 		parse_unicode(input);
 		break;
 	case '\'':
-		input_value = input_token = intern("'");
-		//input_token = AST::intern("<symbol>");
-		//input_value = AST::intern("quote");
+		input_value = intern("'");
 		break;
 	case '\\':
-		input_value = input_token = intern("\\");
+		input_value = intern("\\");
 		break;
 	case '(':
 	case ')':
@@ -241,7 +228,7 @@ void MathParser::parse_token(void) {
 		parse_string(input);
 		break;
 	case EOF:
-		input_value = input_token = NULL;
+		input_value = NULL;
 		break;
 	case '@':
 		parse_keyword(input);
@@ -328,7 +315,6 @@ void MathParser::parse_symbol(int input, int special_prefix, int special_prefix_
 		}
 	} else
 		ungetc(input, input_file), --position;
-	input_token = intern("<symbol>");
 	input_value = intern(matchtext.str().c_str());
 }
 void MathParser::parse_keyword(int input) {
@@ -354,15 +340,14 @@ void MathParser::parse_keyword(int input) {
 		}
 	} else
 		ungetc(input, input_file), --position;
-	input_token = intern("<keyword>");
 	input_value = keywordFromString(matchtext.str().c_str());
 }
 /* returns the PREVIOUS value */
-AST::Node* MathParser::consume(AST::Symbol* expected_token) {
+AST::Node* MathParser::consume(AST::Symbol* expected_value) {
 	AST::Node* previous_value;
 	previous_value = input_value;
-	if(expected_token && expected_token != input_token)
-		raise_error(expected_token->name, input_value ? input_value->str() : input_token ? input_token->name : "<nothing>");
+	if(expected_value && expected_value != input_value)
+		raise_error(expected_value->name, input_value ? input_value->str() : "<nothing>");
 	previous_position = position;
 	parse_token();
 	return(previous_value);
@@ -387,21 +372,11 @@ AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 	else
 		return(NULL);
 }
-static int any_operator_P(AST::Symbol* token) {
-	if(token != AST::intern("<symbol>") && token != AST::intern("<string>") && token != AST::intern("<keyword>")) {
-		std::string name = token->str();
-		assert(name.length() > 0);
-		assert(name[0] != '<' || name.length() == 1 || (name.length() >= 2 && name[1] == '='));
-		return(true);
-	} else 
-		return(false);
-}
 AST::Node* MathParser::parse_define(AST::Node* operand_1) {
-	bool B_extended = (input_token == AST::intern("("));
+	bool B_extended = (input_value == AST::intern("("));
 	if(B_extended)
 		consume();
-	AST::Node* parameter = any_operator_P(input_token) ? consume()
-	                  //: input_token == AST::intern("~") ? consume() 
+	AST::Node* parameter = operator_precedence_list->any_operator_P(input_value) ? consume()
 	                  : consume(intern("<symbol>"));
 	if(B_extended)
 		consume(AST::intern(")"));
@@ -437,8 +412,8 @@ AST::Cons* MathParser::unary_operation(AST::Node* operator_, AST::Node* operand_
 	return(cons(operator_, cons(operand_1, NULL)));
 }
 AST::Node* MathParser::parse_abstraction(void) {
-	if(input_token != intern("<symbol>")) {
-		raise_error("<symbol>", input_token ? input_token->str() : "nothing");
+	if(dynamic_cast<AST::Symbol*>(input_value) == NULL) {
+		raise_error("<symbol>", input_value ? input_value->str() : "nothing");
 		return(NULL);
 	} else {
 		AST::Node* parameter = consume();
@@ -450,24 +425,24 @@ AST::Node* MathParser::parse_abstraction(void) {
 	}
 }
 AST::Node* MathParser::parse_value(void) {
-	if(input_token == intern("\\")) { // function abstraction
+	if(input_value == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());
-	} else if(input_token == intern("-") || input_token == intern("+") || input_token == intern("~") || input_token == intern("'")) {
+	} else if(input_value == intern("-") || input_value == intern("+") || input_value == intern("~") || input_value == intern("'")) {
 		/* the reason why there is a special-case for "~" at all is so that it will require an argument.
 		   Otherwise stuff like ~~#t would not work as expected. 
 		   If "~" were a normal functional, there would be no reason to expect this to be a call.
 		   Hence, ~~#t would mean "(~ ~) whatsthatjunk" or in the best case "(~ ~) #t", both of which is NOT how it is usually meant.
 		   It is usually meant ~ (~ #t). Hence the following special-case forcing it to read the argument if there is one after it.
 		   The same can be said for all unary operators, so there should be special cases for all of them.
-		   In the long term, maybe have our own table of what is a unary operator and what isn't? (like for the binary operators)
+		   Best would be to get rid of all unary operators. TODO.
 		 */
 		AST::Node* operator_ = consume();
-		if(input_token == AST::intern(")") || input_token == NULL) {
+		if(input_value == AST::intern(")") || input_value == NULL) {
 			return(operator_);
 		}
 		AST::Node* argument = parse_binary_operation(operator_precedence_list->next_precedence_level(-1)); // FIXME
-		//input_token == intern("~") ? negation_precedence_level : minus_precedence_level - 1);
+		//input_value == intern("~") ? negation_precedence_level : minus_precedence_level - 1);
 		//AST::Node* argument = parse_value();
 		if(argument == NULL)
 			return(operator_);
@@ -479,12 +454,12 @@ AST::Node* MathParser::parse_value(void) {
 		return(consume());*/
 	} else {
 		AST::Node* result;
-		if(input_token == intern("(")) {
+		if(input_value == intern("(")) {
 			bool previous_allow_args = allow_args;
 			allow_args = true;
 			AST::Node* opening_brace = input_value;
 			consume();
-			if(input_token == intern(")"))
+			if(input_value == intern(")"))
 				result = NULL;
 			else
 				result = parse_expression();
@@ -497,9 +472,9 @@ AST::Node* MathParser::parse_value(void) {
 			allow_args = previous_allow_args;
 		} else {
 #if 0
-			if(input_token == AST::intern(")")) { /* oops! */
+			if(input_value == AST::intern(")")) { /* oops! */
 				raise_error("<value>", ")");
-			} else if(input_token == NULL) {
+			} else if(input_value == NULL) {
 				raise_error("<value>", "<EOF>");
 			}
 #endif
@@ -515,7 +490,7 @@ AST::Node* MathParser::parse_value(void) {
 			allow_args = false; // sigh...
 			try {
 				// this will have problems with: "cos -3" because it doesn't know that that means "cos (-3)" and not "(cos)-3".
-				while(!(input_token == NULL || input_token == intern(")") || any_operator_P(input_token))) {
+				while(!(input_value == NULL || input_value == intern(")") || operator_precedence_list->any_operator_P(input_value))) {
 					//raise_error("<operand>", result ? result->str() : "<nothing>");
 					result = operation(intern("apply"), result, parse_argument());
 				}
@@ -533,17 +508,17 @@ AST::Node* MathParser::parse_value(void) {
 }
 AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 	struct AST::Symbol* associativity;
-	//printf("level is %d, input is: %s\n", precedence_level, input_token->str().c_str());
+	//printf("level is %d, input is: %s\n", precedence_level, input_value->str().c_str());
 	if(operator_precedence_list->empty_P(precedence_level))
 		return(parse_value());
 	AST::Node* result = parse_binary_operation(operator_precedence_list->next_precedence_level(precedence_level));
-	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_token, input_value, /*out*/associativity)) {
+	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity)) {
 		while(actual_token) {
 			AST::Node* operator_ = actual_token;
 			consume(); /* operator */
 			result = operation(operator_, result, parse_binary_operation(associativity == intern("left") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level));
 			/* for right associative operations, the recursion will have consumed all the operators on that level and by virtue of that, the while loop will always stop after one iteration. */
-			actual_token = operator_precedence_list->match_operator(precedence_level, input_token, input_value, /*out*/associativity);
+			actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity);
 		}
 		return(result);
 	} else
@@ -564,7 +539,7 @@ AST::Node* MathParser::parse(OperatorPrecedenceList* operator_precedence_list) {
 	return(result);
 }
 AST::Cons* MathParser::parse_S_list_body(void) {
-	if(input_token == intern(")"))
+	if(input_value == intern(")"))
 		return(NULL);
 	else {
 		AST::Node* head;
@@ -583,9 +558,9 @@ AST::Cons* MathParser::parse_S_list(bool B_consume_closing_brace) {
 }
 AST::Node* MathParser::parse_S_Expression(void) {
 	/* TODO do this without tokenizing? How? */
-	if(input_token == intern("(")) {
+	if(input_value == intern("(")) {
 		return(parse_S_list(true));
-	} else if(input_token == intern("<symbol>")) {
+	} else if(dynamic_cast<AST::Symbol*>(input_value) != NULL) {
 		return(consume()); // & whitespace.
 	} else {
 		/* numbers, strings */
@@ -622,7 +597,7 @@ void MathParser::parse_closing_brace(void) {
 	consume(AST::intern(")"));
 }
 bool MathParser::EOFP(void) const {
-	return(input_token == NULL);
+	return(input_value == NULL);
 }
 
 };
