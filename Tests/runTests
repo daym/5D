@@ -4,5 +4,5 @@ for s in *_*
 do
 	cat "$s/test" |grep -v "=> " | ../REPL/REPL >result
 	cat "$s/test" |grep "=> " |sed 's;^...;;' >expected
-	diff -upr result expected
+	diff -upr result expected >&2 || echo "^ that was $s" >&2
 done
