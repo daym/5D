@@ -8,6 +8,7 @@
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "Scanners/MathParser"
+#include "Scanners/OperatorPrecedenceList"
 #include "FFIs/FFIs"
 
 namespace Evaluators {
@@ -292,8 +293,8 @@ AST::Node* internNative(NativeReal value) {
 	return(new SmallReal(value)); /* TODO cache 0, 1. */
 }
 using namespace AST;
-AST::Node* churchTrue = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f t))"));
-AST::Node* churchFalse = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f f))"));
+AST::Node* churchTrue = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f t))", NULL));
+AST::Node* churchFalse = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f f))", NULL));
 AST::Node* internNative(bool value) {
 	return(value ? churchTrue : churchFalse);
 }

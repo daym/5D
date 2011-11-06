@@ -32,6 +32,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/GTKCompleter"
 #include "FFIs/ResultMarshaller"
 #include "GUI/WindowIcon"
+#include "Scanners/OperatorPrecedenceList"
 
 #define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(REPL_handle_##name), self)
@@ -749,13 +750,19 @@ int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST
 GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));
 }
+Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self) {
+	Scanners::OperatorPrecedenceList* result;
+	result = new Scanners::OperatorPrecedenceList;
+	// FIXME add the operators, reading the environment
+	return(result);
+}
 static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* destination) {
 	std::stringstream result;
 	result << "$ ";
 	std::string resultString;
 	const char* nodeText = NULL;
 	try {
-		Formatters::to_LATEX(node, result);
+		Formatters::to_LATEX(REPL_ensure_operator_precedence_list(self), node, result);
 		result << " $";
 		resultString = result.str();
 		nodeText = resultString.c_str();
@@ -778,7 +785,7 @@ AST::Node* REPL_parse(struct REPL* self, const char* command, GtkTextIter* desti
 	if(input_file) {
 		try {
 			parser.push(input_file, 0);
-			AST::Node* result = parser.parse();
+			AST::Node* result = parser.parse(REPL_ensure_operator_precedence_list(self));
 			fclose(input_file);
 			return(result);
 		} catch(...) {

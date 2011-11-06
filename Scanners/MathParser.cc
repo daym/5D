@@ -11,6 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <iostream>
 #include <string.h>
 #include "Scanners/MathParser"
+#include "Scanners/OperatorPrecedenceList"
 #include "AST/Symbol"
 #include "AST/AST"
 #include "AST/Keyword"
@@ -69,7 +70,8 @@ void MathParser::parse_string(int input) {
 static bool operatorCharP(int input) {
 	// without '#' for now (not sure whether that's good. TODO find out)
 	// without '@' for now (keywords).
-	return((input >= 33 && input < 35) || (input >= 36 && input < 48) || (input >= 58 && input < 64) || (input == '^') || (input == '|') || (input == '~'));
+	// without braces 40 41 91 93
+	return((input >= 33 && input < 35) || (input >= 36 && input < 48 && input != '(' && input != ')') || (input >= 58 && input < 64) || (input == '^') || (input == '|') || (input == '~'));
 }
 void MathParser::parse_operator(int input) {
 	std::stringstream sst;
@@ -366,50 +368,6 @@ AST::Node* MathParser::consume(AST::Symbol* expected_token) {
 	return(previous_value);
 }
 using namespace AST;
-/* keep apply_precedence_level in sync with operator_precedence below */
-const int apply_precedence_level = 3;
-const int minus_precedence_level = 4;
-const int negation_precedence_level = -1;
-static const int precedence_level_R_1 = 10;
-static const int precedence_level_R_2 = 1;
-static const int precedence_level_R_3 = 5;
-const int lambda_precedence_level = 10;
-static Symbol* operator_precedence[][7] = {
-	{intern("."), intern("^")},
-	{intern("**")},
-	{intern("*"), intern("%"), intern("/")},
-	{intern("⨯")},
-	{intern("+"), intern("-")},
-	{intern(":")},
-	{intern("="), intern("/=")},
-	{intern("<"), intern("<="), intern(">"), intern(">=") /*, intern("≤"), intern("≥")*/},
-	{intern("&&")},
-	//{intern("^")}
-	{intern("||")},
-	{intern(";")}, // do
-};
-int get_operator_precedence(AST::Symbol* symbol) {
-	if(symbol == NULL)
-		return(-1);
-	for(size_t i = 0; i < sizeof(operator_precedence) / sizeof(operator_precedence[0]); ++i)
-		for(size_t j = 0; operator_precedence[i][j]; ++j)
-			if(operator_precedence[i][j] == symbol)
-				return(i);
-	return(-1);
-}
-static bool any_operator_P(AST::Node* input_token, int first_precedence_level, int frontier_precedence_level);
-static AST::Node* match_operator(int precedence_level, AST::Node* input_token) {
-	for(int i = 0; operator_precedence[precedence_level][i]; ++i)
-		if(operator_precedence[precedence_level][i] == input_token)
-			return(input_token);
-	return(NULL);
-}
-static bool any_operator_P(AST::Node* input_token, int first_precedence_level, int frontier_precedence_level) {
-	for(int i = first_precedence_level; i < frontier_precedence_level; ++i)
-		if(match_operator(i, input_token))
-			return(true);
-	return(false);
-}
 AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
 	if(operator_ == NULL || operand_1 == NULL/* || operand_2 == NULL*/) {
 		raise_error("<second_operand>", "<nothing>");
@@ -429,12 +387,21 @@ AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 	else
 		return(NULL);
 }
+static int any_operator_P(AST::Symbol* token) {
+	if(token != AST::intern("<symbol>")) {
+		std::string name = token->str();
+		assert(name.length() > 0);
+		assert(name[0] != '<' || name.length() == 1);
+		return(true);
+	} else 
+		return(false);
+}
 AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 	bool B_extended = (input_token == AST::intern("("));
 	if(B_extended)
 		consume();
-	AST::Node* parameter = any_operator_P(input_token, 0, sizeof(operator_precedence)/sizeof(operator_precedence[0])) ? consume()
-	                  : input_token == AST::intern("~") ? consume() 
+	AST::Node* parameter = any_operator_P(input_token) ? consume()
+	                  //: input_token == AST::intern("~") ? consume() 
 	                  : consume(intern("<symbol>"));
 	if(B_extended)
 		consume(AST::intern(")"));
@@ -499,7 +466,8 @@ AST::Node* MathParser::parse_value(void) {
 		if(input_token == AST::intern(")") || input_token == NULL) {
 			return(operator_);
 		}
-		AST::Node* argument = parse_binary_operation(input_token == intern("~") ? negation_precedence_level : minus_precedence_level - 1);
+		AST::Node* argument = parse_binary_operation(operator_precedence_list->next_precedence_level(-1)); // FIXME
+		//input_token == intern("~") ? negation_precedence_level : minus_precedence_level - 1);
 		//AST::Node* argument = parse_value();
 		if(argument == NULL)
 			return(operator_);
@@ -547,7 +515,7 @@ AST::Node* MathParser::parse_value(void) {
 			allow_args = false; // sigh...
 			try {
 				// this will have problems with: "cos -3" because it doesn't know that that means "cos (-3)" and not "(cos)-3".
-				while(!(input_token == NULL || input_token == intern(")") || any_operator_P(input_token, 0, sizeof(operator_precedence)/sizeof(operator_precedence[0])))) {
+				while(!(input_token == NULL || input_token == intern(")") || any_operator_P(input_token))) {
 					//raise_error("<operand>", result ? result->str() : "<nothing>");
 					result = operation(intern("apply"), result, parse_argument());
 				}
@@ -564,34 +532,34 @@ AST::Node* MathParser::parse_value(void) {
 	// TODO ~ (not)
 }
 AST::Node* MathParser::parse_binary_operation(int precedence_level) {
-	if(precedence_level < 0)
+	struct AST::Symbol* associativity;
+	//printf("level is %d, input is: %s\n", precedence_level, input_token->str().c_str());
+	if(operator_precedence_list->empty_P(precedence_level))
 		return(parse_value());
-	if(precedence_level == precedence_level_R_1 || precedence_level == precedence_level_R_2 || precedence_level == precedence_level_R_3) {
-		AST::Node* head = parse_binary_operation(precedence_level - 1);
-		if(AST::Node* actual_token = match_operator(precedence_level, input_token)) {
+	AST::Node* result = parse_binary_operation(operator_precedence_list->next_precedence_level(precedence_level));
+	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_token, /*out*/associativity)) {
+		while(actual_token) {
 			AST::Node* operator_ = actual_token;
 			consume(); /* operator */
-			AST::Node* rest = parse_binary_operation(precedence_level);
-			return(operation(operator_, head, rest));
-		} else
-			return(head);
-	} else {
-		AST::Node* result = parse_binary_operation(precedence_level - 1);
-		while(AST::Node* actual_token = match_operator(precedence_level, input_token)) {
-			AST::Node* operator_ = actual_token;
-			consume(); /* operator */
-			result = operation(operator_, result, parse_binary_operation(precedence_level - 1));
+			result = operation(operator_, result, parse_binary_operation(associativity == intern("left") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level));
+			/* for right associative operations, the recursion will have consumed all the operators on that level and by virtue of that, the while loop will always stop after one iteration. */
+			actual_token = operator_precedence_list->match_operator(precedence_level, input_token, /*out*/associativity);
 		}
 		return(result);
-	}
+	} else
+		return(result);
 }
 AST::Node* MathParser::parse_expression(void) {
-	return parse_binary_operation(sizeof(operator_precedence)/sizeof(operator_precedence[0]) - 1);
+	if(operator_precedence_list)
+		return parse_binary_operation(operator_precedence_list->next_precedence_level(-1));
+	else
+		return parse_value();
 }
 AST::Node* MathParser::parse_argument(void) {
-	return parse_binary_operation(apply_precedence_level);
+	return parse_binary_operation(operator_precedence_list->apply_level);
 }
-AST::Node* MathParser::parse(void) {
+AST::Node* MathParser::parse(OperatorPrecedenceList* operator_precedence_list) {
+	this->operator_precedence_list = operator_precedence_list;
 	AST::Node* result = parse_expression();
 	return(result);
 }
@@ -630,14 +598,14 @@ AST::Node* MathParser::parse_S_Expression(void) {
 		//parse_S_optional_whitespace();
 	}
 }
-AST::Node* MathParser::parse_simple(const char* text) {
+AST::Node* MathParser::parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list) {
 	AST::Node* result;
 	MathParser parser;
 	FILE* input_file;
 	try {
 		input_file = fmemopen((void*) text, strlen(text), "r");
 		parser.push(input_file, 0);
-		result = parser.parse();
+		result = parser.parse(operator_precedence_list);
 		fclose(input_file);
 		return(result);
 	} catch(ParseException& exception) {

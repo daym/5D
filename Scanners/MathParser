@@ -11,6 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/Scanner"
 #include "AST/AST"
 #include "AST/Symbol"
+#include "Scanners/OperatorPrecedenceList"
 
 namespace Scanners {
 
@@ -18,6 +19,7 @@ class MathParser : public Scanner {
 protected:
 	AST::Node* input_value;
 	bool B_process_macros;
+	OperatorPrecedenceList* operator_precedence_list;
 private:
 	bool allow_args;
 	virtual void parse_token(void);
@@ -50,14 +52,13 @@ public:
 an user */
 	void parse_closing_brace(void);
 	AST::Cons* parse_S_list(bool B_consume_closing_brace);
-	AST::Node* parse(void);
+	AST::Node* parse(OperatorPrecedenceList* operator_precedence_list);
 	AST::Node* parse_S_Expression(void);
-	static AST::Node* parse_simple(const char* text); /* I've had it by now... */
+	static AST::Node* parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list);
 	virtual void push(FILE* input_file, int line_number, bool B_consume = true);
 	MathParser(void);
 	bool EOFP(void) const;
 };
-int get_operator_precedence(AST::Symbol* symbol);
 
 extern const int apply_precedence_level;
 extern const int lambda_precedence_level;

@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace Formatters {
 
-void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_precedence_limit) {
+void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_precedence_limit, Scanners::OperatorPrecedenceList* operator_precedence_list) {
 	using namespace Scanners;
 	int operator_precedence;
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
@@ -65,38 +65,38 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 		/* ((- 3) 2)   => 3-2
 		 or (0- 3)      => -3 */
 		AST::Cons* innerCons = dynamic_cast<AST::Cons*>(consNode->head);
-		operator_precedence = get_operator_precedence(dynamic_cast<AST::Symbol*>(innerCons ? innerCons->head : NULL));
+		operator_precedence = operator_precedence_list ? operator_precedence_list->get_operator_precedence(dynamic_cast<AST::Symbol*>(innerCons ? innerCons->head : NULL)) : -1;
 		/*if(operator_precedence == -1)
 			operator_precedence = apply_precedence_level;*/
 		if(operator_precedence != -1 && innerCons && innerCons->head == AST::intern("/")) { /* fraction */
 			output << "{\\frac{";
-			limited_to_LATEX(innerCons->tail->head, output, operator_precedence);
+			limited_to_LATEX(innerCons->tail->head, output, operator_precedence, operator_precedence_list);
 			output << "}{";
 			if(!consNode->tail || !innerCons->tail)
 				throw std::runtime_error("invalid fraction");
-			limited_to_LATEX(consNode->tail->head, output, operator_precedence);
+			limited_to_LATEX(consNode->tail->head, output, operator_precedence, operator_precedence_list);
 			output << "}}";
 		} else if(operator_precedence != -1) { /* actual binary math operator */
-			if(operator_precedence > operator_precedence_limit)
+			if(operator_precedence < operator_precedence_limit)
 				output << "\\left(";
-			limited_to_LATEX(innerCons->tail->head, output, operator_precedence);
-			limited_to_LATEX(innerCons->head, output, operator_precedence); /* operator */
+			limited_to_LATEX(innerCons->tail->head, output, operator_precedence, operator_precedence_list);
+			limited_to_LATEX(innerCons->head, output, operator_precedence, operator_precedence_list); /* operator */
 			if(!consNode->tail || !innerCons || !innerCons->head || !innerCons->tail || !innerCons->tail->head)
 				throw std::runtime_error("invalid binary math operation");
-			limited_to_LATEX(consNode->tail->head, output, operator_precedence-1);
-			if(operator_precedence > operator_precedence_limit)
+			limited_to_LATEX(consNode->tail->head, output, operator_precedence_list->next_precedence_level(operator_precedence), operator_precedence_list);
+			if(operator_precedence < operator_precedence_limit)
 				output << "\\right)";
 		} else if(consNode->head == AST::intern("\\")) {
-			operator_precedence = lambda_precedence_level;
-			if(operator_precedence > operator_precedence_limit)
+			operator_precedence = 9999; // FIXME lambda_precedence_level;
+			if(operator_precedence < operator_precedence_limit)
 				output << "\\left(";
 			AST::Cons* args;
 			output << "\\frac{";
 			args = consNode->tail;
 			while(args) /* parameter etc; should be */ {
-				limited_to_LATEX(consNode->head, output, operator_precedence); /* lambda */
+				limited_to_LATEX(consNode->head, output, operator_precedence, operator_precedence_list); /* lambda */
 				/* parameter */
-				limited_to_LATEX(args->head, output, operator_precedence); /* FIXME precedence */
+				limited_to_LATEX(args->head, output, operator_precedence, operator_precedence_list); /* FIXME precedence */
 				args = args->tail;
 				if(dynamic_cast<AST::Cons*>(args->head) && dynamic_cast<AST::Cons*>(args->head)->head == AST::intern("\\"))
 					args = (AST::Cons*)args->head;
@@ -106,25 +106,25 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 			}
 			output << "}{";
 			/* body */
-			limited_to_LATEX(args->head, output, operator_precedence); /* FIXME precedence */
+			limited_to_LATEX(args->head, output, operator_precedence, operator_precedence_list); /* FIXME precedence */
 			//output << "\\:";
 			output << "}";
-			if(operator_precedence > operator_precedence_limit)
+			if(operator_precedence < operator_precedence_limit)
 				output << "\\right)";
 		} else { /* function call, maybe */
-			operator_precedence = apply_precedence_level;
-			if(operator_precedence > operator_precedence_limit)
+			operator_precedence = operator_precedence_list->apply_level;
+			if(operator_precedence < operator_precedence_limit)
 				output << "\\left(";
 			AST::Cons* args;
-			limited_to_LATEX(consNode->head, output, operator_precedence); /* FIXME precedence */
+			limited_to_LATEX(consNode->head, output, operator_precedence, operator_precedence_list); /* FIXME precedence */
 			output << "\\:";
 			for(args = consNode->tail; args; args = args->tail) { /* actually just one, so didn't pay much attention to operator precedence limit below */
-				limited_to_LATEX(args->head, output, operator_precedence-1); /* FIXME precedence */
+				limited_to_LATEX(args->head, output, operator_precedence_list->next_precedence_level(operator_precedence), operator_precedence_list); /* FIXME precedence */
 				if(args->tail)
 					output << "\\:";
 			}
 			/* TODO what to do with more arguments, if that's even possible? */
-			if(operator_precedence > operator_precedence_limit)
+			if(operator_precedence < operator_precedence_limit)
 				output << "\\right)";
 		}
 	} else if(node)
@@ -132,9 +132,9 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 	else
 		output << "nil";
 }
-void to_LATEX(AST::Node* node, std::ostream& output) {
-	int operator_precedence_limit = 1000;
-	limited_to_LATEX(node, output, operator_precedence_limit);
+void to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list, AST::Node* node, std::ostream& output) {
+	int operator_precedence_limit = 0; // FIXME -1 ?
+	limited_to_LATEX(node, output, operator_precedence_limit, operator_precedence_list);
 	//limited_to_LATEX(node, std::cout, operator_precedence_limit);
 }
 

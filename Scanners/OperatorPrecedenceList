@@ -1,0 +1,67 @@
+#ifndef __SCANNER_OPERATORPRECEDENCELIST_H
+#define __SCANNER_OPERATORPRECEDENCELIST_H
+/*
+5D vector analysis program
+Copyright (C) 2011  Danny Milosavljevic
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#include <stdlib.h>
+#include "AST/Symbol"
+#include "AST/AST"
+namespace Scanners {
+
+/* DIY cons for no good reason. TODO change? */
+
+#define OP_RIGHT_ASSOCIATIVE 1
+#define OP_LEFT_ASSOCIATIVE 0
+struct OperatorPrecedenceItem : AST::Node {
+	struct OperatorPrecedenceItem* next;
+	struct AST::Symbol* operator_;
+	struct AST::Symbol* associativity;
+	virtual std::string str(void) const;
+	OperatorPrecedenceItem(struct OperatorPrecedenceItem* next, struct AST::Symbol* operator_, struct AST::Symbol* associativity) {
+		this->next = next;
+		this->operator_ = operator_;
+		this->associativity = associativity;
+	}
+};
+#define MAX_PRECEDENCE_LEVELS 20
+struct OperatorPrecedenceList : AST::Node {
+	int apply_level;
+	short prefix_usages[256];
+	struct OperatorPrecedenceItem* levels[MAX_PRECEDENCE_LEVELS];
+	OperatorPrecedenceList(void);
+	virtual std::string str(void) const;
+	int get_operator_precedence(AST::Symbol* symbol); /* for LATEX, otherwise DO NOT USE */
+	int empty_P(int precedence_level) {
+		return(precedence_level >= MAX_PRECEDENCE_LEVELS || levels[precedence_level] == NULL);
+	}
+	/* for speed reasons, it can happen that the same operator is present multiple times on the same level. */
+	AST::Node* match_operator(int precedence_level, AST::Node* input_token, struct AST::Symbol*& associativity_out) {
+		if(precedence_level < 0 || precedence_level >= MAX_PRECEDENCE_LEVELS)
+			return(NULL);
+		struct OperatorPrecedenceItem* precedence = levels[precedence_level];
+		for(; precedence; precedence = precedence->next) {
+			if(precedence->operator_ == input_token) {
+				associativity_out = precedence->associativity;
+				return(input_token);
+			}
+		}
+		associativity_out = NULL;
+		return(NULL);
+	}
+	int next_precedence_level(int precedence_level) {
+		++precedence_level;
+		/* skip empty levels */
+		while(precedence_level >= 0 && precedence_level < MAX_PRECEDENCE_LEVELS && levels[precedence_level] == NULL)
+			++precedence_level;
+		return(precedence_level);
+	}
+	void cons(int precedence_level, struct AST::Symbol* operator_, struct AST::Symbol* associativity);
+	void uncons(int precedence_level, struct AST::Symbol* operator_, struct AST::Symbol* associativity);
+};
+
+}; /* end namespace Scanners */
+#endif /*ndef __SCANNER_OPERATORPRECEDENCELIST_H*/
