@@ -1,0 +1,8 @@
+#!/bin/sh
+
+for s in *_*
+do
+	cat "$s/test" |grep -v "=> " | ../REPL/REPL >result
+	cat "$s/test" |grep "=> " |sed 's;^...;;' >expected
+	diff -upr result expected
+done
