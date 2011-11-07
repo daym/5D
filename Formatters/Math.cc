@@ -7,6 +7,13 @@
 
 namespace Formatters {
 
+// TODO make this a combination of LATEX and S Expression output.
+/* TODO Features: 
+     * only print braces when necessary.
+	 * do not print braces around subsequent applications (do  print braces if it's the first).
+     * automatic indentation for "longer" expressions
+*/
+
 static void print_text(std::ostream& output, int& visible_position, const char* text) {
 	output << text;
 	for(; *text; ++text) {
