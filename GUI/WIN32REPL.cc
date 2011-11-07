@@ -43,6 +43,8 @@ struct REPL {
 }; /* end namespace REPLX */
 namespace GUI {
 	int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::Node* value);
+	void REPL_set_file_modified(struct REPL* self, bool value);
+	void REPL_queue_scroll_down(struct REPL* self);
 };
 #include "REPL/REPLEnvironment"
 namespace GUI {
@@ -826,6 +828,9 @@ static HWND createToolTip(HWND hDlg, int itemID, PTSTR pszText)
 	//SendMessage(item, LVM_SETTOOLTIPS, (WPARAM) hwndTip, 0);
     return hwndTip;
 }
+#ifndef LVS_EX_AUTOSIZECOLUMNS
+#define LVS_EX_AUTOSIZECOLUMNS 0x10000000
+#endif
 void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
 	self->fEnvironmentMenu = GetSubMenu(LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDM_ENVIRONMENT)), 0); /* FIXME global? */ /* TODO DestroyMenu */
