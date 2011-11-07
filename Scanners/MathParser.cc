@@ -376,8 +376,10 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 	bool B_extended = (input_value == AST::intern("("));
 	if(B_extended)
 		consume();
-	AST::Node* parameter = operator_precedence_list->any_operator_P(input_value) ? consume()
-	                  : consume(intern("<symbol>"));
+	AST::Node* parameter = consume();
+	if(dynamic_cast<AST::Symbol*>(parameter) == NULL) {
+		raise_error("<symbol>", parameter->str());
+	}
 	if(B_extended)
 		consume(AST::intern(")"));
 	//AST::Node* parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));

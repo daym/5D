@@ -56,25 +56,33 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		output << ')';
 		++position;
 	} else if(application_P(node)) { /* application */
-		AST::Node* operator_ = get_application_operator(node);
+		AST::Node* envelope = get_application_operator(node);
 		//if(operator_ && application_P(operator_)) // 2 for binary ops.
-		//	operator_ = get_application_operator(operator_);
+		AST::Node* operator_ = envelope ? get_application_operator(envelope) : NULL;
 		AST::Symbol* operatorSymbol = dynamic_cast<AST::Symbol*>(operator_); 
 		int precedence = operatorSymbol ? OPL->get_operator_precedence(operatorSymbol) : -1;
 		if(precedence != -1) { // is a (binary) operator
 			if(precedence < precedence_limit) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
 				output << '(';
+			print_math_CXX(OPL, output, position, get_application_operand(envelope), precedence);
 			print_math_CXX(OPL, output, position, operator_, precedence); // ignored precedence
-			output << ' ';
 			print_math_CXX(OPL, output, position, get_application_operand(node), precedence);
 			//print_text(output, position, operator_);
 			//print_math_CXX(OPL, output, position, get_application_operand(node), precedence);
 			if(precedence < precedence_limit) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
 				output << ')';
 		} else { // function application is fine and VERY greedy
+			operator_ = get_application_operator(node);
+			operatorSymbol = dynamic_cast<AST::Symbol*>(operator_);
+			precedence = operatorSymbol ? OPL->get_operator_precedence(operatorSymbol) : -1;
+			if(precedence != -1) { // incomplete binary operation
+				output << '(';
 				print_math_CXX(OPL, output, position, operator_, precedence); // ignored precedence
-				output << ' ';
-				print_math_CXX(OPL, output, position, get_application_operand(node), OPL->apply_level);
+				output << ')';
+			} else
+				print_math_CXX(OPL, output, position, operator_, precedence); // ignored precedence
+			output << ' ';
+			print_math_CXX(OPL, output, position, get_application_operand(node), OPL->apply_level);
 		}
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */

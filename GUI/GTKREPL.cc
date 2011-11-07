@@ -23,6 +23,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Config/Config"
 #include "Formatters/LATEX"
 #include "Formatters/SExpression"
+#include "Formatters/Math"
 #include "GUI/UI_definition.UI"
 #include "GUI/GTKLATEXGenerator"
 #include "Evaluators/FFI"
@@ -753,7 +754,8 @@ GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));
 }
 static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* destination) {
-	Formatters::print_S_Expression(stdout, 0, 0, node);
+	Formatters::print_math(REPL_ensure_operator_precedence_list(self), stdout, 0, 0, node);
+	//Formatters::print_S_Expression(stdout, 0, 0, node);
 	fprintf(stdout, "\n");
 	fflush(stdout);
 
