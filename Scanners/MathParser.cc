@@ -282,6 +282,9 @@ void MathParser::parse_special_coding(int input) {
 			parse_number_with_base(input, base);
 		}
 		break;
+	//case '|': /* block comment */ TODO
+	//	parse_block_comment();
+	//	break;
 	default:
 		parse_symbol(input, '#');
 		break;

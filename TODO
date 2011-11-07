@@ -32,8 +32,9 @@ Y\parse\args
 
 #| commented out |#
 
-define (&) \a \b = (b a)
+define (|) \a \b = (b a)
 define (#) \a \b = (b o a)
 make it possible to define custom operators
-1+2⋅ => error
+1+2⋅ => error or partial application
 Builtins should somehow note they mean super() on str(). Not sure how? Is that even an issue in practise?
+keyword? @d (q a) (q b) formatting
