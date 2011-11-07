@@ -76,12 +76,13 @@ struct REPL {
 namespace GUI {
 int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value);
 void REPL_insert_into_output_buffer(struct REPL* self, GtkTextIter* destination, const char* text);
+void REPL_set_file_modified(struct REPL* self, bool value);
+void REPL_queue_scroll_down(struct REPL* self);
 };
 using namespace GUI;
 #include "REPL/REPLEnvironment"
 namespace GUI {
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
-void REPL_set_file_modified(struct REPL* self, bool value);
 bool REPL_save_content_to(struct REPL* self, FILE* output_file);
 bool REPL_load_contents_by_name(struct REPL* self, const char* file_name);
 
@@ -752,7 +753,7 @@ GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));
 }
 static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* destination) {
-	Formatters::print_S_Expression(stdout, 0, 0, result);
+	Formatters::print_S_Expression(stdout, 0, 0, node);
 	fprintf(stdout, "\n");
 	fflush(stdout);
 

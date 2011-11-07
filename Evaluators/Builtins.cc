@@ -339,7 +339,7 @@ AST::Node* SmallInteger0::execute(AST::Node* argument) {
 AST::Node* SmallIntegerSucc::execute(AST::Node* argument) {
 	SmallInteger* smallInteger = dynamic_cast<SmallInteger*>(argument);
 	if(smallInteger) {
-		int value = smallInteger->value;
+		NativeInt value = smallInteger->value;
 		if(value + 1 < value) /* overflow */
 			return(NULL); /* FIXME bigger numbers */
 		return(internNative(value + 1));

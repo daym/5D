@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/file.h>
@@ -15,11 +16,21 @@ struct REPL {
 	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
 	AST::Cons* fTailUserEnvironmentFrontier;
 	int fEnvironmentCount;
+	bool fBModified;
 };
 
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
 	return(self->fEnvironmentCount++);
 }
+
+void REPL_queue_scroll_down(REPL* self) {
+	// TODO
+}
+void REPL_set_file_modified(REPL* self, bool value) {
+	self->fBModified = value;
+}
+
+void REPL_add_to_environment(struct REPL* self, AST::Node* definition);
 
 };
 
@@ -48,6 +59,7 @@ void REPL_clear(struct REPL* self) {
 	REPL_init_builtins(self);
 }
 void REPL_init(struct REPL* self) {
+	self->fBModified = false;
 	REPL_clear(self);
 }
 bool REPL_execute(struct REPL* self, AST::Node* input) {

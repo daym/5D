@@ -6,6 +6,8 @@
 #include "FFIs/ResultMarshaller"
 #include "FFIs/FFIs"
 
+namespace GUI {
+};
 namespace REPLX {
 using namespace GUI;
 
@@ -69,7 +71,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::intern("head"), Evaluators::HeadGetter);
 	REPL_add_builtin_method(self, AST::intern("tail"), Evaluators::TailGetter);
 	REPL_add_builtin_method(self, AST::intern("smallInteger?"), Evaluators::SmallIntegerP);
-	REPL_add_static_builtin_binding(self, AST::intern("smallInteger0"), Evaluators::internNative(0));
+	REPL_add_static_builtin_binding(self, AST::intern("smallInteger0"), Evaluators::internNative((Evaluators::NativeInt) 0));
 	REPL_add_builtin_method(self, AST::intern("smallIntegerSucc"), Evaluators::SmallIntegerSucc);
 	REPL_add_builtin_method(self, AST::intern("smallReal?"), Evaluators::SmallRealP);
 	REPL_add_builtin_method(self, AST::intern("string?"), Evaluators::StringP);
