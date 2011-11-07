@@ -75,6 +75,7 @@ struct REPL {
 };
 namespace GUI {
 int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value);
+void REPL_insert_into_output_buffer(struct REPL* self, GtkTextIter* destination, const char* text);
 };
 using namespace GUI;
 #include "REPL/REPLEnvironment"
@@ -82,7 +83,6 @@ namespace GUI {
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 void REPL_set_file_modified(struct REPL* self, bool value);
 bool REPL_save_content_to(struct REPL* self, FILE* output_file);
-bool REPL_execute(struct REPL* self, AST::Node* input, GtkTextIter* destination);
 bool REPL_load_contents_by_name(struct REPL* self, const char* file_name);
 
 static void handle_clipboard_change(GtkClipboard* clipboard, GdkEvent* event, struct REPL* self) {
@@ -187,7 +187,8 @@ void REPL_queue_scroll_down(struct REPL* self) {
 }
 void REPL_insert_error_message(struct REPL* self, GtkTextIter* destination, const std::string& prefix, const std::string& errorText) {
 	std::string v = prefix + " => " + errorText; // + "\n";
-	gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
+	REPL_insert_into_output_buffer(self, destination, v.c_str());
+	//gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
 	REPL_set_file_modified(self, true);
 	REPL_queue_scroll_down(self);
 }
@@ -750,13 +751,11 @@ int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST
 GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));
 }
-Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self) {
-	Scanners::OperatorPrecedenceList* result;
-	result = new Scanners::OperatorPrecedenceList;
-	// FIXME add the operators, reading the environment
-	return(result);
-}
 static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* destination) {
+	Formatters::print_S_Expression(stdout, 0, 0, result);
+	fprintf(stdout, "\n");
+	fflush(stdout);
+
 	std::stringstream result;
 	result << "$ ";
 	std::string resultString;
@@ -777,52 +776,6 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 			nodeText = NULL;
 		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? strdup(nodeText) : NULL, alt_text, destination);
 	}
-}
-AST::Node* REPL_parse(struct REPL* self, const char* command, GtkTextIter* destination/*for errors*/) {
-	/* is not allowed to both print stuff AND return non-null, except when it updates the destination iter */
-	Scanners::MathParser parser;
-	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
-	if(input_file) {
-		try {
-			parser.push(input_file, 0);
-			AST::Node* result = parser.parse(REPL_ensure_operator_precedence_list(self));
-			fclose(input_file);
-			return(result);
-		} catch(...) {
-			fclose(input_file);
-			throw;
-		}
-		REPL_set_file_modified(self, true);
-	}
-	REPL_queue_scroll_down(self);
-	return(NULL);
-}
-bool REPL_execute(struct REPL* self, AST::Node* input, GtkTextIter* destination) {
-	bool B_ok = false;
-	try {
-		AST::Node* result = input;
-		if(!input || dynamic_cast<AST::Cons*>(input) == NULL || ((AST::Cons*)input)->head != AST::intern("define")) {
-			result = REPL_close_environment(self, result);
-			result = Evaluators::provide_dynamic_builtins(result);
-			result = Evaluators::annotate(result);
-			result = Evaluators::reduce(result);
-		}
-		/*std::string v = result ? result->str() : "OK";
-		v = " => " + v + "\n";
-		gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
-		Formatters::print_S_Expression(stdout, 0, 0, result);
-		fprintf(stdout, "\n");
-		fflush(stdout);
-		REPL_enqueue_LATEX(self, result, destination);
-		REPL_add_to_environment(self, result);
-		B_ok = true;
-	} catch(Evaluators::EvaluationException e) {
-		std::string v = e.what() ? e.what() : "error";
-		v = " => " + v + "\n";
-		gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
-	}
-	REPL_set_file_modified(self, true);
-	return(B_ok);
 }
 void REPL_clear(struct REPL* self) {
 	GtkTextIter text_start;
@@ -923,6 +876,9 @@ void REPL_load(struct REPL* self) {
 	if(!B_OK) {
 		g_warning("could not open file");
 	}
+}
+void REPL_insert_into_output_buffer(struct REPL* self, GtkTextIter* destination, const char* text) {
+	gtk_text_buffer_insert(self->fOutputBuffer, destination, text, -1);
 }
 bool REPL_save(struct REPL* self, bool B_force_dialog) {
 	bool B_OK = false;

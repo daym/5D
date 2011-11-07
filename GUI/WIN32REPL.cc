@@ -22,6 +22,7 @@
 namespace REPLX {
 	static void REPL_init_builtins(struct REPL* self);
 	static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node);
+	Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self);
 struct REPL {
 	HWND dialog;
 	bool B_file_modified;
@@ -41,8 +42,13 @@ struct REPL {
 };
 }; /* end namespace REPLX */
 namespace GUI {
+	int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::Node* value);
+};
+#include "REPL/REPLEnvironment"
+namespace GUI {
 	using namespace REPLX;
 void REPL_append_to_output_buffer(struct REPL* self, const char* text);
+int REPL_insert_into_output_buffer(struct REPL* self, int destination, const char* text);
 
 
 static void ShowWIN32Diagnostics(void) {
@@ -455,6 +461,15 @@ void REPL_handle_find(struct REPL* self) {
 	const char* text = NULL;
 	REPL_show_search_dialog(self);
 }
+void REPL_queue_scroll_down(struct REPL* self) {
+	// TODO
+}
+void REPL_insert_error_message(struct REPL* self, int destination, const std::string& prefix, const std::string& errorText) {
+	std::string v = prefix + " => " + errorText; // + "\n";
+	REPL_insert_into_output_buffer(self, destination, v.c_str());
+	REPL_set_file_modified(self, true);
+	REPL_queue_scroll_down(self);
+}
 static void REPL_handle_environment_row_activation(struct REPL* self, HWND list, int index) {
 	using namespace AST;
 	char* command;
@@ -472,7 +487,17 @@ static void REPL_handle_environment_row_activation(struct REPL* self, HWND list,
 		sst << "(cons (' define) (cons (' " << escapedName << ") (cons " << escapedName << " nil)))"; /* (makeList 'define 'escapedName escapedName) */
 		std::string commandStr = sst.str();
 		//command = g_strdup_printf("(cons (quote define) (cons (quote %s) (cons %s nil)))", command, command);
-		B_ok = REPL_execute(self, commandStr.c_str());
+		try {
+			AST::Node* getter = REPL_parse(self, commandStr.c_str(), -1);
+			//((cons (quote define)) ((cons (quote cons)) ((cons cons) nil)))
+			B_ok = REPL_execute(self, getter, -1);
+		} catch(Scanners::ParseException& e) {
+			std::string v = e.what() ? e.what() : "error";
+			REPL_insert_error_message(self, -1, std::string("\n") + command, v);
+		} catch(Evaluators::EvaluationException& e) {
+			std::string v = e.what() ? e.what() : "error";
+			REPL_insert_error_message(self, -1, std::string("\n") + command, v);
+		}
 	}
 	/*if(B_ok)
 		UnselectAllListViewItems(list);*/
@@ -504,6 +529,36 @@ static void REPL_delete_environment_row(struct REPL* self, int index) {
 }
 #define GET_X_LPARAM LOWORD
 #define GET_Y_LPARAM HIWORD
+
+static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destination) {
+	// TODO LATEX
+	std::string v = result ? result->str() : "OK";
+	v = " => " + v + "\n";
+	REPL_insert_into_output_buffer(self, destination, v.c_str());
+}
+
+static void REPL_handle_execute(struct REPL* self, const char* text, int destination, bool B_from_entry) {
+	AST::Node* input;
+	try {
+		input = REPL_parse(self, text, destination);
+	} catch(Scanners::ParseException& e) {
+		std::string v = e.what() ? e.what() : "error";
+		REPL_insert_error_message(self, -1, B_from_entry ? (std::string("\n") + text) : std::string(), v);
+		input = NULL;
+	}
+	if(input) {
+		printf("%s\n", input->str().c_str());
+		if(B_from_entry) {
+			std::string v = "\n";
+			destination = REPL_insert_into_output_buffer(self, destination, v.c_str());
+			REPL_enqueue_LATEX(self, input, destination);
+		}
+		destination = REPL_insert_into_output_buffer(self, destination, "=>");
+		bool B_ok = REPL_execute(self, input, destination);
+		if(B_from_entry && B_ok)
+			SetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY, _T(""));
+	}
+}
 INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam) {
 	UNREFERENCED_PARAMETER(lParam);
 	struct REPL* self;
@@ -680,7 +735,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				}
 				std::string UTF8_text = ToUTF8(text);
 				try {
-					REPL_execute(self, UTF8_text.c_str());
+					REPL_handle_execute(self, UTF8_text.c_str(), -1, B_used_entry);
 					if(B_used_entry) {
 						SetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY, _T(""));
 					}
@@ -830,48 +885,13 @@ int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* pa
 	REPL_set_file_modified(self, true);
 	return(index);
 }
-/* TODO abstract into common place */
-bool REPL_execute(struct REPL* self, const char* command) {
-	Scanners::MathParser parser;
-	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
-	if(input_file) {
-		try {
-			try {
-				parser.push(input_file, 0);
-				AST::Node* result = parser.parse();
-				REPL_add_to_environment(self, result);
-				if(!result || dynamic_cast<AST::Cons*>(result) == NULL || ((AST::Cons*)result)->head != AST::intern("define")) {
-					result = REPL_close_environment(self, result);
-					result = Evaluators::provide_dynamic_builtins(result);
-					result = Evaluators::annotate(result);
-					result = Evaluators::reduce(result);
-				}
-				//result = Evaluators::annotate(result);
-				std::string v = result ? result->str() : "OK";
-				v = " => " + v + "\n";
-				REPL_append_to_output_buffer(self, v.c_str());
-			} catch(...) {
-				fclose(input_file);
-				throw;
-			}
-		} catch(Scanners::ParseException e) {
-			std::string v = e.what() ? e.what() : "error";
-			v = " => " + v + "\n";
-			REPL_append_to_output_buffer(self, v.c_str());
-			REPL_set_file_modified(self, true);
-			throw;
-		} catch(Evaluators::EvaluationException e) {
-			std::string v = e.what() ? e.what() : "error";
-			v = " => " + v + "\n";
-			REPL_append_to_output_buffer(self, v.c_str());
-			REPL_set_file_modified(self, true);
-			throw;
-		}
-		REPL_set_file_modified(self, true);
-	}
-}
 void REPL_append_to_output_buffer(struct REPL* self, const char* text) {
 	InsertRichText(GetDlgItem(self->dialog, IDC_OUTPUT), FromUTF8(text));
+}
+int REPL_insert_into_output_buffer(struct REPL* self, int destination, const char* text) {
+	// TODO position
+	InsertRichText(GetDlgItem(self->dialog, IDC_OUTPUT), FromUTF8(text));
+	return(destination); // TODO advance?
 }
 char* REPL_get_output_buffer_text(struct REPL* self) {
 	std::wstring value = GetDlgItemTextCXX(self->dialog, IDC_OUTPUT);
@@ -909,4 +929,3 @@ PHANDLE REPL_get_waiting_handles(struct REPL* REPL, DWORD* handleCount) {
 }; // end namespace GUI
 
 using namespace GUI;
-#include "REPL/REPLEnvironment"

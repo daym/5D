@@ -220,11 +220,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\CodeGen.cc"
+				RelativePath="..\Compilers\X86\CodeGen.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\X86\CodeGen.cc"
+				RelativePath="..\Compilers\CodeGen.cc"
 				>
 			</File>
 			<File
@@ -245,6 +245,10 @@
 			</File>
 			<File
 				RelativePath="..\Scanners\MathParser.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Scanners\OperatorPrecedenceList.cc"
 				>
 			</File>
 			<File
@@ -326,7 +330,111 @@
 				>
 			</File>
 			<File
+				RelativePath="..\FFIs\ArgumentMarshaller"
+				>
+			</File>
+			<File
+				RelativePath="..\AST\AST"
+				>
+			</File>
+			<File
+				RelativePath="..\Evaluators\Backtracker"
+				>
+			</File>
+			<File
+				RelativePath="..\Compilers\X86\BorlandFastCallGen"
+				>
+			</File>
+			<File
+				RelativePath="..\Evaluators\Builtins"
+				>
+			</File>
+			<File
+				RelativePath="..\Compilers\CallGen"
+				>
+			</File>
+			<File
+				RelativePath="..\FFIs\CallMarshaller"
+				>
+			</File>
+			<File
+				RelativePath="..\Compilers\X86\CDECLCallGen"
+				>
+			</File>
+			<File
+				RelativePath="..\Compilers\X86\CodeGen"
+				>
+			</File>
+			<File
+				RelativePath="..\Compilers\CodeGen"
+				>
+			</File>
+			<File
+				RelativePath="..\Config\Config"
+				>
+			</File>
+			<File
+				RelativePath="..\Evaluators\Evaluators"
+				>
+			</File>
+			<File
+				RelativePath="..\Evaluators\FFI"
+				>
+			</File>
+			<File
+				RelativePath="..\FFIs\FFIs"
+				>
+			</File>
+			<File
+				RelativePath="..\AST\Keyword"
+				>
+			</File>
+			<File
+				RelativePath="..\Formatters\LATEX"
+				>
+			</File>
+			<File
+				RelativePath="..\Scanners\MathParser"
+				>
+			</File>
+			<File
+				RelativePath="..\Compilers\X86\MicrosoftThisCallGen"
+				>
+			</File>
+			<File
+				RelativePath="..\Scanners\OperatorPrecedenceList"
+				>
+			</File>
+			<File
+				RelativePath="..\Compilers\X86\PascalCallGen"
+				>
+			</File>
+			<File
+				RelativePath=".\ReadMe.txt"
+				>
+			</File>
+			<File
+				RelativePath="..\GUI\REPL"
+				>
+			</File>
+			<File
+				RelativePath="..\REPL\REPLEnvironment"
+				>
+			</File>
+			<File
 				RelativePath=".\Resource.h"
+				>
+			</File>
+			<File
+				RelativePath="..\FFIs\ResultMarshaller"
+				>
+			</File>
+			<File
+				RelativePath="..\Scanners\Scanner"
+				>
+			</File>
+			<File
+				RelativePath="..\Formatters\SExpression"
 				>
 			</File>
 			<File
@@ -334,7 +442,35 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Compilers\X86\StdCallGen"
+				>
+			</File>
+			<File
+				RelativePath="..\AST\Symbol"
+				>
+			</File>
+			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Formatters\UTF-8_to_LATEX.table"
+				>
+			</File>
+			<File
+				RelativePath="..\Formatters\UTFStateMachine"
+				>
+			</File>
+			<File
+				RelativePath="..\FFIs\WIN32"
+				>
+			</File>
+			<File
+				RelativePath="..\GUI\WIN32Completer"
+				>
+			</File>
+			<File
+				RelativePath="..\GUI\WIN32REPL"
 				>
 			</File>
 		</Filter>
@@ -356,134 +492,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\FFIs\ArgumentMarshaller"
-			>
-		</File>
-		<File
-			RelativePath="..\AST\AST"
-			>
-		</File>
-		<File
-			RelativePath="..\Evaluators\Backtracker"
-			>
-		</File>
-		<File
-			RelativePath="..\Compilers\X86\BorlandFastCallGen"
-			>
-		</File>
-		<File
-			RelativePath="..\Evaluators\Builtins"
-			>
-		</File>
-		<File
-			RelativePath="..\Compilers\CallGen"
-			>
-		</File>
-		<File
-			RelativePath="..\FFIs\CallMarshaller"
-			>
-		</File>
-		<File
-			RelativePath="..\Compilers\X86\CDECLCallGen"
-			>
-		</File>
-		<File
-			RelativePath="..\Compilers\X86\CodeGen"
-			>
-		</File>
-		<File
-			RelativePath="..\Compilers\CodeGen"
-			>
-		</File>
-		<File
-			RelativePath="..\Config\Config"
-			>
-		</File>
-		<File
-			RelativePath="..\Evaluators\Evaluators"
-			>
-		</File>
-		<File
-			RelativePath="..\Evaluators\FFI"
-			>
-		</File>
-		<File
-			RelativePath="..\FFIs\FFIs"
-			>
-		</File>
-		<File
-			RelativePath="..\AST\Keyword"
-			>
-		</File>
-		<File
-			RelativePath="..\Formatters\LATEX"
-			>
-		</File>
-		<File
-			RelativePath="..\Scanners\MathParser"
-			>
-		</File>
-		<File
-			RelativePath="..\Compilers\X86\MicrosoftThisCallGen"
-			>
-		</File>
-		<File
-			RelativePath="..\Compilers\X86\PascalCallGen"
-			>
-		</File>
-		<File
-			RelativePath=".\ReadMe.txt"
-			>
-		</File>
-		<File
-			RelativePath="..\GUI\REPL"
-			>
-		</File>
-		<File
-			RelativePath="..\REPL\REPLEnvironment"
-			>
-		</File>
-		<File
-			RelativePath="..\FFIs\ResultMarshaller"
-			>
-		</File>
-		<File
-			RelativePath="..\Scanners\Scanner"
-			>
-		</File>
-		<File
-			RelativePath="..\Formatters\SExpression"
-			>
-		</File>
-		<File
-			RelativePath="..\Compilers\X86\StdCallGen"
-			>
-		</File>
-		<File
-			RelativePath="..\AST\Symbol"
-			>
-		</File>
-		<File
-			RelativePath="..\Formatters\UTF-8_to_LATEX.table"
-			>
-		</File>
-		<File
-			RelativePath="..\Formatters\UTFStateMachine"
-			>
-		</File>
-		<File
-			RelativePath="..\FFIs\WIN32"
-			>
-		</File>
-		<File
-			RelativePath="..\GUI\WIN32Completer"
-			>
-		</File>
-		<File
-			RelativePath="..\GUI\WIN32REPL"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
