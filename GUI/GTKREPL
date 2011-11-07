@@ -24,7 +24,6 @@ void REPL_init(struct REPL* self, GtkWindow* parent);
 GtkWidget* REPL_get_widget(struct REPL* self);
 struct REPL* REPL_new(GtkWindow* parent);
 void REPL_clear(struct REPL* self);
-//AST::Node* REPL_parse(struct REPL* self, const char* command, GtkTextIter* destination);
 
 }; // end namespace GUI
 #endif /* ndef __GTKREPL_H */

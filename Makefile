@@ -115,6 +115,7 @@ clean:
 	rm -f AST/*.o
 	rm -f Scanners/*.o
 	rm -f Formatters/*.o
+	rm -f GUI/*.o
 	
 distclean: clean
 	rm -f Linear_Algebra/test-Matrix
