@@ -244,6 +244,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Formatters\Math.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\Scanners\MathParser.cc"
 				>
 			</File>
@@ -362,11 +366,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\X86\CodeGen"
+				RelativePath="..\Compilers\CodeGen"
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\CodeGen"
+				RelativePath="..\Compilers\X86\CodeGen"
 				>
 			</File>
 			<File
@@ -391,6 +395,10 @@
 			</File>
 			<File
 				RelativePath="..\Formatters\LATEX"
+				>
+			</File>
+			<File
+				RelativePath="..\Formatters\Math"
 				>
 			</File>
 			<File
