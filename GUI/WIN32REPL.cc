@@ -183,10 +183,10 @@ static void UnselectAllListViewItems(HWND control) {
 	LVITEMW item = {0};
 	item.stateMask = LVIS_SELECTED;
 	item.state     = 0;
-	SendMessage(control, LVM_SETITEMSTATE, -1, (LPARAM)&item);
+	SendMessage(control, LVM_SETITEMSTATE, ~ (WPARAM) 0, (LPARAM)&item);
 }
 static int GetListViewSelectedItemIndex(HWND control) {
-	return(ListView_GetNextItem(control, -1, LVNI_SELECTED));
+	return(ListView_GetNextItem(control, ~ (WPARAM) 0, LVNI_SELECTED));
 }
 static int GetListViewCaretItemIndex(HWND control) {
 	return(SendMessage(control, LVM_GETSELECTIONMARK, 0, 0));
@@ -541,8 +541,10 @@ static LRESULT CALLBACK HandleEditTabMessage(HWND hwnd, UINT message, WPARAM wPa
 static void REPL_delete_environment_row(struct REPL* self, int index) {
 	DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_CONFIRM_DELETE), self->dialog, HandleConfirmDeleteMessages);
 }
+#ifndef GET_X_LPARAM
 #define GET_X_LPARAM LOWORD
 #define GET_Y_LPARAM HIWORD
+#endif
 
 static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destination) {
 	// TODO LATEX
@@ -569,8 +571,7 @@ static void REPL_handle_execute(struct REPL* self, const char* text, int destina
 	if(input) {
 		//printf("%s\n", input->str().c_str());
 		if(B_from_entry) {
-			std::string v = "\n";
-			destination = REPL_insert_into_output_buffer(self, destination, v.c_str());
+			destination = REPL_insert_into_output_buffer(self, destination, "\n");
 			REPL_enqueue_LATEX(self, input, destination);
 		}
 		destination = REPL_insert_into_output_buffer(self, destination, " => ");
@@ -834,7 +835,7 @@ static ATOM registerMyClass(HINSTANCE hInstance)
 static HWND createToolTip(HWND hDlg, int itemID, PTSTR pszText)
 {
 	HWND item = GetDlgItem(hDlg, itemID);
-	HWND hwndTip = CreateWindowEx(NULL, TOOLTIPS_CLASS, NULL, WS_POPUP |TTS_ALWAYSTIP | TTS_BALLOON, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hDlg, NULL, GetModuleHandle(NULL), NULL);
+	HWND hwndTip = CreateWindowEx(0, TOOLTIPS_CLASS, NULL, WS_POPUP |TTS_ALWAYSTIP | TTS_BALLOON, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hDlg, NULL, GetModuleHandle(NULL), NULL);
 	{
 		TOOLINFO toolInfo = { 0 };
 		toolInfo.cbSize = sizeof(toolInfo);
