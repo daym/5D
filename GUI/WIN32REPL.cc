@@ -19,6 +19,8 @@
 #include "FFIs/FFIs"
 #include "Evaluators/Builtins"
 #include "GUI/WIN32Completer"
+#include "Formatters/Math"
+
 namespace REPLX {
 	static void REPL_init_builtins(struct REPL* self);
 	static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node);
@@ -68,6 +70,16 @@ int GetRichTextCaretPosition(HWND control) {
 	LPARAM end = 0;
 	SendMessage(control, EM_GETSEL, (WPARAM) &beginning, (LPARAM) &end);
 	return(beginning);
+}
+static void SetRichEditFontFace(HWND control, const TCHAR* name) {
+	CHARFORMAT format;
+	format.cbSize = sizeof(format);
+	format.dwMask = CFM_FACE;
+	format.dwEffects = 0;
+	lstrcpyn(format.szFaceName, name, LF_FACESIZE - 1);
+	format.szFaceName[LF_FACESIZE - 1] = 0;
+	SendMessage(control, EM_SETCHARFORMAT, SCF_ALL, (LPARAM) &format);
+	SendMessage(control, EM_SETCHARFORMAT, SCF_DEFAULT, (LPARAM) &format);
 }
 std::wstring GetRichTextSelectedText(HWND control) {
 	WCHAR buffer[20000];
@@ -534,8 +546,14 @@ static void REPL_delete_environment_row(struct REPL* self, int index) {
 
 static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destination) {
 	// TODO LATEX
-	std::string v = result ? result->str() : "OK";
-	//v = " => " + v + "\n";
+	int position = 0; // TODO use actual horizontal position at the destination.
+	std::stringstream buffer;
+	std::string v;
+	if(result)
+		Formatters::print_math_CXX(buffer, position, 0, result);
+	else
+		buffer << "OK";
+	v = buffer.str();
 	REPL_insert_into_output_buffer(self, destination, v.c_str());
 }
 
@@ -568,6 +586,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	switch (message) {
 	case WM_INITDIALOG:
 		{
+			SetRichEditFontFace(GetDlgItem(dialog, IDC_OUTPUT), _T("Courier New"));
 			HICON icon = (HICON) LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_MY5D), IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 0);
 			if(icon)
 				SendMessage(dialog, WM_SETICON, ICON_SMALL, (LPARAM) icon);
