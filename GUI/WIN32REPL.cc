@@ -535,7 +535,7 @@ static void REPL_delete_environment_row(struct REPL* self, int index) {
 static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destination) {
 	// TODO LATEX
 	std::string v = result ? result->str() : "OK";
-	v = " => " + v + "\n";
+	//v = " => " + v + "\n";
 	REPL_insert_into_output_buffer(self, destination, v.c_str());
 }
 
@@ -549,13 +549,13 @@ static void REPL_handle_execute(struct REPL* self, const char* text, int destina
 		input = NULL;
 	}
 	if(input) {
-		printf("%s\n", input->str().c_str());
+		//printf("%s\n", input->str().c_str());
 		if(B_from_entry) {
 			std::string v = "\n";
 			destination = REPL_insert_into_output_buffer(self, destination, v.c_str());
 			REPL_enqueue_LATEX(self, input, destination);
 		}
-		destination = REPL_insert_into_output_buffer(self, destination, "=>");
+		destination = REPL_insert_into_output_buffer(self, destination, " => ");
 		bool B_ok = REPL_execute(self, input, destination);
 		if(B_from_entry && B_ok)
 			SetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY, _T(""));
@@ -733,7 +733,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				if(text.length() == 0) {
 					text = GetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY);
 					B_used_entry = true;
-					REPL_append_to_output_buffer(self, ToUTF8(text));
+					//REPL_append_to_output_buffer(self, ToUTF8(text));
 				}
 				std::string UTF8_text = ToUTF8(text);
 				try {
