@@ -218,7 +218,7 @@ static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 	}
 	g_free(text);
 	if(input) {
-		printf("%s\n", input->str().c_str());
+		//printf("%s\n", input->str().c_str());
 		if(B_from_entry) {
 			std::string v = "\n";
 			gtk_text_buffer_insert(self->fOutputBuffer, &end, v.c_str(), -1);

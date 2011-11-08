@@ -7,7 +7,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "Scanners/MathParser"
-#include "Formatters/SExpression"
+#include "Formatters/Math"
 
 namespace REPLX {
 
@@ -73,7 +73,7 @@ bool REPL_execute(struct REPL* self, AST::Node* input) {
 		/*std::string v = result ? result->str() : "OK";
 		v = " => " + v + "\n";
 		gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
-		Formatters::print_S_Expression(stdout, 0, 0, result);
+		Formatters::print_math(REPL_ensure_operator_precedence_list(self), stdout, 0, 0, result);
 		fprintf(stdout, "\n");
 		fflush(stdout);
 		/*REPL_enqueue_LATEX(self, result, destination);*/
