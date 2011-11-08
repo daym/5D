@@ -46,6 +46,8 @@ void print_math_CXX_operand(Scanners::OperatorPrecedenceList* OPL, std::ostream&
 	//if(B_application)
 	//	output << ')';
 }
+#define XN(x) OPL->next_precedence_level(x)
+#define N(x) x
 void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::Node* node, int precedence_limit) {
 	AST::Operation* operation = dynamic_cast<AST::Operation*>(node);
 	if(operation) {
@@ -53,25 +55,23 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		if(n)
 			node = n;
 	}
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);	
 	if(node == NULL)
 		print_text(output, position, "nil");
 	else if(symbolNode)
 		print_text(output, position, symbolNode->name);
 	else if(abstraction_P(node)) { /* abstraction */
-		int index = 0;
-		output << '(';
-		++position;
-		for(; consNode; ++index, consNode = consNode->tail) {
-			print_math_CXX(OPL, output, position, consNode->head, precedence_limit);
-			if(consNode->tail) {
-				output << ' ';
-				++position;
-			}
-		}
-		output << ')';
-		++position;
+		int precedence = 0;
+		if(precedence < precedence_limit)
+			++position, output << '(';
+		AST::Node* parameter = get_abstraction_parameter(node);
+		AST::Node* body = get_abstraction_body(node);
+		++position, output << '\\';
+		print_math_CXX(OPL, output, position, parameter, precedence);
+		++position, output << ' ';
+		print_math_CXX(OPL, output, position, body, precedence);
+		if(precedence < precedence_limit)
+			++position, output << ')';
 	} else if(application_P(node)) { /* application */
 		AST::Node* envelope = get_application_operator(node);
 		//if(operator_ && application_P(operator_)) // 2 for binary ops.
@@ -80,14 +80,14 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		int precedence = operatorSymbol ? OPL->get_operator_precedence(operatorSymbol) : -1;
 		if(precedence != -1) { // is a (binary) operator
 			if(precedence < precedence_limit) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
-				output << '(';
-			print_math_CXX_operand(OPL, output, position, get_application_operand(envelope), OPL->next_precedence_level(precedence));
+				++position, output << '(';
+			print_math_CXX_operand(OPL, output, position, get_application_operand(envelope), N(precedence));
 			print_math_CXX(OPL, output, position, operator_, precedence); // ignored precedence
-			print_math_CXX_operand(OPL, output, position, get_application_operand(node), OPL->next_precedence_level(precedence));
+			print_math_CXX_operand(OPL, output, position, get_application_operand(node), N(precedence));
 			//print_text(output, position, operator_);
 			//print_math_CXX(OPL, output, position, get_application_operand(node), precedence);
 			if(precedence < precedence_limit) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
-				output << ')';
+				++position, output << ')';
 		} else { // function application is fine and VERY greedy
 			precedence = OPL->apply_level;
 			if(precedence < precedence_limit) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
@@ -96,15 +96,27 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 			operatorSymbol = dynamic_cast<AST::Symbol*>(operator_);
 			int xprecedence = operatorSymbol ? OPL->get_operator_precedence(operatorSymbol) : -1;
 			if(xprecedence != -1) { // incomplete binary operation
-				output << '(';
+				++position, output << '(';
 				print_math_CXX(OPL, output, position, operator_, precedence);
-				output << ')';
+				++position, output << ')';
 			} else
 				print_math_CXX(OPL, output, position, operator_, precedence);
-			output << ' ';
-			print_math_CXX_operand(OPL, output, position, get_application_operand(node), OPL->next_precedence_level(precedence));
+			++position, output << ' ';
+			AST::Cons* operands;
+			operands = dynamic_cast<AST::Cons*>(node);
+			if(operands)
+				operands = operands->tail;
+			if(operands->tail) { // define etc
+				for(; operands; operands = operands->tail) {
+					print_math_CXX_operand(OPL, output, position, operands->head, N(precedence));
+					if(operands->tail)
+						++position, output << ' ';
+				}
+			} else { // normal
+				print_math_CXX_operand(OPL, output, position, get_application_operand(node), N(precedence));
+			}
 			if(precedence < precedence_limit) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
-				output << ')';
+				++position, output << ')';
 		}
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
