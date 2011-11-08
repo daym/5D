@@ -91,6 +91,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(void) {
 	//cons(3, I(">>"), L);
 	//cons(3, I(">>="), L);
 	//cons(2, I("$"), L);
+	cons(2, I("|"), L);
 
 #undef N
 #undef L
