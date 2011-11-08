@@ -57,9 +57,9 @@
 ⁴	^4
 ⁵	^5
 ⁰	^0
-&	\land 
+&&	\land 
 #	\# 
-|	\lor 
+||	\lor 
 ⇒	\Rightarrow 
 $	\$ 
 ¬	\lnot 
