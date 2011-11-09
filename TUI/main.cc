@@ -73,6 +73,8 @@ bool REPL_execute(struct REPL* self, AST::Node* input) {
 		/*std::string v = result ? result->str() : "OK";
 		v = " => " + v + "\n";
 		gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
+		if(result)
+			printf("%s\n", result->str().c_str());
 		Formatters::print_math(REPL_ensure_operator_precedence_list(self), stdout, 0, 0, result);
 		fprintf(stdout, "\n");
 		fflush(stdout);
@@ -173,5 +175,7 @@ int main() {
 		add_history(line);
 		run(REPL, line);
 	}
+	printf("\n");
+	fflush(stdout);
 	return(0);
 }
