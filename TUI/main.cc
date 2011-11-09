@@ -149,6 +149,9 @@ void run(struct REPL* REPL, const char* text) {
 		input_file = fmemopen((void*) text, strlen(text), "r");
 		parser.push(input_file, 0);
 		result = parser.parse(operator_precedence_list);
+		if(parser.input_value) {
+			fprintf(stderr, "(ignored junk at the end)\n");
+		}
 		fclose(input_file);
 		REPL_execute(REPL, result);
 	} catch(Scanners::ParseException exception) {
