@@ -606,5 +606,9 @@ void MathParser::parse_closing_brace(void) {
 bool MathParser::EOFP(void) const {
 	return(input_value == NULL);
 }
+void MathParser::ensure_end(void) {
+	if(!EOFP())
+		raise_error("<EOF>", input_value->str());
+}
 
 };

@@ -203,6 +203,7 @@ AST::Node* REPL_parse(struct REPL* self, const char* command, T destination/*for
 		try {
 			parser.push(input_file, 0);
 			AST::Node* result = parser.parse(REPL_ensure_operator_precedence_list(self));
+			parser.ensure_end();
 			fclose(input_file);
 			return(result);
 		} catch(...) {

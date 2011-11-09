@@ -16,9 +16,8 @@ You should have received a copy of the GNU General Public License along with thi
 namespace Scanners {
 
 class MathParser : public Scanner {
-public:
-	AST::Node* input_value; // read-only
 protected:
+	AST::Node* input_value; // read-only
 	bool B_process_macros;
 	OperatorPrecedenceList* operator_precedence_list;
 private:
@@ -49,8 +48,7 @@ protected:
 	AST::Node* parse_expression(void);
 	AST::Cons* parse_S_list_body(void);
 public:
-	AST::Node* consume(AST::Symbol* expected_token = NULL); /* don't call this as
-an user */
+	AST::Node* consume(AST::Symbol* expected_token = NULL); /* don't call this as an user */
 	void parse_closing_brace(void);
 	AST::Cons* parse_S_list(bool B_consume_closing_brace);
 	AST::Node* parse(OperatorPrecedenceList* operator_precedence_list);
@@ -59,6 +57,7 @@ an user */
 	virtual void push(FILE* input_file, int line_number, bool B_consume = true);
 	MathParser(void);
 	bool EOFP(void) const;
+	void ensure_end(void);
 };
 
 extern const int apply_precedence_level;
