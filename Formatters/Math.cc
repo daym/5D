@@ -29,26 +29,29 @@ static void print_text(std::ostream& output, int& visible_position, const char* 
 			++visible_position;
 	}
 }
-/* if the OPERAND (!!!) node is an application, then add braces. */
-void print_math_CXX_operand(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::Node* node, int precedence_limit) {
-	bool B_application = application_P(node);
-	if(B_application) {
-		AST::Node* envelope = get_application_operator(node);
-		AST::Node* operator_ = envelope ? get_application_operator(envelope) : NULL;
-		AST::Symbol* operatorSymbol = dynamic_cast<AST::Symbol*>(operator_);
-                int precedence = operatorSymbol ? OPL->get_operator_precedence(operatorSymbol) : -1;
-		if(precedence != -1) // will be handled in another way.
-			B_application = false;
-	}
-	//if(B_application)
-	//	output << '(';
-	print_math_CXX(OPL, output, position, node, precedence_limit);
-	//if(B_application)
-	//	output << ')';
-}
 #define XN(x) OPL->next_precedence_level(x)
-#define N(x) x
-void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::Node* node, int precedence_limit) {
+static inline bool maybe_print_opening_brace(std::ostream& output, int& position, int precedence, int precedence_limit, bool B_brace_equal_levels) {
+	if(precedence < precedence_limit) {
+		++position, output << '(';
+		return(true);
+	} else if(precedence == precedence_limit) {
+		// FIXME special case here.
+		/* the cases for +- are (all right-associated for a left-associative operator):
+			1+(3-4)
+			1+(3+4)
+			1-(3-4)
+			1-(3+4)
+		*/
+		if(B_brace_equal_levels)
+			++position, output << '(';
+		return(B_brace_equal_levels);
+	} else
+		return(false);
+}
+void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::Node* node, int precedence_limit, bool B_brace_equal_levels) {
+	/* the easiest way to think about this is that any and each node has a precedence level. 
+	   The precedence level of the atoms is just very high. 
+	   The reason it is not explicitly programmed that way is that there are a lot of temporary variables that are used in both precedence level detection and recursion and that would be much code duplication to do two. */
 	AST::Operation* operation = dynamic_cast<AST::Operation*>(node);
 	if(operation) {
 		AST::Node* n = operation->repr(NULL/*FIXME*/);
@@ -62,45 +65,44 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		print_text(output, position, symbolNode->name);
 	else if(abstraction_P(node)) { /* abstraction */
 		int precedence = 0;
-		if(precedence < precedence_limit)
-			++position, output << '(';
+		bool B_braced = maybe_print_opening_brace(output, position, precedence, precedence_limit, B_brace_equal_levels);
 		AST::Node* parameter = get_abstraction_parameter(node);
 		AST::Node* body = get_abstraction_body(node);
 		++position, output << '\\';
-		print_math_CXX(OPL, output, position, parameter, precedence);
+		print_math_CXX(OPL, output, position, parameter, precedence, false);
 		++position, output << ' ';
-		print_math_CXX(OPL, output, position, body, precedence);
-		if(precedence < precedence_limit)
+		print_math_CXX(OPL, output, position, body, precedence, false);
+		if(B_braced)
 			++position, output << ')';
 	} else if(application_P(node)) { /* application */
 		AST::Node* envelope = get_application_operator(node);
 		//if(operator_ && application_P(operator_)) // 2 for binary ops.
 		AST::Node* operator_ = envelope ? get_application_operator(envelope) : NULL;
 		AST::Symbol* operatorSymbol = dynamic_cast<AST::Symbol*>(operator_); 
-		int precedence = operatorSymbol ? OPL->get_operator_precedence(operatorSymbol) : -1;
+		AST::Symbol* operatorAssociativity = NULL;
+		int precedence = operatorSymbol ? OPL->get_operator_precedence_and_associativity(operatorSymbol, operatorAssociativity) : -1;
 		if(precedence != -1) { // is a (binary) operator
-			if(precedence < precedence_limit) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
-				++position, output << '(';
-			print_math_CXX_operand(OPL, output, position, get_application_operand(envelope), N(precedence));
-			print_math_CXX(OPL, output, position, operator_, precedence); // ignored precedence
-			print_math_CXX_operand(OPL, output, position, get_application_operand(node), N(precedence));
+			bool B_braced = maybe_print_opening_brace(output, position, precedence, precedence_limit, B_brace_equal_levels);
+			print_math_CXX(OPL, output, position, get_application_operand(envelope), precedence, operatorAssociativity != AST::intern("left"));
+			print_math_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
+			print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != AST::intern("right"));
 			//print_text(output, position, operator_);
 			//print_math_CXX(OPL, output, position, get_application_operand(node), precedence);
-			if(precedence < precedence_limit) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
+			if(B_braced)
 				++position, output << ')';
 		} else { // function application is fine and VERY greedy
+			operatorAssociativity = AST::intern("left");
 			precedence = OPL->apply_level;
-			if(precedence < precedence_limit) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
-				output << '(';
+			bool B_braced = maybe_print_opening_brace(output, position, precedence, precedence_limit, B_brace_equal_levels);
 			operator_ = get_application_operator(node);
 			operatorSymbol = dynamic_cast<AST::Symbol*>(operator_);
 			int xprecedence = operatorSymbol ? OPL->get_operator_precedence(operatorSymbol) : -1;
 			if(xprecedence != -1) { // incomplete binary operation
 				++position, output << '(';
-				print_math_CXX(OPL, output, position, operator_, precedence);
+				print_math_CXX(OPL, output, position, operator_, precedence, false);
 				++position, output << ')';
 			} else
-				print_math_CXX(OPL, output, position, operator_, precedence);
+				print_math_CXX(OPL, output, position, operator_, precedence, operatorAssociativity != AST::intern("left"));
 			++position, output << ' ';
 			AST::Cons* operands;
 			operands = dynamic_cast<AST::Cons*>(node);
@@ -108,14 +110,14 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 				operands = operands->tail;
 			if(operands->tail) { // define etc
 				for(; operands; operands = operands->tail) {
-					print_math_CXX_operand(OPL, output, position, operands->head, N(precedence));
+					print_math_CXX(OPL, output, position, operands->head, precedence, true);
 					if(operands->tail)
 						++position, output << ' ';
 				}
 			} else { // normal
-				print_math_CXX_operand(OPL, output, position, get_application_operand(node), N(precedence));
+				print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != AST::intern("right"));
 			}
-			if(precedence < precedence_limit) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
+			if(B_braced) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
 				++position, output << ')';
 		}
 	} else { /* literal etc */
@@ -127,7 +129,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 void print_math(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, AST::Node* node) {
 	std::stringstream sst;
 	std::string value;
-	print_math_CXX(OPL, sst, position, node, 0);
+	print_math_CXX(OPL, sst, position, node, 0, true);
 	value = sst.str();
 	fprintf(output_file, "%s", value.c_str());
 }
