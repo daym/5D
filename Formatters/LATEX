@@ -16,7 +16,7 @@ struct OperatorPrecedenceList;
 };
 namespace Formatters {
 void to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list, AST::Node* node, std::ostream& output);
-void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_precedence_limit, Scanners::OperatorPrecedenceList* operator_precedence_list);
+void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list, AST::Node* node, std::ostream& output, int operator_precedence_limit, bool B_brace_equal_levels);
 }; // end namespace Formatters
 
 #endif /* ndef __FORMATTERS_LATEX_H */
