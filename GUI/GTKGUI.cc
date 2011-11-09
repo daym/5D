@@ -11,10 +11,10 @@ You should have received a copy of the GNU General Public License along with thi
 using namespace GUI;
 
 static GtkWindow* REPL_window;
+/*
 static void open_REPL(GtkToolButton* button, GtkWindow* view) {
 	gtk_widget_show(GTK_WIDGET(REPL_window));
 }
-/*
 static GtkWindow* make_view_window() {
 	GtkWindow* window;
 	GdkGeometry geometry;

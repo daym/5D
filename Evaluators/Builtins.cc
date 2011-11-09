@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sstream>
 #include <assert.h>
+#include <limits.h>
 #include "AST/AST"
 #include "AST/Symbol"
 #include "AST/Keyword"
@@ -285,7 +286,7 @@ static SmallInteger integers[256] = {
 	SmallInteger(255),
 }; /* TODO ptr */
 AST::Node* internNative(NativeInt value) {
-	if(value < 256)
+	if(value >= 0 && value < 256)
 		return(&integers[value]);
 	return(new SmallInteger(value));
 }
@@ -394,6 +395,10 @@ static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 				return(internNative(value));
 			else
 				return(NULL);
+		} else { /* maybe too big anyway */
+			if(value == LONG_MIN || value == LONG_MAX) {
+				return(symbol); // TODO allow to hook into this.
+			}
 		}
 		return(internNative((NativeInt) value));
 	} else

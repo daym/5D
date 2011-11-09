@@ -7,7 +7,8 @@ struct Quoter;
 typedef float NativeReal; /* TODO use double for 64 bits? */
 #ifdef __SIZEOF_LONG__
 #if __SIZEOF_LONG__ != __SIZEOF_INT__
-typedef int NativeInt; /* register type */
+/* TODO only do this for 64 bits? */
+typedef long int NativeInt; /* register type */
 #else
 typedef long int NativeInt; /* register type */
 #endif
@@ -69,7 +70,7 @@ struct P : AST::Node { \
 		return(sst.str()); \
 	} \
 };
-DECLARE_SMALL_VALUE(SmallInteger, int)
+DECLARE_SMALL_VALUE(SmallInteger, NativeInt)
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
 DECLARE_SMALL_VALUE(SmallReal, NativeReal)
 AST::Node* provide_dynamic_builtins(AST::Node* body);

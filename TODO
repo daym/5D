@@ -37,3 +37,4 @@ define (#) \a \b = (b o a)
 make it possible to define custom operators
 1+2⋅ => error or partial application
 Builtins should somehow note they mean super() on str(). Not sure how? Is that even an issue in practise?
+move provide_dynamic_builtins into the reduce phase (?)
