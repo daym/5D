@@ -2,7 +2,7 @@ fix printing of expressions like 5-(3-2)
 fix printing of expressions like 5-(3+2)
 fix printing of expressions like 5/(3/2)
 fix printing of expressions like 5/(3*2)
-there should be NO ASSOCIATIVITY of DIVISION
+implement non-associative operators.
 delete environment nodes (includes usage check in the rest of the environment).
 
 translateFFI resulttype argtypes procedure => translator used when calling:

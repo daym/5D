@@ -777,6 +777,7 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 		Formatters::to_LATEX(REPL_ensure_operator_precedence_list(self), node, result);
 		result << " $";
 		resultString = result.str();
+		//std::cout << "XXX " << resultString << std::endl;
 		nodeText = resultString.c_str();
 	} catch(std::runtime_error e) {
 		nodeText = NULL;
