@@ -521,8 +521,10 @@ AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 		while(actual_token) {
 			AST::Node* operator_ = actual_token;
 			consume(); /* operator */
-			result = operation(operator_, result, parse_binary_operation(associativity == intern("left") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level));
+			result = operation(operator_, result, parse_binary_operation(associativity != intern("right") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level));
 			/* for right associative operations, the recursion will have consumed all the operators on that level and by virtue of that, the while loop will always stop after one iteration. */
+			if(associativity == intern("none"))
+				break;
 			actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity);
 		}
 		return(result);

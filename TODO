@@ -1,7 +1,4 @@
-fix printing of expressions like 5-(3-2)
-fix printing of expressions like 5-(3+2)
-fix printing of expressions like 5/(3/2)
-fix printing of expressions like 5/(3*2)
+where does modulo fit?
 implement non-associative operators.
 delete environment nodes (includes usage check in the rest of the environment).
 
@@ -40,3 +37,4 @@ move provide_dynamic_builtins into the reduce phase (?)
 provide hooks for big integers
 support (-1) as opposed to (-x) or (--x) or (--1)
 TUI: load/save current environment
+"# " as line comment starter (=> rem)
