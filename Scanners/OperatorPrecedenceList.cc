@@ -21,14 +21,21 @@ std::string OperatorPrecedenceList::str(void) const {
 std::string OperatorPrecedenceItem::str(void) const {
 	return("FIXME");
 }
-int OperatorPrecedenceList::get_operator_precedence(AST::Symbol* symbol) {
+int OperatorPrecedenceList::get_operator_precedence_and_associativity(AST::Symbol* symbol, AST::Symbol*& associativity_out) {
 	if(symbol != NULL)
 		for(int i = 0; i < MAX_PRECEDENCE_LEVELS; ++i) {
 			for(struct OperatorPrecedenceItem* item = levels[i]; item; item = item->next)
-				if(item->operator_ == symbol)
+				if(item->operator_ == symbol) {
+					associativity_out = item->associativity;
 					return(i);
+				}
 		}
+	associativity_out = NULL;
 	return(-1);
+}
+int OperatorPrecedenceList::get_operator_precedence(AST::Symbol* symbol) {
+	AST::Symbol* assoc;
+	return(get_operator_precedence_and_associativity(symbol, assoc));
 }
 void OperatorPrecedenceList::cons(int precedence_level, struct AST::Symbol* operator_, struct AST::Symbol* associativity) {
 	assert(precedence_level >= 0 && precedence_level < MAX_PRECEDENCE_LEVELS);
@@ -64,7 +71,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(void) {
 #define I(x) intern(x)
 #define R intern("right")
 #define L intern("left")
-#define N L
+#define N intern("none")
 	cons(19, I("_"), R);
 	cons(19, I("."), R);
 	cons(19, I("^"), R);

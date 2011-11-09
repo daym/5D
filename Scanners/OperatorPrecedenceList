@@ -35,6 +35,7 @@ struct OperatorPrecedenceList : AST::Node {
 	OperatorPrecedenceList(void);
 	virtual std::string str(void) const;
 	int get_operator_precedence(AST::Symbol* symbol);
+	int get_operator_precedence_and_associativity(AST::Symbol* symbol, struct AST::Symbol*& associativity_out);
 	int empty_P(int precedence_level) {
 		return(precedence_level >= MAX_PRECEDENCE_LEVELS || levels[precedence_level] == NULL);
 	}
