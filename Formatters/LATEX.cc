@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/MathParser"
 #include "Formatters/UTFStateMachine"
 
+// FIXME derive this from the Math one (so that 5-(2-3) is handled correctly).
 namespace Formatters {
 
 void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_precedence_limit, Scanners::OperatorPrecedenceList* operator_precedence_list) {
