@@ -35,13 +35,13 @@ static inline bool maybe_print_opening_brace(std::ostream& output, int& position
 		++position, output << '(';
 		return(true);
 	} else if(precedence == precedence_limit) {
-		// FIXME special case here.
 		/* the cases for +- are (all right-associated for a left-associative operator):
 			1+(3-4)
 			1+(3+4)
 			1-(3-4)
 			1-(3+4)
 		*/
+		// TODO what if they don't have the SAME associativity? Bad bad.
 		if(B_brace_equal_levels)
 			++position, output << '(';
 		return(B_brace_equal_levels);
