@@ -24,8 +24,8 @@ void limited_to_LATEX(AST::Node* node, std::ostream& output, int operator_preced
 	if(symbolReference)
 		symbolNode = symbolReference->symbol;
 	if(symbolNode) {
-		// TODO don't use mathrm for any \... ?
-		bool B_mathrm = symbolNode != AST::intern("**") && symbolNode != AST::intern("^") && symbolNode != AST::intern("_") && symbolNode != AST::intern("<") && symbolNode != AST::intern(">") && symbolNode != AST::intern("≤") && symbolNode != AST::intern("≥");
+		bool B_mathrm = symbolNode != AST::intern("**") && symbolNode != AST::intern("^") && symbolNode != AST::intern("_");
+		// && symbolNode != AST::intern("<") && symbolNode != AST::intern(">") && symbolNode != AST::intern("≤") && symbolNode != AST::intern("≥");
 		if(B_mathrm)
 			output << "\\mathrm{";
 		std::string text = symbolNode->str();
