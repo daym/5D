@@ -233,7 +233,7 @@ static int SetListViewUserData(HWND control, int index, LPARAM param) {
 int EnsureInEnvironment(HWND dialog, const std::wstring& name) {
 	HWND environment = GetDlgItem(dialog, IDC_ENVIRONMENT);
 	int selectedIndex = GetListViewCaretItemIndex(environment);
-	int index = InsertListViewItem(environment, (selectedIndex != -1) ? (selectedIndex + 1) : 99999/*FIXME*/, (LPWSTR) name.c_str(), 0);
+	int index = InsertListViewItem(environment, (selectedIndex != -1) ? selectedIndex : 99999/*FIXME*/, (LPWSTR) name.c_str(), 0);
 	/*if(index == 0 && selectedIndex == -1 && GetListViewCaretItemIndex(environment) != -1)
 		UnselectAllListViewItems(environment);*/
 	SetListViewUserData(environment, index, (LPARAM) index);

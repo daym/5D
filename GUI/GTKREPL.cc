@@ -736,12 +736,14 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 }
 int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value) {
 	GtkTreeIter iter;
-	GtkTreePath* path;
-	GtkTreeIter siblingIter;
+	GtkTreePath* path = NULL;
 	g_hash_table_replace(self->fEnvironmentKeys, name, gtk_tree_iter_copy(&iter));
-	if(gtk_tree_selection_get_selected(gtk_tree_view_get_selection(self->fEnvironmentView), NULL, &siblingIter))
-		gtk_list_store_insert_after(self->fEnvironmentStore2, &iter, &siblingIter);
-	else
+	gtk_tree_view_get_cursor(self->fEnvironmentView, &path, NULL);
+	if(path) {
+		gint* indices;
+		indices = gtk_tree_path_get_indices(path);
+		gtk_list_store_insert(self->fEnvironmentStore2, &iter, indices[0]);
+	} else
 		gtk_list_store_append(self->fEnvironmentStore2, &iter);
 	gtk_list_store_set(self->fEnvironmentStore2, &iter, 0, name->name, -1);
 	REPL_set_file_modified(self, true);
