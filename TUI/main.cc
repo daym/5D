@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/file.h>
 #include <sys/stat.h>
@@ -8,6 +9,7 @@
 #include <readline/history.h>
 #include "Scanners/MathParser"
 #include "Formatters/Math"
+#include "TUI/Interrupt"
 
 namespace REPLX {
 
@@ -164,7 +166,11 @@ void run(struct REPL* REPL, const char* text) {
 }
 int main() {
 	struct REPL* REPL;
+	using namespace TUI;
 	const char* line;
+	// TODO sigaction
+	install_SIGQUIT_handler();
+	install_SIGINT_handler();
 	REPL = REPL_new();
 	initialize_readline();
 	operator_precedence_list = new Scanners::OperatorPrecedenceList();
