@@ -48,6 +48,8 @@ DECLARE_SIMPLE_OPERATION(KeywordP, "keyword?")
 DECLARE_SIMPLE_OPERATION(IntSucc, "intSucc")
 DECLARE_SIMPLE_OPERATION(Interner, "intern")
 DECLARE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromString")
+DECLARE_SIMPLE_OPERATION(KeywordStr, "keywordStr")
+
 struct Conser2 : AST::Operation {
 private:
 	AST::Node* head;

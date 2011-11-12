@@ -380,6 +380,13 @@ AST::Node* KeywordFromStringGetter::execute(AST::Node* argument) {
 	else
 		return(NULL);
 }
+AST::Node* KeywordStr::execute(AST::Node* argument) {
+	AST::Keyword* keywordNode = dynamic_cast<AST::Keyword*>(argument);
+	if(keywordNode)
+		return(str_literal(keywordNode->name)); // TODO stop converting it back and forth and back and forth
+	else
+		return(NULL);
+}
 static std::map<AST::Symbol*, AST::Node*> cachedDynamicBuiltins;
 static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 	const char* name;
