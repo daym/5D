@@ -1,0 +1,183 @@
+<!DOCTYPE html >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+pre { font-family: monospace; color: blue; }
+span.pre { font-family: monospace; color: blue; }
+</style>
+
+</head>
+<body>
+<h1>Programming in 5D</h1>
+<h2>Syntax Elements</h2>
+<p>Names can contain every printable character except space and <span class="pre">#</span> and <span class="pre">@</span>, although operator symbols consists of different characters than non-operator symbols.</p>
+<p>Operators consist of funny characters or math operator characters, not alphanumeric letters. Custom Operators have to be registered, giving them a precedence level, before they can be used.
+Some are usually preregistered: <span class="pre"
+><span title="index">_</span> 
+ <span title="index">.</span> 
+ <span title="index">^</span> 
+ <span title="power">**</span>
+ <span title="cross product">⨯</span>
+ <span title="multiplication">*</span>
+ <span title="multiplication">⋅</span> 
+ <span title="division">/</span> 
+ <span title="modulation">%</span> 
+ <span title="addition">+</span> 
+ <span title="subtraction">-</span> 
+ <span title="list element construction">:</span> 
+ <span title="list concatenation">++</span> 
+ <span title="equality test">=</span> 
+ <span title="non-equality test">/=</span> 
+ <span title="less-than test">&lt;</span> 
+ <span title="less-than-or-equal test">&lt;=</span> 
+ <span title="less-than-or-equal test">≤</span> 
+ <span title="greater-than test">&gt;</span> 
+ <span title="greater-than-or-equal test">&gt;=</span> 
+ <span title="greater-than-or-equal test">≥</span> 
+ <span title="logical and">&amp;&amp;</span> 
+ <span title="logical or">||</span> 
+ <span title="world time sequencer">;</span> 
+ <span title="unix-like pipe">|</span> 
+ <span title="either unit test expected result or comment">=&gt;</span>
+ <span title="pair constructor">,</span></span></p>
+<h3>Valid Names</h3>
+<pre>
+frobnicate
+μ
+mayTheForceBeWithYou42
+σ
+ελεκτρων
++                      -- operator symbol
+**                     -- operator symbol
+⋅                      -- operator symbol
+&lt;===%^%===&gt;            -- operator symbol, isn't it grand? :-)
+</pre>
+<h3>Valid Numbers</h3>
+<pre>
+5
+(-3)
+5.23232245322151
+358888888888888888888888888888888888888888888888888888888888888888888888888888
+#xFF                    =&gt; 255
+#o777                   =&gt; 511
+</pre>
+
+<h2>Programming by example</h2>
+<h3>Hello world</h3>
+<pre>
+withWorld (display "Hello World")
+</pre>
+<p>What this does is:</p>
+<p><span class="pre">withWorld</span> wraps IO.</p>
+<p><span class="pre">display \text</span> will display text, once a world is given (i.e. by <span class="pre" title="world starter">withWorld</span> or <span class="pre" title="world time sequencer">;</span>).</p>
+
+<h3>Mathematics</h3>
+<p>The usual calculator mathematics work:</p>
+<pre>
+5 + 2 =&gt; 7
+</pre>
+<pre>
+5 + 2 ⋅ 3 =&gt; 11
+</pre>
+<p><a href="">Operator precedence</a> is as you would expect.</p>
+<pre>
+5 + 2 ⋅ 3 =&gt; 11
+</pre>
+<pre>
+define f \x x⋅x
+5 + 2 ⋅ f 3 =&gt; 23
+</pre>
+<p>Here, the function f is defined to be a function of x, giving the square of x.</p>
+<p>Then the function f is called with the argument 3. For a more traditional way, this works, too (although it has more parens for no reason):</p>
+<pre>
+define f (\x x⋅x)
+5+2⋅f(3) =&gt; 23
+</pre>
+<p>Or if it's the first operand of multiplication:</p>
+<pre>
+define f \x x⋅x
+5 + (f 3) ⋅ 2 =&gt; 23
+</pre>
+<p>Note that <span class="pre">*</span> works for multiplication as well (and is the same thing):</p>
+<pre>
+define f \x x⋅x
+5 + (f 3) * 2 =&gt; 23
+</pre>
+<h3>Conditionals</h3>
+<pre>
+define abs \x if (x ≥ 0)  (x)
+                          (-x)
+</pre>
+<h3>Logical Operators and Logical Functions and Logical Values</h3>
+<pre>
+#t
+#f
+#f &amp;&amp; #f    =&gt; #f
+#f &amp;&amp; #t    =&gt; #f
+#t &amp;&amp; #f    =&gt; #f
+#t &amp;&amp; #t    =&gt; #t
+#f || #f    =&gt; #f
+#f || #t    =&gt; #t
+#t || #t    =&gt; #t
+#t || #t    =&gt; #t
+not #f      =&gt; #t
+not #t      =&gt; #f
+</pre>
+<h3>Recursion</h3>
+<p>Usually, the function name is <em>not</em> available within the function:</p>
+<pre>
+define f \x (f 1)      -- makes no sense
+</pre>
+<p>If you want it to do recursion, do it like this:</p>
+<pre>
+define f rec \f \x (f 1)      -- endless recursion, but it works
+</pre>
+<p>Or like this, which is exactly the same:</p>
+<pre>
+define f rec \self \x (self 1)      -- endless recursion, but it works
+</pre>
+<p>There's a more traditional way, too:</p>
+<pre>
+def f \x (f 1)      -- endless recursion, but it works
+</pre>
+<p><span class="pre">def</span> is a macro which expands to the former. Note that <span class="pre">def</span> only works (usefully) for function definitions ("DEfine Function").</p>
+<p>Note that the reason that <span class="pre">define f</span> doesn't make f available within the body of f is that you can refer to previous definitions of f within the new definition of f.</p>
+<p>An example will make that clearer:</p>
+<pre>
+define f \x (x**x)
+define f \x if (x = 0)   1
+                         (f x)    -- refers to the one above.
+</pre>
+<h3>Lists</h3>
+<p>The simplest form of list is the linked list.</p>
+<p>Nodes of a linked list are created by <span class="pre">:</span> like this:</p>
+<pre>
+42:24:12:nil
+</pre>
+<p>This is a list with 3 elements, linked together through the tail. The last element has <span class="pre">nil</span> tail.</p>
+<pre>
+head (1:2:3:nil)            =&gt; 1
+tail (1:2:3:nil)            =&gt; (2:3:nil)
+head (tail (1:2:3:nil))     =&gt; 2
+cons? (1:nil)               =&gt; #t
+cons? nil                   =&gt; #f
+cons? 42                    =&gt; #f
+</pre>
+<h3>Literal Names</h3>
+<p>Sometimes you want to <em>not</em> reduce a function or operator to their definition but rather leave them as-is. If so, prefix their name by <span class="pre">quote</span> or <span class="pre" title="quote">'</span></p>
+<pre>
+define x 2
+x            =&gt; 2
+quote x      =&gt; x       -- NOT 2
+'x           =&gt; x       -- NOT 2
+symbol? 'x   =&gt; #t
+symbol? x    =&gt; #f
+</pre>
+<h3>Keyword Arguments</h3>
+<pre>
+fopen @mode:"w" "foo.INI.temp"        -- Keyword Arguments need to be before normal arguments.
+</pre>
+</body>
+</html>
+<h3>Pairs</h3>

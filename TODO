@@ -39,3 +39,6 @@ provide hooks for big integers
 support (-1) as opposed to (-x) or (--x) or (--1)
 TUI: load/save current environment
 "# " as line comment starter (=> rem)
+fopen @mode:"w" "foo.INI.temp"
+withWorld
+;
