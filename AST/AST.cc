@@ -19,7 +19,7 @@ std::string Node::str(void) const {
 std::string Atom::str(void) const {
 	return(text);
 }
-std::string String::str(void) const {
+std::string Str::str(void) const {
 	std::stringstream sst;
 	const char* item;
 	char c;
@@ -61,12 +61,12 @@ Atom* literal(const char* text) {
 	result->text = text;
 	return(result);
 }
-String* string_literal(const char* text) {
-	String* result = new String(text);
+Str* str_literal(const char* text) {
+	Str* result = new Str(text);
 	return(result);
 }
-bool string_P(AST::Node* node) {
-	return(dynamic_cast<AST::String*>(node) != NULL);
+bool str_P(AST::Node* node) {
+	return(dynamic_cast<AST::Str*>(node) != NULL);
 }
 AST::Cons* follow_tail(AST::Cons* list) {
 	if(!list)

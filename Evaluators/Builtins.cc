@@ -347,9 +347,9 @@ AST::Node* IntSucc::execute(AST::Node* argument) {
 	} else
 		return(NULL);
 }
-AST::Node* StringP::execute(AST::Node* argument) {
+AST::Node* StrP::execute(AST::Node* argument) {
 	using namespace AST;
-	bool result = dynamic_cast<String*>(argument) != NULL;
+	bool result = dynamic_cast<Str*>(argument) != NULL;
 	return(internNative(result));
 }
 AST::Node* HeadGetter::execute(AST::Node* argument) {
@@ -367,14 +367,14 @@ AST::Node* TailGetter::execute(AST::Node* argument) {
 		return(NULL); // FIXME proper error message!
 }
 AST::Node* Interner::execute(AST::Node* argument) {
-	AST::String* stringNode = dynamic_cast<AST::String*>(argument);
+	AST::Str* stringNode = dynamic_cast<AST::Str*>(argument);
 	if(stringNode)
 		return(AST::intern(stringNode->text.c_str()));
 	else
 		return(NULL);
 }
 AST::Node* KeywordFromStringGetter::execute(AST::Node* argument) {
-	AST::String* stringNode = dynamic_cast<AST::String*>(argument);
+	AST::Str* stringNode = dynamic_cast<AST::Str*>(argument);
 	if(stringNode)
 		return(AST::keywordFromString(stringNode->text.c_str()));
 	else

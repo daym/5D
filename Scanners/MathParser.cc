@@ -64,7 +64,7 @@ void MathParser::parse_string(int input) {
 		}
 	}
 	std::string value = matchtext.str();
-	input_value = AST::string_literal(value.c_str());
+	input_value = AST::str_literal(value.c_str());
 }
 static bool operatorCharP(int input) {
 	// without '#' for now (not sure whether that's good. TODO find out)

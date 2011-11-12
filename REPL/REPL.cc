@@ -64,7 +64,7 @@ bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
 	using namespace AST;
 	char* buffer_text;
 	buffer_text = REPL_get_output_buffer_text(self);
-	AST::Cons* buffer_text_box = AST::cons(AST::intern("textBufferText"), AST::cons(string_literal(buffer_text), NULL));
+	AST::Cons* buffer_text_box = AST::cons(AST::intern("textBufferText"), AST::cons(str_literal(buffer_text), NULL));
 	AST::Cons* environment_box = AST::cons(AST::intern("environment"), AST::cons(dynamic_cast<AST::Cons*>(REPL_filter_environment(self, REPL_get_user_environment(self))), NULL));
 	AST::Cons* content_box = AST::cons(AST::intern("REPLV1"), AST::cons(buffer_text_box, AST::cons(environment_box, NULL)));
 	Formatters::print_S_Expression(output_file, 0, 0, content_box);

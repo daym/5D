@@ -230,11 +230,11 @@ void run(struct REPL* REPL, const char* text) {
 		fclose(input_file);
 		REPL_execute(REPL, result);
 	} catch(Scanners::ParseException exception) {
-		AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::String(exception.what()), NULL));
+		AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::Str(exception.what()), NULL));
 		std::string errStr = err->str();
 		fprintf(stderr, "%s\n", errStr.c_str());
 	} catch(Evaluators::EvaluationException exception) {
-		AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::String(exception.what()), NULL));
+		AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::Str(exception.what()), NULL));
 		std::string errStr = err->str();
 		fprintf(stderr, "%s\n", errStr.c_str());
 	}

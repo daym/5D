@@ -30,7 +30,7 @@ bool get_native_boolean(AST::Node* root) {
 	return(false);
 }
 char* get_native_string(AST::Node* root) {
-	AST::String* rootString = dynamic_cast<AST::String*>(root);
+	AST::Str* rootString = dynamic_cast<AST::Str*>(root);
 	if(rootString)
 		return(strdup(rootString->text.c_str()));
 	else {

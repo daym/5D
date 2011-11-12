@@ -117,13 +117,13 @@ int main() {
 			// TODO parse left-over ")"
 			REPL_execute(REPL, source);
 		} catch(Scanners::ParseException exception) {
-			AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::String(exception.what()), NULL));
+			AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::Str(exception.what()), NULL));
 			std::string errStr = err->str();
 			fprintf(stderr, "%s\n", errStr.c_str());
 			status = 1;
 			parser.consume();
 		} catch(Evaluators::EvaluationException exception) {
-			AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::String(exception.what()), NULL));
+			AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::Str(exception.what()), NULL));
 			std::string errStr = err->str();
 			fprintf(stderr, "%s\n", errStr.c_str());
 			status = 2;
