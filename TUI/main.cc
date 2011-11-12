@@ -220,6 +220,27 @@ bool REPL_load_contents_by_name(struct REPL* self, const char* file_name) {
 		return(true);
 	}
 }
+bool REPL_save(struct REPL* self, bool B_force_dialog) {
+	bool B_OK = false;
+	char temp_name[PATH_MAX + 1];
+	char* file_name = self->fEnvironmentName;
+	if(snprintf(temp_name, PATH_MAX, "%sXXXXXX", file_name) == -1)
+		abort();
+	int FD = mkstemp(temp_name);
+	FILE* output_file = fdopen(FD, "w");
+	if(REPL_save_contents_to(self, output_file)) {
+		fclose(output_file);
+		close(FD);
+		if(rename(temp_name, file_name) != -1) {
+			//char* absolute_name = REPL_get_absolute_path(file_name);
+			B_OK = true;
+			REPL_set_current_environment_name(self, file_name); // absolute_name);
+			REPL_set_file_modified(self, false);
+		}
+		//unlink(temp_name);
+	}
+	return(B_OK);
+}
 int main(int argc, char* argv[]) {
 	struct REPL* REPL;
 	using namespace TUI;
@@ -229,7 +250,6 @@ int main(int argc, char* argv[]) {
 		const char* name = argv[argc - 1];
 		REPL_load_contents_by_name(REPL, name);
 	}
-	// TODO sigaction
 	install_SIGQUIT_handler();
 	install_SIGINT_handler();
 	initialize_readline();
@@ -244,5 +264,6 @@ int main(int argc, char* argv[]) {
 	}
 	printf("\n");
 	fflush(stdout);
+	REPL_save(REPL, false);
 	return(0);
 }
