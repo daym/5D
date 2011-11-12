@@ -95,6 +95,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(void) {
 	cons(8, I("≥"), N);
 	cons(7, I("&&"), L);
 	cons(5, I("||"), L);
+	cons(3, I(";"), L);
 	//cons(3, I(">>"), L);
 	//cons(3, I(">>="), L);
 	//cons(2, I("$"), L);
