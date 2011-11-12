@@ -101,6 +101,14 @@ void REPL_init(struct REPL* self) {
 	//self->fConfig = load_Config();
 	REPL_clear(self);
 }
+char* REPL_get_output_buffer_text(struct REPL* self) {
+	return(strdup("FIXME"));
+}
+//REPL_load_contents_from(struct REPL* self, const char* name) {
+void REPL_append_to_output_buffer(struct REPL* self, char const* text) {
+	// FIXME
+}
+
 bool REPL_execute(struct REPL* self, AST::Node* input) {
 	bool B_ok = false;
 	try {
