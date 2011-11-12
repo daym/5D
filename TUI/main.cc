@@ -86,7 +86,7 @@ static char* REPL_ensure_default_environment_name(struct REPL* self) {
 		}
 		if(snprintf(config_dir_name, NAME_MAX, "%s/.config/5D", HOME) == -1)
 			abort();
-		if(snprintf(config_dir_name, NAME_MAX, "%s/.config/5D/TUI_environment", XDG_CONFIG_HOME) == -1)
+		if(snprintf(config_dir_name, NAME_MAX, "%s/.config/5D/TUI_environment", HOME) == -1)
 			abort();
 	}
 	return(strdup(config_dir_name));
