@@ -18,10 +18,12 @@ define write translateWrite writeProc
 
 runMonad (write (list 1 "hello world")) "world"
 
-pipe a ber = \w
-		c, w2 = a w
-		d, w3 = ber c w2
-		d, w3
+define (;) \monad \consumer \world
+	if (stop? value) (stop:world2:nil)
+	                 (consumer value world2) -- returns value2:world3:nil
+	/. value (head step)
+	/. world2 (head (tail step))
+	/. step (monad world)
 
 Y\parse\args
 	cond
@@ -35,9 +37,9 @@ make it possible to define custom operators
 1+2⋅ => error or partial application
 Builtins should somehow note they mean super() on str(). Not sure how? Is that even an issue in practise?
 move provide_dynamic_builtins into the reduce phase (?)
-provide hooks for big integers
+provide hooks for big integers (?)
+provide hooks for listing currently registered operators (?)
 support (-1) as opposed to (-x) or (--x) or (--1)
-TUI: load/save current environment
 "# " as line comment starter (=> rem)
 fopen @mode:"w" "foo.INI.temp"
 withWorld
