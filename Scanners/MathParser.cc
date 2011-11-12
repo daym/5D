@@ -324,25 +324,20 @@ void MathParser::parse_keyword(int input) {
 	std::stringstream matchtext;
 	++position, input = fgetc(input_file);
 	if(!symbol1_char_P(input)) {
-		raise_error("<expression>", input);
+		raise_error("<symbol>", input);
 		return;
 	}
 	while(symbol_char_P(input)) {
 		matchtext << (char) input;
 		++position, input = fgetc(input_file);
 	}
-	if(input == 0xE2) {
-		++position, input = fgetc(input_file);
-		if(input == 0x83) { // vector arrow etc.
-			++position, input = fgetc(input_file);
-			matchtext << (char) 0xE2 << (char) 0x83 << (char) input; // usually 0x97
-		} else {
-			ungetc(input, input_file), --position;
-			ungetc(0xE2, input_file), --position; // FIXME it is actually unsupported to unget more than 1 character :-(
-			//raise_error("<unicode_operator>", "<unknown>");
-		}
-	} else
-		ungetc(input, input_file), --position;
+	if(input != ':') {
+		raise_error(":", input);
+		return;
+	}
+	matchtext << (char) input;
+	//++position, input = fgetc(input_file);
+	//ungetc(input, input_file), --position;
 	input_value = keywordFromString(matchtext.str().c_str());
 }
 /* returns the PREVIOUS value */
