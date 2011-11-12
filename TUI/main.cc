@@ -93,16 +93,44 @@ static char* REPL_ensure_default_environment_name(struct REPL* self) {
 }
 void REPL_init(struct REPL* self) {
 	self->fFileModified = false;
-	self->fEnvironmentName = REPL_ensure_default_environment_name(self);
+	self->fEnvironmentName = NULL;
 	//self->fConfig = load_Config();
 	REPL_clear(self);
 }
 char* REPL_get_output_buffer_text(struct REPL* self) {
-	return(strdup("FIXME"));
+	// TODO get history text (get_history_event etc)
+	// TODO get_history_item
+	HIST_ENTRY **history;
+	char* buffer;
+	char* pos;
+	int count = 0;
+	history = history_list();
+	for(int i = 0; i < history_length; ++i) {
+		// TODO timestamp?
+		count += 2 + HISTENT_BYTES(history[i]);
+	}
+	++count;
+	pos = buffer = (char*) malloc(count);
+	for(int i = 0; i < history_length; ++i) {
+		strcpy(pos, history[i]->line);
+		pos += strlen(history[i]->line);
+		*(pos++) = '\n';
+	}
+	*(pos++) = 0;
+	return(buffer);
 }
 void REPL_append_to_output_buffer(struct REPL* self, char const* text) {
-	// TODO
-	add_history(text);
+	char* buffer;
+	char* pos;
+	char* newline;
+	for(pos = buffer = strdup(text); *pos; ) {
+		newline = strchr(pos, '\n');
+		*newline = 0;
+		add_history(pos);
+		pos += strlen(pos);
+		assert(*pos == 0);
+		++pos;
+	}
 }
 
 bool REPL_execute(struct REPL* self, AST::Node* input) {
@@ -249,6 +277,8 @@ int main(int argc, char* argv[]) {
 	if(argc > 1) {
 		const char* name = argv[argc - 1];
 		REPL_load_contents_by_name(REPL, name);
+	} else {
+		REPL_load_contents_by_name(REPL, REPL_ensure_default_environment_name(REPL));
 	}
 	install_SIGQUIT_handler();
 	install_SIGINT_handler();
