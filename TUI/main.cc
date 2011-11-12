@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <signal.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/file.h>
 #include <sys/stat.h>
@@ -63,6 +64,7 @@ void REPL_set_file_modified(struct REPL* self, bool value) {
 	}
 }
 static char* REPL_ensure_default_environment_name(struct REPL* self) {
+	char* result;
 	char config_dir_name[PATH_MAX + 1];
 	char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
 	char* HOME = getenv("HOME");
@@ -89,7 +91,9 @@ static char* REPL_ensure_default_environment_name(struct REPL* self) {
 		if(snprintf(config_dir_name, NAME_MAX, "%s/.config/5D/TUI_environment", HOME) == -1)
 			abort();
 	}
-	return(strdup(config_dir_name));
+	result = strdup(config_dir_name);
+	self->fEnvironmentName = result;
+	return(result);
 }
 void REPL_init(struct REPL* self) {
 	self->fFileModified = false;
@@ -278,7 +282,10 @@ int main(int argc, char* argv[]) {
 		const char* name = argv[argc - 1];
 		REPL_load_contents_by_name(REPL, name);
 	} else {
-		REPL_load_contents_by_name(REPL, REPL_ensure_default_environment_name(REPL));
+		char* environment_name = REPL_ensure_default_environment_name(REPL);
+		struct stat stat_buf;
+		if(stat(environment_name, &stat_buf) != -1)
+			REPL_load_contents_by_name(REPL, environment_name);
 	}
 	install_SIGQUIT_handler();
 	install_SIGINT_handler();
