@@ -1,3 +1,4 @@
+bool builtins: move them into the runtime and somehow have the parser find them anyway (?)
 where does modulo fit?
 implement non-associative operators.
 delete environment nodes (includes usage check in the rest of the environment).

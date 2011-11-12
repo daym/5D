@@ -291,7 +291,7 @@ int main(int argc, char* argv[]) {
 	install_SIGINT_handler();
 	initialize_readline();
 	operator_precedence_list = new Scanners::OperatorPrecedenceList();
-	while((line = readline("λ> "))) {
+	while((line = readline("\316\1\273\2> "))) {
 		if(!line)
 			break;
 		if(!line[0])
