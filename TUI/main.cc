@@ -10,6 +10,7 @@
 #include "Scanners/MathParser"
 #include "Formatters/Math"
 #include "TUI/Interrupt"
+#include "Config/Config"
 
 namespace REPLX {
 
@@ -19,6 +20,7 @@ struct REPL {
 	AST::Cons* fTailUserEnvironmentFrontier;
 	int fEnvironmentCount;
 	bool fBModified;
+	struct Config* fConfig;
 };
 
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
@@ -60,6 +62,7 @@ void REPL_clear(struct REPL* self) {
 }
 void REPL_init(struct REPL* self) {
 	self->fBModified = false;
+	self->fConfig = load_Config();
 	REPL_clear(self);
 }
 bool REPL_execute(struct REPL* self, AST::Node* input) {
