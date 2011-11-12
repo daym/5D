@@ -129,7 +129,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 void print_math(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, AST::Node* node) {
 	std::stringstream sst;
 	std::string value;
-	print_math_CXX(OPL, sst, position, node, 0, true);
+	print_math_CXX(OPL, sst, position, node, 0, false);
 	value = sst.str();
 	fprintf(output_file, "%s", value.c_str());
 }

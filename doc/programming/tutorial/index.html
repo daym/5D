@@ -70,7 +70,7 @@ withWorld (display "Hello World")
 </pre>
 <p>What this does is:</p>
 <p><span class="pre">withWorld</span> wraps IO.</p>
-<p><span class="pre">display \text</span> will display text, once a world is given (i.e. by <span class="pre" title="world starter">withWorld</span> or <span class="pre" title="world time sequencer">;</span>).</p>
+<p><span class="pre">display \text</span> will display text, once a World is given (i.e. by <span class="pre" title="world starter">withWorld</span> or <span class="pre" title="world time sequencer">;</span>).</p>
 
 <h3>Mathematics</h3>
 <p>The usual calculator mathematics work:</p>
@@ -165,7 +165,7 @@ cons? nil                   =&gt; #f
 cons? 42                    =&gt; #f
 </pre>
 <h3>Literal Names</h3>
-<p>Sometimes you want to <em>not</em> reduce a function or operator to their definition but rather leave them as-is. If so, prefix their name by <span class="pre">quote</span> or <span class="pre" title="quote">'</span></p>
+<p>Sometimes you want to <em>not</em> reduce a function or operator to their definition but rather leave them as-is. To do so, prefix their name by <span class="pre">quote</span> or <span class="pre" title="quote">'</span></p>
 <pre>
 define x 2
 x            =&gt; 2
@@ -181,3 +181,11 @@ fopen @mode:"w" "foo.INI.temp"        -- Keyword Arguments need to be before nor
 </body>
 </html>
 <h3>Pairs</h3>
+<p>Pairs are like lists, so pairs are probably not used that much.</p>
+<pre>
+1,2
+first (1,2)    =&gt; 1
+second (1,2)   =&gt; 2
+first (1,2,3)    =&gt; 1
+second (1,2,3)    =&gt; (2,3)
+</pre>
