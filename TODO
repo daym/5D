@@ -44,3 +44,5 @@ support (-1) as opposed to (-x) or (--x) or (--1)
 fopen @mode:"w" "foo.INI.temp"
 withWorld
 ;
+rename smallInteger to int
+rename smallString to str

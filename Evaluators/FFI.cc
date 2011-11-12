@@ -14,9 +14,9 @@ namespace Evaluators {
 using namespace AST;
 
 int get_native_integer(AST::Node* root) {
-	SmallInteger* rootSmallInteger = dynamic_cast<SmallInteger*>(root);
-	if(rootSmallInteger) {
-		return(rootSmallInteger->value);
+	Int* rootInt = dynamic_cast<Int*>(root);
+	if(rootInt) {
+		return(rootInt->value);
 	}
 	/* FIXME */
 	return(0);

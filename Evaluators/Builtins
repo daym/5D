@@ -39,13 +39,13 @@ DECLARE_SIMPLE_OPERATION(Conser, "cons")
 DECLARE_SIMPLE_OPERATION(HeadGetter, "head")
 DECLARE_SIMPLE_OPERATION(TailGetter, "tail")
 DECLARE_SIMPLE_OPERATION(ConsP, "cons?")
-DECLARE_SIMPLE_OPERATION(SmallIntegerP, "smallInteger?")
+DECLARE_SIMPLE_OPERATION(IntP, "int?")
 DECLARE_SIMPLE_OPERATION(SmallRealP, "smallReal?")
 DECLARE_SIMPLE_OPERATION(StringP, "string?")
 DECLARE_SIMPLE_OPERATION(SymbolP, "symbol?")
 DECLARE_SIMPLE_OPERATION(KeywordP, "keyword?")
-/*DECLARE_SIMPLE_OPERATION(SmallInteger0, "smallInteger0")*/
-DECLARE_SIMPLE_OPERATION(SmallIntegerSucc, "smallIntegerSucc")
+/*DECLARE_SIMPLE_OPERATION(Int0, "int0")*/
+DECLARE_SIMPLE_OPERATION(IntSucc, "intSucc")
 DECLARE_SIMPLE_OPERATION(Interner, "intern")
 DECLARE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromString")
 struct Conser2 : AST::Operation {
@@ -70,7 +70,7 @@ struct P : AST::Node { \
 		return(sst.str()); \
 	} \
 };
-DECLARE_SMALL_VALUE(SmallInteger, NativeInt)
+DECLARE_SMALL_VALUE(Int, NativeInt)
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
 DECLARE_SMALL_VALUE(SmallReal, NativeReal)
 AST::Node* provide_dynamic_builtins(AST::Node* body);
