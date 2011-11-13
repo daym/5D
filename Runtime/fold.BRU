@@ -8,3 +8,6 @@ define foldr \folder \initialValue \list Y\foldr
    (cond
      (empty? list) initialValue  
      else (folder (head list) (foldr folder initialValue (rest list))))
+-- foldr gives a function which replaces all cons of the list by folder and the nil of the list by initialValue.
+
+define reduce foldr
