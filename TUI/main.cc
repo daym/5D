@@ -161,6 +161,7 @@ bool REPL_execute(struct REPL* self, AST::Node* input) {
 	} catch(Evaluators::EvaluationException e) {
 		std::string v = e.what() ? e.what() : "error";
 		v = " => " + v + "\n";
+		fprintf(stderr, "%s\n", v.c_str());
 		// FIXME gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
 	}
 	return(B_ok);
