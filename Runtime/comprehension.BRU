@@ -5,8 +5,6 @@ define anyTrue? foldr (||) #f
 define allTrue? foldr (&&) #t
 define (++) \a \b foldr (:) b a
 define map \f foldr (cons . f) nil
-define ∑ sum
-define Π product
 
 -- f (f (f (f a)))
 define repeatedly rec \repeat \f \a a:(repeat f (f a))
