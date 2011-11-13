@@ -1,6 +1,11 @@
+numbers: 1. int, 2. BigInteger, 3. Q, 4. smallReal, 5. arbitrary precision fixed point
+equality (numbers, strings(?) and booleans (?))
 bool builtins: move them into the runtime and somehow have the parser find them anyway (?)
+Builtins should somehow note they mean super() on str(). Not sure how? Is that even an issue in practise?
+move provide_dynamic_builtins into the reduce phase (?)
+provide hooks for big integers (?)
+provide hooks for listing currently registered operators (?)
 where does modulo fit?
-implement non-associative operators.
 delete environment nodes (includes usage check in the rest of the environment).
 
 translateFFI resulttype argtypes procedure => translator used when calling:
@@ -18,12 +23,13 @@ define write translateWrite writeProc
 
 runMonad (write (list 1 "hello world")) "world"
 
+define monadValue \monad \world head (monad world)
+define monadWorld \monad \world head (tail (monad world))
+
 define (;) \monad \consumer \world
 	if (stop? value) (stop:world2:nil)
-	                 (consumer value world2) -- returns value2:world3:nil
-	/. value (head step)
-	/. world2 (head (tail step))
-	/. step (monad world)
+	                 (consumer (monadValue monad world) (monadWorld monad world))
+-- returns value2:world3:nil
 
 Y\parse\args
 	cond
@@ -31,16 +37,11 @@ Y\parse\args
 		                  )
 		else nil
 #| commented out |#
-define (|) \a \b = (b a)
 define (#) \a \b = (b o a)
 make it possible to define custom operators
 1+2⋅ => error or partial application
-Builtins should somehow note they mean super() on str(). Not sure how? Is that even an issue in practise?
-move provide_dynamic_builtins into the reduce phase (?)
-provide hooks for big integers (?)
-provide hooks for listing currently registered operators (?)
 support (-1) as opposed to (-x) or (--x) or (--1)
 "# " as line comment starter (=> rem)
 fopen @mode:"w" "foo.INI.temp"
-withWorld
 ;
+unary posfix operators like "!"?
