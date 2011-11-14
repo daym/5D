@@ -33,7 +33,7 @@ std::string LibraryLoader::str(void) const {
 	return("fromLibrary");
 }
 AST::Node* LibraryLoader::execute(AST::Node* libraryName) {
-	if(string_P(libraryName))
+	if(str_P(libraryName))
 		libraryName = AST::intern(((AST::Str*)libraryName)->text.c_str());
 	AST::Symbol* libraryNameSymbol = dynamic_cast<AST::Symbol*>(libraryName);
 	if(libraryNameSymbol == NULL)
@@ -65,7 +65,7 @@ CLibrary::CLibrary(const char* name) {
 }
 AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 	/* argument is the name (symbol). Result is a CProcedure */
-	if(string_P(argument))
+	if(str_P(argument))
 		argument = AST::intern(((AST::Str*)argument)->text.c_str());
 	AST::Symbol* nameSymbol = dynamic_cast<AST::Symbol*>(argument);
 	if(nameSymbol == NULL)

@@ -10,7 +10,7 @@
 #include <tchar.h>
 #include <Commdlg.h>
 #include <Richedit.h>
-#include "REPL"
+#include "REPL/REPL"
 #include "WIN32REPL"
 #include "Scanners/MathParser"
 #include "AST/AST"
