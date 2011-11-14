@@ -1,4 +1,4 @@
-numbers: 1. int, 2. BigInteger, 3. Q, 4. smallReal, 5. arbitrary precision fixed point
+numbers: 1. int, 2. BigInteger, 3. Q, 4. smallReal, 5. arbitrary-precision fixed point
 equality (numbers, strings(?) and booleans (?))
 bool builtins: move them into the runtime and somehow have the parser find them anyway (?)
 Builtins should somehow note they mean super() on str(). Not sure how? Is that even an issue in practise?

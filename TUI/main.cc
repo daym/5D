@@ -8,6 +8,8 @@
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/errno.h>
+#include <list>
+#include <set>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <limits.h>
@@ -27,11 +29,17 @@ struct REPL {
 	bool fFileModified;
 	char* fEnvironmentName;
 	//struct Config* fConfig;
+	std::list<AST::Symbol*> fEnvironmentNames;
+	std::set<AST::Symbol*> fEnvironmentNamesSet;
 };
-
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
-	return(self->fEnvironmentCount++);
+	if(self->fEnvironmentNamesSet.find(name) == self->fEnvironmentNamesSet.end()) {
+		self->fEnvironmentNamesSet.insert(name);
+		self->fEnvironmentNames.push_back(name);
+	}
+	return(self->fEnvironmentCount++); // FIXME
 }
+// TODO delete etc.
 void REPL_queue_scroll_down(REPL* self) {
         // TODO
 }
@@ -168,41 +176,32 @@ bool REPL_execute(struct REPL* self, AST::Node* input) {
 }
 struct REPL* REPL_new(void) {
 	struct REPL* result;
-	result = (struct REPL*) calloc(1, sizeof(struct REPL));
+	result = new REPL; // (struct REPL*) calloc(1, sizeof(struct REPL));
 	REPL_init(result);
 	return(result);
 }
 
 }; /* end namespace */
 
-
-/* TODO enable history file */
-
-const char* commands[] = { /* FIXME un-hardcode */
-	"\\",
-	"if",
-	"cond",
-	"define",
-	"display",
-	"newline",
-	"begin",
-	NULL,
-};
 static char** completion_matches(const char* text, rl_compentry_func_t* callback) {
 	return(rl_completion_matches(text, callback));
 }
+static struct REPL* REPL1; // for completion. eew.
 static char* command_generator(const char* text, int state) {
 	static int len;
-	static int list_index;
-	const char* name;
+	static std::list<AST::Symbol*>::const_iterator iter;
 	if(state == 0) {
-		list_index = 0;
+		iter = REPL1->fEnvironmentNames.begin();
 		len = strlen(text);
 	}
-	while((name = commands[list_index])) {
-		++list_index;
-		if(strncmp(name, text, len) == 0)
+	while(iter != REPL1->fEnvironmentNames.end()) {
+		const char* name;
+		name = (*iter)->name;
+		if(strncmp(name, text, len) == 0) {
+			++iter;
 			return(strdup(name));
+		} else
+			++iter;
 	}
 	return(NULL);
 }
@@ -279,6 +278,7 @@ int main(int argc, char* argv[]) {
 	using namespace TUI;
 	const char* line;
 	REPL = REPL_new();
+	REPL1 = REPL;
 	if(argc > 1) {
 		const char* name = argv[argc - 1];
 		REPL_load_contents_by_name(REPL, name);
