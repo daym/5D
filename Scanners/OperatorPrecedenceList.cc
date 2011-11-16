@@ -81,7 +81,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(void) {
 	cons(15, I("/"), L);
 	cons(15, I("%"), L);
 	// TODO div rem quot 17 L
-	cons(13, I("+"), L);
+	cons(13, I("+"), L); // keep in sync with MINUS_PRECEDENCE_LEVEL
 	cons(13, I("-"), L);
 	cons(11, I(":"), R);
 	cons(11, I("++"), L);

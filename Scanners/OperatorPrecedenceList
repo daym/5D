@@ -13,9 +13,6 @@ You should have received a copy of the GNU General Public License along with thi
 namespace Scanners {
 
 /* DIY cons for no good reason. TODO change? */
-
-#define OP_RIGHT_ASSOCIATIVE 1
-#define OP_LEFT_ASSOCIATIVE 0
 struct OperatorPrecedenceItem : AST::Node {
 	struct OperatorPrecedenceItem* next;
 	struct AST::Symbol* operator_;
@@ -28,6 +25,7 @@ struct OperatorPrecedenceItem : AST::Node {
 	}
 };
 #define MAX_PRECEDENCE_LEVELS 21
+#define MINUS_PRECEDENCE_LEVEL 13
 struct OperatorPrecedenceList : AST::Node {
 	int apply_level;
 	short prefix_usages[256];

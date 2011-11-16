@@ -438,6 +438,7 @@ AST::Node* MathParser::parse_value(void) {
 	if(input_value == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());
+#if 0
 	} else if(input_value == intern("-") || input_value == intern("+") || input_value == intern("~") || input_value == intern("'")) {
 		/* the reason why there is a special-case for "~" at all is so that it will require an argument.
 		   Otherwise stuff like ~~#t would not work as expected. 
@@ -460,7 +461,8 @@ AST::Node* MathParser::parse_value(void) {
 			return((operator_ == intern("+")) ? argument :
 			       (operator_ == intern("-")) ? operation(intern("-"), intern("0"), argument) :
 			       unary_operation(operator_, argument));
-	/*} else if(input_token == intern("<string>")) {
+#endif
+		/*} else if(input_token == intern("<string>")) {
 		return(consume());*/
 	} else {
 		AST::Node* result;
@@ -494,20 +496,22 @@ AST::Node* MathParser::parse_value(void) {
 		}
 		return(result);
 	}
-	// TODO .
-	// TODO ~ (not)
 }
 AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 	struct AST::Symbol* associativity;
-	bool B_visible_operator;
+	bool B_visible_operator, B_unary_operator = false;
 	//printf("level is %d, input is: %s\n", precedence_level, input_value->str().c_str());
 	if(operator_precedence_list->empty_P(precedence_level))
 		return(parse_value());
-	AST::Node* result = parse_binary_operation(operator_precedence_list->next_precedence_level(precedence_level));
+	/* special case for unary - */
+	AST::Node* result = (precedence_level == MINUS_PRECEDENCE_LEVEL && input_value == intern("-")) ? (B_unary_operator = true, intern("0")) : parse_binary_operation(operator_precedence_list->next_precedence_level(precedence_level));
 	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator)) {
 		while(actual_token) {
 			AST::Node* operator_ = B_visible_operator ? consume() : intern(" ");
-			result = operation(operator_, result, parse_binary_operation(associativity != intern("right") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level));
+			AST::Node* b = parse_binary_operation(associativity != intern("right") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level);
+			if(B_unary_operator && !b) // -nil, funny...
+				return(operator_);
+			result = operation(operator_, result, b);
 			/* for right associative operations, the recursion will have consumed all the operators on that level and by virtue of that, the while loop will always stop after one iteration. */
 			if(associativity == intern("none"))
 				break;
