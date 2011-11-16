@@ -25,7 +25,6 @@ using namespace AST;
 MathParser::MathParser(void) : Scanner() {
 	B_process_macros = true;
 	input_value = NULL;
-	allow_args = true;
 }
 void MathParser::parse_structural(int input) {
 	switch(input) {
@@ -70,7 +69,7 @@ static bool operatorCharP(int input) {
 	// without '#' for now (not sure whether that's good. TODO find out)
 	// without '@' for now (keywords).
 	// without braces 40 41 91 93
-	return((input >= 33 && input < 35) || (input >= 36 && input < 48 && input != '(' && input != ')') || (input >= 58 && input < 64) || (input == '^') || (input == '|') || (input == '~'));
+	return((input >= 33 && input < 35) || (input >= 36 && input < 48 && input != '(' && input != ')') || (input >= 58 && input < 64) || (input == '^') || (input == '|') || (input == '~')) || input == '[' || input == ']';
 }
 void MathParser::parse_operator(int input) {
 	std::stringstream sst;
@@ -355,14 +354,14 @@ AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 	if(operator_ == NULL || operand_1 == NULL/* || operand_2 == NULL*/) {
 		raise_error("<second_operand>", "<nothing>");
 		return(NULL);
-	} else if(operator_ == intern("apply"))
+	} else if(operator_ == intern(" ")) // apply
 		return(cons(operand_1, cons(operand_2, NULL)));
 	else
 		return(cons(cons(operator_, cons(operand_1, NULL)), cons(operand_2, NULL)));
 		//return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
 }
 bool macro_operator_P(AST::Node* operator_) {
-	return(operator_ == intern("define") || operator_ == intern("'"));
+	return(operator_ == intern("define") || operator_ == intern("'") || operator_ == intern("["));
 }
 AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 	if(B_process_macros && macro_operator_P(node))
@@ -396,13 +395,24 @@ AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
 	B_process_macros = true;
 	return(result);
 }
+AST::Node* MathParser::parse_list(void) {
+	if(EOFP() || input_value == intern("]")) {
+		consume(intern("]"));
+		return(NULL);
+	} else {
+		AST::Node* value = parse_value();
+		return(operation(intern(":"), value, parse_list()));
+	}
+}
 AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 	// TODO let|where, include, cond, make-list, quote, case.
-	if(operand_1 == intern("define")) {
+	if(operand_1 == intern("define"))
 		return(parse_define(operand_1));
-	} else if(operand_1 == intern("'")) {
+	else if(operand_1 == intern("'"))
 		return(parse_quote(operand_1));
-	} else {
+	else if(operand_1 == intern("["))
+		return(parse_list());
+	else {
 		raise_error("<known_macro>", "<unknown_macro>");
 		return(NULL);
 	}
@@ -455,8 +465,6 @@ AST::Node* MathParser::parse_value(void) {
 	} else {
 		AST::Node* result;
 		if(input_value == intern("(")) {
-			bool previous_allow_args = allow_args;
-			allow_args = true;
 			AST::Node* opening_brace = input_value;
 			consume();
 			if(input_value == intern(")"))
@@ -465,11 +473,9 @@ AST::Node* MathParser::parse_value(void) {
 				result = parse_expression();
 			if(opening_brace != intern("(") || input_value != intern(")")) {
 				raise_error(")", input_value ? input_value->str() : "<nothing>");
-				allow_args = previous_allow_args;
 				return(NULL);
 			}
 			consume(intern(")"));
-			allow_args = previous_allow_args;
 		} else {
 #if 0
 			if(input_value == AST::intern(")")) { /* oops! */
@@ -486,41 +492,26 @@ AST::Node* MathParser::parse_value(void) {
 			if(macro_result)
 				return(macro_result);
 		}
-		if(allow_args) {
-			allow_args = false; // sigh...
-			try {
-				// this will have problems with: "cos -3" because it doesn't know that that means "cos (-3)" and not "(cos)-3".
-				while(!(input_value == NULL || input_value == intern(")") || operator_precedence_list->any_operator_P(input_value))) {
-					//raise_error("<operand>", result ? result->str() : "<nothing>");
-					result = operation(intern("apply"), result, parse_argument());
-				}
-			} catch(...) {
-				allow_args = true;
-				throw;
-			}
-			allow_args = true;
-		}
 		return(result);
 	}
-	// TODO []
 	// TODO .
 	// TODO ~ (not)
 }
 AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 	struct AST::Symbol* associativity;
+	bool B_visible_operator;
 	//printf("level is %d, input is: %s\n", precedence_level, input_value->str().c_str());
 	if(operator_precedence_list->empty_P(precedence_level))
 		return(parse_value());
 	AST::Node* result = parse_binary_operation(operator_precedence_list->next_precedence_level(precedence_level));
-	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity)) {
+	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator)) {
 		while(actual_token) {
-			AST::Node* operator_ = actual_token;
-			consume(); /* operator */
+			AST::Node* operator_ = B_visible_operator ? consume() : intern(" ");
 			result = operation(operator_, result, parse_binary_operation(associativity != intern("right") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level));
 			/* for right associative operations, the recursion will have consumed all the operators on that level and by virtue of that, the while loop will always stop after one iteration. */
 			if(associativity == intern("none"))
 				break;
-			actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity);
+			actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator);
 		}
 		return(result);
 	} else

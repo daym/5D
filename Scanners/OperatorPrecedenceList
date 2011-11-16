@@ -27,7 +27,7 @@ struct OperatorPrecedenceItem : AST::Node {
 		this->associativity = associativity;
 	}
 };
-#define MAX_PRECEDENCE_LEVELS 20
+#define MAX_PRECEDENCE_LEVELS 21
 struct OperatorPrecedenceList : AST::Node {
 	int apply_level;
 	short prefix_usages[256];
@@ -40,12 +40,20 @@ struct OperatorPrecedenceList : AST::Node {
 		return(precedence_level >= MAX_PRECEDENCE_LEVELS || levels[precedence_level] == NULL);
 	}
 	/* for speed reasons, it can happen that the same operator is present multiple times on the same level. */
-	AST::Node* match_operator(int precedence_level, AST::Node* operator_, struct AST::Symbol*& associativity_out) {
+	AST::Node* match_operator(int precedence_level, AST::Node* operator_, struct AST::Symbol*& associativity_out, bool& B_visible_operator) {
+		B_visible_operator = true;
 		if(precedence_level < 0 || precedence_level >= MAX_PRECEDENCE_LEVELS)
 			return(NULL);
 		struct OperatorPrecedenceItem* precedence = levels[precedence_level];
 		for(; precedence; precedence = precedence->next) {
-			if(precedence->operator_ == operator_) {
+			if(precedence->operator_ == operator_ 
+			 || (precedence->operator_ == AST::intern(" ") /* apply */ && 
+			     !any_operator_P(operator_) && 
+			     operator_ && 
+			     operator_ != AST::intern(")") &&
+			     operator_ != AST::intern("]"))) {
+				if(precedence->operator_ != operator_)
+					B_visible_operator = false;
 				associativity_out = precedence->associativity;
 				return(operator_);
 			}

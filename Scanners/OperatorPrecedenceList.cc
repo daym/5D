@@ -13,7 +13,6 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace Scanners {
 using namespace AST;
-#define MAX_PRECEDENCE_LEVELS 20
 
 std::string OperatorPrecedenceList::str(void) const {
 	return("FIXME");
@@ -72,6 +71,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(void) {
 #define R intern("right")
 #define L intern("left")
 #define N intern("none")
+	cons(20, I(" "), L); // apply
 	cons(19, I("_"), R);
 	cons(19, I("."), R);
 	cons(19, I("^"), R);
@@ -83,7 +83,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(void) {
 	// TODO div rem quot 17 L
 	cons(13, I("+"), L);
 	cons(13, I("-"), L);
-	cons(11, I(":"), L);
+	cons(11, I(":"), R);
 	cons(11, I("++"), L);
 	cons(9, I("="), N);
 	cons(9, I("/="), N);
