@@ -167,7 +167,7 @@ static void TerminalEmulator_handle_control_character(struct TerminalEmulator* e
 }
 
 unsigned int TerminalEmulator_maybe_handle_escape(struct TerminalEmulator* emulator, const unsigned char* raw_buffer, unsigned int count) {
-	int i;
+	unsigned int i;
 	unsigned char item;
 	unsigned char* end;
 	assert(count > 0);
