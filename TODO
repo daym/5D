@@ -4,10 +4,13 @@ bool builtins: move them into the runtime and somehow have the parser find them 
 Builtins should somehow note they mean super() on str(). Not sure how? Is that even an issue in practise?
 move provide_dynamic_builtins into the reduce phase (?)
 provide hooks for big integers (?)
-provide hooks for listing currently registered operators (?)
+provide callback used by the scanner for getting currently registered operators and their precedence
 where does modulo fit?
-delete environment nodes (includes usage check in the rest of the environment).
-
+let a=b+c in ...
+GUI: allow deletion environment nodes (includes usage check in the rest of the environment).
+GUI: allow moving of environment nodes.
+GUI: allow compacting of environment nodes.
+(+3) = \x (x+3)
 translateFFI resulttype argtypes procedure => translator used when calling:
 	translateFFI unmarshalVoidResult (list marshalInt marshal...)
 ONLY implement marshallers and demarshallers in C, let them return stand-in buffers
@@ -45,3 +48,4 @@ support (-1) as opposed to (-x) or (--x) or (--1)
 fopen @mode:"w" "foo.INI.temp"
 ;
 unary posfix operators like "!"?
+... `catch` \e error e
