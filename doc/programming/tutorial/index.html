@@ -161,9 +161,11 @@ define f \x if (x = 0)   1
 head (1:2:3:nil)            =&gt; 1
 tail (1:2:3:nil)            =&gt; (2:3:nil)
 head (tail (1:2:3:nil))     =&gt; 2
+cons? (1:nil)               =&gt; #t
+cons? nil                   =&gt; #f
+cons? 42                    =&gt; #f
 list? (1:nil)               =&gt; #t
-list? nil                   =&gt; #f
-list? 42                    =&gt; #f
+list? nil                   =&gt; #t
 </pre>
 <p>There's also a shorthand macro for creating lists used like this:</p>
 <pre>
