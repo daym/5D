@@ -1,5 +1,8 @@
 
-CXXFLAGS += -Wall -I. -g3
+CXXFLAGS += -Wall -I. -g3 -fno-strict-overflow
+#-fwrapv
+#-Werror=strict-overflow
+
 LDFLAGS += -lreadline -ldl
 GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
 GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
@@ -24,7 +27,7 @@ Linear_Algebra/test-Tensor: Linear_Algebra/test-Tensor.o
 Scanners/test-Scanner: Scanners/test-Scanner.o Scanners/Scanner.o
 	g++ -o $@ $^ $(CXXFLAGS)
 
-Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/MathParser.o Scanners/Scanner.o AST/Symbol.o AST/AST.o
+Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/MathParser.o Scanners/Scanner.o AST/Symbol.o AST/AST.o Scanners/OperatorPrecedenceList.o AST/Keyword.o
 	g++ -o $@ $^ $(CXXFLAGS)
 	
 AST/test-AST: AST/test-AST.o
