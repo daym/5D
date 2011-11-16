@@ -90,7 +90,7 @@ define f \x x⋅x
 5 + 2 ⋅ f 3 =&gt; 23
 </pre>
 <p>Here, the function f is defined to be a function of x, giving the square of x.</p>
-<p>Then the function f is called with the argument 3. For a more traditional way, this works, too (although it has more parens for no reason):</p>
+<p>Then the function f is called with the argument 3. The following works, too (although it has more parens for no reason):</p>
 <pre>
 define f\x x⋅x
 5+2⋅f(3) =&gt; 23
@@ -191,4 +191,13 @@ second (1,2)   =&gt; 2
 first (1,2,3)    =&gt; 1
 second (1,2,3)    =&gt; (2,3)
 </pre>
+
+define f $ x = f x
+define (f . g) x = f (g x)
+  
+TODO
+  backticks `` precedence level 4 (overridable); ONLY work around symbol.
+
+[] braces and how they are implemented
+⟨||⟩ braces and how they are implemented
 -->
