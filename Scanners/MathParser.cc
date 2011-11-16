@@ -435,7 +435,9 @@ AST::Node* MathParser::parse_abstraction(void) {
 	}
 }
 AST::Node* MathParser::parse_value(void) {
-	if(input_value == intern("\\")) { // function abstraction
+	if(input_value == intern(")")) {
+		raise_error("<value>", ')');
+	} else if(input_value == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());
 #if 0
@@ -508,8 +510,10 @@ AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator)) {
 		while(actual_token) {
 			AST::Node* operator_ = B_visible_operator ? consume() : intern(" ");
+			if(input_value == intern(")")) // premature end.
+				return(B_unary_operator ? operator_ : cons(operator_, cons(result, NULL))); /* default to the binary operator */
 			AST::Node* b = parse_binary_operation(associativity != intern("right") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level);
-			if(B_unary_operator && !b) // -nil, funny...
+			if(B_unary_operator && !b) // -nil
 				return(operator_);
 			result = operation(operator_, result, b);
 			/* for right associative operations, the recursion will have consumed all the operators on that level and by virtue of that, the while loop will always stop after one iteration. */
