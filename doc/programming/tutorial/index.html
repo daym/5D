@@ -165,6 +165,10 @@ cons? (1:nil)               =&gt; #t
 cons? nil                   =&gt; #f
 cons? 42                    =&gt; #f
 </pre>
+<p>There's also a shorthand macro for creating lists used like this:</p>
+<pre>
+[42 24 12]
+</pre>
 <h3>Literal Names</h3>
 <p>Sometimes you want to <em>not</em> reduce a function or operator to their definition but rather leave the name. To do so, prefix their name by <span class="pre">quote</span> or <span class="pre" title="quote">'</span></p>
 <pre>
