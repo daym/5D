@@ -106,6 +106,7 @@ static char* REPL_ensure_default_environment_name(struct REPL* self) {
 void REPL_init(struct REPL* self) {
 	self->fFileModified = false;
 	self->fEnvironmentName = NULL;
+	self->fEnvironmentCount = 0;
 	//self->fConfig = load_Config();
 	REPL_clear(self);
 }
