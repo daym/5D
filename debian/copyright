@@ -3,12 +3,11 @@ Upstream-Name: 5d
 Source: <url://example.com>
 
 Files: *
-Copyright: <years> <put author's name and email here>
-           <years> <likewise for another author>
+Copyright: 2011 Danny Milosavljevic <danny.milo+ml@gmail.com>
 License: GPL-3.0+
 
 Files: debian/*
-Copyright: 2011 Danny Milosavljevic <danny.milo+ml@gmail.com>
+Copyright: 2011 Danny Milosavljevic <danny_milo@yahoo.com>
 License: GPL-3.0+
 
 License: GPL-3.0+

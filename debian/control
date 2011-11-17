@@ -1,7 +1,7 @@
 Source: 5d
 Section: unknown
 Priority: extra
-Maintainer: Danny Milosavljevic <danny.milo+ml@gmail.com>
+Maintainer: Danny Milosavljevic <danny_milo@yahoo.com>
 Build-Depends: debhelper (>= 7.0.50~)
 Standards-Version: 3.9.1
 Homepage: http://www.scratchpost.org/software/5D/
