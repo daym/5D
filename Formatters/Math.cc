@@ -18,6 +18,22 @@ using namespace Evaluators;
 */
 
 static void print_text(std::ostream& output, int& visible_position, const char* text) {
+	if(isalnum(*text))
+		output << text;
+	else
+		output << '(' << text << ')';
+	for(; *text; ++text) {
+		unsigned c = (unsigned) *text;
+		if(c == 10)
+			visible_position = 0;
+		else if(c < 0x20)
+			;
+		else if(c < 0x80 || c >= 0xC0)
+			++visible_position;
+	}
+}
+static void print_text_raw(std::ostream& output, int& visible_position, const std::string& textStr) {
+	const char* text = textStr.c_str();
 	output << text;
 	for(; *text; ++text) {
 		unsigned c = (unsigned) *text;
@@ -84,7 +100,8 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		if(precedence != -1) { // is a (binary) operator
 			bool B_braced = maybe_print_opening_brace(output, position, precedence, precedence_limit, B_brace_equal_levels);
 			print_math_CXX(OPL, output, position, get_application_operand(envelope), precedence, operatorAssociativity != AST::intern("left"));
-			print_math_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
+			print_text_raw(output, position, operatorSymbol->str());
+			////print_math_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
 			print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != AST::intern("right"));
 			//print_text(output, position, operator_);
 			//print_math_CXX(OPL, output, position, get_application_operand(node), precedence);
@@ -99,7 +116,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 			int xprecedence = operatorSymbol ? OPL->get_operator_precedence(operatorSymbol) : -1;
 			if(xprecedence != -1) { // incomplete binary operation
 				++position, output << '(';
-				print_math_CXX(OPL, output, position, operator_, precedence, false);
+                                print_text_raw(output, position, operatorSymbol->str());
 				++position, output << ')';
 			} else
 				print_math_CXX(OPL, output, position, operator_, precedence, operatorAssociativity != AST::intern("left"));
@@ -108,7 +125,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 			operands = dynamic_cast<AST::Cons*>(node);
 			if(operands)
 				operands = operands->tail;
-			if(operands->tail) { // define etc
+			if(operands && operands->tail) { // define etc
 				for(; operands; operands = operands->tail) {
 					print_math_CXX(OPL, output, position, operands->head, precedence, true);
 					if(operands->tail)
