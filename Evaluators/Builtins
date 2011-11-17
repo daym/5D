@@ -35,9 +35,10 @@ struct P : BuiltinOperation { \
 	} \
 };
 DECLARE_SIMPLE_OPERATION(ProcedureP, "procedure?")
-DECLARE_SIMPLE_OPERATION(Conser, "cons")
+DECLARE_SIMPLE_OPERATION(Conser, ":")
 DECLARE_SIMPLE_OPERATION(HeadGetter, "head")
 DECLARE_SIMPLE_OPERATION(TailGetter, "tail")
+DECLARE_SIMPLE_OPERATION(NilP, "nil?")
 DECLARE_SIMPLE_OPERATION(ConsP, "cons?")
 DECLARE_SIMPLE_OPERATION(IntP, "int?")
 DECLARE_SIMPLE_OPERATION(SmallRealP, "smallReal?")
@@ -47,7 +48,7 @@ DECLARE_SIMPLE_OPERATION(KeywordP, "keyword?")
 /*DECLARE_SIMPLE_OPERATION(Int0, "int0")*/
 DECLARE_SIMPLE_OPERATION(IntSucc, "intSucc")
 DECLARE_SIMPLE_OPERATION(Interner, "intern")
-DECLARE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromString")
+DECLARE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr")
 DECLARE_SIMPLE_OPERATION(KeywordStr, "keywordStr")
 
 struct Conser2 : AST::Operation {

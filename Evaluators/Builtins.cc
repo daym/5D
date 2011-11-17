@@ -316,6 +316,10 @@ AST::Node* ConsP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<AST::Cons*>(argument) != NULL;
 	return(internNative(result));
 }
+AST::Node* NilP::execute(AST::Node* argument) {
+	bool result = argument == NULL;
+	return(internNative(result));
+}
 AST::Node* IntP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<Int*>(argument) != NULL;
 	return(internNative(result));
