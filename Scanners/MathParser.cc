@@ -34,6 +34,12 @@ void MathParser::parse_structural(int input) {
 	case ')':
 		input_value = intern(")");
 		return;
+	case '[':
+		input_value = intern("(");
+		return;
+	case ']':
+		input_value = intern(")");
+		return;
 	/* TODO other kind of braces? */
 	default:
 		raise_error("<expression>", input);	
@@ -221,6 +227,8 @@ void MathParser::parse_token(void) {
 		break;
 	case '(':
 	case ')':
+	case '[':
+	case ']':
 		parse_structural(input);
 		break;
 	case '"':
