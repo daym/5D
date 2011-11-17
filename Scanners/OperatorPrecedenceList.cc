@@ -61,7 +61,7 @@ void OperatorPrecedenceList::uncons(int precedence_level, struct AST::Symbol* op
 	levels[precedence_level]->next = NULL;
 	levels[precedence_level] = item;
 }
-OperatorPrecedenceList::OperatorPrecedenceList(void) {
+OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 	apply_level = 0;
 	for(int i = 0; i < MAX_PRECEDENCE_LEVELS; ++i)
 		levels[i] = NULL;
@@ -72,37 +72,39 @@ OperatorPrecedenceList::OperatorPrecedenceList(void) {
 #define L intern("left")
 #define N intern("none")
 	cons(20, I(" "), L); // apply
-	cons(19, I("_"), R);
-	cons(19, I("."), R);
-	cons(19, I("^"), R);
-	cons(17, I("**"), R);
-	cons(16, I("⨯"), R);
-	cons(15, I("*"), L);
-	cons(15, I("/"), L);
-	cons(15, I("%"), L);
-	// TODO div rem quot 17 L
-	cons(13, I("+"), L); // keep in sync with MINUS_PRECEDENCE_LEVEL
-	cons(13, I("-"), L);
-	cons(11, I(":"), R);
-	cons(11, I("++"), L);
-	cons(9, I("="), N);
-	cons(9, I("/="), N);
-	cons(8, I("<"), N);
-	cons(8, I("<="), N);
-	cons(8, I(">"), N);
-	cons(8, I(">="), N); /*, intern("≤"), intern("≥")*/
-	cons(8, I("≤"), N);
-	cons(8, I("≥"), N);
-	cons(7, I("&&"), L);
-	cons(5, I("||"), L);
-	cons(4, I(","), R),
-	cons(3, I(";"), L);
-	//cons(3, I(">>"), L);
-	//cons(3, I(">>="), L);
-	//cons(2, I("$"), L);
-	cons(2, I("|"), L);
-	cons(1, I("=>"), L); // FIXME precedence.
-
+	if(bInitDefaults) {
+		cons(19, I("_"), R);
+		cons(19, I("."), R);
+		cons(19, I("^"), R);
+		cons(17, I("**"), R);
+		cons(16, I("⨯"), R);
+		cons(15, I("*"), L);
+		cons(15, I("/"), L);
+		cons(15, I("%"), L);
+		// TODO div rem quot 17 L
+		cons(13, I("+"), L); // keep in sync with MINUS_PRECEDENCE_LEVEL
+		cons(13, I("-"), L);
+		cons(11, I(":"), R);
+		cons(11, I("++"), L);
+		cons(9, I("="), N);
+		cons(9, I("/="), N);
+		cons(8, I("<"), N);
+		cons(8, I("<="), N);
+		cons(8, I(">"), N);
+		cons(8, I(">="), N); /*, intern("≤"), intern("≥")*/
+		cons(8, I("≤"), N);
+		cons(8, I("≥"), N);
+		cons(7, I("&&"), L);
+		cons(5, I("||"), L);
+		cons(4, I(","), L), // FIXME R
+		cons(3, I(";"), L);
+		//cons(3, I(">>"), L);
+		//cons(3, I(">>="), L);
+		//cons(2, I("$"), L);
+		cons(2, I("|"), L);
+		cons(1, I("=>"), L); // FIXME precedence.
+		cons(0, I("$"), R);
+	}
 #undef N
 #undef L
 #undef R
