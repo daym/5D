@@ -66,8 +66,9 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, AST::intern("reduce"), &Evaluators::reducer);
 	REPL_add_builtin_method(self, AST::intern("fromLibrary"), FFIs::LibraryLoader);
 	REPL_add_static_builtin_binding(self, AST::intern("nil"), NULL);
-	REPL_add_builtin_method(self, AST::intern("cons"), Evaluators::Conser);
-	REPL_add_builtin_method(self, AST::intern("cons?"), Evaluators::ConsP);
+	REPL_add_builtin_method(self, AST::intern(":"), Evaluators::Conser);
+	REPL_add_builtin_method(self, AST::intern("list?"), Evaluators::ConsP);
+	REPL_add_builtin_method(self, AST::intern("nil?"), Evaluators::NilP);
 	REPL_add_builtin_method(self, AST::intern("head"), Evaluators::HeadGetter);
 	REPL_add_builtin_method(self, AST::intern("tail"), Evaluators::TailGetter);
 	REPL_add_builtin_method(self, AST::intern("int?"), Evaluators::IntP);
@@ -79,7 +80,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::intern("keyword?"), Evaluators::KeywordP);
 	REPL_add_builtin_method(self, AST::intern("translateFFI"), FFIs::ResultMarshaller);
 	REPL_add_builtin_method(self, AST::intern("intern"), Evaluators::Interner);
-	REPL_add_builtin_method(self, AST::intern("keywordFromString"), Evaluators::KeywordFromStringGetter);
+	REPL_add_builtin_method(self, AST::intern("keywordFromStr"), Evaluators::KeywordFromStringGetter);
 	REPL_add_builtin_method(self, AST::intern("keywordStr"), Evaluators::KeywordStr);
 	REPL_add_static_builtin_binding(self, AST::intern("#t"), Evaluators::churchTrue);
 	REPL_add_static_builtin_binding(self, AST::intern("#f"), Evaluators::churchFalse);
