@@ -25,6 +25,7 @@ using namespace AST;
 MathParser::MathParser(void) : Scanner() {
 	B_process_macros = true;
 	input_value = NULL;
+	//operator_precedence_list = new OperatorPrecedenceList(false);
 }
 void MathParser::parse_structural(int input) {
 	switch(input) {
@@ -252,7 +253,7 @@ static bool symbol1_char_P(int input) {
 	return (input >= 'A' && input <= 'Z')
 	    || (input >= 'a' && input <= 'z')
 	    || input == '#'
-	    || input == '$'
+	    // FIXME || input == '$'
 	    || (input >= 128 && input != 0xE2 /* operators */);
 }
 bool symbol_char_P(int input) {
@@ -445,6 +446,7 @@ AST::Node* MathParser::parse_abstraction(void) {
 AST::Node* MathParser::parse_value(void) {
 	if(input_value == intern(")")) {
 		raise_error("<value>", ')');
+		return(NULL);
 	} else if(input_value == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());
@@ -538,9 +540,6 @@ AST::Node* MathParser::parse_expression(void) {
 		return parse_binary_operation(operator_precedence_list->next_precedence_level(-1));
 	else
 		return parse_value();
-}
-AST::Node* MathParser::parse_argument(void) {
-	return parse_binary_operation(operator_precedence_list->apply_level);
 }
 AST::Node* MathParser::parse(OperatorPrecedenceList* operator_precedence_list) {
 	this->operator_precedence_list = operator_precedence_list;
