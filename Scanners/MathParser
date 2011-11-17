@@ -34,6 +34,7 @@ private:
 	void parse_keyword(int input);
 	void parse_string(int input);
 	AST::Node* parse_value(void);
+	AST::Node* parse_argument(void);
 	AST::Node* parse_binary_operation(int precedence_level);
 	AST::Node* parse_abstraction(void);
 	void parse_optional_whitespace(void);
@@ -43,7 +44,6 @@ private:
 	AST::Node* parse_define(AST::Node* operand_1);
 	AST::Node* parse_quote(AST::Node* operand_1);
 	AST::Node* parse_list(void);
-	AST::Node* parse_argument(void);
 	AST::Node* maybe_parse_macro(AST::Node* node);
 protected:
 	AST::Node* parse_expression(void);

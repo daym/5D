@@ -541,6 +541,9 @@ AST::Node* MathParser::parse_expression(void) {
 	else
 		return parse_value();
 }
+AST::Node* MathParser::parse_argument(void) {
+	return parse_binary_operation(operator_precedence_list->apply_level);
+}
 AST::Node* MathParser::parse(OperatorPrecedenceList* operator_precedence_list) {
 	this->operator_precedence_list = operator_precedence_list;
 	AST::Node* result = parse_expression();
