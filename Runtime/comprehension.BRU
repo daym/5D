@@ -7,7 +7,7 @@ define (++) \a \b foldr (:) b a
 define map \f foldr (cons . f) nil
 
 -- f (f (f (f a)))
-define repeatedly rec \repeat \f \a a:(repeat f (f a))
+define repeatedly rec \repeatedly \f \a a:(repeatedly f (f a))
 
 define flip \f \a \b (f b a)
 define reverse foldl (flip (:)) nil
