@@ -151,6 +151,9 @@ AST::Node* provide_dynamic_builtins(AST::Node* body) {
 	return(provide_dynamic_builtins_impl(body, end_iter, freeNames.begin()));
 }
 
+Float promoteToFloat(const Int& v) {
+	return(Float((NativeFloat) v.value));
+}
 #define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
 AST::Node* N::execute(AST::Node* argument) { \
 	return(new Curried ## N(NULL/*FIXME*/, argument)); \
@@ -167,6 +170,10 @@ AST::Node* Curried##N::execute(AST::Node* argument) { \
 		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b); \
 		if(aFloat && bFloat) \
 			return(*aFloat op *bFloat); \
+		else if(aFloat && bInt) \
+			return(*aFloat op promoteToFloat(*bInt)); \
+		else if(aInt && bFloat) \
+			return(promoteToFloat(*aInt) op *bFloat); \
 	} \
 	return(NULL); \
 }
