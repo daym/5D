@@ -16,6 +16,13 @@ struct Real : AST::Node {
 	virtual std::string str(void) const;
 };
 
+AST::Node* operator+(const Float& a, const Float& b);
+AST::Node* operator-(const Float& a, const Float& b);
+AST::Node* operator*(const Float& a, const Float& b);
+Real* operator+(const Real& a, const Real& b);
+Real* operator-(const Real& a, const Real& b);
+Real* operator*(const Real& a, const Real& b);
+
 };
 
 #endif /* ndef __NUMBERS_REAL_H */

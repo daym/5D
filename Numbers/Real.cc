@@ -11,4 +11,23 @@ AST::Node* FloatP::execute(AST::Node* argument) {
 	return(internNative(result));
 }
 
+AST::Node* operator+(const Float& a, const Float& b) {
+	return(internNative(a.value + b.value)); /* FIXME */
+}
+AST::Node* operator-(const Float& a, const Float& b) {
+	return(internNative(a.value - b.value)); /* FIXME */
+}
+AST::Node* operator*(const Float& a, const Float& b) {
+	return(internNative(a.value * b.value)); /* FIXME */
+}
+Real* operator+(const Real& a, const Real& b) {
+	return(NULL); /* FIXME */
+}
+Real* operator-(const Real& a, const Real& b) {
+	return(NULL); /* FIXME */
+}
+Real* operator*(const Real& a, const Real& b) {
+	return(NULL); /* FIXME */
+}
+
 }; /* end namespace Numbers */
