@@ -160,6 +160,11 @@ AST::Node* CurriedAdder::execute(AST::Node* argument) {
 	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
 	if(aInt && bInt) {
 		return(operator+(*aInt, *bInt));
+	} else {
+		Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
+		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
+		if(aFloat && bFloat)
+			return(operator+(*aFloat, *bFloat));
 	}
 	return(NULL);
 }
@@ -173,6 +178,11 @@ AST::Node* CurriedSubtractor::execute(AST::Node* argument) {
 	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
 	if(aInt && bInt) {
 		return(operator-(*aInt, *bInt));
+	} else {
+		Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
+		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
+		if(aFloat && bFloat)
+			return(operator-(*aFloat, *bFloat));
 	}
 	return(NULL);
 }
@@ -186,6 +196,11 @@ AST::Node* CurriedMultiplicator::execute(AST::Node* argument) {
 	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
 	if(aInt && bInt) {
 		return(operator*(*aInt, *bInt));
+	} else {
+		Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
+		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
+		if(aFloat && bFloat)
+			return(operator*(*aFloat, *bFloat));
 	}
 	return(NULL);
 }
@@ -199,6 +214,11 @@ AST::Node* CurriedLEComparer::execute(AST::Node* argument) {
 	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
 	if(aInt && bInt) {
 		return(internNative(aInt->value <= bInt->value));
+	} else {
+		Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
+		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
+		if(aFloat && bFloat)
+			return(internNative(aFloat->value <= bFloat->value));
 	}
 	return(NULL);
 }
