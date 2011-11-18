@@ -150,60 +150,29 @@ AST::Node* provide_dynamic_builtins(AST::Node* body) {
 	end_iter = freeNames.end();
 	return(provide_dynamic_builtins_impl(body, end_iter, freeNames.begin()));
 }
-AST::Node* Adder::execute(AST::Node* argument) {
-	return(new CurriedAdder(NULL/*FIXME*/, argument));
+
+#define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
+AST::Node* N::execute(AST::Node* argument) { \
+	return(new Curried ## N(NULL/*FIXME*/, argument)); \
+} \
+AST::Node* Curried##N::execute(AST::Node* argument) { \
+	AST::Node* a = fArgument; \
+	AST::Node* b = argument; \
+	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a); \
+	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b); \
+	if(aInt && bInt) { \
+		return(*aInt op *bInt); \
+	} else { \
+		Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a); \
+		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b); \
+		if(aFloat && bFloat) \
+			return(*aFloat op *bFloat); \
+	} \
+	return(NULL); \
 }
-AST::Node* CurriedAdder::execute(AST::Node* argument) {
-	AST::Node* a = fArgument;
-	AST::Node* b = argument;
-	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
-	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
-	if(aInt && bInt) {
-		return(operator+(*aInt, *bInt));
-	} else {
-		Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
-		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
-		if(aFloat && bFloat)
-			return(operator+(*aFloat, *bFloat));
-	}
-	return(NULL);
-}
-AST::Node* Subtractor::execute(AST::Node* argument) {
-	return(new CurriedSubtractor(NULL/*FIXME*/, argument));
-}
-AST::Node* CurriedSubtractor::execute(AST::Node* argument) {
-	AST::Node* a = fArgument;
-	AST::Node* b = argument;
-	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
-	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
-	if(aInt && bInt) {
-		return(operator-(*aInt, *bInt));
-	} else {
-		Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
-		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
-		if(aFloat && bFloat)
-			return(operator-(*aFloat, *bFloat));
-	}
-	return(NULL);
-}
-AST::Node* Multiplicator::execute(AST::Node* argument) {
-	return(new CurriedMultiplicator(NULL/*FIXME*/, argument));
-}
-AST::Node* CurriedMultiplicator::execute(AST::Node* argument) {
-	AST::Node* a = fArgument;
-	AST::Node* b = argument;
-	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
-	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
-	if(aInt && bInt) {
-		return(operator*(*aInt, *bInt));
-	} else {
-		Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
-		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
-		if(aFloat && bFloat)
-			return(operator*(*aFloat, *bFloat));
-	}
-	return(NULL);
-}
+IMPLEMENT_NUMERIC_BUILTIN(Adder, +)
+IMPLEMENT_NUMERIC_BUILTIN(Subtractor, -)
+IMPLEMENT_NUMERIC_BUILTIN(Multiplicator, *)
 AST::Node* LEComparer::execute(AST::Node* argument) {
 	return(new CurriedLEComparer(NULL/*FIXME*/, argument));
 }
