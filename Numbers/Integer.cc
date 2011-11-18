@@ -1,8 +1,13 @@
 #include <string>
-
+#include "Evaluators/Builtins"
 #include "Numbers/Integer"
 
+namespace Evaluators {
+AST::Node* internNative(bool value);
+};
+
 namespace Numbers {
+using namespace Evaluators;
 
 static Int integers[256] = {
 	Int(0),
@@ -291,7 +296,7 @@ Integer* operator*(const Integer& a, const Integer& b) {
 }
 AST::Node* IntP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<Int*>(argument) != NULL;
-	return(internNative(result));
+	return(Evaluators::internNative(result));
 }
 AST::Node* IntSucc::execute(AST::Node* argument) {
 	Int* int1 = dynamic_cast<Int*>(argument);

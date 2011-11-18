@@ -1,4 +1,9 @@
 #include "Numbers/Real"
+#include "Evaluators/Builtins"
+
+namespace Evaluators {
+AST::Node* internNative(bool value);
+};
 
 namespace Numbers {
 
@@ -8,7 +13,7 @@ AST::Node* internNative(NativeFloat value) {
 
 AST::Node* FloatP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<Float*>(argument) != NULL;
-	return(internNative(result));
+	return(Evaluators::internNative(result));
 }
 
 AST::Node* operator+(const Float& a, const Float& b) {

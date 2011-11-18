@@ -119,8 +119,8 @@ GUI/5D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/
 GUI/GTKTerminalEmulator.o: GUI/GTKTerminalEmulator.cc GUI/TerminalEmulator
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-Numbers/Integer.o: Numbers/Integer.cc Numbers/Integer Numbers/Small
-Numbers/Real.o: Numbers/Real.cc Numbers/Real Numbers/Small
+Numbers/Integer.o: Numbers/Integer.cc Numbers/Integer Numbers/Small Evaluators/Builtins
+Numbers/Real.o: Numbers/Real.cc Numbers/Real Numbers/Small Evaluators/Builtins
 
 clean:
 	rm -f Linear_Algebra/*.o
