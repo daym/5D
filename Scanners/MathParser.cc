@@ -122,7 +122,11 @@ void MathParser::parse_number(int input) {
 	if(input == 'e' || input == 'E') {
 		matchtext << ((char) input);
 		++position, input = fgetc(input_file);
-		while((input >= '0' && input <= '9') || input == '-' || input == '+'/* || input == '.'*/) {
+		if(input == '+' || input == '-') {
+			matchtext << ((char) input);                   
+			++position, input = fgetc(input_file);
+		}
+		while((input >= '0' && input <= '9') /* || input == '.'*/) {
 			matchtext << ((char) input);                   
 			++position, input = fgetc(input_file);
 		}
