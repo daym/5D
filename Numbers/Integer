@@ -1,0 +1,37 @@
+#ifndef __NUMBERS_INTEGER_H
+#define __NUMBERS_INTEGER_H
+#include <string>
+#include <sstream>
+#include "AST/AST"
+#include "Numbers/Small"
+
+namespace Numbers {
+
+#ifdef __SIZEOF_LONG__
+#if __SIZEOF_LONG__ != __SIZEOF_INT__
+/* TODO only do this for 64 bits? */
+typedef long int NativeInt; /* register type */
+#else
+typedef long int NativeInt; /* register type */
+#endif
+#else
+typedef int NativeInt; /* register type */
+#endif
+
+DECLARE_SMALL_VALUE(Int, Numbers::NativeInt)
+DECLARE_SIMPLE_OPERATION(IntP, "int?")
+DECLARE_SIMPLE_OPERATION(IntSucc, "intSucc")
+AST::Node* internNative(NativeInt value);
+
+struct Integer : AST::Node {
+	NativeInt* parts;
+	virtual std::string str(void) const;
+};
+
+struct Integer* operator+(const Integer& a, const Integer& b);
+struct Integer* operator-(const Integer& a, const Integer& b);
+struct Integer* operator*(const Integer& a, const Integer& b);
+
+
+}; /* namespace Numbers */
+#endif /* __NUMBERS_INTEGER_H */

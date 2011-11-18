@@ -1,0 +1,21 @@
+#ifndef __NUMBERS_REAL_H
+#define __NUMBERS_REAL_H
+#include <sstream>
+#include "Numbers/Small"
+#include "AST/AST"
+
+namespace Numbers {
+
+typedef float NativeFloat; /* TODO use double for 64 bits? */
+
+DECLARE_SMALL_VALUE(Float, NativeFloat)   
+DECLARE_SIMPLE_OPERATION(FloatP, "float?")
+
+struct Real : AST::Node {
+	NativeFloat* parts;
+	virtual std::string str(void) const;
+};
+
+};
+
+#endif /* ndef __NUMBERS_REAL_H */

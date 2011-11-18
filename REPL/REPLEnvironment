@@ -71,10 +71,10 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::intern("nil?"), Evaluators::NilP);
 	REPL_add_builtin_method(self, AST::intern("head"), Evaluators::HeadGetter);
 	REPL_add_builtin_method(self, AST::intern("tail"), Evaluators::TailGetter);
-	REPL_add_builtin_method(self, AST::intern("int?"), Evaluators::IntP);
-	REPL_add_static_builtin_binding(self, AST::intern("int0"), Evaluators::internNative((Evaluators::NativeInt) 0));
-	REPL_add_builtin_method(self, AST::intern("intSucc"), Evaluators::IntSucc);
-	REPL_add_builtin_method(self, AST::intern("smallReal?"), Evaluators::SmallRealP);
+	REPL_add_builtin_method(self, AST::intern("int?"), Numbers::IntP);
+	REPL_add_static_builtin_binding(self, AST::intern("int0"), Numbers::internNative((Numbers::NativeInt) 0));
+	REPL_add_builtin_method(self, AST::intern("intSucc"), Numbers::IntSucc);
+	REPL_add_builtin_method(self, AST::intern("float?"), Numbers::FloatP);
 	REPL_add_builtin_method(self, AST::intern("str?"), Evaluators::StrP);
 	REPL_add_builtin_method(self, AST::intern("symbol?"), Evaluators::SymbolP);
 	REPL_add_builtin_method(self, AST::intern("keyword?"), Evaluators::KeywordP);

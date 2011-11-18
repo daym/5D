@@ -42,7 +42,7 @@ struct FFIClosure : AST::Operation {
 	virtual AST::Node* execute(AST::Node* state);
 	virtual std::string str(void) const;
 };
-struct SymArgCacheFFI : BuiltinOperation {
+struct SymArgCacheFFI : AST::BuiltinOperation {
 private:
 	std::map<AST::Symbol*, AST::Node*> knownResults;
 public:

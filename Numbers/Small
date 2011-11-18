@@ -1,0 +1,28 @@
+#ifndef __NUMBERS_SMALL_H
+#define __NUMBERS_SMALL_H
+#define DECLARE_SMALL_VALUE(P, T) \
+/* use internNative to create. */ \
+struct P : AST::Node { \
+	T value; \
+	P(T value) { \
+		this->value = value; \
+	} \
+	virtual std::string str(void) const { \
+		std::stringstream sst; \
+		sst.precision(7); /* 17 for some */ \
+		sst << this->value; \
+		return(sst.str()); \
+	} \
+};
+
+#define DECLARE_SIMPLE_OPERATION(P, N) \
+struct P : AST::BuiltinOperation { \
+	P(AST::Node* fallback) : AST::BuiltinOperation(fallback) {} \
+	virtual AST::Node* execute(AST::Node* argument); \
+	virtual std::string str(void) const { \
+		/*return(std::string("(N" ") + (fallback ? fallback->str() : std::string("()")) + ")"); f... off */ \
+		return(N); \
+	} \
+};
+
+#endif /* ndef __NUMBERS_SMALL_H */

@@ -12,14 +12,6 @@ public:
 	virtual const char* what() const throw();
 };
 
-/*typedef Operation BuiltinOperation;*/
-struct BuiltinOperation : AST::Operation { /* FIXME make this string out the fallback, too */
-	AST::Node* fallback;
-	BuiltinOperation(AST::Node* fallback) {
-		this->fallback = fallback;
-	}
-	virtual bool eager_P() const;
-};
 struct Reducer : AST::Operation {
 	Reducer(void) {}
 	virtual bool eager_P(void) const {

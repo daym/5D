@@ -1,23 +1,13 @@
 #ifndef __5D_BUILTINS_H
 #define __5D_BUILTINS_H
 #include <sstream>
+#include "Numbers/Small"
+#include "Numbers/Integer"
+#include "Numbers/Real"
 
 namespace Evaluators {
 struct Quoter;
-typedef float NativeReal; /* TODO use double for 64 bits? */
-#ifdef __SIZEOF_LONG__
-#if __SIZEOF_LONG__ != __SIZEOF_INT__
-/* TODO only do this for 64 bits? */
-typedef long int NativeInt; /* register type */
-#else
-typedef long int NativeInt; /* register type */
-#endif
-#else
-typedef int NativeInt; /* register type */
-#endif
-AST::Node* internNative(NativeInt value);
 AST::Node* internNative(bool value);
-AST::Node* internNative(NativeReal value);
 struct Quoter : AST::Operation {
 	virtual bool eager_P(void) const;
 	virtual AST::Node* execute(AST::Node* argument);
@@ -25,28 +15,16 @@ struct Quoter : AST::Operation {
 		return("'");
 	}
 };
-#define DECLARE_SIMPLE_OPERATION(P, N) \
-struct P : BuiltinOperation { \
-	P(AST::Node* fallback) : BuiltinOperation(fallback) {} \
-	virtual AST::Node* execute(AST::Node* argument); \
-	virtual std::string str(void) const { \
-		/*return(std::string("(N" ") + (fallback ? fallback->str() : std::string("()")) + ")"); f... off */ \
-		return(N); \
-	} \
-};
 DECLARE_SIMPLE_OPERATION(ProcedureP, "procedure?")
 DECLARE_SIMPLE_OPERATION(Conser, ":")
 DECLARE_SIMPLE_OPERATION(HeadGetter, "head")
 DECLARE_SIMPLE_OPERATION(TailGetter, "tail")
 DECLARE_SIMPLE_OPERATION(NilP, "nil?")
 DECLARE_SIMPLE_OPERATION(ConsP, "cons?")
-DECLARE_SIMPLE_OPERATION(IntP, "int?")
-DECLARE_SIMPLE_OPERATION(SmallRealP, "smallReal?")
 DECLARE_SIMPLE_OPERATION(StrP, "str?")
 DECLARE_SIMPLE_OPERATION(SymbolP, "symbol?")
 DECLARE_SIMPLE_OPERATION(KeywordP, "keyword?")
 /*DECLARE_SIMPLE_OPERATION(Int0, "int0")*/
-DECLARE_SIMPLE_OPERATION(IntSucc, "intSucc")
 DECLARE_SIMPLE_OPERATION(Interner, "intern")
 DECLARE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr")
 DECLARE_SIMPLE_OPERATION(KeywordStr, "keywordStr")
@@ -59,23 +37,7 @@ public:
 	virtual AST::Node* execute(AST::Node* argument);
 	virtual std::string str(void) const;
 };
-#define DECLARE_SMALL_VALUE(P, T) \
-/* use internNative to create. */ \
-struct P : AST::Node { \
-	T value; \
-	P(T value) { \
-		this->value = value; \
-	} \
-	virtual std::string str(void) const { \
-		std::stringstream sst; \
-		sst.precision(7); /* 17 for some */ \
-		sst << this->value; \
-		return(sst.str()); \
-	} \
-};
-DECLARE_SMALL_VALUE(Int, NativeInt)
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
-DECLARE_SMALL_VALUE(SmallReal, NativeReal)
 AST::Node* provide_dynamic_builtins(AST::Node* body);
 extern AST::Node* churchFalse;
 extern AST::Node* churchTrue;

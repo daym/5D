@@ -285,8 +285,5 @@ AST::Node* abstraction(AST::Node* parameter, AST::Node* body) {
 AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body) {
 	return(application(abstraction(parameter, body), argument));
 }
-bool BuiltinOperation::eager_P() const {
-	return(true);
-}
 
 }; // end namespace Evaluators.

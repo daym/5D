@@ -23,7 +23,7 @@ using namespace Evaluators;
 struct LibraryLoaderP {
 	std::map<AST::Symbol*, CLibrary*> knownLibraries;
 };
-LibraryLoader::LibraryLoader(AST::Node* fallback) : Evaluators::BuiltinOperation(fallback) {
+LibraryLoader::LibraryLoader(AST::Node* fallback) : AST::BuiltinOperation(fallback) {
 	p = new LibraryLoaderP();
 }
 std::string LibraryLoader::str(void) const {

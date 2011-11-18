@@ -9,9 +9,11 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
 #include "AST/AST"
+#include "Numbers/Integer"
 
 namespace Evaluators {
 using namespace AST;
+using namespace Numbers;
 
 int get_native_integer(AST::Node* root) {
 	Int* rootInt = dynamic_cast<Int*>(root);
