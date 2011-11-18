@@ -150,4 +150,44 @@ AST::Node* provide_dynamic_builtins(AST::Node* body) {
 	end_iter = freeNames.end();
 	return(provide_dynamic_builtins_impl(body, end_iter, freeNames.begin()));
 }
+AST::Node* Adder::execute(AST::Node* argument) {
+	return(new CurriedAdder(NULL/*FIXME*/, argument));
+}
+AST::Node* CurriedAdder::execute(AST::Node* argument) {
+	AST::Node* a = fArgument;
+	AST::Node* b = argument;
+	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
+	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
+	if(aInt && bInt) {
+		return(operator+(*aInt, *bInt));
+	}
+	return(NULL);
+}
+AST::Node* Subtractor::execute(AST::Node* argument) {
+	return(new CurriedSubtractor(NULL/*FIXME*/, argument));
+}
+AST::Node* CurriedSubtractor::execute(AST::Node* argument) {
+	AST::Node* a = fArgument;
+	AST::Node* b = argument;
+	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
+	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
+	if(aInt && bInt) {
+		return(operator-(*aInt, *bInt));
+	}
+	return(NULL);
+}
+AST::Node* Multiplicator::execute(AST::Node* argument) {
+	return(new CurriedMultiplicator(NULL/*FIXME*/, argument));
+}
+AST::Node* CurriedMultiplicator::execute(AST::Node* argument) {
+	AST::Node* a = fArgument;
+	AST::Node* b = argument;
+	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
+	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
+	if(aInt && bInt) {
+		return(operator*(*aInt, *bInt));
+	}
+	return(NULL);
+}
+
 }; /* end namespace Evaluators */

@@ -271,31 +271,40 @@ AST::Node* internNative(NativeInt value) {
 std::string Integer::str(void) const {
 	return("FIXME");
 }
-
-struct Integer* operator+(const Integer& a, const Integer& b) {
+AST::Node* operator+(const Int& a, const Int& b) {
+	return(internNative(a.value + b.value)); /* FIXME */
+}
+AST::Node* operator-(const Int& a, const Int& b) {
+	return(internNative(a.value - b.value)); /* FIXME */
+}
+AST::Node* operator*(const Int& a, const Int& b) {
+	return(internNative(a.value * b.value)); /* FIXME */
+}
+Integer* operator+(const Integer& a, const Integer& b) {
 	return(NULL); /* FIXME */
 }
-struct Integer* operator-(const Integer& a, const Integer& b) {
+Integer* operator-(const Integer& a, const Integer& b) {
 	return(NULL); /* FIXME */
 }
-struct Integer* operator*(const Integer& a, const Integer& b) {
+Integer* operator*(const Integer& a, const Integer& b) {
 	return(NULL); /* FIXME */
 }
-
 AST::Node* IntP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<Int*>(argument) != NULL;
 	return(internNative(result));
 }
-
 AST::Node* IntSucc::execute(AST::Node* argument) {
 	Int* int1 = dynamic_cast<Int*>(argument);
 	if(int1) {
 		NativeInt value = int1->value;
 		if(value + 1 < value) /* overflow */
-			return(NULL); /* FIXME bigger numbers */
+			return(new Integer(value, 1)); /* FIXME bigger numbers */
 		return(internNative(value + 1));
 	} else
 		return(NULL);
+}
+Integer::Integer(int position, int offset) {
+	// FIXME
 }
 
 }; /* end namespace Numbers */
