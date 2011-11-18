@@ -50,7 +50,7 @@ Formatters/Math.o: Formatters/Math.cc Formatters/Math AST/Symbol AST/AST
 Formatters/UTFStateMachine.o: Formatters/UTFStateMachine.cc Formatters/UTFStateMachine Formatters/UTF-8_to_LATEX_result.h
 Formatters/UTF-8_to_LATEX_result.h: Formatters/UTF-8_to_LATEX.table Formatters/generate-state-machine
 	Formatters/generate-state-machine Formatters/UTF-8_to_LATEX.table >tmp4711 && mv tmp4711 Formatters/UTF-8_to_LATEX_result.h
-AST/AST.o: AST/AST.cc AST/AST
+AST/AST.o: AST/AST.cc AST/AST AST/Symbol
 AST/test-AST.o: AST/test-AST.cc AST/AST
 AST/test-Symbol.o: AST/test-Symbol.cc AST/Symbol AST/AST
 AST/Symbol.o: AST/Symbol.cc AST/Symbol AST/AST

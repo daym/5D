@@ -175,7 +175,7 @@ AST::Node* Curried##N::execute(AST::Node* argument) { \
 		else if(aInt && bFloat) \
 			return(promoteToFloat(*aInt) op *bFloat); \
 	} \
-	return(NULL); \
+	return(operation(fallback ? fallback : AST::intern(#op), a, b)); \
 }
 IMPLEMENT_NUMERIC_BUILTIN(Adder, +)
 IMPLEMENT_NUMERIC_BUILTIN(Subtractor, -)

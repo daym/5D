@@ -61,5 +61,7 @@ struct BuiltinOperation : AST::Operation { /* FIXME make this string out the fal
 	}
 };
 
+Cons* operation(Node* operator_, Node* operand_1, Node* operand_2);
+
 }; /* namespace AST */
 #endif /* __AST_H */

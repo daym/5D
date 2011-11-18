@@ -360,14 +360,10 @@ AST::Node* MathParser::consume(AST::Symbol* expected_value) {
 }
 using namespace AST;
 AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
-	if(operator_ == NULL || operand_1 == NULL/* || operand_2 == NULL*/) {
+	AST::Cons* result = AST::operation(operator_, operand_1, operand_2);
+	if(result == NULL)
 		raise_error("<second_operand>", "<nothing>");
-		return(NULL);
-	} else if(operator_ == intern(" ")) // apply
-		return(cons(operand_1, cons(operand_2, NULL)));
-	else
-		return(cons(cons(operator_, cons(operand_1, NULL)), cons(operand_2, NULL)));
-		//return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
+	return(result);
 }
 bool macro_operator_P(AST::Node* operator_) {
 	return(operator_ == intern("define") || operator_ == intern("'") || operator_ == intern("["));

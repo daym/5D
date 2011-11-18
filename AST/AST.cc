@@ -10,6 +10,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <string>
 #include <sstream>
 #include "AST/AST"
+#include "AST/Symbol"
 
 namespace AST {
 
@@ -82,6 +83,16 @@ AST::Node* Operation::repr(AST::Node* selfName) const {
 }
 bool Operation::eager_P(void) const {
 	return(false);
+}
+
+AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
+	if(operator_ == NULL || operand_1 == NULL/* || operand_2 == NULL*/) {
+		return(NULL);
+	} else if(operator_ == intern(" ")) // apply
+		return(cons(operand_1, cons(operand_2, NULL)));
+	else
+		return(cons(cons(operator_, cons(operand_1, NULL)), cons(operand_2, NULL)));
+		//return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
 }
 
 }; /* end namespace AST */
