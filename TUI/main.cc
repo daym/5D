@@ -280,9 +280,7 @@ int main(int argc, char* argv[]) {
 	const char* line;
 	REPL = REPL_new();
 	REPL1 = REPL;
-	if(argc > 1) {
-		const char* name = argv[argc - 1];
-		REPL_load_contents_by_name(REPL, name);
+	if(argc > 1 && REPL_load_contents_by_name(REPL, argv[argc - 1])) {
 	} else {
 		char* environment_name = REPL_ensure_default_environment_name(REPL);
 		struct stat stat_buf;

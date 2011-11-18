@@ -49,3 +49,4 @@ fopen @mode:"w" "foo.INI.temp"
 ;
 unary posfix operators like "!"?
 ... `catch` \e error e
+TUI: if trying to pass a path to a file that does not exist, it doesn't create it on exit. Should it?
