@@ -77,6 +77,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::intern("+"), Evaluators::Adder);
 	REPL_add_builtin_method(self, AST::intern("-"), Evaluators::Subtractor);
 	REPL_add_builtin_method(self, AST::intern("*"), Evaluators::Multiplicator);
+	REPL_add_builtin_method(self, AST::intern("<="), Evaluators::LEComparer);
 	REPL_add_builtin_method(self, AST::intern("float?"), Numbers::FloatP);
 	REPL_add_builtin_method(self, AST::intern("str?"), Evaluators::StrP);
 	REPL_add_builtin_method(self, AST::intern("symbol?"), Evaluators::SymbolP);

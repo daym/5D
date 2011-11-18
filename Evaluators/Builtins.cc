@@ -189,5 +189,18 @@ AST::Node* CurriedMultiplicator::execute(AST::Node* argument) {
 	}
 	return(NULL);
 }
+AST::Node* LEComparer::execute(AST::Node* argument) {
+	return(new CurriedLEComparer(NULL/*FIXME*/, argument));
+}
+AST::Node* CurriedLEComparer::execute(AST::Node* argument) {
+	AST::Node* a = fArgument;
+	AST::Node* b = argument;
+	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
+	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
+	if(aInt && bInt) {
+		return(internNative(aInt->value <= bInt->value));
+	}
+	return(NULL);
+}
 
 }; /* end namespace Evaluators */
