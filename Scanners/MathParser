@@ -17,11 +17,9 @@ namespace Scanners {
 
 class MathParser : public Scanner {
 protected:
-	AST::Node* input_value; // read-only
 	bool B_process_macros;
 	OperatorPrecedenceList* operator_precedence_list;
 private:
-	bool allow_args;
 	void parse_token(void);
 	void parse_operator(int input);
 	void parse_number(int input);
@@ -57,8 +55,6 @@ public:
 	static AST::Node* parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list);
 	virtual void push(FILE* input_file, int line_number, bool B_consume = true);
 	MathParser(void);
-	bool EOFP(void) const;
-	void ensure_end(void);
 };
 
 extern const int apply_precedence_level;

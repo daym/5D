@@ -53,4 +53,12 @@ void Scanner::raise_error(const std::string& expected_text, int got_text) {
 	raise_error(expected_text, s);
 }
 
+bool Scanner::EOFP(void) const {
+	return(input_value == NULL);
+}
+void Scanner::ensure_end(void) {
+	if(!EOFP())
+		raise_error("<EOF>", input_value->str());
+}
+
 };
