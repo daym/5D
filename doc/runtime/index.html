@@ -332,7 +332,7 @@ keywordStr @mode: =&gt; "mode:"
 <p>The value 0 as an Int.</p>
 <hr/>
 <h3><del>intSucc \v</del></h3>
-<p>Given a Int value <span class="pre">v</span>, returns its successor on the natural numerical axis. Not necessarily Int any longer (the range of Int is limited by machine register size).</p>
+<p>Given a Int value <span class="pre">v</span>, get its successor on the natural numerical axis. Not necessarily Int any longer (the range of Int is limited by machine register size).</p>
 <hr/>
 <h3><del>number? \v</del></h3>
 <p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is a number or not.</p>
@@ -354,7 +354,7 @@ keywordStr @mode: =&gt; "mode:"
 <a name="FFI"><h2>Foreign Function Interface</h2>
 <h3>fromLibrary \s</h3>
 <p>Given the Str <span class="pre">s</span>, loads the library with the given name and results in an <span class="pre" title="Foreign Function Interface">FFI</span> function for it.</p>
-<p>You can then give a function name and it will look it up in the library and return the function it found.</p>
+<p>You can then give a function name and it will look it up in the library and get the function.</p>
 <p>Example:</p>
 <pre>
 define openLL fromLibrary "libc.so.6" "open"
