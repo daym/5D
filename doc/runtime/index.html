@@ -275,7 +275,7 @@ tail (8:nil) =&gt; nil
 <hr/>
 <h3>(;) \m \handler</h3>
 <p>The sequencing operator.</p>
-<p>Chains together <span class="pre">m</span> and <span class="pre">handler</span> in such a way that, once <span class="pre">runWorld</span> reaches <span class="pre">m</span>, it will run first, deliver its result to <span class="pre">handler</span>, which will run next.</p>
+<p>Chains together <span class="pre">m</span> and <span class="pre">handler</span> in such a way that, once <span class="pre">runWorld</span> reaches <span class="pre">m</span>, <span class="pre">m</span> will run first, deliver its result to <span class="pre">handler</span>, which will run next.</p>
 <p>Example:</p>
 <pre>
 define readFile fopen @mode:"r" "/etc/passwd" ;\f fgets f
