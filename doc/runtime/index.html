@@ -270,8 +270,8 @@ tail (8:nil) =&gt; nil
 </a>
 
 <a name="state"><h2>State</h2>
-<h3>runWorld \f</h3>
-<p>Can only be there once in the entire program. Will cause the state machine to run, giving the initial World State to the function <span class="pre">f</span>. f eventually returns and its result will be decomposed, the monad value extracted and it will become the result.</p>
+<h3>runWorld \m</h3>
+<p>Can only be there once in the entire program. Will cause the state machine to run, giving the initial World State to the function <span class="pre">m</span>. m eventually returns and its result will be decomposed, the monad value extracted and it will become the result.</p>
 <hr/>
 <h3>(;) \m \handler</h3>
 <p>The sequencing operator.</p>
