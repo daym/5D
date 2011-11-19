@@ -4,12 +4,30 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <style type="text/css">
 pre { font-family: monospace; color: blue; }
+h3 { font-family: monospace; color: blue; }
 span.pre { font-family: monospace; color: blue; }
+hr { color: #808080;
+     background-color: #808080;
+     height: 3px; }
 </style>
 
 </head>
 <body>
 <h1>Runtime Documentation</h1>
+<nl>
+<li><a href="#macros">Macros</a></li>
+<li><a href="#composition">Function Composition</a></li>
+<li><a href="#logic">Logic Values and Functions</a></li>
+<li><a href="#conditionals">Conditionals</a></li>
+<li><a href="#numberAlgebra">Number Algebra Functions</a></li>
+<li><a href="#lists">Lists</a></li>
+<li><a href="#state">State</a></li>
+<li><a href="#builtins">Builtin Types Except Lists</a></li>
+<li><a href="#FFI">Foreign Function Interface</a></li>
+<li><a href="#obsolete">Obsolete Functions</a></li>
+<li><a href="#math">Higher Mathematics</a></li>
+</nl>
+<a name="macros"><h2>Macros</h2>
 <h3>' a</h3>
 <p>(Pronounce it "quote a").</p>
 <p>Sometimes you just want to have a symbolic stand-in for things you <em>don't</em> define. Even <em>if</em> there is a definition, sometimes you don't want to substitute it in.</p>
@@ -22,27 +40,32 @@ x =&gt; 2
 'x =&gt; x
 '(i am not an application with function i) =&gt; (i am not an application with function i)
 </pre>
-<h2>Useful Function Composition Functionals</h2>
+</a>
+<a name="composition"><h2>Function Composition</h2>
 <h3>id \f</h3>
 <p>Result is <span class="pre">f</span> .</p>
+<hr/>
 <h3>(|) \a \b</h3>
 <p>Given two arguments, results in an application of b to a. Like UN*X pipe.</p>
 <p>Example:</p>
 <pre>
 sort | uniq
 </pre>
+<hr/>
 <h3>compose \f \g</h3>
 <p>Given two functions f and g, results in a function that, when given an argument x, calculates <span class="pre">f (g x)</span> .</p>
 <p>Example:</p>
 <pre>
 compose uniq sort
 </pre>
+<hr/>
 <h3>flip \f</h3>
 <p>Given a function of two arguments, results in a function with the arguments flipped.</p>
 <p>Example:</p>
 <pre>
 define (&gt;) flip (&lt;)
 </pre>
+<hr/>
 <h3>rec \f</h3>
 <p>Given a function f, results in a recursable function, i.e. rec g =&gt; g g.</p>
 <p>Example:</p>
@@ -51,38 +74,50 @@ define factorial rec \factorial \n if (n=0) 1 n*(factorial (n - 1))
 factorial 3 =&gt; 6
 factorial 20 =&gt; 2432902008176640000
 </pre>
-<h2>Logic Values and Functions</h2>
+<hr/>
+</a>
+<a name="logic"><h2>Logic Values and Functions</h2>
 <h3>#t</h3>
 <p>Represents the true value. See <span class="pre">toBool</span> for getting a readable representation or <span class="pre">if</span> for deciding something upon it.</p>
+<hr/>
 <h3>#f</h3>
 <p>Represents the false value. See <span class="pre">toBool</span> for getting a readable representation or <span class="pre">if</span> for deciding something upon it.</p>
+<hr/>
 <h3>not \v</h3>
 <p>Result is true if <span class="pre">v</span> is false, otherwise true. Logical NOT.</p>
+<hr/>
 <h3>(||) \a \b</h3>
 <p>Result is true if either <span class="pre">a</span> or <span class="pre">b</span> are true or both. Logical OR.</p>
 <p>Example:</p>
 <pre>
 if (2 &lt; 3 || 5 &lt; 3) 5 7 =&gt; 5
 </pre>
+<hr/>
 <h3>(&amp;&amp;) \a \b</h3>
 <p>Result is true if both <span class="pre">a</span> and <span class="pre">b</span> are true. Logical AND.</p>
 <pre>
 if (2 &lt; 3 &amp;&amp; 1 &lt; 3) 5 7 =&gt; 5
 </pre>
+<hr/>
 <h3>equivalent? \a \b</h3>
 <p>Result is true if the statements <span class="pre">a</span> and <span class="pre">b</span> are equivalent. Logical equivalence.</p>
+<hr/>
 <h3>implies? \a \b</h3>
 <p>Result is true if <span class="pre">a</span> implies <span class="pre">b</span>. Logical implication.</p>
+<hr/>
+</a>
 
-<h2>Conditionals</h2>
+<a name="conditionals"><h2>Conditionals</h2>
 <h3>if \c \T \F</h3>
 <p>Result is a function resulting in <span class="pre">T</span> if <span class="pre">c</span> is true, otherwise <span class="pre">F</span>.</p>
 <p>Example:</p>
 <pre>
 if (nil? nil) 'yes 'no =&gt; yes
 </pre>
+<hr/>
+</a>
 
-<h2>Number Algebra Functions</h2>
+<a name="numberAlgebra"><h2>Number Algebra Functions</h2>
 <h3>(+) \a \b</h3>
 <p>Result is the sum of <span class="pre">a</span> and <span class="pre">b</span> .</p>
 <p>Example:</p>
@@ -171,8 +206,9 @@ if (negative? 0) 'yes 'no =&gt; no
 </pre>
 <hr/>
 -->
+</a>
 
-<h2>Values and Functions Pertaining to Lists</h2>
+<a name="lists"><h2>Lists</h2>
 <h3>nil</h3>
 <p>Represents the empty list.</p>
 <p>Example:</p>
@@ -231,15 +267,21 @@ tail (5:6:7:8:nil) =&gt; (6:7:8:nil)
 tail (8:nil) =&gt; nil
 </pre>
 <hr/>
-<h2>Functions Pertaining to State</h2>
+</a>
+
+<a name="state"><h2>State</h2>
 <h3>withWorld \f</h3>
 <p>Can only be there once in the entire program. Will cause the state machine to run, giving the initial World State to the function <span class="pre">f</span>.</p>
+<hr/>
 <h3><del>monadValue \m</del></h3>
 <p>Given a monad, results in the value of the monad.</p>
+<hr/>
 <h3><del>monadWorld \m</del></h3>
 <p>Given a monad, results in the World State of the monad.</p>
+<hr/>
+</a>
 
-<h2>Values and Functions Pertaining to Builtin Types Except Lists</h2>
+<a name="builtins"><h2>Builtin Types Except Lists</h2>
 <h3>toBool \v</h3>
 <p>Given a statement <span class="eq">v</span>, results in the symbol <span class="pre">t</span> if v is true, otherwise the symbol <span class="pre">f</span>.</p>
 <p>Definition:</p>
@@ -284,16 +326,22 @@ keywordStr @mode: =&gt; "mode:"
 <hr/>
 <h3><del>number? \v</del></h3>
 <p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is a number or not.</p>
+<hr/>
 <h3><del>str? \v</del></h3>
 <p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is a Str or not.</p>
+<hr/>
 <h3><del>symbol? \v</del></h3>
 <p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is a Symbol or not.</p>
+<hr/>
 <h3><del>float? \v</del></h3>
 <p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is a Float or not.</p>
+<hr/>
 <h3><del>int?</del></h3>
 <p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is an Int or not.</p>
+<hr/>
+</a>
 
-<h2>Functions Pertaining to Foreign Function Interface</h2>
+<a name="FFI"><h2>Foreign Function Interface</h2>
 <h3>fromLibrary \s</h3>
 <p>Given the Str <span class="pre">s</span>, loads the library with the given name and results in an <span class="pre" title="Foreign Function Interface">FFI</span> function for it.</p>
 <p>You can then give a function name and it will look it up in the library and return the function it found.</p>
@@ -302,6 +350,7 @@ keywordStr @mode: =&gt; "mode:"
 define openLL fromLibrary "libc.so.6" "open"
 define open translateFFI openLL 'C intDemarshaller (strMarshaller:strMarshaller:nil)
 </pre>
+<hr/>
 <h3>translateFFI \f \callingConvention \resultDemarshaller \parameterMarshallers</h3>
 <p>Given a LL function and a signature and a result demarshaller, results in a function, that, when called, will marshal arguments until there are enough, then call the LL function, then demarshal the result. </p>
 <p>Example:</p>
@@ -309,12 +358,14 @@ define open translateFFI openLL 'C intDemarshaller (strMarshaller:strMarshaller:
 define openLL fromLibrary "libc.so.6" "open"
 define open translateFFI openLL 'C intDemarshaller (strMarshaller:strMarshaller:nil)
 </pre>
+</a>
 
-<h2>Obsolete Functions</h2>
+<a name="obsolete"><h2>Obsolete Functions</h2>
 <h3>else</h3>
 <h3>otherwise</h3>
+</a>
 
-<h2>Values and Functions Pertaining to Higher Mathematics</h2>
+<a name="math"><h2>Higher Mathematics</h2>
 <h3>δ \v</h3>
 <p>Given <span class="pre">v</span>, results in 1 if v=0, otherwise 0.</p>
 <hr/>
@@ -364,3 +415,4 @@ define open translateFFI openLL 'C intDemarshaller (strMarshaller:strMarshaller:
 <h3>artanh \x</h3>
 <p>Given <span class="pre">x</span>, results in the area tangens hyperbolicus of x .</p>
 <hr/>
+</a>
