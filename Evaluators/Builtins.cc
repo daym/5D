@@ -25,6 +25,12 @@ AST::Node* Quoter::execute(AST::Node* argument) {
 	*/
 	return(argument);
 }
+bool Dummyer::eager_P(void) const {
+	return(false);
+}
+AST::Node* Dummyer::execute(AST::Node* argument) {
+	return(argument);
+}
 using namespace AST;
 AST::Node* churchTrue = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f t))", NULL));
 AST::Node* churchFalse = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f f))", NULL));
@@ -76,7 +82,6 @@ AST::Node* StrP::execute(AST::Node* argument) {
 	return(internNative(result));
 }
 AST::Node* HeadGetter::execute(AST::Node* argument) {
-	printf("head %s\n", argument->str().c_str());
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
 	if(consNode)
 		return(consNode->head);
@@ -84,7 +89,6 @@ AST::Node* HeadGetter::execute(AST::Node* argument) {
 		return(makeOperation(intern(" "), fallback, argument));
 }
 AST::Node* TailGetter::execute(AST::Node* argument) {
-	printf("tail %s\n", argument->str().c_str());
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
 	if(consNode)
 		return(consNode->tail);

@@ -6,13 +6,19 @@
 #include "Numbers/Real"
 
 namespace Evaluators {
-struct Quoter;
 AST::Node* internNative(bool value);
 struct Quoter : AST::Operation {
 	virtual bool eager_P(void) const;
 	virtual AST::Node* execute(AST::Node* argument);
 	virtual std::string str(void) const {
 		return("'");
+	}
+};
+struct Dummyer : AST::Operation {
+	virtual bool eager_P(void) const;
+	virtual AST::Node* execute(AST::Node* argument);
+	virtual std::string str(void) const {
+		return("dummy");
 	}
 };
 #define DECLARE_CURRIED_OPERATION(P, N) \

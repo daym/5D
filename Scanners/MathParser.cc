@@ -35,7 +35,7 @@ AST::Node* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 	return(result);
 }
 bool macro_operator_P(AST::Node* operator_) {
-	return(operator_ == intern("define") || operator_ == intern("'") || operator_ == intern("["));
+	return(operator_ == intern("define") || operator_ == intern("defrec") || operator_ == intern("'") || operator_ == intern("["));
 }
 AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 	if(B_process_macros && macro_operator_P(node))
@@ -49,7 +49,7 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 		consume();
 	AST::Node* parameter = consume();
 	if(dynamic_cast<AST::Symbol*>(parameter) == NULL) {
-		raise_error("<symbol>", parameter->str());
+		raise_error("<symbol>", parameter ? parameter->str() : std::string("<nothing>"));
 	}
 	if(B_extended)
 		consume(AST::intern(")"));
@@ -60,6 +60,24 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 		return(NULL);
 	}
 	return(makeApplication(operand_1, makeAbstraction(parameter, body)));
+}
+AST::Node* MathParser::parse_defrec(AST::Node* operand_1) {
+	bool B_extended = (input_value == AST::intern("("));
+	if(B_extended)
+		consume();
+	AST::Node* parameter = consume();
+	if(dynamic_cast<AST::Symbol*>(parameter) == NULL) {
+		raise_error("<symbol>", parameter ? parameter->str() : std::string("<nothing>"));
+	}
+	if(B_extended)
+		consume(AST::intern(")"));
+	//AST::Node* parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
+	AST::Node* body = parse_expression();
+	if(!parameter||!body||!operand_1) {
+		raise_error("<define-body>", "<incomplete>");
+		return(NULL);
+	}
+	return(makeApplication(AST::intern("define"), makeAbstraction(parameter, makeApplication(AST::intern("rec"), makeAbstraction(parameter, body)))));
 }
 AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
 	AST::Node* result;
@@ -81,6 +99,8 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 	// TODO let|where, include, cond, make-list, quote, case.
 	if(operand_1 == intern("define"))
 		return(parse_define(operand_1));
+	if(operand_1 == intern("defrec"))
+		return(parse_defrec(operand_1));
 	else if(operand_1 == intern("'"))
 		return(parse_quote(operand_1));
 	else if(operand_1 == intern("["))
