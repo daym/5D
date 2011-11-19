@@ -56,3 +56,4 @@ implement division
 performance optimisation: use the lowest bit to signify pointers (1=it is one). This will have problems with native pointers maybe, so also override the native allocator.
 move str() to the actual language
 packages (namespaces)
+$! strict applicator

@@ -195,6 +195,10 @@ AST::Node* CurriedLEComparer::execute(AST::Node* argument) {
 		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
 		if(aFloat && bFloat)
 			return(internNative(aFloat->value <= bFloat->value));
+		else if(aFloat && bInt)
+			return(internNative(aFloat->value <= bInt->value));
+		else if(aInt && bFloat)
+			return(internNative(aInt->value <= bFloat->value));
 	}
 	return(NULL);
 }
