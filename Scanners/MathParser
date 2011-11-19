@@ -20,22 +20,10 @@ protected:
 	bool B_process_macros;
 	OperatorPrecedenceList* operator_precedence_list;
 private:
-	void parse_token(void);
-	void parse_operator(int input);
-	void parse_number(int input);
-	void parse_number_with_base(int input, int base);
-	void parse_anglebracket(int input);
-	void parse_unicode(int input);
-	void parse_structural(int input);
-	void parse_symbol(int input, int special_prefix = 0, int special_prefix_2 = 0);
-	void parse_special_coding(int input);
-	void parse_keyword(int input);
-	void parse_string(int input);
 	AST::Node* parse_value(void);
 	AST::Node* parse_argument(void);
 	AST::Node* parse_binary_operation(int precedence_level);
 	AST::Node* parse_abstraction(void);
-	void parse_optional_whitespace(void);
 	AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2);
 	AST::Cons* unary_operation(AST::Node* operator_, AST::Node* operand_1);
 	AST::Node* parse_macro(AST::Node* operand_1);
@@ -47,7 +35,6 @@ protected:
 	AST::Node* parse_expression(void);
 	AST::Cons* parse_S_list_body(void);
 public:
-	AST::Node* consume(AST::Symbol* expected_token = NULL); /* don't call this as an user */
 	void parse_closing_brace(void);
 	AST::Cons* parse_S_list(bool B_consume_closing_brace);
 	AST::Node* parse(OperatorPrecedenceList* operator_precedence_list);
