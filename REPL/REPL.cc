@@ -120,18 +120,17 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 }
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 	using namespace AST;
-	AST::Cons* definitionCons;
-	if(!definition)
-		return;
-	definitionCons = dynamic_cast<AST::Cons*>(definition);
-	if(!definitionCons || !definitionCons->head || !definitionCons->tail || definitionCons->head != intern("define"))
-		return;
-	definitionCons = definitionCons->tail;
-	AST::Symbol* procedureName = dynamic_cast<AST::Symbol*>(definitionCons->head);
-	if(!procedureName || !definitionCons->tail)
-		return;
-	AST::Node* value = follow_tail(definitionCons->tail)->head;
-	REPL_add_to_environment_simple(self, procedureName, value);
+	if(application_P(definition) && get_application_operator(definition) == intern("define")) {
+		AST::Node* abstraction = get_application_operand(definition);
+		if(abstraction_P(abstraction)) {
+			AST::Node* parameter = get_abstraction_parameter(abstraction);
+			AST::Symbol* parameterSymbol;
+			if((parameterSymbol = dynamic_cast<AST::Symbol*>(parameter))) {
+				AST::Node* body = get_abstraction_body(abstraction);
+				REPL_add_to_environment_simple(self, parameterSymbol, body);
+			}
+		}
+	}
 }
 
 }; // end namespace GUI
