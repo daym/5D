@@ -200,7 +200,7 @@ AST::Node* CurriedLEComparer::execute(AST::Node* argument) {
 		else if(aInt && bFloat)
 			return(internNative(aInt->value <= bFloat->value));
 	}
-	return(NULL);
+	return(operation(fallback ? fallback : AST::intern("<="), a, b));
 }
 
 }; /* end namespace Evaluators */
