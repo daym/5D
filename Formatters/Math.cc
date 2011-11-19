@@ -146,8 +146,9 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		}
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
+		/* FIXME braces for these? */
 		std::string value = node->str();
-		print_text(output, position, value.c_str());
+		print_text_raw(output, position, value.c_str());
 	}
 }
 void print_math(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, AST::Node* node) {
