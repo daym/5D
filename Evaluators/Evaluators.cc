@@ -237,5 +237,26 @@ AST::Node* makeError(const char* reason) {
 bool define_P(AST::Node* input) {
 	return(input != NULL && application_P(input) && get_application_operator(input) == AST::intern("define"));
 }
+AST::Node* programFromSExpression(AST::Node* root) {
+	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
+	if(consNode) {
+		// application or abstraction
+		if(consNode->head == AST::intern("\\")) { // abstraction
+			assert(consNode->tail);
+			assert(consNode->tail->tail);
+			assert(consNode->tail->tail->tail == NULL);
+			AST::Node* parameter = consNode->tail->head;
+			AST::Node* body = consNode->tail->tail->head;
+			return(makeAbstraction(programFromSExpression(parameter), programFromSExpression(body)));
+		} else { // application
+			assert(consNode->tail);
+			assert(consNode->tail->tail == NULL);
+			AST::Node* operator_ = consNode->head;
+			AST::Node* operand = consNode->tail->head;
+			return(makeApplication(programFromSExpression(operator_), programFromSExpression(operand)));
+		}
+	} else
+		return(root);
+}
 
 }; // end namespace Evaluators.

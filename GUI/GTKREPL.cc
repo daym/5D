@@ -835,7 +835,7 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* o_text) {
 				input_file = fmemopen((void*) next_text, strlen(next_text), "r");
 				parser.push(input_file, 0, false);
 				parser.consume();
-				content = parser.parse_S_Expression();
+				content = Evaluators::programFromSExpression(parser.parse_S_Expression());
 				fclose(input_file);
 				gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);
 				REPL_enqueue_LATEX(self, content, &text_end);

@@ -30,6 +30,7 @@ AST::Node* reduce(AST::Node* term);
 AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body);
 AST::Node* makeError(const char* reason);
 bool define_P(AST::Node* input);
+AST::Node* programFromSExpression(AST::Node* root);
 
 };
 

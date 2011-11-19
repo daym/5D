@@ -178,12 +178,17 @@ static void REPL_unfilter_environment(struct REPL* self, AST::Node* environment)
 	AST::Node* name;
 	AST::Node* body;
 	AST::Node* next;
+	if(environment == AST::intern("nil")) {
+		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
+		return;
+	}
 	for(; environment; environment = next) {
 		getEnvEntry(environment, name, body, next);
 		REPL_add_to_environment_simple_GUI(self, dynamic_cast<AST::Symbol*>(name), body);
-		if(body == NULL) { // used as a tail marker
+		if(next == NULL || next == AST::intern("nil")) { // used as a tail marker
 			self->fTailUserEnvironmentFrontier = environment;
 			envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL);
+			break;
 		}
 	}
 }

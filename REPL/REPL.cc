@@ -9,6 +9,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
+#include <list>
 #include "Scanners/Scanner"
 #include "AST/AST"
 #include "AST/Symbol"
@@ -61,13 +62,22 @@ static AST::Node* REPL_filter_environment(struct REPL* self, AST::Node* environm
 	return(environment);
 }
 bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
+	// (REPLV1 'textBufferText "abc" 'environment "xyz" nil)
+	// (((((REPLV1 'textBufferText) "abc") 'environment) "xyz") nil)
+	//     tbtK--------------------
+	//    --tbtV--------------------------
+	//   ----envK---------------------------------------
+	//  -------envV--------------------------------------------
+	// ---------sentinel--------------------------------------------
 	using namespace AST;
 	char* buffer_text;
 	buffer_text = REPL_get_output_buffer_text(self);
-	AST::Node* buffer_text_box = AST::makeApplication(AST::intern("textBufferText"), makeStr(buffer_text));
-	AST::Node* environment_box = AST::makeApplication(AST::intern("environment"), REPL_filter_environment(self, REPL_get_user_environment(self)));
-	AST::Node* content_box = AST::makeApplication(AST::makeApplication(AST::intern("REPLV1"), buffer_text_box), environment_box);
-	Formatters::print_S_Expression(output_file, 0, 0, content_box);
+	AST::Node* tbtK = AST::makeApplication(AST::intern("REPLV1"), AST::intern("textBufferText"));
+	AST::Node* tbtV = AST::makeApplication(tbtK, makeStr(buffer_text));
+	AST::Node* envK = AST::makeApplication(tbtV, AST::intern("environment"));
+	AST::Node* envV = AST::makeApplication(envK, REPL_filter_environment(self, REPL_get_user_environment(self)));
+	AST::Node* sentinel = AST::makeApplication(envV, NULL);
+	Formatters::print_S_Expression(output_file, 0, 0, sentinel);
 	return(true);
 }
 bool REPL_load_contents_from(struct REPL* self, const char* name) {
@@ -75,7 +85,6 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 	{
 		FILE* input_file;
 		AST::Node* content;
-		AST::Cons* contentCons;
 		Scanners::MathParser parser;
 		input_file = fopen(name, "r");
 		if(!input_file) {
@@ -85,32 +94,45 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 		try {
 			parser.push(input_file, 0, false);
 			parser.consume();
-			content = parser.parse_S_Expression();
+			content = Evaluators::programFromSExpression(parser.parse_S_Expression());
 		} catch(Scanners::ParseException exception) {
 			fprintf(stderr, "error: failed to load file: \"%s\"\n", name);
 			fclose(input_file);
 			return(false);
 		}
-		contentCons = dynamic_cast<AST::Cons*>(content);
-		if(!contentCons || contentCons->head != AST::intern("REPLV1")) {
+		if(!application_P(content)) {
 			fclose(input_file);
 			return(false);
 		}
-		for(AST::Cons* entryCons = contentCons->tail; entryCons; entryCons = entryCons->tail) {
-			AST::Cons* entry = dynamic_cast<AST::Cons*>(entryCons->head);
-			if(!entry)
-				continue;
-			if(entry->head == AST::intern("textBufferText") && entry->tail) {
+		// (REPLV1 'textBufferText "abc" 'environment "xyz" nil)
+		// (((((REPLV1 'textBufferText) "abc") 'environment) "xyz") nil)
+		//     tbtK--------------------
+		//    --tbtV--------------------------
+		//   ----envK---------------------------------------
+		//  -------envV--------------------------------------------
+		// ---------sentinel--------------------------------------------
+		std::list<AST::Node*> arguments;
+		for(; application_P(content); content = get_application_operator(content)) {
+			arguments.push_front(get_application_operand(content));
+			if(get_application_operator(content) == AST::intern("REPLV1"))
+				break;
+		}
+		std::list<AST::Node*>::const_iterator end_arguments = arguments.end();
+		for(std::list<AST::Node*>::const_iterator iter_arguments = arguments.begin(); iter_arguments != end_arguments; ++iter_arguments) {
+			AST::Node* keywordName = *iter_arguments;
+			++iter_arguments;
+			if(iter_arguments == end_arguments) // ???
+				break;
+			AST::Node* value = *iter_arguments;
+			if(keywordName == AST::intern("textBufferText")) {
 				char* text;
-				text = Evaluators::get_native_string(entry->tail->head);
+				text = Evaluators::get_native_string(value);
 				REPL_append_to_output_buffer(self, text);
 				if(text)
 					free(text);
-			} else if(entry->head == AST::intern("environment") && entry->tail) {
-				AST::Cons* environment = dynamic_cast<AST::Cons*>(entry->tail->head);
-				if(!environment)
-					continue;
-				REPL_set_environment(self, environment);
+			} else if(keywordName == AST::intern("environment")) {
+				assert(application_P(value));
+				REPL_set_environment(self, value);
 			}
 		}
 		fclose(input_file);
