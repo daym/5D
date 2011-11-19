@@ -24,8 +24,7 @@ private:
 	AST::Node* parse_argument(void);
 	AST::Node* parse_binary_operation(int precedence_level);
 	AST::Node* parse_abstraction(void);
-	AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2);
-	AST::Cons* unary_operation(AST::Node* operator_, AST::Node* operand_1);
+	AST::Node* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2);
 	AST::Node* parse_macro(AST::Node* operand_1);
 	AST::Node* parse_define(AST::Node* operand_1);
 	AST::Node* parse_quote(AST::Node* operand_1);

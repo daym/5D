@@ -19,6 +19,16 @@ struct Cons : Node {
 	Cons* tail;
 	virtual std::string str(void) const;
 };
+struct Application : Node {
+	Node* operator_;
+	Node* operand;
+	virtual std::string str(void) const;
+};
+struct Abstraction : Node {
+	Node* parameter;
+	Node* body;
+	virtual std::string str(void) const;
+};
 std::string str(const Cons& a);
 struct Atom : Node {
 	std::string text; // char* text;
@@ -44,9 +54,8 @@ struct Box : Atom {
 };
 std::string str(const Atom& a);
 
-Cons* cons(Node* head, Cons* tail);
-Atom* literal(const char* text);
-Str* str_literal(const char* text);
+Cons* makeCons(Node* head, Cons* tail);
+Str* makeStr(const char* text);
 AST::Cons* follow_tail(AST::Cons* list);
 bool str_P(AST::Node* node);
 
@@ -61,7 +70,27 @@ struct BuiltinOperation : AST::Operation { /* FIXME make this string out the fal
 	}
 };
 
-Cons* operation(Node* operator_, Node* operand_1, Node* operand_2);
+static inline bool abstraction_P(Node* root) {
+	return(dynamic_cast<Abstraction*>(root) != NULL);
+}
+static inline bool application_P(Node* root) {
+	return(dynamic_cast<Application*>(root) != NULL);
+}
+static inline Node* get_application_operator(Node* app) {
+	return(((Application*)app)->operator_);
+}
+static inline Node* get_application_operand(Node* app) {
+	return(((Application*)app)->operand);
+}
+static inline Node* get_abstraction_body(Node* abstraction) {
+	return(((Abstraction*)abstraction)->body);
+}
+static inline Node* get_abstraction_parameter(Node* abstraction) {
+	return(((Abstraction*)abstraction)->parameter);
+}
+Application* makeApplication(Node* fn, Node* argument);
+Abstraction* makeAbstraction(Node* parameter, Node* body);
+Application* makeOperation(Node* operator_, Node* operand_1, Node* operand_2);
 
 }; /* namespace AST */
 #endif /* __AST_H */

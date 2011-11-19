@@ -60,6 +60,25 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		}
 		output << ')';
 		++position;
+	} else if(application_P(node)) {
+		output << '(';
+		++position;
+		print_S_Expression_CXX(output, position, indentation, AST::get_application_operator(node));
+		output << ' ';
+		++position;
+		print_S_Expression_CXX(output, position, indentation, AST::get_application_operand(node));
+		output << ')';
+		++position;
+	} else if(abstraction_P(node)) {
+		output << "(\\";
+		++position;
+		++position;
+		print_S_Expression_CXX(output, position, indentation, AST::get_abstraction_parameter(node));
+		output << ' ';
+		++position;
+		print_S_Expression_CXX(output, position, indentation, AST::get_abstraction_body(node));
+		output << ')';
+		++position;
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
 		std::string value = node->str();

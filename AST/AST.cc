@@ -50,7 +50,7 @@ std::string Cons::str(void) const {
 	result << ')';
 	return(result.str());
 }
-Cons* cons(Node* head, Cons* tail) {
+Cons* makeCons(Node* head, Cons* tail) {
 	Cons* result = new Cons;
 	/*assert(head); unfortunately, now that we have NIL, that's allowed. */
 	result->head = head;
@@ -62,7 +62,7 @@ Atom* literal(const char* text) {
 	result->text = text;
 	return(result);
 }
-Str* str_literal(const char* text) {
+Str* makeStr(const char* text) {
 	Str* result = new Str(text);
 	return(result);
 }
@@ -84,15 +84,42 @@ AST::Node* Operation::repr(AST::Node* selfName) const {
 bool Operation::eager_P(void) const {
 	return(false);
 }
-
-AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
+std::string Application::str(void) const {
+	std::stringstream result;
+	result << '(';
+	result << (operator_ ? operator_->str() : std::string("nil"));
+	result << ' ';
+	result << (operand ? operand->str() : std::string("nil"));
+	result << ')';
+	return(result.str());
+}
+std::string Abstraction::str(void) const {
+	std::stringstream result;
+	result << "(\\";
+	result << (parameter ? parameter->str() : std::string("nil"));
+	result << (body ? body->str() : std::string("nil"));
+	result << ')';
+	return(result.str());
+}
+Application* makeApplication(Node* fn, Node* argument) {
+	Application* result = new Application;
+	result->operator_ = fn;
+	result->operand = argument;
+	return(result);
+}
+Abstraction* makeAbstraction(Node* parameter, Node* body) {
+	Abstraction* result = new Abstraction;
+	result->parameter = parameter;
+	result->body = body;
+	return(result);
+}
+Application* makeOperation(Node* operator_, Node* operand_1, Node* operand_2) {
 	if(operator_ == NULL || operand_1 == NULL/* || operand_2 == NULL*/) {
 		return(NULL);
 	} else if(operator_ == intern(" ")) // apply
-		return(cons(operand_1, cons(operand_2, NULL)));
+		return(makeApplication(operand_1, operand_2));
 	else
-		return(cons(cons(operator_, cons(operand_1, NULL)), cons(operand_2, NULL)));
-		//return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
+		return(makeApplication(makeApplication(operator_, operand_1), operand_2));
 }
 
 }; /* end namespace AST */

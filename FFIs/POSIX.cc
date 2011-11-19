@@ -88,7 +88,7 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 	}
 }
 std::string CLibrary::str(void) const {
-	return(AST::cons(AST::intern("fromLibrary"), AST::cons(new AST::Str(p->name), NULL)))->str();
+	return(makeApplication(AST::intern("fromLibrary"), AST::makeStr(p->name.c_str()))->str());
 	//return(std::string("(fromLibrary '") + p->name + ")"); // FIXME nicer
 }
 CProcedure::CProcedure(void* native) : 

@@ -25,7 +25,7 @@ struct OperatorPrecedenceItem : AST::Node {
 	}
 };
 #define MAX_PRECEDENCE_LEVELS 21
-#define MINUS_PRECEDENCE_LEVEL 13
+#define MINUS_PRECEDENCE_LEVEL 11
 struct OperatorPrecedenceList : AST::Node {
 	int apply_level;
 	short prefix_usages[256];

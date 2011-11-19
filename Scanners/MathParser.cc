@@ -28,8 +28,8 @@ MathParser::MathParser(void) : Scanner() {
 	//operator_precedence_list = new OperatorPrecedenceList(false);
 }
 using namespace AST;
-AST::Cons* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
-	AST::Cons* result = AST::operation(operator_, operand_1, operand_2);
+AST::Node* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
+	AST::Node* result = makeOperation(operator_, operand_1, operand_2);
 	if(result == NULL)
 		raise_error("<second_operand>", "<nothing>");
 	return(result);
@@ -59,13 +59,12 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 		raise_error("<define-body>", "<incomplete>");
 		return(NULL);
 	}
-	return(cons(operand_1, cons(parameter, cons(body, NULL))));
-	//return(cons(operand_1, cons(parse_expression(), NULL)));
+	return(makeApplication(operand_1, makeAbstraction(parameter, body)));
 }
 AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
 	AST::Node* result;
 	B_process_macros = false; /* to make (' define) work; TODO do this in a nicer way? How? */
-	result = cons(operand_1, cons(parse_value(), NULL));
+	result = makeApplication(operand_1, parse_value());
 	B_process_macros = true;
 	return(result);
 }
@@ -91,10 +90,6 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 		return(NULL);
 	}
 }
-AST::Cons* MathParser::unary_operation(AST::Node* operator_, AST::Node* operand_1) {
-	assert(operator_);
-	return(cons(operator_, cons(operand_1, NULL)));
-}
 AST::Node* MathParser::parse_abstraction(void) {
 	if(dynamic_cast<AST::Symbol*>(input_value) == NULL) {
 		raise_error("<symbol>", input_value ? input_value->str() : "nothing");
@@ -103,9 +98,9 @@ AST::Node* MathParser::parse_abstraction(void) {
 		AST::Node* parameter = consume();
 		AST::Node* expression = parse_expression();
 		if(expression)
-			return(cons(intern("\\"), cons(parameter, cons(expression, NULL))));
+			return(makeAbstraction(parameter, expression));
 		else // ???
-			return(cons(intern("\\"), cons(parameter, NULL)));
+			return(makeAbstraction(parameter, NULL));
 	}
 }
 AST::Node* MathParser::parse_value(void) {
@@ -115,32 +110,6 @@ AST::Node* MathParser::parse_value(void) {
 	} else if(input_value == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());
-#if 0
-	} else if(input_value == intern("-") || input_value == intern("+") || input_value == intern("~") || input_value == intern("'")) {
-		/* the reason why there is a special-case for "~" at all is so that it will require an argument.
-		   Otherwise stuff like ~~#t would not work as expected. 
-		   If "~" were a normal functional, there would be no reason to expect this to be a call.
-		   Hence, ~~#t would mean "(~ ~) whatsthatjunk" or in the best case "(~ ~) #t", both of which is NOT how it is usually meant.
-		   It is usually meant ~ (~ #t). Hence the following special-case forcing it to read the argument if there is one after it.
-		   The same can be said for all unary operators, so there should be special cases for all of them.
-		   Best would be to get rid of all unary operators. TODO.
-		 */
-		AST::Node* operator_ = consume();
-		if(input_value == AST::intern(")") || input_value == NULL) {
-			return(operator_);
-		}
-		AST::Node* argument = parse_binary_operation(operator_precedence_list->next_precedence_level(-1)); // FIXME
-		//input_value == intern("~") ? negation_precedence_level : minus_precedence_level - 1);
-		//AST::Node* argument = parse_value();
-		if(argument == NULL)
-			return(operator_);
-		else
-			return((operator_ == intern("+")) ? argument :
-			       (operator_ == intern("-")) ? operation(intern("-"), intern("0"), argument) :
-			       unary_operation(operator_, argument));
-#endif
-		/*} else if(input_token == intern("<string>")) {
-		return(consume());*/
 	} else {
 		AST::Node* result;
 		if(input_value == intern("(")) {
@@ -186,7 +155,7 @@ AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 		while(actual_token) {
 			AST::Node* operator_ = B_visible_operator ? consume() : intern(" ");
 			if(input_value == intern(")")) // premature end.
-				return(B_unary_operator ? operator_ : cons(operator_, cons(result, NULL))); /* default to the binary operator */
+				return(B_unary_operator ? operator_ : makeApplication(operator_, result)); /* default to the binary operator */
 			AST::Node* b = parse_binary_operation(associativity != intern("right") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level);
 			if(B_unary_operator && !b) // -nil
 				return(operator_);
@@ -220,7 +189,7 @@ AST::Cons* MathParser::parse_S_list_body(void) {
 	else {
 		AST::Node* head;
 		head = parse_S_Expression();
-		return(cons(head, parse_S_list_body()));
+		return(makeCons(head, parse_S_list_body()));
 	}
 }
 AST::Cons* MathParser::parse_S_list(bool B_consume_closing_brace) {

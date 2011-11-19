@@ -33,6 +33,7 @@ static inline bool maybe_print_opening_brace(std::ostream& output, int precedenc
 	} else
 		return(false);
 }
+// FIXME application, abstraction
 void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list, AST::Node* node, std::ostream& output, int operator_precedence_limit, bool B_brace_equal_levels) {
 	using namespace Scanners;
 	int operator_precedence;

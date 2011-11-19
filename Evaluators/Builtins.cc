@@ -39,10 +39,11 @@ Conser2::Conser2(AST::Node* head) {
 }
 AST::Node* Conser2::execute(AST::Node* argument) {
 	/* FIXME error message if it doesn't work. */
-	return(cons(head, dynamic_cast<AST::Cons*>(argument)));
+	printf("cons\n");
+	return(makeCons(head, dynamic_cast<AST::Cons*>(argument)));
 }
 std::string Conser2::str(void) const {
-	return("(cons " + (head ? head->str() : "()") + ")");
+	return("((:) " + (head ? head->str() : "()") + ")");
 }
 AST::Node* Conser::execute(AST::Node* argument) {
 	return(new Conser2(argument));
@@ -75,39 +76,41 @@ AST::Node* StrP::execute(AST::Node* argument) {
 	return(internNative(result));
 }
 AST::Node* HeadGetter::execute(AST::Node* argument) {
+	printf("head %s\n", argument->str().c_str());
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
 	if(consNode)
 		return(consNode->head);
 	else
-		return(operation(intern(" "), fallback, argument));
+		return(makeOperation(intern(" "), fallback, argument));
 }
 AST::Node* TailGetter::execute(AST::Node* argument) {
+	printf("tail %s\n", argument->str().c_str());
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
 	if(consNode)
 		return(consNode->tail);
 	else
-		return(operation(intern(" "), fallback, argument));
+		return(makeOperation(intern(" "), fallback, argument));
 }
 AST::Node* Interner::execute(AST::Node* argument) {
 	AST::Str* stringNode = dynamic_cast<AST::Str*>(argument);
 	if(stringNode)
 		return(AST::intern(stringNode->text.c_str()));
 	else
-		return(operation(intern(" "), fallback, argument));
+		return(makeOperation(intern(" "), fallback, argument));
 }
 AST::Node* KeywordFromStringGetter::execute(AST::Node* argument) {
 	AST::Str* stringNode = dynamic_cast<AST::Str*>(argument);
 	if(stringNode)
 		return(AST::keywordFromString(stringNode->text.c_str()));
 	else
-		return(operation(intern(" "), fallback, argument));
+		return(makeOperation(intern(" "), fallback, argument));
 }
 AST::Node* KeywordStr::execute(AST::Node* argument) {
 	AST::Keyword* keywordNode = dynamic_cast<AST::Keyword*>(argument);
 	if(keywordNode)
-		return(str_literal(keywordNode->name)); // TODO stop converting it back and forth and back and forth
+		return(makeStr(keywordNode->name)); // TODO stop converting it back and forth and back and forth
 	else
-		return(operation(intern(" "), fallback, argument));
+		return(makeOperation(intern(" "), fallback, argument));
 }
 static std::map<AST::Symbol*, AST::Node*> cachedDynamicBuiltins;
 static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
@@ -156,7 +159,7 @@ Float promoteToFloat(const Int& v) {
 }
 #define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
 AST::Node* N::execute(AST::Node* argument) { \
-	return(new Curried ## N(NULL/*FIXME*/, argument)); \
+	return(new Curried ## N(this, NULL/*FIXME*/, argument)); \
 } \
 AST::Node* Curried##N::execute(AST::Node* argument) { \
 	AST::Node* a = fArgument; \
@@ -175,32 +178,11 @@ AST::Node* Curried##N::execute(AST::Node* argument) { \
 		else if(aInt && bFloat) \
 			return(promoteToFloat(*aInt) op *bFloat); \
 	} \
-	return(operation(fallback ? fallback : AST::intern(#op), a, b)); \
+	return(makeOperation(AST::intern(#op), a, b)); \
 }
 IMPLEMENT_NUMERIC_BUILTIN(Adder, +)
 IMPLEMENT_NUMERIC_BUILTIN(Subtractor, -)
 IMPLEMENT_NUMERIC_BUILTIN(Multiplicator, *)
-AST::Node* LEComparer::execute(AST::Node* argument) {
-	return(new CurriedLEComparer(NULL/*FIXME*/, argument));
-}
-AST::Node* CurriedLEComparer::execute(AST::Node* argument) {
-	AST::Node* a = fArgument;
-	AST::Node* b = argument;
-	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
-	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
-	if(aInt && bInt) {
-		return(internNative(aInt->value <= bInt->value));
-	} else {
-		Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
-		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
-		if(aFloat && bFloat)
-			return(internNative(aFloat->value <= bFloat->value));
-		else if(aFloat && bInt)
-			return(internNative(aFloat->value <= bInt->value));
-		else if(aInt && bFloat)
-			return(internNative(aInt->value <= bFloat->value));
-	}
-	return(operation(fallback ? fallback : AST::intern("<="), a, b));
-}
+IMPLEMENT_NUMERIC_BUILTIN(LEComparer, <=)
 
 }; /* end namespace Evaluators */

@@ -19,24 +19,21 @@ const char* EvaluationException::what() const throw() {
 };
 
 static void get_free_variables_impl(AST::Node* root, std::set<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& freeNames) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(root);
-	if(consNode) {
-		AST::Node* headNode = consNode->head;
-		if(headNode == intern("\\") && consNode->tail) { // abstraction.
-			AST::Node* parameterNode = consNode->tail->head;
-			AST::Symbol* parameterSymbolNode = dynamic_cast<AST::Symbol*>(parameterNode);
-			assert(parameterSymbolNode);
-			if(boundNames.find(symbolNode) == boundNames.end()) { // not bound yet
-				boundNames.insert(parameterSymbolNode);
-				get_free_variables_impl(consNode->tail->tail, boundNames, freeNames);
-				boundNames.erase(parameterSymbolNode);
-			} else // already bound to something else: make sure not to get rid of it.
-				get_free_variables_impl(consNode->tail->tail, boundNames, freeNames);
-		} else { // application etc.
-			get_free_variables_impl(consNode->head, boundNames, freeNames);
-			get_free_variables_impl(consNode->tail, boundNames, freeNames);
-		}
+	if(abstraction_P(root)) {
+		AST::Node* parameterNode = get_abstraction_parameter(root);
+		AST::Symbol* parameterSymbolNode = dynamic_cast<AST::Symbol*>(parameterNode);
+		assert(parameterSymbolNode);
+		AST::Node* body = get_abstraction_body(root);
+		if(boundNames.find(symbolNode) == boundNames.end()) { // not bound yet
+			boundNames.insert(parameterSymbolNode);
+			get_free_variables_impl(body, boundNames, freeNames);
+			boundNames.erase(parameterSymbolNode);
+		} else // already bound to something else: make sure not to get rid of it.
+			get_free_variables_impl(body, boundNames, freeNames);
+	} else if(application_P(root)) {
+		get_free_variables_impl(get_application_operator(root), boundNames, freeNames);
+		get_free_variables_impl(get_application_operand(root), boundNames, freeNames);
 	} else if(symbolNode) {
 		if(boundNames.find(symbolNode) == boundNames.end()) // not bound is free.
 			freeNames.insert(symbolNode);
@@ -45,43 +42,6 @@ static void get_free_variables_impl(AST::Node* root, std::set<AST::Symbol*>& bou
 void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames) {
 	std::set<AST::Symbol*> boundNames;
 	get_free_variables_impl(root, boundNames, freeNames);
-}
-AST::Node* get_abstraction_body(AST::Node* root) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
-	if(consNode && consNode->head == intern("\\") && consNode->tail && consNode->tail->tail) {
-		/* take the trailing item as body */
-		return(follow_tail(consNode->tail->tail)->head);
-	} else
-		return(NULL);
-}
-AST::Node* get_abstraction_parameter(AST::Node* root) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
-	if(consNode && consNode->head == intern("\\") && consNode->tail)
-		return(consNode->tail->head);
-	else
-		return(NULL);
-}
-bool abstraction_P(AST::Node* root) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
-	if(!consNode)
-		return(false);
-	else
-		return(consNode->head == intern("\\") && consNode->tail);
-}
-bool application_P(AST::Node* root) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
-	if(!consNode)
-		return(false);
-	else
-		return(consNode->head != intern("\\"));
-}
-AST::Node* get_application_operator(AST::Node* root) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
-	return(consNode ? consNode->head : NULL);
-}
-AST::Node* get_application_operand(AST::Node* root) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
-	return((consNode && consNode->tail) ? consNode->tail->head : NULL);
 }
 static AST::Symbol* get_variable_name(AST::Node* root) {
 	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
@@ -106,41 +66,36 @@ static bool quote_P(AST::Node* root) {
 	}
 }
 AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& boundNamesSet) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
+	// TODO maybe traverse cons etc? maybe not.
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(root);
 	AST::Node* result;
-	if(consNode) {
-		AST::Node* headNode = consNode->head;
-		if(headNode == intern("\\") && consNode->tail) { // abstraction.
-			AST::Node* parameterNode = consNode->tail->head;
-			AST::Symbol* parameterSymbolNode = dynamic_cast<AST::Symbol*>(parameterNode);
-			assert(parameterSymbolNode);
-			boundNames.push_front(parameterSymbolNode);
-			if(boundNamesSet.find(symbolNode) == boundNamesSet.end()) { // not bound yet
-				boundNamesSet.insert(parameterSymbolNode);
-				result = annotate_impl(consNode->tail->tail, boundNames, boundNamesSet);
-				boundNamesSet.erase(parameterSymbolNode);
-			} else // already bound to something else: make sure not to get rid of it.
-				result = annotate_impl(consNode->tail->tail, boundNames, boundNamesSet);
-			assert(!boundNames.empty() && boundNames.front() == parameterSymbolNode);
-			boundNames.pop_front();
-			if(result == consNode->tail->tail) // reuse the original nodes if we didn't migrate off them.
-				result = consNode;
-			else
-				result = cons(headNode, cons(parameterNode, dynamic_cast<AST::Cons*>(result)));
-		} else { // application etc.
-			// headNode
-			AST::Node* newHeadNode = annotate_impl(headNode, boundNames, boundNamesSet);
-			//AST::Node* newTailNode = annotate_impl(consNode->tail, boundNames, boundNamesSet);
-			AST::Node* newTailNode = quote_P(newHeadNode) ? consNode->tail : annotate_impl(consNode->tail, boundNames, boundNamesSet);
-			AST::Cons* newTailCons = dynamic_cast<AST::Cons*>(newTailNode);
-			if(newHeadNode == headNode && newTailNode == consNode->tail)
-				return(consNode);
-			if(!newTailCons && newTailNode) /* not a cons. */
-				throw EvaluationException("cons tail is not a cons");
-			return(cons(newHeadNode, newTailCons));
-		}
-		return(result);
+	if(abstraction_P(root)) {
+		AST::Node* parameterNode = get_abstraction_parameter(root);
+		AST::Node* body = get_abstraction_body(root);
+		AST::Symbol* parameterSymbolNode = dynamic_cast<AST::Symbol*>(parameterNode);
+		assert(parameterSymbolNode);
+		boundNames.push_front(parameterSymbolNode);
+		if(boundNamesSet.find(symbolNode) == boundNamesSet.end()) { // not bound yet
+			boundNamesSet.insert(parameterSymbolNode);
+			result = annotate_impl(body, boundNames, boundNamesSet);
+			boundNamesSet.erase(parameterSymbolNode);
+		} else // already bound to something else: make sure not to get rid of it.
+			result = annotate_impl(body, boundNames, boundNamesSet);
+		assert(!boundNames.empty() && boundNames.front() == parameterSymbolNode);
+		boundNames.pop_front();
+		if(result == body) // reuse the original nodes if we didn't migrate off them.
+			return(root);
+		else
+			return(makeAbstraction(parameterNode, result));
+	} else if(application_P(root)) {
+		AST::Node* operator_ = get_application_operator(root);
+		AST::Node* operand = get_application_operand(root);
+		AST::Node* newOperatorNode = annotate_impl(operator_, boundNames, boundNamesSet);
+		AST::Node* newOperandNode = quote_P(newOperatorNode) ? operand : annotate_impl(operand, boundNames, boundNamesSet);
+		if(operator_ == newOperatorNode && operand == newOperandNode)
+			return(root);
+		else
+			return(makeApplication(newOperatorNode, newOperandNode));
 	} else if(symbolNode) {
 		int size = boundNames.size();
 		int i;
@@ -182,7 +137,7 @@ static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
 		if(new_fn == x_fn && new_argument == x_argument)
 			return(term);
 		else
-			return(cons(new_fn, cons(new_argument, NULL)));
+			return(makeApplication(new_fn, new_argument));
 	} else if(abstraction_P(term)) {
 		AST::Node* body;
 		AST::Node* parameter;
@@ -196,7 +151,7 @@ static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
 		if(body == new_body)
 			return(term);
 		else
-			return(cons(intern("\\"), cons(parameter, cons(new_body, NULL))));
+			return(makeAbstraction(parameter, new_body));
 	} else 
 		return(term);
 }
@@ -220,9 +175,6 @@ AST::Node* reduce(AST::Node* term) {
 		++recursionLevel;
 		fn = reduce(get_application_operator(term));
 		--recursionLevel;
-		if(dynamic_cast<AST::Cons*>(term)->tail == NULL) { // (+) // TODO is this a good idea?
-			return(fn);
-		}
 		argument = get_application_operand(term);
 		if(wants_its_argument_reduced_P(fn)) {
 			++recursionLevel;
@@ -250,7 +202,7 @@ AST::Node* reduce(AST::Node* term) {
 			} else if(get_application_operator(term) == fn && get_application_operand(term) == argument)
 				return(term);
 			else
-				return(AST::cons(fn, AST::cons(argument, NULL)));
+				return(makeApplication(fn, argument)); // XXX
 		}
 	} else if(abstraction_P(term)) {
 		/* this isn't strictly necessary, but nicer */
@@ -271,19 +223,19 @@ AST::Node* reduce(AST::Node* term) {
 		if(new_body == body)
 			return(term);
 		else
-			return(AST::cons(AST::intern("\\"), AST::cons(parameter, AST::cons(new_body, NULL))));
+			return(makeAbstraction(parameter, new_body));
 	} else
 		return(term);
 }
-
-AST::Node* application(AST::Node* fn, AST::Node* argument) {
-	return(cons(fn, cons(argument, NULL)));
-}
-AST::Node* abstraction(AST::Node* parameter, AST::Node* body) {
-	return(cons(AST::intern("\\"), cons(parameter, cons(body, NULL))));
-}
 AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body) {
-	return(application(abstraction(parameter, body), argument));
+	return(makeApplication(makeAbstraction(parameter, body), argument));
+}
+AST::Node* makeError(const char* reason) {
+	// FIXME!!
+	return(AST::makeStr(reason));
+}
+bool define_P(AST::Node* input) {
+	return(input != NULL && application_P(input) && get_application_operator(input) == AST::intern("define"));
 }
 
 }; // end namespace Evaluators.

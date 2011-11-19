@@ -69,9 +69,9 @@ struct REPL {
 	char* fSearchTerm;
 	bool fBSearchUpwards;
 	bool fBSearchCaseSensitive;
-	AST::Cons* fTailEnvironment;
-	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::Cons* fTailUserEnvironmentFrontier;
+	AST::Node* fTailEnvironment;
+	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::Node* fTailUserEnvironmentFrontier;
 };
 };
 namespace GUI {

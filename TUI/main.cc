@@ -17,14 +17,15 @@
 #include "Formatters/Math"
 #include "TUI/Interrupt"
 #include "REPL/REPL"
+#include "Evaluators/Evaluators"
 //#include "Config/Config"
 
 namespace REPLX {
 
 struct REPL {
-	AST::Cons* fTailEnvironment;
-	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::Cons* fTailUserEnvironmentFrontier;
+	AST::Node* fTailEnvironment;
+	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::Node* fTailUserEnvironmentFrontier;
 	int fEnvironmentCount;
 	bool fFileModified;
 	char* fEnvironmentName;
@@ -150,7 +151,7 @@ bool REPL_execute(struct REPL* self, AST::Node* input) {
 	bool B_ok = false;
 	try {
 		AST::Node* result = input;
-		if(!input || dynamic_cast<AST::Cons*>(input) == NULL || ((AST::Cons*)input)->head != AST::intern("define")) {
+		if(!Evaluators::define_P(input)) {
 			result = REPL_close_environment(self, result);
 			result = Evaluators::provide_dynamic_builtins(result);
 			result = Evaluators::annotate(result);
@@ -232,11 +233,11 @@ void run(struct REPL* REPL, const char* text) {
 		fclose(input_file);
 		REPL_execute(REPL, result);
 	} catch(Scanners::ParseException exception) {
-		AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::Str(exception.what()), NULL));
+		AST::Node* err = Evaluators::makeError(exception.what());
 		std::string errStr = err->str();
 		fprintf(stderr, "%s\n", errStr.c_str());
 	} catch(Evaluators::EvaluationException exception) {
-		AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::Str(exception.what()), NULL));
+		AST::Node* err = Evaluators::makeError(exception.what());
 		std::string errStr = err->str();
 		fprintf(stderr, "%s\n", errStr.c_str());
 	}

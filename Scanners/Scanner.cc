@@ -261,7 +261,7 @@ void Scanner::parse_string(int input) {
 		}
 	}
 	std::string value = matchtext.str();
-	input_value = AST::str_literal(value.c_str());
+	input_value = AST::makeStr(value.c_str());
 }
 static bool symbol1_char_P(int input) {
 	return (input >= 'A' && input <= 'Z')

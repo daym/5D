@@ -8,13 +8,15 @@
 #include "Scanners/MathParser"
 #include "FFIs/FFIs"
 #include "Formatters/SExpression"
+#include "Evaluators/Evaluators"
+#include "REPL/REPL"
 
 namespace REPLX {
 
 struct REPL {
-	AST::Cons* fTailEnvironment;
-	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::Cons* fTailUserEnvironmentFrontier;
+	AST::Node* fTailEnvironment;
+	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::Node* fTailUserEnvironmentFrontier;
 	int fEnvironmentCount;
 	bool fBModified;
 };
@@ -26,33 +28,28 @@ int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node*
 void REPL_queue_scroll_down(REPL* self) {
 	// TODO
 }
+
+
+};
+namespace GUI {
+
 void REPL_set_file_modified(REPL* self, bool value) {
 	self->fBModified = value;
 }
 
-void REPL_add_to_environment(struct REPL* self, AST::Node* definition);
+char* REPL_get_output_buffer_text(struct REPL* self) {
+	return(NULL);
+}
+
+void REPL_append_to_output_buffer(struct REPL* self, char const* text) {
+}
 
 };
+using namespace GUI;
 
 #include "REPL/REPLEnvironment"
 
-namespace REPLX {
-
-void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
-	using namespace AST;
-	AST::Cons* definitionCons;
-	if(!definition)
-		return;
-	definitionCons = dynamic_cast<AST::Cons*>(definition);
-	if(!definitionCons || !definitionCons->head || !definitionCons->tail || definitionCons->head != intern("define"))
-		return;
-	definitionCons = definitionCons->tail;
-	AST::Symbol* procedureName = dynamic_cast<AST::Symbol*>(definitionCons->head);
-	if(!procedureName || !definitionCons->tail)
-		return;
-	AST::Node* value = follow_tail(definitionCons->tail)->head;
-	REPL_add_to_environment_simple(self, procedureName, value);
-}
+namespace GUI {
 
 void REPL_clear(struct REPL* self) {
 	self->fTailEnvironment = self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier = NULL;
@@ -66,7 +63,7 @@ bool REPL_execute(struct REPL* self, AST::Node* input) {
 	bool B_ok = false;
 	try {
 		AST::Node* result = input;
-		if(!input || dynamic_cast<AST::Cons*>(input) == NULL || ((AST::Cons*)input)->head != AST::intern("define")) {
+		if(!Evaluators::define_P(input)) {
 			result = REPL_close_environment(self, result);
 			result = Evaluators::provide_dynamic_builtins(result);
 			result = Evaluators::annotate(result);
@@ -118,13 +115,13 @@ int main() {
 			// TODO parse left-over ")"
 			REPL_execute(REPL, source);
 		} catch(Scanners::ParseException exception) {
-			AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::Str(exception.what()), NULL));
+			AST::Node* err = Evaluators::makeError(exception.what());
 			std::string errStr = err->str();
 			fprintf(stderr, "%s\n", errStr.c_str());
 			status = 1;
 			parser.consume();
 		} catch(Evaluators::EvaluationException exception) {
-			AST::Node* err = AST::cons(AST::intern("error"), AST::cons(new AST::Str(exception.what()), NULL));
+			AST::Node* err = Evaluators::makeError(exception.what());
 			std::string errStr = err->str();
 			fprintf(stderr, "%s\n", errStr.c_str());
 			status = 2;

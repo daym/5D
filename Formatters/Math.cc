@@ -1,5 +1,6 @@
 #include <string.h>
 #include <iostream>
+#include <assert.h>
 #include <sstream>
 #include "AST/AST"
 #include "AST/Symbol"
@@ -94,12 +95,14 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 			++position, output << ')';
 	} else if(application_P(node)) { /* application */
 		AST::Node* envelope = get_application_operator(node);
+		if(!application_P(envelope))
+			envelope = NULL;
 		//if(operator_ && application_P(operator_)) // 2 for binary ops.
 		AST::Node* operator_ = envelope ? get_application_operator(envelope) : NULL;
 		AST::Symbol* operatorSymbol = dynamic_cast<AST::Symbol*>(operator_); 
 		AST::Symbol* operatorAssociativity = NULL;
 		int precedence = operatorSymbol ? OPL->get_operator_precedence_and_associativity(operatorSymbol, operatorAssociativity) : -1;
-		if(precedence != -1) { // is a (binary) operator
+		if(precedence != -1 && application_P(envelope)) { // is a (binary) operator and the envelope is not a builtin (i.e. (+))
 			bool B_braced = maybe_print_opening_brace(output, position, precedence, precedence_limit, B_brace_equal_levels);
 			print_math_CXX(OPL, output, position, get_application_operand(envelope), precedence, operatorAssociativity != AST::intern("left"));
 			print_text_raw(output, position, operatorSymbol->str());

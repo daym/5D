@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace REPLX {
 struct REPL;
-void REPL_set_environment(struct REPL* self, AST::Cons* environment);
+void REPL_set_environment(struct REPL* self, AST::Node* environment);
 AST::Cons* REPL_get_user_environment(struct REPL* self);
 void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value);
 };
@@ -64,9 +64,9 @@ bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
 	using namespace AST;
 	char* buffer_text;
 	buffer_text = REPL_get_output_buffer_text(self);
-	AST::Cons* buffer_text_box = AST::cons(AST::intern("textBufferText"), AST::cons(str_literal(buffer_text), NULL));
-	AST::Cons* environment_box = AST::cons(AST::intern("environment"), AST::cons(dynamic_cast<AST::Cons*>(REPL_filter_environment(self, REPL_get_user_environment(self))), NULL));
-	AST::Cons* content_box = AST::cons(AST::intern("REPLV1"), AST::cons(buffer_text_box, AST::cons(environment_box, NULL)));
+	AST::Node* buffer_text_box = AST::makeApplication(AST::intern("textBufferText"), makeStr(buffer_text));
+	AST::Node* environment_box = AST::makeApplication(AST::intern("environment"), REPL_filter_environment(self, REPL_get_user_environment(self)));
+	AST::Node* content_box = AST::makeApplication(AST::makeApplication(AST::intern("REPLV1"), buffer_text_box), environment_box);
 	Formatters::print_S_Expression(output_file, 0, 0, content_box);
 	return(true);
 }
@@ -118,7 +118,6 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 	REPL_set_file_modified(self, false);
 	return(true);
 }
-/* FIXME remove */
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 	using namespace AST;
 	AST::Cons* definitionCons;

@@ -34,5 +34,11 @@ Real* operator-(const Real& a, const Real& b) {
 Real* operator*(const Real& a, const Real& b) {
 	return(NULL); /* FIXME */
 }
+AST::Node* operator<=(const Float& a, const Float& b) {
+	return(Evaluators::internNative(a.value <= b.value));
+}
+AST::Node* operator<=(const Real& a, const Real& b) {
+	return(Evaluators::internNative(false)); /* FIXME */
+}
 
 }; /* end namespace Numbers */

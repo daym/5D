@@ -9,6 +9,7 @@
 namespace GUI {
 };
 namespace REPLX {
+typedef AST::Node EnvEntry; /* actually Application, but we don't want the client to assume silly things */
 using namespace GUI;
 
 /*      [ ->!]            [ ->!]                  [ ->!]
@@ -16,8 +17,56 @@ using namespace GUI;
     fTailEnvironment  fTailUserEnvironment   fTailUserEnvironmentFrontier
 
    entry = ((\x B) a)
+
+((\+ 
+
+	(\*
+
+		B
+
+	(M +))
+
+(\x nil) is used as a tail marker for where the user code should go.
+
+) P)
+
+env-entry = application(abstraction(\+, xxx), P)
+xxx = application(abstraction(...), ...) or nil or junk
+
+
+there is a dummy entry at the beginnning, called fTailEnvironment.
+fTailUserEnvironment is the last entry before the user environment, it can be used to smuggle in new builtins.
+fTailUserEnvironmentFrontier is the last entry of the user environment. Its tail will be the code to execute.
 */
 
+static bool envEntry_P(AST::Node* node) {
+	return(application_P(node) && abstraction_P(get_application_operator(node)));
+}
+static void envEntrySetTail(AST::Node* node, AST::Node* value) {
+	// continue at the abstraction body embedded in the application (all other slots are used up)
+	assert(envEntry_P(node));
+	AST::Node* op = get_application_operator(node);
+	assert(abstraction_P(op));
+	((AST::Abstraction*)op)->body = value; // shoot me now
+}
+static AST::Node* envEntryGetTail(AST::Node* node) {
+	// continue at the abstraction body embedded in the application (all other slots are used up)
+	assert(envEntry_P(node));
+	AST::Node* op = get_application_operator(node);
+	assert(abstraction_P(op));
+	return(get_abstraction_body(op));
+}
+static AST::Node* makeEnvEntry(AST::Symbol* name, AST::Node* body, AST::Node* next) {
+	return(makeApplication(makeAbstraction(name, next), body));
+}
+static void getEnvEntry(AST::Node* entry, AST::Node*& name, AST::Node*& body, AST::Node*& next) {
+	assert(application_P(entry));
+	AST::Node* abstraction = get_application_operator(entry);
+	assert(abstraction_P(abstraction));
+	name = get_abstraction_parameter(abstraction);
+	next = get_abstraction_body(abstraction);
+	body = get_application_operand(entry);
+}
 //fTailEnvironment
 //fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */
 //fTailUserEnvironmentFrontier
@@ -42,7 +91,7 @@ struct SuperAwareOperation : AST::Operation { /* will be immediately executed, r
 };
 template<class T>
 static AST::Node* buildSuperAwareOperation(AST::Symbol* name) {
-	return(AST::cons(AST::intern("reduce"), AST::cons(AST::cons(new SuperAwareOperation<T>(), AST::cons(name, NULL)), NULL)));
+	return(AST::makeApplication(AST::intern("reduce"), AST::makeApplication(new SuperAwareOperation<T>(), name)));
 }
 #if 0
 static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::Node* value) { /* allows chaining */
@@ -53,12 +102,12 @@ static Evaluators::Quoter quoter;
 
 #define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, buildSuperAwareOperation<v>(n))
 static void REPL_init_builtins(struct REPL* self) {
-	if(self->fTailUserEnvironment && self->fTailUserEnvironment->tail) {
+	if(self->fTailUserEnvironment && envEntryGetTail(self->fTailUserEnvironment)) {
 		fprintf(stderr, "warning: There is a user environment, so not clobbering it by builtins.\n");
 		return;
 	}
 	if(!self->fTailEnvironment) { /* first init */
-		self->fTailEnvironment = AST::cons(AST::intern("environment"), NULL/*mutable*/);
+		self->fTailEnvironment = makeApplication(makeAbstraction(AST::intern("nil"), NULL/*mutable*/), NULL);
 		self->fTailUserEnvironment = self->fTailEnvironment;
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
 	}
@@ -92,108 +141,63 @@ static void REPL_init_builtins(struct REPL* self) {
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }
 //int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value);
-void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value) {
+/* returns: whether we just inserted something after endIter, ostensibly moving stuff */
+bool REPL_add_to_environment_simple_end(struct REPL* self, AST::Symbol* name, AST::Node* value, AST::Node* endIter) {
 	using namespace AST;
 	using namespace Evaluators;
-	AST::Cons* node;
-	AST::Cons* nodeTail;
 	int index = REPL_add_to_environment_simple_GUI(self, name, value);
 	assert(index >= 0);
-	/* the returned index is "just not as important as the new entry" */
-	AST::Cons* prevNode = self->fTailEnvironment && self->fTailEnvironment->tail ? dynamic_cast<AST::Cons*>(self->fTailEnvironment->tail->head) : NULL;
-	for(; index > 0 && prevNode; --index) {
-		if(self->fTailUserEnvironmentFrontier && self->fTailUserEnvironmentFrontier->tail && prevNode == self->fTailUserEnvironmentFrontier->tail->head) { // if it is an user expression (not a definition in the environment)
-			prevNode = NULL;
-			break;
-		}
-		assert(application_P(prevNode));
-		AST::Node* x_fn;
-		//AST::Node* x_argument;
-		x_fn = get_application_operator(prevNode);
-		//x_argument = get_application_operand(prevNode);
-		assert(abstraction_P(x_fn));
-		AST::Node* body;
-		//AST::Node* parameter;
-		body = get_abstraction_body(x_fn);
-		//parameter = get_abstraction_parameter(x_fn);
-		/*assert(dynamic_cast<AST::Cons*>(body) != NULL);*/
-		prevNode = dynamic_cast<AST::Cons*>(body);
+	EnvEntry* prevNode = self->fTailEnvironment;
+	EnvEntry* shiftedNode = NULL;
+	EnvEntry* newNode;
+	// there is a sentinel at the beginning.
+	for(; index > 0 && prevNode != endIter; --index)
+		prevNode = envEntryGetTail(prevNode);
+	if(!prevNode) {
+		abort();
 	}
-	if(self->fTailUserEnvironmentFrontier && self->fTailUserEnvironmentFrontier->tail && prevNode == self->fTailUserEnvironmentFrontier->tail->head) // if it is an user expression (not a definition in the environment)
-		prevNode = NULL;
-	if(prevNode) {
-		assert(application_P(prevNode));
-		AST::Node* x_fn;
-		//AST::Node* x_argument;
-		x_fn = get_application_operator(prevNode);
-		//x_argument = get_application_operand(prevNode);
-		assert(abstraction_P(x_fn));
-		AST::Node* body;
-		//AST::Node* parameter;
-		//parameter = get_abstraction_parameter(x_fn);
-		body = get_abstraction_body(x_fn);
-		nodeTail = cons(name, cons(body, NULL));
-		node = cons(cons(AST::intern("\\"), nodeTail), cons(value, NULL));
-		/*return(application(abstraction(parameter, node), x_argument));*/
-		dynamic_cast<AST::Cons*>(x_fn)->tail->head = node;
-	} else {
-		nodeTail = cons(name, cons(NULL, NULL));
-		node = cons(cons(AST::intern("\\"), nodeTail), cons(value, NULL));
-		/* node = ((\x B) a) 
-		nodeTail =    ^ */
-		if(self->fTailUserEnvironmentFrontier)
-			self->fTailUserEnvironmentFrontier->tail = AST::cons(node, NULL);
-		else
-			abort();
-		self->fTailUserEnvironmentFrontier = nodeTail;
-	}
+	shiftedNode = envEntryGetTail(prevNode);
+	newNode = makeEnvEntry(name, value, /*next*/shiftedNode);
+	envEntrySetTail(prevNode, newNode);
+	return(prevNode == endIter);
+}
+void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value) {
+	if(REPL_add_to_environment_simple_end(self, name, value, self->fTailUserEnvironmentFrontier))
+		self->fTailUserEnvironmentFrontier = envEntryGetTail(self->fTailUserEnvironmentFrontier);
 }
 static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node) {
 	if(self->fTailUserEnvironmentFrontier) {
-		self->fTailUserEnvironmentFrontier->tail = AST::cons(node, NULL);
-		return(self->fTailEnvironment->tail->head);
+		envEntrySetTail(self->fTailUserEnvironmentFrontier, node);
+		return(envEntryGetTail(self->fTailEnvironment));
 	} else
 		return(node);
 }
 static void REPL_unfilter_environment(struct REPL* self, AST::Node* environment) {
 	/* filters out Builtins */
 	using namespace AST;
-	AST::Cons* environmentCons = dynamic_cast<AST::Cons*>(environment);
-	if(Evaluators::application_P(environment)) {
-		AST::Cons* fn;
-		AST::Node* parameter;
-		AST::Node* argument;
-		argument = environmentCons && environmentCons->tail ? environmentCons->tail->head : NULL;
-		fn = dynamic_cast<AST::Cons*>(environmentCons->head);
-		parameter = fn->tail->head;
-		assert(fn && Evaluators::abstraction_P(fn));
-		REPL_add_to_environment_simple_GUI(self, dynamic_cast<AST::Symbol*>(parameter), argument);
-		REPL_unfilter_environment(self, environmentCons->head);
-	} else if(Evaluators::abstraction_P(environment)) {
-		AST::Node* body;
-		//AST::Node* parameter;
-		//parameter = environmentCons->tail->head;
-		if(!environmentCons->tail->tail) {
-			/* (\b) used as tail marker */
-			self->fTailUserEnvironmentFrontier = environmentCons->tail;
-			self->fTailUserEnvironmentFrontier->tail = NULL;
-		} else {
-			body = follow_tail(environmentCons->tail->tail)->head;
-			REPL_unfilter_environment(self, body);
+	AST::Node* name;
+	AST::Node* body;
+	AST::Node* next;
+	for(; environment; environment = next) {
+		getEnvEntry(environment, name, body, next);
+		REPL_add_to_environment_simple_GUI(self, dynamic_cast<AST::Symbol*>(name), body);
+		if(body == NULL) { // used as a tail marker
+			self->fTailUserEnvironmentFrontier = environment;
+			envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL);
 		}
 	}
 }
-void REPL_set_environment(struct REPL* self, AST::Cons* environment) {
-	self->fTailUserEnvironment->tail = NULL;
-	self->fTailUserEnvironmentFrontier->tail = NULL;
+void REPL_set_environment(struct REPL* self, EnvEntry* environment) {
+	envEntrySetTail(self->fTailUserEnvironment, NULL);
+	envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL); // help GC
 	self->fTailUserEnvironmentFrontier = NULL;
-	self->fTailUserEnvironment->tail = AST::cons(environment, NULL);
+	envEntrySetTail(self->fTailUserEnvironment, environment);
 	REPL_unfilter_environment(self, environment);
 }
-AST::Cons* REPL_get_user_environment(struct REPL* self) {
+AST::Node* REPL_get_user_environment(struct REPL* self) {
 	if(self->fTailUserEnvironmentFrontier)
-		self->fTailUserEnvironmentFrontier->tail = NULL; /* clear the last command from the environment, nobody cares. */
-	return(self->fTailUserEnvironment->tail ? dynamic_cast<AST::Cons*>(self->fTailUserEnvironment->tail->head) : NULL);
+		envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL); /* clear the last command from the environment, nobody cares. */
+	return(self->fTailUserEnvironment ? envEntryGetTail(self->fTailUserEnvironment) : NULL);
 }
 Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self) {
 	Scanners::OperatorPrecedenceList* result;
@@ -228,7 +232,7 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 	bool B_ok = false;
 	try {
 		AST::Node* result = input;
-		if(!input || dynamic_cast<AST::Cons*>(input) == NULL || ((AST::Cons*)input)->head != AST::intern("define")) {
+		if(!Evaluators::define_P(input)) {
 			result = REPL_close_environment(self, result);
 			result = Evaluators::provide_dynamic_builtins(result);
 			result = Evaluators::annotate(result);
