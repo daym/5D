@@ -270,8 +270,18 @@ tail (8:nil) =&gt; nil
 </a>
 
 <a name="state"><h2>State</h2>
-<h3>withWorld \f</h3>
+<h3>runWorld \f</h3>
 <p>Can only be there once in the entire program. Will cause the state machine to run, giving the initial World State to the function <span class="pre">f</span>. f eventually returns and its result will be decomposed, the monad value extracted and it will become the result.</p>
+<hr/>
+<h3>(;) \m \handler</h3>
+<p>The sequencing operator.</p>
+<p>Chains together <span class="pre">m</span> and <span class="pre">handler</span> in such a way that, once <span class="pre">runWorld</span> is started, <span class="pre">m</span> will run first, deliver its result to <span class="pre">handler</span>, which will run next.</p>
+<p>Example:</p>
+<pre>
+define readFile fopen @mode:"r" "/etc/passwd" ;\f fgets f
+runWorld readFile
+</pre>
+<p>This results in the first line of the file named "/etc/passwd".</p>
 <hr/>
 <h3><del>monadValue \m</del></h3>
 <p>Given a monad, results in the value of the monad.</p>
