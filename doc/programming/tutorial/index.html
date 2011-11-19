@@ -140,9 +140,9 @@ define f rec \self \x (self 1)      -- endless recursion, but it works
 </pre>
 <p>There's a more traditional way, too:</p>
 <pre>
-def f \x (f 1)      -- endless recursion, but it works
+defrec f \x (f 1)      -- endless recursion, but it works
 </pre>
-<p><span class="pre">def</span> is a macro which expands to the former. Note that <span class="pre">def</span> only works (usefully) for function definitions ("DEfine Function").</p>
+<p><span class="pre">defrec</span> is a macro which expands to the former. Note that <span class="pre">defrec</span> only works (usefully) for function definitions.</p>
 <p>Note that the reason that <span class="pre">define f</span> doesn't make f available within the body of f is that you can refer to previous definitions of f within the new definition of f.</p>
 <p>An example will make that clearer:</p>
 <pre>
