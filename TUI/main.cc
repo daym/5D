@@ -225,7 +225,8 @@ void run(struct REPL* REPL, const char* text) {
 	FILE* input_file;
 	try {
 		input_file = fmemopen((void*) text, strlen(text), "r");
-		parser.push(input_file, 0);
+		parser.push(input_file, 0, false);
+		parser.consume();
 		result = parser.parse(operator_precedence_list);
 		parser.ensure_end();
 		fclose(input_file);

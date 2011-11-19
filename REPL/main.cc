@@ -104,7 +104,8 @@ int main() {
 	using namespace REPLX;
 	struct REPL* REPL = REPL_new();
 	input_file = stdin;
-	parser.push(input_file, 0);
+	parser.push(input_file, 0, false);
+	parser.consume();
 	while(!parser.EOFP()) {
 		try {
 			if(B_first)

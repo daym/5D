@@ -208,7 +208,8 @@ AST::Node* REPL_parse(struct REPL* self, const char* command, T destination/*for
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
 	if(input_file) {
 		try {
-			parser.push(input_file, 0);
+			parser.push(input_file, 0, false);
+			parser.consume();
 			AST::Node* result = parser.parse(REPL_ensure_operator_precedence_list(self));
 			parser.ensure_end();
 			fclose(input_file);

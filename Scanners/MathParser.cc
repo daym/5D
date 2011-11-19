@@ -255,7 +255,8 @@ AST::Node* MathParser::parse_simple(const char* text, OperatorPrecedenceList* op
 	FILE* input_file;
 	try {
 		input_file = fmemopen((void*) text, strlen(text), "r");
-		parser.push(input_file, 0);
+		parser.push(input_file, 0, false);
+		parser.consume();
 		result = parser.parse(operator_precedence_list);
 		fclose(input_file);
 		return(result);
@@ -263,11 +264,6 @@ AST::Node* MathParser::parse_simple(const char* text, OperatorPrecedenceList* op
 		fprintf(stderr, "could not parse \"%s\" because: %s\n", text, exception.what());
 		abort();
 	}
-}
-void MathParser::push(FILE* input_file, int line_number, bool B_consume) {
-	Scanner::push(input_file, line_number, B_consume);
-	if(B_consume)
-		consume();
 }
 void MathParser::parse_closing_brace(void) {
 	consume(AST::intern(")"));

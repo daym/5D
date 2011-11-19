@@ -83,7 +83,8 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 			return(false);
 		}
 		try {
-			parser.push(input_file, 0);
+			parser.push(input_file, 0, false);
+			parser.consume();
 			content = parser.parse_S_Expression();
 		} catch(Scanners::ParseException exception) {
 			fprintf(stderr, "error: failed to load file: \"%s\"\n", name);

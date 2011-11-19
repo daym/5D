@@ -35,6 +35,7 @@ void Scanner::push(FILE* input_file, int line_number, bool B_consume) {
 	this->line_number = line_number;
 	this->position = 0; // FIXME ftell(input_file);
 	this->previous_position = 0;
+	assert(!B_consume);
 }
 
 void Scanner::pop(void) {

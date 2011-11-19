@@ -30,7 +30,7 @@ protected:
 	int line_number;
 	AST::Node* input_value; // read-only
 public:
-	virtual void push(FILE* input_file, int line_number, bool B_consume = true);
+	void push(FILE* input_file, int line_number, bool B_consume);
 	void pop(void);
 	int get_position(void) const {
 		return(previous_position);

@@ -40,7 +40,6 @@ public:
 	AST::Node* parse(OperatorPrecedenceList* operator_precedence_list);
 	AST::Node* parse_S_Expression(void);
 	static AST::Node* parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list);
-	virtual void push(FILE* input_file, int line_number, bool B_consume = true);
 	MathParser(void);
 };
 
