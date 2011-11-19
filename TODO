@@ -58,3 +58,4 @@ move str() to the actual language
 packages (namespaces)
 $! strict applicator
 from the looks of it, (:) should be more important than function application.
+head 1 => head 1

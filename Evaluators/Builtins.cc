@@ -79,35 +79,35 @@ AST::Node* HeadGetter::execute(AST::Node* argument) {
 	if(consNode)
 		return(consNode->head);
 	else
-		return(NULL); // FIXME proper error message!
+		return(operation(intern(" "), fallback, argument));
 }
 AST::Node* TailGetter::execute(AST::Node* argument) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
 	if(consNode)
 		return(consNode->tail);
 	else
-		return(NULL); // FIXME proper error message!
+		return(operation(intern(" "), fallback, argument));
 }
 AST::Node* Interner::execute(AST::Node* argument) {
 	AST::Str* stringNode = dynamic_cast<AST::Str*>(argument);
 	if(stringNode)
 		return(AST::intern(stringNode->text.c_str()));
 	else
-		return(NULL);
+		return(operation(intern(" "), fallback, argument));
 }
 AST::Node* KeywordFromStringGetter::execute(AST::Node* argument) {
 	AST::Str* stringNode = dynamic_cast<AST::Str*>(argument);
 	if(stringNode)
 		return(AST::keywordFromString(stringNode->text.c_str()));
 	else
-		return(NULL);
+		return(operation(intern(" "), fallback, argument));
 }
 AST::Node* KeywordStr::execute(AST::Node* argument) {
 	AST::Keyword* keywordNode = dynamic_cast<AST::Keyword*>(argument);
 	if(keywordNode)
 		return(str_literal(keywordNode->name)); // TODO stop converting it back and forth and back and forth
 	else
-		return(NULL);
+		return(operation(intern(" "), fallback, argument));
 }
 static std::map<AST::Symbol*, AST::Node*> cachedDynamicBuiltins;
 static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
