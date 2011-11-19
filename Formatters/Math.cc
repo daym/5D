@@ -21,6 +21,8 @@ using namespace Evaluators;
 static void print_text(std::ostream& output, int& visible_position, const char* text) {
 	if(isalnum(*text))
 		output << text;
+	else if(*text == '@')
+		output << text;
 	else if(*text == '\'' && *(text + 1) == 0) // unary operator
 		output << '\'';
 	else
