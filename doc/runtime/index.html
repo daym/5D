@@ -358,7 +358,7 @@ keywordStr @mode: =&gt; "mode:"
 <p>Example:</p>
 <pre>
 define openLL fromLibrary "libc.so.6" "open"
-define open translateFFI openLL 'pure 'C intDemarshaller (strMarshaller:strMarshaller:nil)
+define open translateFFI openLL 'messy 'C intDemarshaller (strMarshaller:strMarshaller:nil)
 </pre>
 <hr/>
 <h3>translateFFI \f \purity \callingConvention \resultDemarshaller \parameterMarshallers</h3>
@@ -366,7 +366,7 @@ define open translateFFI openLL 'pure 'C intDemarshaller (strMarshaller:strMarsh
 <p>Example:</p>
 <pre>
 define openLL fromLibrary "libc.so.6" "open"
-define open translateFFI openLL 'pure 'C intDemarshaller (strMarshaller:strMarshaller:nil)
+define open translateFFI openLL 'messy 'C intDemarshaller (strMarshaller:strMarshaller:nil)
 </pre>
 </a>
 
