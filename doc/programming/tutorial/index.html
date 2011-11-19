@@ -186,7 +186,7 @@ symbol? x    =&gt; #f
 fopen @mode:"w" "foo.INI.temp"        -- Keyword Arguments need to be before normal arguments.
 </pre>
 <h3>Conditionals</h3>
-<p>Conditionals are used for flow control. Note that the result of a conditional is a Church Boolean.</p>
+<p>Conditionals are used for flow control. Note that the result of a conditional is a Church functional.</p>
 <p>If you want to see a short result on screen, use toBool. toBool converts a Chruch Boolean to either the symbol <span class="pre">t</span> or the symbol <span class="pre">f</span> after figuring out which.</p>
 <pre>
 #t&amp;&amp;#t => \t \f (\t \f t) ((\t \f t) t f) f
