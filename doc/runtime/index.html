@@ -358,15 +358,15 @@ keywordStr @mode: =&gt; "mode:"
 <p>Example:</p>
 <pre>
 define openLL fromLibrary "libc.so.6" "open"
-define open translateFFI openLL 'C intDemarshaller (strMarshaller:strMarshaller:nil)
+define open translateFFI openLL 'pure 'C intDemarshaller (strMarshaller:strMarshaller:nil)
 </pre>
 <hr/>
-<h3>translateFFI \f \callingConvention \resultDemarshaller \parameterMarshallers</h3>
+<h3>translateFFI \f \purity \callingConvention \resultDemarshaller \parameterMarshallers</h3>
 <p>Given a LL function and a signature and a result demarshaller, results in a function, that, when called, will marshal arguments until there are enough, then call the LL function, then demarshal the result. </p>
 <p>Example:</p>
 <pre>
 define openLL fromLibrary "libc.so.6" "open"
-define open translateFFI openLL 'C intDemarshaller (strMarshaller:strMarshaller:nil)
+define open translateFFI openLL 'pure 'C intDemarshaller (strMarshaller:strMarshaller:nil)
 </pre>
 </a>
 
