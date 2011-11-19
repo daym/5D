@@ -57,5 +57,8 @@ performance optimisation: use the lowest bit to signify pointers (1=it is one). 
 move str() to the actual language
 packages (namespaces)
 $! strict applicator
-from the looks of it, (:) should be more important than function application.
 get rid of follow_tail
+sorting: quick sort, merge sort.
+searching: binary search, bisect.
+trees: binary trees, tries, red black trees.
+div with negative args.
