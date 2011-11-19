@@ -30,7 +30,7 @@ static void Completer_accept_match(struct Completer* self, const char* match, bo
 }
 static bool in_all_keys_P(std::set<AST::Symbol*>& keys, int i, char c) {
 	std::set<AST::Symbol*>::const_iterator end_iter = keys.end();
-	for(std::set<AST::Symbol*>::const_iterator iter = keys.begin(); iter != keys.end(); ++iter) {
+	for(std::set<AST::Symbol*>::const_iterator iter = keys.begin(); iter != end_iter; ++iter) {
 		AST::Symbol* key = *iter;
 		if(key->name[i] != c)
 			return(false);

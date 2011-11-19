@@ -108,14 +108,14 @@ void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::N
 		}
 		assert(application_P(prevNode));
 		AST::Node* x_fn;
-		AST::Node* x_argument;
+		//AST::Node* x_argument;
 		x_fn = get_application_operator(prevNode);
-		x_argument = get_application_operand(prevNode);
+		//x_argument = get_application_operand(prevNode);
 		assert(abstraction_P(x_fn));
 		AST::Node* body;
-		AST::Node* parameter;
+		//AST::Node* parameter;
 		body = get_abstraction_body(x_fn);
-		parameter = get_abstraction_parameter(x_fn);
+		//parameter = get_abstraction_parameter(x_fn);
 		/*assert(dynamic_cast<AST::Cons*>(body) != NULL);*/
 		prevNode = dynamic_cast<AST::Cons*>(body);
 	}
@@ -124,13 +124,13 @@ void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::N
 	if(prevNode) {
 		assert(application_P(prevNode));
 		AST::Node* x_fn;
-		AST::Node* x_argument;
+		//AST::Node* x_argument;
 		x_fn = get_application_operator(prevNode);
-		x_argument = get_application_operand(prevNode);
+		//x_argument = get_application_operand(prevNode);
 		assert(abstraction_P(x_fn));
 		AST::Node* body;
-		AST::Node* parameter;
-		parameter = get_abstraction_parameter(x_fn);
+		//AST::Node* parameter;
+		//parameter = get_abstraction_parameter(x_fn);
 		body = get_abstraction_body(x_fn);
 		nodeTail = cons(name, cons(body, NULL));
 		node = cons(cons(AST::intern("\\"), nodeTail), cons(value, NULL));
@@ -171,8 +171,8 @@ static void REPL_unfilter_environment(struct REPL* self, AST::Node* environment)
 		REPL_unfilter_environment(self, environmentCons->head);
 	} else if(Evaluators::abstraction_P(environment)) {
 		AST::Node* body;
-		AST::Node* parameter;
-		parameter = environmentCons->tail->head;
+		//AST::Node* parameter;
+		//parameter = environmentCons->tail->head;
 		if(!environmentCons->tail->tail) {
 			/* (\b) used as tail marker */
 			self->fTailUserEnvironmentFrontier = environmentCons->tail;
