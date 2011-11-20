@@ -326,8 +326,8 @@ filter (>2) [1 2 3 4] =&gt; [3 4]
 <p><span class="pre">folder</span> is applied to the first element and the result of (foldr of the rest) until the end it reached, whereas <span class="pre">v</span> is substituted for the rest.</p>
 <p>Example:</p>
 <pre>
-foldr (+) 0 [1 2 3] =&gt; (1+(2+3)) =&gt; 6
-foldr (-) 0 [1 2 3] =&gt; (1-(2-3)) =&gt; 2
+foldr (+) 0 [1 2 3] =&gt; (1+(2+(3+0))) =&gt; 6
+foldr (-) 0 [1 2 3] =&gt; (1-(2-(3-0))) =&gt; 2
 </pre>
 <hr/>
 <h3>foldl \folder \v \list</h3>
@@ -335,8 +335,8 @@ foldr (-) 0 [1 2 3] =&gt; (1-(2-3)) =&gt; 2
 <p><span class="pre">folder</span> is applied to the (foldl of the rest) and the remaining element until the end it reached, whereas <span class="pre">v</span> is substituted for the (foldl of the rest).</p>
 <p>Example:</p>
 <pre>
-foldl (+) 0 [1 2 3] =&gt; ((1+2)+3) =&gt; 6
-foldl (-) 0 [1 2 3] =&gt; ((1-2)-3)) =&gt; (-4)
+foldl (+) 0 [1 2 3] =&gt; (((0+1)+2)+3) =&gt; 6
+foldl (-) 0 [1 2 3] =&gt; (((0-1)-2)-3)) =&gt; (-6)
 </pre>
 <hr/>
 </a>
