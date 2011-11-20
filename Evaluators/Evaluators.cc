@@ -164,12 +164,19 @@ static bool wants_its_argument_reduced_P(AST::Node* fn) {
 	return(fnOperation ? fnOperation->eager_P() : fn == &reducer);
 }
 static int recursionLevel = 0; /* anti-endless-loop */
+static AST::Node* remember(AST::Node* app, AST::Node* result) {
+	((AST::Application*) app)->result = result;
+	((AST::Application*) app)->bResult = true;
+	return(result);
+}
 AST::Node* reduce(AST::Node* term) {
 	if(recursionLevel > 1000) {
 		recursionLevel = 0;
 		throw EvaluationException("recursion was too deep");
 	}
 	if(application_P(term)) {
+		if(((AST::Application*) term)->bResult)
+			return(((AST::Application*) term)->result);
 		AST::Node* fn;
 		AST::Node* argument;
 		++recursionLevel;
@@ -188,7 +195,7 @@ AST::Node* reduce(AST::Node* term) {
 			++recursionLevel;
 			body = reduce(body);
 			--recursionLevel;
-			return(body);
+			return(remember(term, body));
 		} else {
 			// most of the time, SymbolReference anyway: AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(fn);
 			Evaluators::Operation* fnOperation = dynamic_cast<Evaluators::Operation*>(fn);
@@ -196,13 +203,13 @@ AST::Node* reduce(AST::Node* term) {
 				AST::Node* result;
 				result = fnOperation->execute(argument);
 				/*if(result)*/
-					return(result);
+					return(remember(term, result));
 				/*TODO else
 					return(fnOperation);*/
 			} else if(get_application_operator(term) == fn && get_application_operand(term) == argument)
-				return(term);
+				return(remember(term, term));
 			else
-				return(makeApplication(fn, argument)); // XXX
+				return(remember(term, makeApplication(fn, argument))); // XXX
 		}
 	} else if(abstraction_P(term)) {
 		/* this isn't strictly necessary, but nicer */
@@ -241,7 +248,8 @@ AST::Node* get_application_result(AST::Node* n) {
 	AST::Application* app = (AST::Application*) n;
 	if(!app->bResult) {
 		app->bResult = true;
-		app->result = reduce(app);
+		app->result = NULL;
+		reduce(app);
 	}
 	return(app->result);
 }
