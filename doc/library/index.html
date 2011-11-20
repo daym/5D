@@ -1,0 +1,463 @@
+<!DOCTYPE html >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+pre { font-family: monospace; color: blue; }
+h3 { font-family: monospace; color: blue; }
+span.pre { font-family: monospace; color: blue; }
+hr { color: #808080;
+     background-color: #808080;
+     height: 3px; }
+</style>
+
+</head>
+<body>
+<h1>Runtime Documentation</h1>
+<nl>
+<li><a href="#macros">Macros</a></li>
+<li><a href="#composition">Function Composition</a></li>
+<li><a href="#logic">Logic Values and Functions</a></li>
+<li><a href="#conditionals">Conditionals</a></li>
+<li><a href="#numberAlgebra">Number Algebra Functions</a></li>
+<li><a href="#lists">Lists</a></li>
+<li><a href="#state">State</a></li>
+<li><a href="#builtins">Builtin Types Except Lists</a></li>
+<li><a href="#FFI">Foreign Function Interface</a></li>
+<li><a href="#math">Higher Mathematics</a></li>
+<li><a href="#adorning">Adorning Functions</a></li>
+</nl>
+<a name="macros"><h2>Macros</h2>
+<h3>' a</h3>
+<p>(Pronounce it "quote a").</p>
+<p>Sometimes you just want to have a symbolic stand-in for things you <em>don't</em> define. Even <em>if</em> there is a definition, sometimes you don't want to substitute it in.</p>
+<p>If so, use quote to protect the symbol (or "create" the symbol).</p>
+<p>Note that <span class="pre" title="quote">'</span> is a macro and does <em>not</em> evaluate a.</p>
+<p>Example:</p>
+<pre>
+define x 2
+x =&gt; 2
+'x =&gt; x
+'(i am not an application with function i) =&gt; (i am not an application with function i)
+</pre>
+</a>
+<a name="composition"><h2>Function Composition</h2>
+<h3>id \f</h3>
+<p>Result is <span class="pre">f</span> .</p>
+<hr/>
+<h3>(|) \a \b</h3>
+<p>Given two arguments, results in an application of b to a. Like UN*X pipe.</p>
+<p>Example:</p>
+<pre>
+sort | uniq
+</pre>
+<hr/>
+<h3>compose \f \g</h3>
+<p>Given two functions f and g, results in a function that, when given an argument x, calculates <span class="pre">f (g x)</span> .</p>
+<p>Example:</p>
+<pre>
+compose uniq sort
+</pre>
+<hr/>
+<h3>flip \f</h3>
+<p>Given a function of two arguments, results in a function with the arguments flipped.</p>
+<p>Example:</p>
+<pre>
+define (&gt;) flip (&lt;)
+</pre>
+<hr/>
+<h3>rec \f</h3>
+<p>Given a function f, results in a recursable function, i.e. rec f =&gt; f f.</p>
+<p>Example:</p>
+<pre>
+define factorial rec \factorial \n if (n=0) 1 n*(factorial (n - 1))
+factorial 3 =&gt; 6
+factorial 20 =&gt; 2432902008176640000
+</pre>
+<hr/>
+</a>
+<a name="logic"><h2>Logic Values and Functions</h2>
+<h3>#t</h3>
+<p>Represents the true value. See <span class="pre">toBool</span> for getting a readable representation or <span class="pre">if</span> for deciding something upon it.</p>
+<hr/>
+<h3>#f</h3>
+<p>Represents the false value. See <span class="pre">toBool</span> for getting a readable representation or <span class="pre">if</span> for deciding something upon it.</p>
+<hr/>
+<h3>not \v</h3>
+<p>Result is true if <span class="pre">v</span> is false, otherwise true. Logical NOT.</p>
+<hr/>
+<h3>(||) \a \b</h3>
+<p>Result is true if either <span class="pre">a</span> or <span class="pre">b</span> are true or both. Logical OR.</p>
+<p>Example:</p>
+<pre>
+if (2 &lt; 3 || 5 &lt; 3) 5 7 =&gt; 5
+</pre>
+<hr/>
+<h3>(&amp;&amp;) \a \b</h3>
+<p>Result is true if both <span class="pre">a</span> and <span class="pre">b</span> are true. Logical AND.</p>
+<pre>
+if (2 &lt; 3 &amp;&amp; 1 &lt; 3) 5 7 =&gt; 5
+</pre>
+<hr/>
+<h3>equivalent? \a \b</h3>
+<p>Result is true if the statements <span class="pre">a</span> and <span class="pre">b</span> are equivalent. Logical equivalence.</p>
+<hr/>
+<h3>implies? \a \b</h3>
+<p>Result is true if <span class="pre">a</span> implies <span class="pre">b</span>. Logical implication.</p>
+<hr/>
+</a>
+
+<a name="conditionals"><h2>Conditionals</h2>
+<h3>if \c \T \F</h3>
+<p>Result is <span class="pre">T</span> if <span class="pre">c</span> is true, otherwise <span class="pre">F</span>.</p>
+<p>Example:</p>
+<pre>
+if (nil? nil) 'yes 'no =&gt; yes
+</pre>
+<hr/>
+</a>
+
+<a name="numberAlgebra"><h2>Number Algebra Functions</h2>
+<h3>(+) \a \b</h3>
+<p>Result is the sum of <span class="pre">a</span> and <span class="pre">b</span> .</p>
+<p>Example:</p>
+<pre>
+5 + 3 =&gt; 8
+</pre>
+<hr/>
+<h3>(-) \a \b</h3>
+<p>Result is the difference of <span class="pre">a</span> and <span class="pre">b</span> .</p>
+<p>Note that if you write <span class="pre">- b</span> , this implies a=0 and you will get the numerical negation. This is a special case <em>only</em> for this function.</p>
+<p>Example:</p>
+<pre>
+5 - 3 =&gt; 2
+- 3 =&gt; (-3)
+</pre>
+<hr/>
+<h3>(*) \a \b</h3>
+<p>Alternative Name: ⋅</p>
+<p>Result is the product of <span class="pre">a</span> and <span class="pre">b</span> .</p>
+<p>Example:</p>
+<pre>
+5 ⋅ 3 =&gt; 15
+</pre>
+<hr/>
+<h3>(/) \a \b</h3>
+<p>Alternative Name: ÷</p>
+<p>Result is the quotient of <span class="pre">a</span> and <span class="pre">b</span> .</p>
+<p>Example:</p>
+<pre>
+5 / 3 =&gt; 1.6666666666666667
+</pre>
+<hr/>
+<h3>divmod \a \b</h3>
+<p>Result is a list with the integer quotient of <span class="pre">a</span> and <span class="pre">b</span> and the remainder and nil.</p>
+<p>Example:</p>
+<pre>
+divmod 5 3 =&gt; (1:2:nil)
+</pre>
+<hr/>
+<h3>(&lt;) \a \b</h3>
+<p>Result is whether <span class="pre">a</span> is smaller than <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Example:</p>
+<pre>
+if (5 &lt; 3) 'yes 'no =&gt; no
+</pre>
+<hr/>
+<h3>(&lt;=) \a \b</h3>
+<p>Alternative Name: ≤</p>
+<p>Result is whether <span class="pre">a</span> is smaller than or equal to <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Example:</p>
+<pre>
+if (5 &lt;= 5) 'yes 'no =&gt; yes
+if (5 ≤ 5) 'yes 'no =&gt; yes
+</pre>
+<hr/>
+<h3>(=) \a \b</h3>
+<p>Result is whether <span class="pre">a</span> is equal to <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Example:</p>
+<pre>
+if (5 = 5) 'yes 'no =&gt; yes
+</pre>
+<hr/>
+<h3>(/=) \a \b</h3>
+<p>Result is whether <span class="pre">a</span> is not equal to <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Example:</p>
+<pre>
+if (5 /= 5) 'yes 'no =&gt; no
+</pre>
+<hr/>
+<h3>(&gt;) \a \b</h3>
+<p>Result is whether <span class="pre">a</span> is greater than <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Example:</p>
+<pre>
+if (5 &gt; 3) 'yes 'no =&gt; yes
+</pre>
+<hr/>
+<h3>(&gt;=) \a \b</h3>
+<p>Alternative Name: ≥</p>
+<p>Result is whether <span class="pre">a</span> is greater than or equal to <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Example:</p>
+<pre>
+if (5 &gt;= 5) 'yes 'no =&gt; yes
+if (5 ≥ 5) 'yes 'no =&gt; yes
+</pre>
+<hr/>
+<h3>abs \a</h3>
+<p>Returns the absolute value of <span class="pre">a</span>.</p>
+<p>Example:</p>
+<pre>
+abs 5 =&gt; 5
+abs (-5) =&gt; 5
+abs (-5.3) =&gt; 5.3
+abs 0 =&gt; 0
+</pre>
+<!--
+<h3>zero? \a</h3>
+<p>Result is whether <span class="pre">a</span> is the number 0.</p>
+<p>Example:</p>
+<pre>
+if (zero? (-1)) 'yes 'no =&gt; no
+if (zero? 0) 'yes 'no =&gt; yes
+if (zero? (42)) 'yes 'no =&gt; no
+</pre>
+<h3>negative? \a</h3>
+<p>Result is whether <span class="pre">a</span> is less than 0, if that is possible. If not, results in the original form.</p>
+<p>Example:</p>
+<pre>
+if (negative? (-1)) 'yes 'no =&gt; yes
+if (negative? 0) 'yes 'no =&gt; no
+</pre>
+<hr/>
+-->
+</a>
+
+<a name="lists"><h2>Lists</h2>
+<h3>nil</h3>
+<p>Represents the empty list.</p>
+<p>Example:</p>
+<pre>
+nil
+</pre>
+<hr/>
+<h3>nil? \l</h3>
+<p>Result is whether <span class="pre">l</span> is the empty list (and any list at all).</p>
+<p>Example:</p>
+<pre>
+if (nil? nil) 'yes 'no =&gt; yes
+</pre>
+<hr/>
+<h3>(:) \h \t</h3>
+<p>Result is a list with head <span class="pre">h</span> and tail <span class="pre">t</span>.</p>
+<p>Example:</p>
+<pre>
+if (list? (5:6:7:8:nil)) 'yes 'no =&gt; yes
+head (5:6:7:8:nil) =&gt; 5
+tail (5:6:7:8:nil) =&gt; (6:7:8:nil)
+</pre>
+<hr/>
+<h3>cons? \l</h3>
+<p>Result is whether <span class="pre">l</span> is something constructed by <span class="pre">(:)</span> .</p>
+<p>Example:</p>
+<pre>
+if (cons? (5:6:7:8:nil)) 'yes 'no =&gt; yes
+if (cons? nil) 'yes 'no =&gt; no
+if (cons? 42) 'yes 'no =&gt; no
+</pre>
+<hr/>
+<h3>list?</h3>
+<p>Result is whether <span class="pre">l</span> is a list, i.e. something constructed by <span class="pre">(:)</span> or <span class="pre">nil</span> .</p>
+<p>Example:</p>
+<pre>
+if (list? (5:6:7:8:nil)) 'yes 'no =&gt; yes
+if (list? nil) 'yes 'no =&gt; yes
+if (list? 42) 'yes 'no =&gt; no
+</pre>
+<hr/>
+<h3>head \l</h3>
+<p>Result is the head of <span class="pre">l</span>.</p>
+<p>Example:</p>
+<pre>
+head (5:6:7:8:nil) =&gt; 5
+tail (5:6:7:8:nil) =&gt; (6:7:8:nil)
+</pre>
+<hr/>
+<h3>tail \l</h3>
+<p>Result is the tail of <span class="pre">l</span>.</p>
+<p>Example:</p>
+<pre>
+head (5:6:7:8:nil) =&gt; 5
+tail (5:6:7:8:nil) =&gt; (6:7:8:nil)
+tail (8:nil) =&gt; nil
+</pre>
+<hr/>
+<h3>range \beginning \frontier \step</h3>
+<p>Result is a list of numbers, starting with <span class="pre">beginning</span>, incrementing by <span class="pre">step</span>, yielding the new number until <span class="pre">frontier</span> is reached (<span>frontier</span> is not part of the resulting list)
+</a>
+
+<a name="state"><h2>State</h2>
+<h3>runWorld \m</h3>
+<p>Can only be there once in the entire program. Will cause the state machine to run, giving the initial World State to the function <span class="pre">m</span>. m eventually returns and its result will be decomposed, the monad value extracted and it will become the result.</p>
+<hr/>
+<h3>(;) \m \handler</h3>
+<p>The sequencing operator.</p>
+<p>Chains together <span class="pre">m</span> and <span class="pre">handler</span> in such a way that, once <span class="pre">runWorld</span> reaches <span class="pre">m</span>, <span class="pre">m</span> will run first, deliver its result to <span class="pre">handler</span>, which will run next.</p>
+<p>Example:</p>
+<pre>
+define readFile fopen @mode:"r" "/etc/passwd" ;\f fgets f
+runWorld readFile
+</pre>
+<p>This results in the first line of the file named "/etc/passwd".</p>
+<hr/>
+<h3><del>monadValue \m</del></h3>
+<p>Given a monad, results in the value of the monad.</p>
+<hr/>
+<h3><del>monadWorld \m</del></h3>
+<p>Given a monad, results in the World State of the monad.</p>
+<hr/>
+</a>
+
+<a name="builtins"><h2>Builtin Types Except Lists</h2>
+<h3>toBool \v</h3>
+<p>Given a statement <span class="eq">v</span>, results in the symbol <span class="pre">t</span> if v is true, otherwise the symbol <span class="pre">f</span>.</p>
+<p>Definition:</p>
+<pre>
+define toBool \v if v 't 'f
+</pre>
+<hr/>
+<h3>intern \s</h3>
+<p>Given a String <span class="pre">s</span>, results in a Symbol of that name.</p>
+<p>Example:</p>
+<pre>
+intern "x" =&gt; x
+</pre>
+<hr/>
+<h3>keyword? \v</h3>
+<p>Given <span class="pre">v</span>, results in whether it's a Keyword or not.</p>
+<p>Example:</p>
+<pre>
+if (keyword? @mode:) 'yes 'no =&gt; yes
+</pre>
+<hr/>
+<h3>keywordFromStr \s</h3>
+<p>Given a String <span class="pre">s</span>, results in a Keyword of that name.</p>
+<p>Example:</p>
+<pre>
+keywordFromStr "mode:" =&gt; @mode:
+</pre>
+<hr/>
+<h3>keywordStr \k</h3>
+<p>Given a Keyword <span class="pre">k</span>, results in a Str with its name.</p>
+<p>Example:</p>
+<pre>
+keywordStr @mode: =&gt; "mode:"
+</pre>
+<hr/>
+<p>Most of the following functions in this section are a bad idea to use. Therefore, they are striked out.</p>
+<h3><del>int0</del></h3>
+<p>The value 0 as an Int.</p>
+<hr/>
+<h3><del>intSucc \v</del></h3>
+<p>Given a Int value <span class="pre">v</span>, get its successor on the natural numerical axis. Not necessarily Int any longer (the range of Int is limited by machine register size).</p>
+<hr/>
+<h3><del>number? \v</del></h3>
+<p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is a number or not.</p>
+<hr/>
+<h3><del>str? \v</del></h3>
+<p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is a Str or not.</p>
+<hr/>
+<h3><del>symbol? \v</del></h3>
+<p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is a Symbol or not.</p>
+<hr/>
+<h3><del>float? \v</del></h3>
+<p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is a Float or not.</p>
+<hr/>
+<h3><del>int?</del></h3>
+<p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is an Int or not.</p>
+<hr/>
+</a>
+
+<a name="FFI"><h2>Foreign Function Interface</h2>
+<h3>fromLibrary \s</h3>
+<p>Given the Str <span class="pre">s</span>, loads the library with the given name and results in an <span class="pre" title="Foreign Function Interface">FFI</span> function for it.</p>
+<p>You can then give a function name and it will look it up in the library and get the function.</p>
+<p>Example:</p>
+<pre>
+define openLL fromLibrary "libc.so.6" "open"
+define open translateFFI openLL 'messy 'C demarshalIntResult (marshalStr:marshalStr:nil)
+</pre>
+<hr/>
+<h3>translateFFI \f \purity \callingConvention \resultDemarshaller \parameterMarshallers</h3>
+<p>Given a LL function and a signature and a result demarshaller, results in a function, that, when called, will marshal arguments until there are enough, then call the LL function, then demarshal the result. </p>
+<p>Example:</p>
+<pre>
+define openLL fromLibrary "libc.so.6" "open"
+define open translateFFI openLL 'messy 'C demarshalIntResult (marshalStr:marshalStr:nil)
+</pre>
+</a>
+
+<a name="math"><h2>Higher Mathematics</h2>
+<h3>π</h3>
+<p>3.141592653589793</p>
+<hr/>
+<h3>e</h3>
+<p>2.718281828459045</p>
+<hr/>
+<h3>I</h3>
+<p>The imaginary unit. I is defined so that <span class="pre">I⋅I=-1</span> is true.</p>
+<hr/>
+<h3>δ \v</h3>
+<p>Given <span class="pre">v</span>, results in 1 if v=0, otherwise 0.</p>
+<hr/>
+<h3>sqrt \x</h3>
+<p>Alternative Name: √</p>
+<p>Given <span class="pre">x</span>, results in the (approximation of the) square root of x .</p>
+<hr/>
+<h3>sin \x</h3>
+<p>Given <span class="pre">x</span>, results in the sine of x .</p>
+<hr/>
+<h3>cos \x</h3>
+<p>Given <span class="pre">x</span>, results in the cosine of x .</p>
+<hr/>
+<h3>tan \x</h3>
+<p>Given <span class="pre">x</span>, results in the tangent of x .</p>
+<hr/>
+<h3>arcsin \x</h3>
+<p>Given <span class="pre">x</span>, results in the inverse sine of x .</p>
+<hr/>
+<h3>arccos \x</h3>
+<p>Given <span class="pre">x</span>, results in the inverse cosine of x .</p>
+<hr/>
+<h3>arctan \x</h3>
+<p>Given <span class="pre">x</span>, results in the inverse tangens of x .</p>
+<hr/>
+<h3>exp \x</h3>
+<p>Given <span class="pre">x</span>, results in the exponential of x .</p>
+<hr/>
+<h3>sinh \x</h3>
+<p>Given <span class="pre">x</span>, results in the sinus hyperbolicus of x .</p>
+<hr/>
+<h3>cosh \x</h3>
+<p>Given <span class="pre">x</span>, results in the cosinus hyperbolicus of x .</p>
+<hr/>
+<h3>tanh \x</h3>
+<p>Given <span class="pre">x</span>, results in the tangens hyperbolicus of x .</p>
+<hr/>
+<h3>arsinh \x</h3>
+<p>Given <span class="pre">x</span>, results in the area sinus hyperbolicus of x .</p>
+<hr/>
+<h3>arcosh \x</h3>
+<p>Given <span class="pre">x</span>, results in the area cosinus hyperbolicus of x .</p>
+<hr/>
+<h3>artanh \x</h3>
+<p>Given <span class="pre">x</span>, results in the area tangens hyperbolicus of x .</p>
+<hr/>
+</a>
+
+<a name="adorning"><h2>Adorning Functions</h2>
+<h3>else</h3>
+<p>id</p>
+
+<h3>otherwise</h3>
+<p>id</p>
+</a>
