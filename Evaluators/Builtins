@@ -7,6 +7,7 @@
 #include "AST/Keyword"
 #include "AST/Symbol"
 #include "AST/AST"
+#include "Evaluators/Evaluators"
 
 namespace Evaluators {
 AST::Node* internNative(bool value);
@@ -46,6 +47,7 @@ DEFINE_SIMPLE_OPERATION(ConsP, "cons?", (dynamic_cast<AST::Cons*>(argument) != N
 DEFINE_SIMPLE_OPERATION(StrP, "str?", str_P(argument))
 DEFINE_SIMPLE_OPERATION(SymbolP, "symbol?", symbol_P(argument))
 DEFINE_SIMPLE_OPERATION(KeywordP, "keyword?", keyword_P(argument))
+DEFINE_SIMPLE_OPERATION(ListFromStringGetter, "listFromStr", (dynamic_cast<AST::Str*>(argument) ? listFromStr((AST::Str*) argument) : FALLBACK))
 /*DECLARE_SIMPLE_OPERATION(Int0, "int0")*/
 DECLARE_BINARY_OPERATION(Adder, "+")
 DECLARE_BINARY_OPERATION(Subtractor, "-")

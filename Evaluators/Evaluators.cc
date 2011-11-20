@@ -284,4 +284,14 @@ AST::Node* programFromSExpression(AST::Node* root) {
 		return(root);
 }
 
+AST::Node* listFromCharZ(const char* text) {
+	if(*text == 0)
+		return(NULL);
+	else
+		return(makeCons(Numbers::internNative((Numbers::NativeInt) *text), listFromCharZ(text + 1)));
+}
+AST::Node* listFromStr(AST::Str* node) {
+	return(listFromCharZ(node->text.c_str()));
+}
+
 }; // end namespace Evaluators.
