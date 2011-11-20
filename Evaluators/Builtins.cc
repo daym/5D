@@ -25,9 +25,6 @@ AST::Node* Quoter::execute(AST::Node* argument) {
 	*/
 	return(argument);
 }
-bool Dummyer::eager_P(void) const {
-	return(false);
-}
 AST::Node* Dummyer::execute(AST::Node* argument) {
 	return(argument);
 }
@@ -37,37 +34,12 @@ AST::Node* churchFalse = Evaluators::annotate(Scanners::MathParser::parse_simple
 AST::Node* internNative(bool value) {
 	return(value ? churchTrue : churchFalse);
 }
-AST::Node* ProcedureP::execute(AST::Node* argument) {
-	return(internNative(argument != NULL && (dynamic_cast<Operation*>(argument) != NULL)));
-}
-
-AST::Node* ConsP::execute(AST::Node* argument) {
-	bool result = dynamic_cast<AST::Cons*>(argument) != NULL;
-	return(internNative(result));
-}
-AST::Node* NilP::execute(AST::Node* argument) {
-	bool result = argument == NULL;
-	return(internNative(result));
-}
 using namespace Numbers;
-AST::Node* SymbolP::execute(AST::Node* argument) {
-	bool result = dynamic_cast<Symbol*>(argument) != NULL || dynamic_cast<SymbolReference*>(argument) != NULL;
-	return(internNative(result)); /* TODO SymbolReference? */
-}
-AST::Node* KeywordP::execute(AST::Node* argument) {
-	bool result = dynamic_cast<Keyword*>(argument) != NULL;
-	return(internNative(result));
-}
 #if 0
 AST::Node* Int0::execute(AST::Node* argument) {
 	return(internNative(0)); /* i.e. integers[0] */
 }
 #endif
-AST::Node* StrP::execute(AST::Node* argument) {
-	using namespace AST;
-	bool result = dynamic_cast<Str*>(argument) != NULL;
-	return(internNative(result));
-}
 AST::Node* HeadGetter::execute(AST::Node* argument) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
 	if(consNode)

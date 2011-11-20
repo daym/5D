@@ -31,5 +31,9 @@ public:
 };
 Symbol* intern(const char* name) G_5D_GNUC_PURE;
 
+static inline bool symbol_P(AST::Node* argument) {
+	return(dynamic_cast<Symbol*>(argument) != NULL || dynamic_cast<SymbolReference*>(argument) != NULL);
+}
+
 };
 #endif /* ndef __AST_SYMBOL_H */

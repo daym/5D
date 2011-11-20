@@ -99,7 +99,7 @@ static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::
 }
 #endif
 static Evaluators::Quoter quoter;
-static Evaluators::Dummyer id;
+static Evaluators::Dummyer id(NULL);
 
 #define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, buildSuperAwareOperation<v>(n))
 static void REPL_init_builtins(struct REPL* self) {

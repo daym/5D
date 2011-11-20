@@ -23,6 +23,9 @@ public:
 };
 
 Keyword* keywordFromString(const char* name) G_5D_GNUC_PURE;
+static inline bool keyword_P(AST::Node* argument) {
+	return(dynamic_cast<Keyword*>(argument) != NULL);
+}
 
 };
 #endif /* ndef __AST_KEYWORD_H */

@@ -15,14 +15,35 @@ struct P : AST::Node { \
 	} \
 };
 
-#define DECLARE_SIMPLE_OPERATION(P, N) \
+#define DECLARE_SIMPLE_OPERATION_BODY(P, N, B) \
 struct P : AST::BuiltinOperation { \
+	P(AST::Node* fallback) : AST::BuiltinOperation(fallback) {} \
+	virtual AST::Node* execute(AST::Node* argument) B \
+	virtual std::string str(void) const { \
+		/*return(std::string("(N" ") + (fallback ? fallback->str() : std::string("()")) + ")"); f... off */ \
+		return(N); \
+	} \
+};
+#define DECLARE_SIMPLE_OPERATION(P, N) \
+	DECLARE_SIMPLE_OPERATION_BODY(P, N, ;)
+
+#define DEFINE_SIMPLE_OPERATION(P, N, B) \
+	DECLARE_SIMPLE_OPERATION_BODY(P, N, { return(internNative(B)); })
+
+#define DECLARE_UNEAGER_OPERATION_BODY(P, N, B) \
+struct P : AST::BuiltinOperation { \
+	virtual bool eager_P(void) const { \
+		return(false); \
+	} \
 	P(AST::Node* fallback) : AST::BuiltinOperation(fallback) {} \
 	virtual AST::Node* execute(AST::Node* argument); \
 	virtual std::string str(void) const { \
 		/*return(std::string("(N" ") + (fallback ? fallback->str() : std::string("()")) + ")"); f... off */ \
 		return(N); \
 	} \
+	B \
 };
+#define DECLARE_UNEAGER_OPERATION(P, N) \
+	DECLARE_UNEAGER_OPERATION_BODY(P, N, )
 
 #endif /* ndef __NUMBERS_SMALL_H */
