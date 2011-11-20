@@ -21,6 +21,7 @@ hr { color: #808080;
 <li><a href="#conditionals">Conditionals</a></li>
 <li><a href="#numberAlgebra">Number Algebra Functions</a></li>
 <li><a href="#lists">Lists</a></li>
+<li><a href="#dpho">Higher-Order Data Processing Functions</a></li>
 <li><a href="#state">State</a></li>
 <li><a href="#builtins">Builtin Types Except Lists</a></li>
 <li><a href="#FFI">Foreign Function Interface</a></li>
@@ -304,6 +305,42 @@ range 0 10 2 =&gt; [0 2 4 6 8]
 </pre>
 </a>
 
+<a name="dpho"><h2>Higher-Order Data Processing Functions</h2>
+<h3>map \mapper \list</h3>
+<p>Result is a list where each element is <span class="pre">mapper</span> applied to the element of the original list, in order.</p>
+<p>Example:</p>
+<pre>
+define square \x x*x
+map square [1 2 3] =&gt; [2 4 6]
+</pre>
+<hr/>
+<h3>filter \keep? \list</h3>
+<p>Result is a list of elements <span class="pre">list</span> where <span class="pre">keep? element</span> is true.</p>
+<p>Example:</p>
+<pre>
+filter (>2) [1 2 3 4] =&gt; [3 4]
+</pre>
+<hr/>
+<h3>foldr \folder \v \list</h3>
+<p>Result is a value like <span class="pre">v</span> in this way:</p>
+<p><span class="pre">folder</span> is applied to the first element and the result of (foldr of the rest) until the end it reached, whereas <span class="pre">v</span> is substituted for the rest.</p>
+<p>Example:</p>
+<pre>
+foldr (+) 0 [1 2 3] =&gt; (1+(2+3)) =&gt; 6
+foldr (-) 0 [1 2 3] =&gt; (1-(2-3)) =&gt; 2
+</pre>
+<hr/>
+<h3>foldl \folder \v \list</h3>
+<p>Result is a value like <span class="pre">v</span> in this way:</p>
+<p><span class="pre">folder</span> is applied to the (foldl of the rest) and the remaining element until the end it reached, whereas <span class="pre">v</span> is substituted for the (foldl of the rest).</p>
+<p>Example:</p>
+<pre>
+foldl (+) 0 [1 2 3] =&gt; ((1+2)+3) =&gt; 6
+foldl (-) 0 [1 2 3] =&gt; ((1-2)-3)) =&gt; (-4)
+</pre>
+<hr/>
+</a>
+
 <a name="state"><h2>State</h2>
 <h3>runWorld \m</h3>
 <p>Can only be there once in the entire program. Will cause the state machine to run, giving the initial World State to the function <span class="pre">m</span>. m eventually returns and its result will be decomposed, the monad value extracted and it will become the result.</p>
@@ -470,3 +507,5 @@ define open translateFFI openLL 'messy 'C demarshalIntResult (marshalStr:marshal
 <h3>otherwise</h3>
 <p>id</p>
 </a>
+</body>
+</html>
