@@ -288,7 +288,7 @@ AST::Node* listFromCharZ(const char* text) {
 	if(*text == 0)
 		return(NULL);
 	else
-		return(makeCons(Numbers::internNative((Numbers::NativeInt) *text), listFromCharZ(text + 1)));
+		return(makeCons(Numbers::internNative((Numbers::NativeInt) (unsigned char) *text), listFromCharZ(text + 1)));
 }
 AST::Node* listFromStr(AST::Str* node) {
 	return(listFromCharZ(node->text.c_str()));
