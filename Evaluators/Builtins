@@ -31,10 +31,12 @@ struct P : AST::BuiltinOperation { \
 	DECLARE_SIMPLE_OPERATION(P, N) \
 	DECLARE_CURRIED_OPERATION(Curried ## P, N)
 
+#define FALLBACK (AST::Node*) makeOperation(AST::intern(" "), fallback, argument)
+
 DEFINE_SIMPLE_OPERATION(ProcedureP, "procedure?", (dynamic_cast<Operation*>(argument) != NULL))
 DECLARE_BINARY_OPERATION(Conser, ":")
-DECLARE_SIMPLE_OPERATION(HeadGetter, "head")
-DECLARE_SIMPLE_OPERATION(TailGetter, "tail")
+DEFINE_SIMPLE_OPERATION(HeadGetter, "head", (dynamic_cast<AST::Cons*>(argument) ? ((AST::Cons*) argument)->head : FALLBACK))
+DEFINE_SIMPLE_OPERATION(TailGetter, "tail", (dynamic_cast<AST::Cons*>(argument) ? ((AST::Cons*) argument)->head : FALLBACK))
 DEFINE_SIMPLE_OPERATION(NilP, "nil?", (argument == NULL))
 DEFINE_SIMPLE_OPERATION(ConsP, "cons?", (dynamic_cast<AST::Cons*>(argument) != NULL))
 DEFINE_SIMPLE_OPERATION(StrP, "str?", str_P(argument))
@@ -45,7 +47,7 @@ DECLARE_BINARY_OPERATION(Adder, "+")
 DECLARE_BINARY_OPERATION(Subtractor, "-")
 DECLARE_BINARY_OPERATION(Multiplicator, "*")
 DECLARE_BINARY_OPERATION(LEComparer, "<=")
-DECLARE_SIMPLE_OPERATION(Interner, "intern")
+DEFINE_SIMPLE_OPERATION(Interner, "intern", (dynamic_cast<AST::Str*>(argument) ? internNative(((AST::Str*)argument)->text.c_str()) : FALLBACK));
 DECLARE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr")
 DECLARE_SIMPLE_OPERATION(KeywordStr, "keywordStr")
 

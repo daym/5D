@@ -27,27 +27,6 @@ AST::Node* Int0::execute(AST::Node* argument) {
 	return(internNative(0)); /* i.e. integers[0] */
 }
 #endif
-AST::Node* HeadGetter::execute(AST::Node* argument) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
-	if(consNode)
-		return(consNode->head);
-	else
-		return(makeOperation(intern(" "), fallback, argument));
-}
-AST::Node* TailGetter::execute(AST::Node* argument) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(argument);
-	if(consNode)
-		return(consNode->tail);
-	else
-		return(makeOperation(intern(" "), fallback, argument));
-}
-AST::Node* Interner::execute(AST::Node* argument) {
-	AST::Str* stringNode = dynamic_cast<AST::Str*>(argument);
-	if(stringNode)
-		return(AST::intern(stringNode->text.c_str()));
-	else
-		return(makeOperation(intern(" "), fallback, argument));
-}
 AST::Node* KeywordFromStringGetter::execute(AST::Node* argument) {
 	AST::Str* stringNode = dynamic_cast<AST::Str*>(argument);
 	if(stringNode)
