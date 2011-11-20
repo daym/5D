@@ -36,14 +36,16 @@ struct P : AST::BuiltinOperation { \
 		return(false); \
 	} \
 	P(AST::Node* fallback) : AST::BuiltinOperation(fallback) {} \
-	virtual AST::Node* execute(AST::Node* argument); \
+	virtual AST::Node* execute(AST::Node* argument) B \
 	virtual std::string str(void) const { \
 		/*return(std::string("(N" ") + (fallback ? fallback->str() : std::string("()")) + ")"); f... off */ \
 		return(N); \
 	} \
-	B \
 };
 #define DECLARE_UNEAGER_OPERATION(P, N) \
-	DECLARE_UNEAGER_OPERATION_BODY(P, N, )
+	DECLARE_UNEAGER_OPERATION_BODY(P, N, ;)
+
+#define DEFINE_UNEAGER_OPERATION(P, N, B) \
+	DECLARE_UNEAGER_OPERATION_BODY(P, N, { return(B); })
 
 #endif /* ndef __NUMBERS_SMALL_H */

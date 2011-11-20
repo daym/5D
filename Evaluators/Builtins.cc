@@ -15,19 +15,6 @@
 
 namespace Evaluators {
 
-bool Quoter::eager_P(void) const {
-	return(false);
-}
-AST::Node* Quoter::execute(AST::Node* argument) {
-	/* there's a special case in the annotator, so this cannot happen:
-	AST::SymbolReference* ref = dynamic_cast<AST::SymbolReference*>(argument);
-	return(ref ? ref->symbol : argument);
-	*/
-	return(argument);
-}
-AST::Node* Dummyer::execute(AST::Node* argument) {
-	return(argument);
-}
 using namespace AST;
 AST::Node* churchTrue = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f t))", NULL));
 AST::Node* churchFalse = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f f))", NULL));

@@ -9,14 +9,12 @@
 
 namespace Evaluators {
 AST::Node* internNative(bool value);
-struct Quoter : AST::Operation {
-	virtual bool eager_P(void) const;
-	virtual AST::Node* execute(AST::Node* argument);
-	virtual std::string str(void) const {
-		return("'");
-	}
-};
-DECLARE_UNEAGER_OPERATION(Dummyer, "dummy")
+
+/* there's a special case in the annotator, so this cannot happen:
+AST::SymbolReference* ref = dynamic_cast<AST::SymbolReference*>(argument);
+return(ref ? ref->symbol : argument);
+*/
+DEFINE_UNEAGER_OPERATION(Quoter, "'", argument)
 #define DECLARE_CURRIED_OPERATION(P, N) \
 struct P : AST::BuiltinOperation { \
 	AST::Operation* fParent; \
@@ -33,7 +31,7 @@ struct P : AST::BuiltinOperation { \
 	DECLARE_SIMPLE_OPERATION(P, N) \
 	DECLARE_CURRIED_OPERATION(Curried ## P, N)
 
-DEFINE_SIMPLE_OPERATION(ProcedureP, "procedure?", (argument != NULL && dynamic_cast<Operation*>(argument) != NULL))
+DEFINE_SIMPLE_OPERATION(ProcedureP, "procedure?", (dynamic_cast<Operation*>(argument) != NULL))
 DECLARE_BINARY_OPERATION(Conser, ":")
 DECLARE_SIMPLE_OPERATION(HeadGetter, "head")
 DECLARE_SIMPLE_OPERATION(TailGetter, "tail")
