@@ -41,7 +41,7 @@ struct P : AST::BuiltinOperation { \
 DEFINE_SIMPLE_OPERATION(ProcedureP, "procedure?", (dynamic_cast<Operation*>(argument) != NULL))
 DECLARE_BINARY_OPERATION(Conser, ":")
 DEFINE_SIMPLE_OPERATION(HeadGetter, "head", (dynamic_cast<AST::Cons*>(argument) ? ((AST::Cons*) argument)->head : FALLBACK))
-DEFINE_SIMPLE_OPERATION(TailGetter, "tail", (dynamic_cast<AST::Cons*>(argument) ? ((AST::Cons*) argument)->head : FALLBACK))
+DEFINE_SIMPLE_OPERATION(TailGetter, "tail", (dynamic_cast<AST::Cons*>(argument) ? ((AST::Cons*) argument)->tail : FALLBACK))
 DEFINE_SIMPLE_OPERATION(NilP, "nil?", (argument == NULL))
 DEFINE_SIMPLE_OPERATION(ConsP, "cons?", (dynamic_cast<AST::Cons*>(argument) != NULL))
 DEFINE_SIMPLE_OPERATION(StrP, "str?", str_P(argument))
