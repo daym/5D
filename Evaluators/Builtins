@@ -6,9 +6,13 @@
 #include "Numbers/Real"
 #include "AST/Keyword"
 #include "AST/Symbol"
+#include "AST/AST"
 
 namespace Evaluators {
 AST::Node* internNative(bool value);
+static inline AST::Node* internNative(AST::Node* n) {
+	return(n);
+}
 
 /* there's a special case in the annotator, so this cannot happen:
 AST::SymbolReference* ref = dynamic_cast<AST::SymbolReference*>(argument);
@@ -48,8 +52,8 @@ DECLARE_BINARY_OPERATION(Subtractor, "-")
 DECLARE_BINARY_OPERATION(Multiplicator, "*")
 DECLARE_BINARY_OPERATION(LEComparer, "<=")
 DEFINE_SIMPLE_OPERATION(Interner, "intern", (dynamic_cast<AST::Str*>(argument) ? internNative(((AST::Str*)argument)->text.c_str()) : FALLBACK));
-DECLARE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr")
-DECLARE_SIMPLE_OPERATION(KeywordStr, "keywordStr")
+DEFINE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::keywordFromString(((AST::Str*)argument)->text.c_str()) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(KeywordStr, "keywordStr", dynamic_cast<AST::Keyword*>(argument) ? AST::makeStr(((AST::Keyword*)argument)->name) : FALLBACK)
 
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
 AST::Node* provide_dynamic_builtins(AST::Node* body);

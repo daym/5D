@@ -27,20 +27,6 @@ AST::Node* Int0::execute(AST::Node* argument) {
 	return(internNative(0)); /* i.e. integers[0] */
 }
 #endif
-AST::Node* KeywordFromStringGetter::execute(AST::Node* argument) {
-	AST::Str* stringNode = dynamic_cast<AST::Str*>(argument);
-	if(stringNode)
-		return(AST::keywordFromString(stringNode->text.c_str()));
-	else
-		return(makeOperation(intern(" "), fallback, argument));
-}
-AST::Node* KeywordStr::execute(AST::Node* argument) {
-	AST::Keyword* keywordNode = dynamic_cast<AST::Keyword*>(argument);
-	if(keywordNode)
-		return(makeStr(keywordNode->name)); // TODO stop converting it back and forth and back and forth
-	else
-		return(makeOperation(intern(" "), fallback, argument));
-}
 static std::map<AST::Symbol*, AST::Node*> cachedDynamicBuiltins;
 static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 	const char* name;
