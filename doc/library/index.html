@@ -294,6 +294,14 @@ tail (8:nil) =&gt; nil
 <h3>range \beginning \frontier \step</h3>
 <p>Result is a list of numbers.</p>
 <p>The list starts with <span class="pre">beginning</span> (inclusive), listing all the numbers until <span class="pre">frontier</span>, spaced <span class="pre">step</span> apart.</p>
+<p>Example:</p>
+<pre>
+range 0 10 1 =&gt; [0 1 2 3 4 5 6 7 8 9]
+range 5 10 1 =&gt; [5 6 7 8 9]
+range 5 5 1 =&gt; []
+range 5 3 1 =&gt; []
+range 0 10 2 =&gt; [0 2 4 6 8]
+</pre>
 </a>
 
 <a name="state"><h2>State</h2>
