@@ -45,12 +45,12 @@ std::string Box::str(void) const {
 }
 std::string Cons::str(void) const {
 	std::stringstream result;
-	result << '(';
+	result << '[';
 	result << (head ? head->str() : "()");
 	for(Cons* node = Evaluators::evaluateToCons(this->tail); node; node = Evaluators::evaluateToCons(node->tail)) {
 		result << ' ' << (node->head ? node->head->str() : "()");
 	}
-	result << ')';
+	result << ']';
 	return(result.str());
 }
 Cons* makeCons(Node* head, Node* tail) {
