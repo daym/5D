@@ -311,14 +311,14 @@ range 0 10 2 =&gt; [0 2 4 6 8]
 <p>Example:</p>
 <pre>
 define square \x x*x
-map square [1 2 3] =&gt; [2 4 6]
+map square [1 2 3] =&gt; [1 4 9]
 </pre>
 <hr/>
 <h3>filter \keep? \list</h3>
 <p>Result is a list of elements <span class="pre">list</span> where <span class="pre">keep? element</span> is true.</p>
 <p>Example:</p>
 <pre>
-filter (>2) [1 2 3 4] =&gt; [3 4]
+filter (&gt;2) [1 2 3 4] =&gt; [3 4]
 </pre>
 <hr/>
 <h3>foldr \folder \v \list</h3>
