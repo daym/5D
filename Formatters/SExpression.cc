@@ -70,13 +70,29 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		print_S_Expression_CXX(output, position, indentation, AST::get_application_operand(node));
 		output << ')';
 		++position;
+		if(B_split_cons_items) {
+			indentation = position;
+			output << std::endl;
+			print_indentation(output, indentation);
+			position = indentation;
+		} else {
+			output << ' ';
+			++position;
+		}
 	} else if(abstraction_P(node)) {
 		output << "(\\";
 		++position;
 		++position;
 		print_S_Expression_CXX(output, position, indentation, AST::get_abstraction_parameter(node));
-		output << ' ';
-		++position;
+		if(B_split_cons_items) {
+			indentation = position;
+			output << std::endl;
+			print_indentation(output, indentation);
+			position = indentation;
+		} else {
+			output << ' ';
+			++position;
+		}
 		print_S_Expression_CXX(output, position, indentation, AST::get_abstraction_body(node));
 		output << ')';
 		++position;
