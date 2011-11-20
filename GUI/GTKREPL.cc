@@ -486,12 +486,12 @@ static void handle_tips_response(GtkDialog* dialog, gint response_id, struct REP
 		else {
 			if(current_tip->tail)
 				++current_tip_index;
-			current_tip = current_tip->tail ? current_tip->tail : current_tip;
+			current_tip = Evaluators::evaluateToCons(current_tip->tail) ? Evaluators::evaluateToCons(current_tip->tail) : current_tip;
 		}
 	} else if(response_id == 1/*PREV*/) {
 		if(current_tip) {
 			AST::Cons* previous_tip = NULL;
-			for(AST::Cons* n = tips; n != current_tip; n = n->tail)
+			for(AST::Cons* n = tips; n != current_tip; n = Evaluators::evaluateToCons(n->tail))
 				previous_tip = n;
 			if(previous_tip)
 				--current_tip_index;
@@ -569,7 +569,7 @@ static void REPL_show_tips(struct REPL* self) {
 		current_tip_index = Config_get_current_tip(self->fConfig);
 		current_tip = current_tip_index > 0 ? tips : NULL;
 		for(int i = 0; i < current_tip_index - 1 && current_tip; ++i)
-			current_tip = current_tip->tail;
+			current_tip = Evaluators::evaluateToCons(current_tip->tail);
 		--current_tip_index;
 	}
 	handle_tips_response(dialog, 2/*NEXT*/, self);

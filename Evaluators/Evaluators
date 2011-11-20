@@ -31,6 +31,8 @@ AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body);
 AST::Node* makeError(const char* reason);
 bool define_P(AST::Node* input);
 AST::Node* programFromSExpression(AST::Node* root);
+AST::Node* evaluate(AST::Node* input);
+AST::Cons* evaluateToCons(AST::Node* input);
 
 };
 

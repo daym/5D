@@ -40,20 +40,7 @@ AST::Node* internNative(bool value) {
 AST::Node* ProcedureP::execute(AST::Node* argument) {
 	return(internNative(argument != NULL && (dynamic_cast<Operation*>(argument) != NULL)));
 }
-Conser2::Conser2(AST::Node* head) {
-	this->head = head;
-}
-AST::Node* Conser2::execute(AST::Node* argument) {
-	/* FIXME error message if it doesn't work. */
-	printf("cons\n");
-	return(makeCons(head, dynamic_cast<AST::Cons*>(argument)));
-}
-std::string Conser2::str(void) const {
-	return("((:) " + (head ? head->str() : "()") + ")");
-}
-AST::Node* Conser::execute(AST::Node* argument) {
-	return(new Conser2(argument));
-}
+
 AST::Node* ConsP::execute(AST::Node* argument) {
 	bool result = dynamic_cast<AST::Cons*>(argument) != NULL;
 	return(internNative(result));
@@ -184,9 +171,19 @@ AST::Node* Curried##N::execute(AST::Node* argument) { \
 	} \
 	return(makeOperation(AST::intern(#op), a, b)); \
 }
+#define IMPLEMENT_BINARY_BUILTIN(N, op, fn) \
+AST::Node* N::execute(AST::Node* argument) { \
+	return(new Curried ## N(this, NULL/*FIXME*/, argument)); \
+} \
+AST::Node* Curried##N::execute(AST::Node* argument) { \
+	AST::Node* a = fArgument; \
+	AST::Node* b = argument; \
+	return(fn(a, b)); \
+}
 IMPLEMENT_NUMERIC_BUILTIN(Adder, +)
 IMPLEMENT_NUMERIC_BUILTIN(Subtractor, -)
 IMPLEMENT_NUMERIC_BUILTIN(Multiplicator, *)
 IMPLEMENT_NUMERIC_BUILTIN(LEComparer, <=)
+IMPLEMENT_BINARY_BUILTIN(Conser, :, makeCons)
 
 }; /* end namespace Evaluators */

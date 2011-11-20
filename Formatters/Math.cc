@@ -128,19 +128,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 			} else
 				print_math_CXX(OPL, output, position, operator_, precedence, operatorAssociativity != AST::intern("left"));
 			++position, output << ' ';
-			AST::Cons* operands;
-			operands = dynamic_cast<AST::Cons*>(node);
-			if(operands)
-				operands = operands->tail;
-			if(operands && operands->tail) { // define etc
-				for(; operands; operands = operands->tail) {
-					print_math_CXX(OPL, output, position, operands->head, precedence, true);
-					if(operands->tail)
-						++position, output << ' ';
-				}
-			} else { // normal
-				print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != AST::intern("right"));
-			}
+			print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != AST::intern("right"));
 			if(B_braced) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
 				++position, output << ')';
 		}

@@ -1,3 +1,11 @@
+5d (0.0.2) unstable; urgency=low
+
+  * Change config file format.
+  * Use Application and Abstraction abstractions throughout the language instead of hard-coding conses.
+  * update docs.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Sat, 19 Nov 2011 23:20:29 +0100
+
 5d (0.0.1) unstable; urgency=low
 
   * Initial Release.

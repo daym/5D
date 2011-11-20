@@ -38,7 +38,7 @@ struct P : AST::BuiltinOperation { \
 	DECLARE_CURRIED_OPERATION(Curried ## P, N)
 
 DECLARE_SIMPLE_OPERATION(ProcedureP, "procedure?")
-DECLARE_SIMPLE_OPERATION(Conser, ":")
+DECLARE_BINARY_OPERATION(Conser, ":")
 DECLARE_SIMPLE_OPERATION(HeadGetter, "head")
 DECLARE_SIMPLE_OPERATION(TailGetter, "tail")
 DECLARE_SIMPLE_OPERATION(NilP, "nil?")
@@ -55,14 +55,6 @@ DECLARE_SIMPLE_OPERATION(Interner, "intern")
 DECLARE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr")
 DECLARE_SIMPLE_OPERATION(KeywordStr, "keywordStr")
 
-struct Conser2 : AST::Operation {
-private:
-	AST::Node* head;
-public:
-	Conser2(AST::Node* head);
-	virtual AST::Node* execute(AST::Node* argument);
-	virtual std::string str(void) const;
-};
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
 AST::Node* provide_dynamic_builtins(AST::Node* body);
 extern AST::Node* churchFalse;

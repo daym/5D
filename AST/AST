@@ -16,12 +16,14 @@ struct Node {
 };
 struct Cons : Node {
 	Node* head;
-	Cons* tail;
+	Node* tail; /* Cons or Application */
 	virtual std::string str(void) const;
 };
 struct Application : Node {
 	Node* operator_;
 	Node* operand;
+	Node* result;
+	bool bResult;
 	virtual std::string str(void) const;
 };
 struct Abstraction : Node {
@@ -54,7 +56,7 @@ struct Box : Atom {
 };
 std::string str(const Atom& a);
 
-Cons* makeCons(Node* head, Cons* tail);
+Cons* makeCons(Node* head, Node* tail);
 Str* makeStr(const char* text);
 AST::Cons* follow_tail(AST::Cons* list);
 bool str_P(AST::Node* node);

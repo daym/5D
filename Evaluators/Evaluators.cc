@@ -237,22 +237,39 @@ AST::Node* makeError(const char* reason) {
 bool define_P(AST::Node* input) {
 	return(input != NULL && application_P(input) && get_application_operator(input) == AST::intern("define"));
 }
+AST::Node* get_application_result(AST::Node* n) {
+	AST::Application* app = (AST::Application*) n;
+	if(!app->bResult) {
+		app->bResult = true;
+		app->result = reduce(app);
+	}
+	return(app->result);
+}
+AST::Node* evaluate(AST::Node* computation) {
+	if(application_P(computation))
+		return(get_application_result(computation));
+	else
+		return(computation);
+}
+AST::Cons* evaluateToCons(AST::Node* computation) {
+	return(dynamic_cast<AST::Cons*>(evaluate(computation))); // TODO error check
+}
 AST::Node* programFromSExpression(AST::Node* root) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	if(consNode) {
 		// application or abstraction
 		if(consNode->head == AST::intern("\\")) { // abstraction
 			assert(consNode->tail);
-			assert(consNode->tail->tail);
-			assert(consNode->tail->tail->tail == NULL);
-			AST::Node* parameter = consNode->tail->head;
-			AST::Node* body = consNode->tail->tail->head;
+			assert(evaluateToCons(consNode->tail)->tail);
+			assert(evaluateToCons(evaluateToCons(consNode->tail)->tail)->tail == NULL);
+			AST::Node* parameter = evaluateToCons(consNode->tail)->head;
+			AST::Node* body = evaluateToCons(evaluateToCons(consNode->tail)->tail)->head;
 			return(makeAbstraction(programFromSExpression(parameter), programFromSExpression(body)));
 		} else { // application
-			assert(consNode->tail);
-			assert(consNode->tail->tail == NULL);
+			assert(evaluateToCons(consNode->tail));
+			assert(evaluateToCons(evaluateToCons(consNode->tail)->tail) == NULL);
 			AST::Node* operator_ = consNode->head;
-			AST::Node* operand = consNode->tail->head;
+			AST::Node* operand = evaluateToCons(consNode->tail)->head;
 			return(makeApplication(programFromSExpression(operator_), programFromSExpression(operand)));
 		}
 	} else

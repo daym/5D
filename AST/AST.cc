@@ -12,6 +12,10 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/AST"
 #include "AST/Symbol"
 
+namespace Evaluators {
+AST::Cons* evaluateToCons(AST::Node* computation);
+};
+
 namespace AST {
 
 std::string Node::str(void) const {
@@ -41,16 +45,15 @@ std::string Box::str(void) const {
 }
 std::string Cons::str(void) const {
 	std::stringstream result;
-	Cons* tail = this->tail;
 	result << '(';
 	result << (head ? head->str() : "()");
-	for(; tail; tail = tail->tail) {
-		result << ' ' << (tail->head ? tail->head->str() : "()");
+	for(Cons* node = Evaluators::evaluateToCons(this->tail); node; node = Evaluators::evaluateToCons(node->tail)) {
+		result << ' ' << (node->head ? node->head->str() : "()");
 	}
 	result << ')';
 	return(result.str());
 }
-Cons* makeCons(Node* head, Cons* tail) {
+Cons* makeCons(Node* head, Node* tail) {
 	Cons* result = new Cons;
 	/*assert(head); unfortunately, now that we have NIL, that's allowed. */
 	result->head = head;
@@ -68,13 +71,6 @@ Str* makeStr(const char* text) {
 }
 bool str_P(AST::Node* node) {
 	return(dynamic_cast<AST::Str*>(node) != NULL);
-}
-AST::Cons* follow_tail(AST::Cons* list) {
-	if(!list)
-		return(NULL);
-	while(list->tail)
-		list = list->tail;
-	return(list);
 }
 
 // Operation
@@ -105,6 +101,8 @@ Application* makeApplication(Node* fn, Node* argument) {
 	Application* result = new Application;
 	result->operator_ = fn;
 	result->operand = argument;
+	result->result = NULL;
+	result->bResult = false;
 	return(result);
 }
 Abstraction* makeAbstraction(Node* parameter, Node* body) {

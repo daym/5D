@@ -1,15 +1,16 @@
-numbers: 1. int, 2. BigInteger, 3. Q, 4. smallReal, 5. arbitrary-precision fixed point
-equality (numbers, strings(?) and booleans (?))
+numbers: 1. Int [almost done], 2. Integer, 3. Q, 4. Float, 5. arbitrary-precision fixed point
+equality (numbers, strings(?) and booleans (?) and symbols)
 bool builtins: move them into the runtime and somehow have the parser find them anyway (?)
 Builtins should somehow note they mean super() on str(). Not sure how? Is that even an issue in practise?
 move provide_dynamic_builtins into the reduce phase (?)
 provide hooks for big integers (?)
 provide callback used by the scanner for getting currently registered operators and their precedence
-where does modulo fit?
+where does modulo fit in the precedence list?
 let a=b+c in ...
 GUI: allow deletion environment nodes (includes usage check in the rest of the environment).
 GUI: allow moving of environment nodes.
 GUI: allow compacting of environment nodes.
+GUI: fix LATEX formatter again.
 (+3) = \x (x+3)
 translateFFI resulttype argtypes procedure => translator used when calling:
 	translateFFI unmarshalVoidResult (list marshalInt marshal...)
@@ -46,7 +47,7 @@ make it possible to define custom operators
 support (-1) as opposed to (-x) or (--x) or (--1)
 "# " as line comment starter (=> rem)
 fopen @mode:"w" "foo.INI.temp"
-;
+(;)
 unary posfix operators like "!"?
 ... `catch` \e error e
 TUI: if trying to pass a path to a file that does not exist, it doesn't create it on exit. Should it?
@@ -62,3 +63,4 @@ sorting: quick sort, merge sort.
 searching: binary search, bisect.
 trees: binary trees, tries, red black trees.
 div with negative args.
+arrays.

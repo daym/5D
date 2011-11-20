@@ -37,7 +37,6 @@ static inline bool maybe_print_opening_brace(std::ostream& output, int precedenc
 void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list, AST::Node* node, std::ostream& output, int operator_precedence_limit, bool B_brace_equal_levels) {
 	using namespace Scanners;
 	int operator_precedence;
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);
 	AST::SymbolReference* symbolReference = dynamic_cast<AST::SymbolReference*>(node);
 	if(symbolReference)
@@ -81,70 +80,60 @@ void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list
 		// TODO output << "\\operatorname{" << node->str() << "}"; // "\\math{" << node->str() << "}";
 		if(B_mathrm)
 			output << "}";
-	} else if(consNode) {
+	} else if(application_P(node) || abstraction_P(node)) {
 		/* ((- 3) 2)   => 3-2
 		 or (0- 3)      => -3 */
-		AST::Cons* innerCons = dynamic_cast<AST::Cons*>(consNode->head);
+		AST::Node* innerApplication = application_P(node) ? dynamic_cast<AST::Application*>(get_application_operator(node)) : NULL;
 		AST::Symbol* operatorAssociativity = NULL;
-		operator_precedence = operator_precedence_list ? operator_precedence_list->get_operator_precedence_and_associativity(dynamic_cast<AST::Symbol*>(innerCons ? innerCons->head : NULL), operatorAssociativity) : -1;
+		operator_precedence = operator_precedence_list ? operator_precedence_list->get_operator_precedence_and_associativity(dynamic_cast<AST::Symbol*>(innerApplication ? get_application_operator(innerApplication) : NULL), operatorAssociativity) : -1;
 		/*if(operator_precedence == -1)
 			operator_precedence = apply_precedence_level;*/
-		if(operator_precedence != -1 && innerCons && innerCons->head == AST::intern("/")) { /* fraction */
-			output << "{\\frac{";
-			limited_to_LATEX(operator_precedence_list, innerCons->tail->head, output, operator_precedence, false);
-			output << "}{";
-			if(!consNode->tail || !innerCons->tail)
-				throw std::runtime_error("invalid fraction");
-			limited_to_LATEX(operator_precedence_list, consNode->tail->head, output, operator_precedence, false/*TODO*/);
-			output << "}}";
-		} else if(operator_precedence != -1) { /* actual binary math operator */
-			bool B_braced = maybe_print_opening_brace(output, operator_precedence, operator_precedence_limit, B_brace_equal_levels);
-			limited_to_LATEX(operator_precedence_list, innerCons->tail->head, output, operator_precedence, operatorAssociativity != AST::intern("left"));
-			limited_to_LATEX(operator_precedence_list, innerCons->head, output, operator_precedence, true);
-			if(!consNode->tail || !innerCons || !innerCons->head || !innerCons->tail || !innerCons->tail->head)
-				throw std::runtime_error("invalid binary math operation");
-			limited_to_LATEX(operator_precedence_list, consNode->tail->head, output, operator_precedence, operatorAssociativity != AST::intern("right")); /* operator */
-			if(B_braced)
-				output << "\\right)";
-		} else if(consNode->head == AST::intern("\\")) {
+		if(abstraction_P(node)) {
 			operator_precedence = 9999; // FIXME lambda_precedence_level;
 			bool B_braced = maybe_print_opening_brace(output, operator_precedence, operator_precedence_limit, B_brace_equal_levels);
-			AST::Cons* args;
+			AST::Node* node2 = node;
 			output << "\\frac{";
-			args = consNode->tail;
-			while(args) /* parameter etc; should be */ {
-				limited_to_LATEX(operator_precedence_list, consNode->head, output, operator_precedence, false); /* lambda */
+			while(abstraction_P(node2)) {
+				AST::Node* parameter = get_abstraction_parameter(node2);
+				limited_to_LATEX(operator_precedence_list, AST::intern("\\"), output, operator_precedence, false); /* lambda */
 				/* parameter */
-				limited_to_LATEX(operator_precedence_list, args->head, output, operator_precedence, false); /* FIXME precedence */
-				args = args->tail;
-				if(dynamic_cast<AST::Cons*>(args->head) && dynamic_cast<AST::Cons*>(args->head)->head == AST::intern("\\"))
-					args = (AST::Cons*)args->head;
-				else
-					break;
-				args = args->tail;
+				limited_to_LATEX(operator_precedence_list, parameter, output, operator_precedence, false); /* FIXME precedence */
+				node2 = get_abstraction_body(node2);
 			}
 			output << "}{";
 			/* body */
-			limited_to_LATEX(operator_precedence_list, args->head, output, operator_precedence, true/*assoc is right*/); /* FIXME precedence */
+			limited_to_LATEX(operator_precedence_list, node2, output, operator_precedence, true/*assoc is right*/); /* FIXME precedence */
 			//output << "\\:";
 			output << "}";
 			if(B_braced)
 				output << "\\right)";
-		} else { /* function call, maybe */
+		} else if(operator_precedence != -1 && innerApplication && get_application_operator(innerApplication) == AST::intern("/")) { /* fraction */
+			output << "{\\frac{";
+			limited_to_LATEX(operator_precedence_list, get_application_operand(innerApplication), output, operator_precedence, false);
+			output << "}{";
+			//throw std::runtime_error("invalid fraction");
+			limited_to_LATEX(operator_precedence_list, get_application_operand(node), output, operator_precedence, false/*TODO*/);
+			output << "}}";
+		} else if(operator_precedence != -1) { /* actual binary math operator */
+			bool B_braced = maybe_print_opening_brace(output, operator_precedence, operator_precedence_limit, B_brace_equal_levels);
+			limited_to_LATEX(operator_precedence_list, get_application_operand(innerApplication), output, operator_precedence, operatorAssociativity != AST::intern("left"));
+			limited_to_LATEX(operator_precedence_list, get_application_operator(innerApplication), output, operator_precedence, true);
+			//	throw std::runtime_error("invalid binary math operation");
+			limited_to_LATEX(operator_precedence_list, get_application_operand(node), output, operator_precedence, operatorAssociativity != AST::intern("right")); /* operator */
+			if(B_braced)
+				output << "\\right)";
+		} else { /* function call */
 			operator_precedence = operator_precedence_list->apply_level;
 			bool B_braced = maybe_print_opening_brace(output, operator_precedence, operator_precedence_limit, B_brace_equal_levels);
 			AST::Cons* args;
-			limited_to_LATEX(operator_precedence_list, consNode->head, output, operator_precedence, true); /* FIXME precedence */
+			limited_to_LATEX(operator_precedence_list, get_application_operator(node), output, operator_precedence, true); /* FIXME precedence */
 			output << "\\:";
-			for(args = consNode->tail; args; args = args->tail) { /* actually just one, so didn't pay much attention to operator precedence limit below */
-				limited_to_LATEX(operator_precedence_list, args->head, output, operator_precedence, false); /* FIXME precedence */
-				if(args->tail)
-					output << "\\:";
-			}
+			limited_to_LATEX(operator_precedence_list, get_application_operand(node), output, operator_precedence, false); /* FIXME precedence */
 			/* TODO what to do with more arguments, if that's even possible? */
 			if(B_braced)
 				output << "\\right)";
 		}
+		// TODO cons etc
 	} else if(node)
 		output << "\\mathrm{" << node->str() << "}";
 	else

@@ -131,7 +131,8 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 				if(text)
 					free(text);
 			} else if(keywordName == AST::intern("environment")) {
-				assert(application_P(value));
+				if(value && value != AST::intern("nil"))
+					assert(application_P(value));
 				REPL_set_environment(self, value);
 			}
 		}

@@ -4,6 +4,7 @@
 #include "AST/AST"
 #include "AST/Symbol"
 #include "Formatters/SExpression"
+#include "Evaluators/Evaluators"
 
 namespace Formatters {
 
@@ -41,7 +42,7 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		int index = 0;
 		output << '(';
 		++position;
-		for(; consNode; ++index, consNode = consNode->tail) {
+		for(; consNode; ++index, consNode = Evaluators::evaluateToCons(consNode->tail)) {
 			print_S_Expression_CXX(output, position, indentation, consNode->head);
 			if(consNode->tail) {
 				if(B_split_cons_items && index >= 1) {
