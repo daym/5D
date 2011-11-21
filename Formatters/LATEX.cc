@@ -127,7 +127,6 @@ void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list
 		} else { /* function call */
 			operator_precedence = operator_precedence_list->apply_level;
 			bool B_braced = maybe_print_opening_brace(output, operator_precedence, operator_precedence_limit, B_brace_equal_levels);
-			AST::Cons* args;
 			limited_to_LATEX(operator_precedence_list, get_application_operator(node), output, operator_precedence, true); /* FIXME precedence */
 			output << "\\:";
 			limited_to_LATEX(operator_precedence_list, get_application_operand(node), output, operator_precedence, false); /* FIXME precedence */

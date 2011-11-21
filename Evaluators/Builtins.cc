@@ -171,6 +171,7 @@ REGISTER_STR(Abstraction, {
 	std::stringstream result;
 	result << "(\\";
 	result << str(node->parameter);
+	result << ' ';
 	result << str(node->body);
 	result << ')';
 	return(result.str());
