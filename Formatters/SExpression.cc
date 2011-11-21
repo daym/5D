@@ -64,15 +64,25 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		output << ')';
 		++position;
 	} else if(application_P(node)) {
+		/*if(B_split_cons_items) {
+			//indentation = position;
+			output << std::endl;
+			print_indentation(output, indentation);
+			position = indentation;
+		} else {
+			output << ' ';
+			++position;
+		}*/
 		output << '(';
 		++position;
 		print_S_Expression_CXX(output, position, indentation, AST::get_application_operator(node));
 		output << ' ';
 		++position;
+		indentation = position;
 		print_S_Expression_CXX(output, position, indentation, AST::get_application_operand(node));
 		output << ')';
 		++position;
-		if(B_split_cons_items) {
+		/*if(B_split_cons_items) {
 			indentation = position;
 			output << std::endl;
 			print_indentation(output, indentation);
@@ -80,21 +90,14 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		} else {
 			output << ' ';
 			++position;
-		}
+		}*/
 	} else if(abstraction_P(node)) {
 		output << "(\\";
 		++position;
 		++position;
 		print_S_Expression_CXX(output, position, indentation, AST::get_abstraction_parameter(node));
-		if(B_split_cons_items) {
-			indentation = position;
-			output << std::endl;
-			print_indentation(output, indentation);
-			position = indentation;
-		} else {
-			output << ' ';
-			++position;
-		}
+		output << ' ';
+		++position;
 		print_S_Expression_CXX(output, position, indentation, AST::get_abstraction_body(node));
 		output << ')';
 		++position;
