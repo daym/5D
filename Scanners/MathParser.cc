@@ -114,12 +114,21 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 		return(NULL);
 	}
 }
+AST::Node* MathParser::parse_application(void) {
+	AST::Node* hd = parse_value();
+	while(!EOFP() && input_value != AST::intern(")") && input_value != AST::intern("]") && !operator_precedence_list->any_operator_P(input_value)) {
+		hd = AST::makeApplication(hd, parse_argument());
+	}
+	return(hd);
+}
 AST::Node* MathParser::parse_abstraction(void) {
 	if(dynamic_cast<AST::Symbol*>(input_value) == NULL) {
 		raise_error("<symbol>", str(input_value));
 		return(NULL);
 	} else {
 		AST::Node* parameter = consume();
+		if(EOFP() || input_value == AST::intern(")") || input_value == AST::intern("]"))
+			raise_error("<body>", str(input_value));
 		AST::Node* expression = parse_expression();
 		if(expression)
 			return(makeAbstraction(parameter, expression));
@@ -195,13 +204,6 @@ AST::Node* MathParser::parse_expression(void) {
 		return parse_binary_operation(operator_precedence_list->next_precedence_level(-1));
 	else
 		return parse_application();
-}
-AST::Node* MathParser::parse_application(void) {
-	AST::Node* hd = parse_value();
-	while(!EOFP() && input_value != AST::intern(")") && input_value != AST::intern("]") && !operator_precedence_list->any_operator_P(input_value)) {
-		hd = AST::makeApplication(hd, parse_argument());
-	}
-	return(hd);
 }
 AST::Node* MathParser::parse_argument(void) {
 	assert(operator_precedence_list->apply_level != 0);
