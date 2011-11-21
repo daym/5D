@@ -195,7 +195,9 @@ StrRegistration* registerStr(StrRegistration* n) {
 
 // TODO move this into the language runtime
 std::string str(Node* node) {
-	if(root)
+	if(node == NULL)
+		return("[]");
+	else if(root)
 		return(root->call(node));
 	else
 		return("<node>");
