@@ -148,7 +148,7 @@ dist: all
 	cp Makefile "$(DISTDIR)"/Makefile
 	cp COPYING "$(DISTDIR)"/COPYING
 	cp TODO "$(DISTDIR)"/TODO
-	for s in $(SUBDIRS2) ; do mkdir "$(DISTDIR)"/"$$s" && cp "$$s"/* "$(DISTDIR)"/"$$s"/ && rm -f "$(DISTDIR)"/"$$s"/*.o ; done
+	for s in $(SUBDIRS2) ; do mkdir "$(DISTDIR)"/"$$s" && cp "$$s"/* "$(DISTDIR)"/"$$s"/ ; rm -f "$(DISTDIR)"/"$$s"/*.o ; done
 	for s in $(EXECUTABLES) ; do rm -f "$(DISTDIR)"/"$$s" ; done
 	tar zcf "$(DISTDIR).tar.gz" "$(DISTDIR)/"* 
 	rm -rf "$(DISTDIR)"
