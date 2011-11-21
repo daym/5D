@@ -323,7 +323,7 @@ filter (2&lt;) [1 2 3 4] =&gt; [3 4]
 <hr/>
 <h3>foldr \f \v \list</h3>
 <p>Result is a value like <span class="pre">v</span> in this way:</p>
-<p><span class="pre">f</span> is applied to the first element and the result of (foldr of the rest) until the end it reached, where <span class="pre">v</span> is substituted for the rest.</p>
+<p>Let the list be <span class="pre">[a b c]</span>. Let <span class="pre">f</span> be <span class="pre">(+)</span>. Then foldr applies <span class="pre">(+)</span> to the left to finally reach the result <span class="pre">a+(b+(c+0))</span>.</p>
 <p>Example:</p>
 <pre>
 foldr (+) 0 [1 2 3] =&gt; (1+(2+(3+0))) =&gt; 6
@@ -333,8 +333,6 @@ foldr (-) 0 [1 2 3] =&gt; (1-(2-(3-0))) =&gt; 2
 <h3>foldl \f \v \list</h3>
 <p>Result is a value like <span class="pre">v</span> in this way:</p>
 <p>Let the list be <span class="pre">[a b c]</span>. Let <span class="pre">f</span> be <span class="pre">(+)</span>. Then foldl applies <span class="pre">(+)</span> to the left to finally reach the result <span class="pre">(((0+a)+b)+c)</span>.</p>
-
- is applied to the left like f  (foldl of the rest) and the remaining element until the end it reached, where <span class="pre">v</span> is substituted for the (foldl of the rest).</p>
 <p>Example:</p>
 <pre>
 foldl (+) 0 [1 2 3] =&gt; (((0+1)+2)+3) =&gt; 6
