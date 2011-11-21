@@ -158,6 +158,7 @@ static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
 AST::Node* Reducer::execute(AST::Node* argument) {
 	return(argument);
 }
+REGISTER_STR(Reducer, return("reduce");)
 Reducer reducer;
 static bool wants_its_argument_reduced_P(AST::Node* fn) {
 	Operation* fnOperation = dynamic_cast<Operation*>(fn);
