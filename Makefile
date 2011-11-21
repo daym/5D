@@ -1,5 +1,11 @@
 
+SUBDIRS = Config REPL Linear_Algebra Bugs WIN32 Tests FFIs Bootstrappers Compilers AST Evaluators TUI Numbers Formatters doc Runtime debian GUI Scanners
+SUBDIRS2 = $(SUBDIRS) doc/FFI doc/building doc/installation doc/interna doc/library doc/programming doc/programming/tutorial Tests/0*
+EXECUTABLES = REPL/5DREPL GUI/5D TUI/TUI Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol Scanners/test-MathParser Scanners/test-Scanner GUI/5D REPL/5DREPL
+
 CXXFLAGS += -Wall -I. -g3 -fno-strict-overflow
+DISTDIR = 5D
+
 #-fwrapv
 #-Werror=strict-overflow
 
@@ -134,13 +140,15 @@ clean:
 	rm -f Numbers/*.o
 	
 distclean: clean
-	rm -f Linear_Algebra/test-Matrix
-	rm -f Linear_Algebra/test-Vector
-	rm -f Linear_Algebra/test-Tensor
-	rm -f AST/test-AST
-	rm -f AST/test-Symbol
-	rm -f Scanners/test-MathParser
-	rm -f Scanners/test-Scanner
-	rm -f GUI/5D
-	rm -f REPL/5DREPL
+	rm -f $(EXECUTABLES)
 
+dist: all
+	rm -rf "$(DISTDIR)"
+	mkdir "$(DISTDIR)"
+	cp Makefile "$(DISTDIR)"/Makefile
+	cp COPYING "$(DISTDIR)"/COPYING
+	cp TODO "$(DISTDIR)"/TODO
+	for s in $(SUBDIRS2) ; do mkdir "$(DISTDIR)"/"$$s" && cp "$$s"/* "$(DISTDIR)"/"$$s"/ && rm -f "$(DISTDIR)"/"$$s"/*.o ; done
+	for s in $(EXECUTABLES) ; do rm -f "$(DISTDIR)"/"$$s" ; done
+	tar zcf "$(DISTDIR).tar.gz" "$(DISTDIR)/"* 
+	rm -rf "$(DISTDIR)"
