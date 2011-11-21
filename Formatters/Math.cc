@@ -38,9 +38,13 @@ static void print_text(std::ostream& output, int& visible_position, const char* 
 			++visible_position;
 	}
 }
-static void print_text_raw(std::ostream& output, int& visible_position, const std::string& textStr) {
+static void print_text_raw(std::ostream& output, int& visible_position, const std::string& textStr, bool spaces) {
 	const char* text = textStr.c_str();
+	if(spaces)
+		output << ' ';
 	output << text;
+	if(spaces)
+		output << ' ';
 	for(; *text; ++text) {
 		unsigned c = (unsigned) *text;
 		if(c == 10)
@@ -108,7 +112,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		if(precedence != -1 && application_P(envelope)) { // is a (binary) operator and the envelope is not a builtin (i.e. (+))
 			bool B_braced = maybe_print_opening_brace(output, position, precedence, precedence_limit, B_brace_equal_levels);
 			print_math_CXX(OPL, output, position, get_application_operand(envelope), precedence, operatorAssociativity != AST::intern("left"));
-			print_text_raw(output, position, operatorSymbol->str());
+			print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
 			////print_math_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
 			print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != AST::intern("right"));
 			//print_text(output, position, operator_);
@@ -124,7 +128,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 			int xprecedence = operatorSymbol ? OPL->get_operator_precedence(operatorSymbol) : -1;
 			if(xprecedence != -1) { // incomplete binary operation
 				++position, output << '(';
-                                print_text_raw(output, position, operatorSymbol->str());
+                                print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
 				++position, output << ')';
 			} else
 				print_math_CXX(OPL, output, position, operator_, precedence, operatorAssociativity != AST::intern("left"));
@@ -135,9 +139,10 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		}
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
-		/* FIXME braces for these? */
+		/* FIXME braces for these? spaces for these? */
 		std::string value = str(node);
-		print_text_raw(output, position, value.c_str());
+		int pl = OPL->get_operator_precedence(AST::intern(value.c_str()));
+		print_text_raw(output, position, value.c_str(), pl < OPL->apply_level && pl != -1);
 	}
 }
 void print_math(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, AST::Node* node) {
