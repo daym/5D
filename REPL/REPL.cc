@@ -22,7 +22,7 @@ You should have received a copy of the GNU General Public License along with thi
 namespace REPLX {
 struct REPL;
 void REPL_set_environment(struct REPL* self, AST::Node* environment);
-AST::Cons* REPL_get_user_environment(struct REPL* self);
+AST::Node* REPL_get_user_environment(struct REPL* self);
 void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::Node* value);
 };
 namespace GUI {

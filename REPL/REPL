@@ -19,7 +19,7 @@ namespace GUI {
 using namespace REPLX;
 bool REPL_save_contents_to(struct REPL* self, FILE* output_file);
 bool REPL_load_contents_from(struct REPL* self, const char* name);
-AST::Cons* REPL_get_environment(struct REPL* self);
+AST::Node* REPL_get_environment(struct REPL* self);
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition);
 }; /* end namespace */
 

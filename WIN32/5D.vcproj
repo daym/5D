@@ -220,11 +220,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\CodeGen.cc"
+				RelativePath="..\Compilers\X86\CodeGen.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\X86\CodeGen.cc"
+				RelativePath="..\Compilers\CodeGen.cc"
 				>
 			</File>
 			<File
@@ -233,6 +233,10 @@
 			</File>
 			<File
 				RelativePath="..\Evaluators\FFI.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Numbers\Integer.cc"
 				>
 			</File>
 			<File
@@ -257,6 +261,10 @@
 			</File>
 			<File
 				RelativePath="..\Compilers\X86\PascalCallGen.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\Numbers\Real.cc"
 				>
 			</File>
 			<File
@@ -366,11 +374,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\CodeGen"
+				RelativePath="..\Compilers\X86\CodeGen"
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\X86\CodeGen"
+				RelativePath="..\Compilers\CodeGen"
 				>
 			</File>
 			<File
@@ -387,6 +395,10 @@
 			</File>
 			<File
 				RelativePath="..\FFIs\FFIs"
+				>
+			</File>
+			<File
+				RelativePath="..\Numbers\Integer"
 				>
 			</File>
 			<File
@@ -422,6 +434,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Numbers\Real"
+				>
+			</File>
+			<File
 				RelativePath="..\REPL\REPL"
 				>
 			</File>
@@ -443,6 +459,10 @@
 			</File>
 			<File
 				RelativePath="..\Formatters\SExpression"
+				>
+			</File>
+			<File
+				RelativePath="..\Numbers\Small"
 				>
 			</File>
 			<File

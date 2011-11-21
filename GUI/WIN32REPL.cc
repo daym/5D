@@ -34,9 +34,9 @@ struct REPL {
 	std::wstring fSearchTerm;
 	bool fBSearchUpwards;
 	bool fBSearchCaseSensitive;
-	AST::Cons* fTailEnvironment;
-	AST::Cons* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::Cons* fTailUserEnvironmentFrontier;
+	AST::Node* fTailEnvironment;
+	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::Node* fTailUserEnvironmentFrontier;
 	WNDPROC oldEditBoxProc;
 	struct Completer* fCompleter;
 	struct std::set<AST::Symbol*>* fEnvironmentKeys;
@@ -931,7 +931,7 @@ void REPL_clear(struct REPL* self) {
 	REPL_init_builtins(self);
 	REPL_set_file_modified(self, false);
 }
-static AST::Cons* box_environment_elements(HWND dialog, int index, int count) {
+static AST::Node* box_environment_elements(HWND dialog, int index, int count) {
 	if(index >= count)
 		return(NULL);
 	else {
@@ -940,10 +940,10 @@ static AST::Cons* box_environment_elements(HWND dialog, int index, int count) {
 		AST::Node* value = (AST::Node*) GetListViewItemUserData(environmentList, index);
 		std::wstring name = GetListViewEntryStringCXX(environmentList, index);
 		AST::Symbol* nameSymbol = AST::intern(ToUTF8(name));
-		return(cons(cons(nameSymbol, cons(value, NULL)), box_environment_elements(dialog, index + 1, count)));
+		return(makeEnvEntry(nameSymbol, value, box_environment_elements(dialog, index + 1, count)));
 	}
 }
-AST::Cons* REPL_get_environment(struct REPL* self) {
+AST::Node* REPL_get_environment(struct REPL* self) {
 	int count = SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LVM_GETITEMCOUNT, (WPARAM) 0, (LPARAM) 0);
 	return(box_environment_elements(self->dialog, 0, count));
 }
