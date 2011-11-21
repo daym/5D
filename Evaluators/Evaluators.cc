@@ -167,7 +167,7 @@ static bool wants_its_argument_reduced_P(AST::Node* fn) {
 static int recursionLevel = 0; /* anti-endless-loop */
 static AST::Node* remember(AST::Node* app, AST::Node* result) {
 	((AST::Application*) app)->result = result;
-	((AST::Application*) app)->bResult = true;
+	//((AST::Application*) app)->bResult = true;
 	return(result);
 }
 AST::Node* reduce(AST::Node* term) {
