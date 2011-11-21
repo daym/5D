@@ -62,7 +62,7 @@ void OperatorPrecedenceList::uncons(int precedence_level, struct AST::Symbol* op
 	levels[precedence_level] = item;
 }
 OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
-	apply_level = 13;
+	apply_level = 12;
 	for(int i = 0; i < MAX_PRECEDENCE_LEVELS; ++i)
 		levels[i] = NULL;
 	for(int i = 0; i < 256; ++i)
