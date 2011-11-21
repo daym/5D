@@ -4,7 +4,9 @@ SUBDIRS2 = $(SUBDIRS) doc/FFI doc/building doc/installation doc/interna doc/libr
 EXECUTABLES = REPL/5DREPL GUI/5D TUI/TUI Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol Scanners/test-MathParser Scanners/test-Scanner GUI/5D REPL/5DREPL
 
 CXXFLAGS += -Wall -I. -g3 -fno-strict-overflow
-DISTDIR = 5D
+PACKAGE = 5D
+VERSION = $(shell head -1 debian/changelog |cut -d"(" -f2 |cut -d")" -f1)
+DISTDIR = $(PACKAGE)-$(VERSION)
 
 #-fwrapv
 #-Werror=strict-overflow
