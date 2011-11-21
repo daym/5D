@@ -322,8 +322,7 @@ filter (2&lt;) [1 2 3 4] =&gt; [3 4]
 </pre>
 <hr/>
 <h3>foldr \f \v \list</h3>
-<p>Result is a value like <span class="pre">v</span> in this way:</p>
-<p>Let the list be <span class="pre">[a b c]</span>. Let <span class="pre">f</span> be <span class="pre">(+)</span>. Then foldr applies <span class="pre">(+)</span> to the left to finally reach the result <span class="pre">a+(b+(c+0))</span>.</p>
+<p>Associates list elements to the right, two by two, mediated by f, until running out of elements. For the missing element, substitutes <span class="pre">v</span>.
 <p>Example:</p>
 <pre>
 foldr (+) 0 [1 2 3] =&gt; (1+(2+(3+0))) =&gt; 6
@@ -331,7 +330,7 @@ foldr (-) 0 [1 2 3] =&gt; (1-(2-(3-0))) =&gt; 2
 </pre>
 <hr/>
 <h3>foldl \f \v \list</h3>
-<p>Result is a value like <span class="pre">v</span> in this way:</p>
+<p>Associates list elements to the left, two by two, mediated by f, until running out of elements. For the missing element, substitutes <span class="pre">v</span>.
 <p>Let the list be <span class="pre">[a b c]</span>. Let <span class="pre">f</span> be <span class="pre">(+)</span>. Then foldl applies <span class="pre">(+)</span> to the left to finally reach the result <span class="pre">(((0+a)+b)+c)</span>.</p>
 <p>Example:</p>
 <pre>
