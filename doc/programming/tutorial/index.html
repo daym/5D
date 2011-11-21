@@ -85,19 +85,20 @@ runWorld (display "Hello world")
 <pre>
 5 + 2 ⋅ 3 =&gt; 11
 </pre>
-<p><a href="">Operator precedence</a> is as you would expect.</p>
+<p><a href="">Operator precedence</a> is as you would expect, with one strange quirk: 2⋅f x means (2⋅f) x</p>
 <pre>
 5 + 2 ⋅ 3 =&gt; 11
 </pre>
 <pre>
 define f \x x⋅x
-5 + 2 ⋅ f 3 =&gt; 23
+5 + 2 ⋅ (f 3) =&gt; 23
+5 + 2 ⋅ f 3 =&gt; ??????
 </pre>
 <p>Here, the function f is defined to be a function of x, giving the square of x.</p>
 <p>Then the function f is called with the argument 3. The following works, too (although it has more parens for no reason):</p>
 <pre>
 define f\x x⋅x
-5+2⋅f(3) =&gt; 23
+5+2⋅(f(3)) =&gt; 23
 </pre>
 <p>Or if it's the first operand of multiplication:</p>
 <pre>
