@@ -65,3 +65,4 @@ trees: binary trees, tries, red black trees.
 div with negative args.
 arrays.
 string processing.
+catch bodyless lambda in math parser.

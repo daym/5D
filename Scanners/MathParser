@@ -21,6 +21,7 @@ protected:
 	OperatorPrecedenceList* operator_precedence_list;
 private:
 	AST::Node* parse_value(void);
+	AST::Node* parse_application(void);
 	AST::Node* parse_argument(void);
 	AST::Node* parse_binary_operation(int precedence_level);
 	AST::Node* parse_abstraction(void);

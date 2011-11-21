@@ -169,7 +169,7 @@ AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 	bool B_visible_operator, B_unary_operator = false;
 	//printf("level is %d, input is: %s\n", precedence_level, input_value->str().c_str());
 	if(operator_precedence_list->empty_P(precedence_level))
-		return(parse_value());
+		return(parse_application());
 	/* special case for unary - */
 	AST::Node* result = (precedence_level == MINUS_PRECEDENCE_LEVEL && input_value == intern("-")) ? (B_unary_operator = true, intern("0")) : parse_binary_operation(operator_precedence_list->next_precedence_level(precedence_level));
 	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator)) {
@@ -194,9 +194,17 @@ AST::Node* MathParser::parse_expression(void) {
 	if(operator_precedence_list)
 		return parse_binary_operation(operator_precedence_list->next_precedence_level(-1));
 	else
-		return parse_value();
+		return parse_application();
+}
+AST::Node* MathParser::parse_application(void) {
+	AST::Node* hd = parse_value();
+	while(!EOFP() && input_value != AST::intern(")") && input_value != AST::intern("]") && !operator_precedence_list->any_operator_P(input_value)) {
+		hd = AST::makeApplication(hd, parse_argument());
+	}
+	return(hd);
 }
 AST::Node* MathParser::parse_argument(void) {
+	assert(operator_precedence_list->apply_level != 0);
 	return parse_binary_operation(operator_precedence_list->apply_level);
 }
 AST::Node* MathParser::parse(OperatorPrecedenceList* operator_precedence_list) {

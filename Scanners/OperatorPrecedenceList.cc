@@ -62,7 +62,7 @@ void OperatorPrecedenceList::uncons(int precedence_level, struct AST::Symbol* op
 	levels[precedence_level] = item;
 }
 OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
-	apply_level = 12;
+	apply_level = 0;
 	for(int i = 0; i < MAX_PRECEDENCE_LEVELS; ++i)
 		levels[i] = NULL;
 	for(int i = 0; i < 256; ++i)
@@ -71,7 +71,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 #define R intern("right")
 #define L intern("left")
 #define N intern("none")
-	cons(12, I(" "), L); // apply
+	//cons(12, I(" "), L); // apply
 	if(bInitDefaults) {
 		cons(19, I("_"), R);
 		cons(19, I("."), R);
