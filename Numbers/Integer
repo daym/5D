@@ -31,9 +31,11 @@ struct Integer : AST::Node {
 AST::Node* operator+(const Int& a, const Int& b);
 AST::Node* operator-(const Int& a, const Int& b);
 AST::Node* operator*(const Int& a, const Int& b);
+AST::Node* operator/(const Int& a, const Int& b);
 Integer* operator+(const Integer& a, const Integer& b);
 Integer* operator-(const Integer& a, const Integer& b);
 Integer* operator*(const Integer& a, const Integer& b);
+Integer* operator/(const Integer& a, const Integer& b);
 AST::Node* operator<=(const Int& a, const Int& b);
 AST::Node* operator<=(const Integer& a, const Integer& b);
 

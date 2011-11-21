@@ -281,6 +281,9 @@ AST::Node* operator-(const Int& a, const Int& b) {
 AST::Node* operator*(const Int& a, const Int& b) {
 	return(internNative(a.value * b.value)); /* FIXME */
 }
+AST::Node* operator/(const Int& a, const Int& b) {
+	return(internNative((float) a.value / (float) b.value)); /* FIXME */
+}
 Integer* operator+(const Integer& a, const Integer& b) {
 	return(NULL); /* FIXME */
 }
@@ -288,6 +291,9 @@ Integer* operator-(const Integer& a, const Integer& b) {
 	return(NULL); /* FIXME */
 }
 Integer* operator*(const Integer& a, const Integer& b) {
+	return(NULL); /* FIXME */
+}
+Integer* operator/(const Integer& a, const Integer& b) {
 	return(NULL); /* FIXME */
 }
 AST::Node* operator<=(const Int& a, const Int& b) {

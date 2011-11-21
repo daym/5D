@@ -19,9 +19,11 @@ struct Real : AST::Node {
 AST::Node* operator+(const Float& a, const Float& b);
 AST::Node* operator-(const Float& a, const Float& b);
 AST::Node* operator*(const Float& a, const Float& b);
+AST::Node* operator/(const Float& a, const Float& b);
 Real* operator+(const Real& a, const Real& b);
 Real* operator-(const Real& a, const Real& b);
 Real* operator*(const Real& a, const Real& b);
+Real* operator/(const Real& a, const Real& b);
 AST::Node* operator<=(const Float& a, const Float& b);
 AST::Node* operator<=(const Real& a, const Real& b);
 

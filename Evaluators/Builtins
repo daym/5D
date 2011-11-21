@@ -73,6 +73,7 @@ DEFINE_SIMPLE_OPERATION(ListFromStringGetter, "listFromStr", (dynamic_cast<AST::
 DECLARE_BINARY_OPERATION(Adder, "+")
 DECLARE_BINARY_OPERATION(Subtractor, "-")
 DECLARE_BINARY_OPERATION(Multiplicator, "*")
+DECLARE_BINARY_OPERATION(Divider, "*")
 DECLARE_BINARY_OPERATION(SymbolEqualityChecker, "symbol=")
 DECLARE_BINARY_OPERATION(LEComparer, "<=")
 DEFINE_SIMPLE_OPERATION(Interner, "intern", (dynamic_cast<AST::Str*>(argument) ? internNative(((AST::Str*)argument)->text.c_str()) : FALLBACK));
