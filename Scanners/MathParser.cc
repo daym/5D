@@ -116,9 +116,11 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 }
 AST::Node* MathParser::parse_application(void) {
 	AST::Node* hd = parse_value();
-	while(!EOFP() && input_value != AST::intern(")") && input_value != AST::intern("]") && !operator_precedence_list->any_operator_P(input_value)) {
+#ifndef SIMPLE_APPLICATION
+	while(!EOFP() && input_value != AST::intern(")") && input_value != AST::intern("]") && input_value && !operator_precedence_list->any_operator_P(input_value)) {
 		hd = AST::makeApplication(hd, parse_argument());
 	}
+#endif
 	return(hd);
 }
 AST::Node* MathParser::parse_abstraction(void) {

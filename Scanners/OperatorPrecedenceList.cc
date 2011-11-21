@@ -71,7 +71,10 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 #define R intern("right")
 #define L intern("left")
 #define N intern("none")
-	//cons(12, I(" "), L); // apply
+#ifdef SIMPLE_APPLICATION
+	apply_level = 12;
+	cons(12, I(" "), L); // apply
+#endif
 	if(bInitDefaults) {
 		cons(19, I("_"), R);
 		cons(19, I("."), R);

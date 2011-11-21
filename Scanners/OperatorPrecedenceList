@@ -12,6 +12,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/AST"
 namespace Scanners {
 
+#define SIMPLE_APPLICATION
+
 /* DIY cons for no good reason. TODO change? */
 struct OperatorPrecedenceItem : AST::Node {
 	struct OperatorPrecedenceItem* next;
