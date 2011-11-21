@@ -43,8 +43,8 @@ Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/MathParser.o Scann
 AST/test-AST: AST/test-AST.o
 	g++ -o AST/test-AST AST/test-AST.o
 
-AST/test-Symbol: AST/test-Symbol.o AST/Symbol.o AST/AST.o
-	g++ -o AST/test-Symbol AST/test-Symbol.o AST/Symbol.o AST/AST.o
+AST/test-Symbol: AST/test-Symbol.o AST/Symbol.o AST/AST.o $(AST_UNCLEAN)
+	g++ -o AST/test-Symbol AST/test-Symbol.o AST/Symbol.o AST/AST.o $(AST_UNCLEAN)
 
 test-AST: test-AST.o
 	g++ -o test-AST test-AST.o
@@ -52,9 +52,9 @@ test-AST: test-AST.o
 Linear_Algebra/test-Vector.o: Linear_Algebra/test-Vector.cc Linear_Algebra/Vector
 Linear_Algebra/test-Matrix.o: Linear_Algebra/test-Matrix.cc Linear_Algebra/Matrix
 Linear_Algebra/test-Tensor.o: Linear_Algebra/test-Tensor.cc Linear_Algebra/Tensor
-Formatters/LATEX.o: Formatters/LATEX.cc Formatters/LATEX AST/AST AST/Symbol Scanners/MathParser Formatters/UTFStateMachine Scanners/OperatorPrecedenceList
-Formatters/SExpression.o: Formatters/SExpression.cc Formatters/SExpression AST/Symbol AST/AST
-Formatters/Math.o: Formatters/Math.cc Formatters/Math AST/Symbol AST/AST
+Formatters/LATEX.o: Formatters/LATEX.cc Formatters/LATEX AST/AST AST/Symbol Scanners/MathParser Formatters/UTFStateMachine Scanners/OperatorPrecedenceList Evaluators/Builtins
+Formatters/SExpression.o: Formatters/SExpression.cc Formatters/SExpression AST/Symbol AST/AST Evaluators/Builtins
+Formatters/Math.o: Formatters/Math.cc Formatters/Math AST/Symbol AST/AST Evaluators/Builtins
 Formatters/UTFStateMachine.o: Formatters/UTFStateMachine.cc Formatters/UTFStateMachine Formatters/UTF-8_to_LATEX_result.h
 Formatters/UTF-8_to_LATEX_result.h: Formatters/UTF-8_to_LATEX.table Formatters/generate-state-machine
 	Formatters/generate-state-machine Formatters/UTF-8_to_LATEX.table >tmp4711 && mv tmp4711 Formatters/UTF-8_to_LATEX_result.h
@@ -63,16 +63,16 @@ AST/test-AST.o: AST/test-AST.cc AST/AST
 AST/test-Symbol.o: AST/test-Symbol.cc AST/Symbol AST/AST
 AST/Symbol.o: AST/Symbol.cc AST/Symbol AST/AST
 AST/Keyword.o: AST/Keyword.cc AST/Keyword AST/AST
-Scanners/Scanner.o: Scanners/Scanner.cc Scanners/Scanner AST/Symbol AST/AST AST/Keyword
+Scanners/Scanner.o: Scanners/Scanner.cc Scanners/Scanner AST/Symbol AST/AST AST/Keyword Evaluators/Builtins
 Scanners/test-Scanner.o: Scanners/test-Scanner.cc Scanners/Scanner
-Scanners/MathParser.o: Scanners/MathParser.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol Scanners/OperatorPrecedenceList
+Scanners/MathParser.o: Scanners/MathParser.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol Scanners/OperatorPrecedenceList Evaluators/Builtins
 Scanners/OperatorPrecedenceList.o: Scanners/OperatorPrecedenceList.cc AST/AST AST/Symbol
 Scanners/test-MathParser.o: Scanners/test-MathParser.cc Scanners/MathParser Scanners/Scanner Scanners/OperatorPrecedenceList
 Evaluators/Evaluators.o: Evaluators/Evaluators.cc Evaluators/Evaluators AST/AST AST/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList
 Evaluators/Builtins.o: Evaluators/Builtins.cc Scanners/MathParser Evaluators/Builtins Numbers/Integer Numbers/Real AST/AST AST/Symbol AST/Keyword FFIs/ResultMarshaller FFIs/FFIs  Scanners/OperatorPrecedenceList
 Evaluators/Backtracker.o: Evaluators/Backtracker.cc Evaluators/Backtracker
 Evaluators/FFI.o: Evaluators/FFI.cc Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real
-FFIs/POSIX.o: FFIs/POSIX.cc FFIs/FFIs Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Numbers/Integer Numbers/Real
+FFIs/POSIX.o: FFIs/POSIX.cc Evaluators/Builtins FFIs/FFIs Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Numbers/Integer Numbers/Real
 FFIs/ArgumentMarshaller.o: FFIs/ArgumentMarshaller.cc FFIs/ArgumentMarshaller Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators FFIs/CallMarshaller
 FFIs/ResultMarshaller.o: FFIs/ResultMarshaller.cc FFIs/ResultMarshaller Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators FFIs/ArgumentMarshaller
 FFIs/CallMarshaller.o: FFIs/CallMarshaller.cc FFIs/CallMarshaller Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators
@@ -97,7 +97,7 @@ TUI/TUI: TUI/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o Scanners/Scanne
 REPL/main.o: REPL/main.cc REPL/REPL REPL/REPLEnvironment FFIs/FFIs AST/AST AST/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators FFIs/ResultMarshaller Scanners/MathParser Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Scanners/MathParser Scanners/Scanner Evaluators/Evaluators
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-TUI/main.o: TUI/main.cc REPL/REPLEnvironment FFIs/FFIs AST/AST AST/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators FFIs/ResultMarshaller Scanners/MathParser Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Numbers/Integer Numbers/Real TUI/Interrupt Config/Config Evaluators/Evaluators
+TUI/main.o: TUI/main.cc REPL/REPLEnvironment FFIs/FFIs AST/AST AST/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators FFIs/ResultMarshaller Scanners/MathParser Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Numbers/Integer Numbers/Real TUI/Interrupt Config/Config Evaluators/Evaluators Evaluators/Builtins
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 TUI/Interrupt.o: TUI/Interrupt.cc TUI/Interrupt

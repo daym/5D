@@ -25,7 +25,6 @@ AST::Node* internNative(NativeInt value);
 
 struct Integer : AST::Node {
 	NativeInt* parts;
-	virtual std::string str(void) const;
 	Integer(int position, int offset = 0);
 };
 

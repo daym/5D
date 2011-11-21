@@ -9,9 +9,11 @@
 #include "FFIs/FFIs"
 #include "Formatters/SExpression"
 #include "Evaluators/Evaluators"
+#include "Evaluators/Builtins"
 #include "REPL/REPL"
 
 namespace REPLX {
+using namespace Evaluators;
 
 struct REPL {
 	AST::Node* fTailEnvironment;
@@ -116,13 +118,13 @@ int main() {
 			REPL_execute(REPL, source);
 		} catch(Scanners::ParseException exception) {
 			AST::Node* err = Evaluators::makeError(exception.what());
-			std::string errStr = err->str();
+			std::string errStr = str(err);
 			fprintf(stderr, "%s\n", errStr.c_str());
 			status = 1;
 			parser.consume();
 		} catch(Evaluators::EvaluationException exception) {
 			AST::Node* err = Evaluators::makeError(exception.what());
-			std::string errStr = err->str();
+			std::string errStr = str(err);
 			fprintf(stderr, "%s\n", errStr.c_str());
 			status = 2;
 		}

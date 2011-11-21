@@ -7,6 +7,15 @@ AST::Node* internNative(bool value);
 
 namespace Numbers {
 
+REGISTER_STR(Float, {
+	std::stringstream sst;
+	sst.precision(7); /* 17 for some */
+	sst << node->value;
+	return(sst.str());
+})
+
+REGISTER_STR(Real, return("FIXME");)
+
 AST::Node* internNative(NativeFloat value) {
 	return(new Float(value));
 }

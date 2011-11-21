@@ -12,57 +12,16 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/AST"
 #include "AST/Symbol"
 
-namespace Evaluators {
-AST::Cons* evaluateToCons(AST::Node* computation);
-};
-
 namespace AST {
 
-std::string Node::str(void) const {
-	return("<node>");
+Node::~Node() {
 }
-std::string Atom::str(void) const {
-	return(text);
-}
-std::string Str::str(void) const {
-	std::stringstream sst;
-	const char* item;
-	char c;
-	sst << "\"";
-	for(item = text.c_str(); (c = *item); ++item) {
-		if(c == '"')
-			sst << '\\';
-		else if(c == '\\')
-			sst << '\\';
-		/* TODO escape other things? not that useful... */
-		sst << c;
-	}
-	sst << "\"";
-	return(sst.str());
-}
-std::string Box::str(void) const {
-	return("box"); // TODO nicer?
-}
-std::string Cons::str(void) const {
-	std::stringstream result;
-	result << '[';
-	result << (head ? head->str() : "()");
-	for(Cons* node = Evaluators::evaluateToCons(this->tail); node; node = Evaluators::evaluateToCons(node->tail)) {
-		result << ' ' << (node->head ? node->head->str() : "()");
-	}
-	result << ']';
-	return(result.str());
-}
+
 Cons* makeCons(Node* head, Node* tail) {
 	Cons* result = new Cons;
 	/*assert(head); unfortunately, now that we have NIL, that's allowed. */
 	result->head = head;
 	result->tail = tail;
-	return(result);
-}
-Atom* literal(const char* text) {
-	Atom* result = new Atom;
-	result->text = text;
 	return(result);
 }
 Str* makeStr(const char* text) {
@@ -79,23 +38,6 @@ AST::Node* Operation::repr(AST::Node* selfName) const {
 }
 bool Operation::eager_P(void) const {
 	return(false);
-}
-std::string Application::str(void) const {
-	std::stringstream result;
-	result << '(';
-	result << (operator_ ? operator_->str() : std::string("nil"));
-	result << ' ';
-	result << (operand ? operand->str() : std::string("nil"));
-	result << ')';
-	return(result.str());
-}
-std::string Abstraction::str(void) const {
-	std::stringstream result;
-	result << "(\\";
-	result << (parameter ? parameter->str() : std::string("nil"));
-	result << (body ? body->str() : std::string("nil"));
-	result << ')';
-	return(result.str());
 }
 Application* makeApplication(Node* fn, Node* argument) {
 	Application* result = new Application;

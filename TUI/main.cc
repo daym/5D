@@ -18,6 +18,7 @@
 #include "TUI/Interrupt"
 #include "REPL/REPL"
 #include "Evaluators/Evaluators"
+#include "Evaluators/Builtins"
 //#include "Config/Config"
 
 namespace REPLX {
@@ -54,6 +55,7 @@ using namespace GUI;
 #include "REPL/REPLEnvironment"
 
 namespace GUI {
+using namespace Evaluators;
 
 void REPL_clear(struct REPL* self) {
 	self->fTailEnvironment = self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier = NULL;
@@ -216,7 +218,7 @@ static char** complete(const char* text, int start, int end) {
 static void initialize_readline(void) {
 	rl_readline_name = "5D";
 	rl_attempted_completion_function = complete;
-	rl_sort_completion_matches = 1;
+	//rl_sort_completion_matches = 1;
 }
 using namespace REPLX;
 static Scanners::OperatorPrecedenceList* operator_precedence_list;
@@ -234,11 +236,11 @@ void run(struct REPL* REPL, const char* text) {
 		REPL_execute(REPL, result);
 	} catch(Scanners::ParseException exception) {
 		AST::Node* err = Evaluators::makeError(exception.what());
-		std::string errStr = err->str();
+		std::string errStr = str(err);
 		fprintf(stderr, "%s\n", errStr.c_str());
 	} catch(Evaluators::EvaluationException exception) {
 		AST::Node* err = Evaluators::makeError(exception.what());
-		std::string errStr = err->str();
+		std::string errStr = str(err);
 		fprintf(stderr, "%s\n", errStr.c_str());
 	}
 }

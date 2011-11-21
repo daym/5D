@@ -18,8 +18,6 @@ namespace AST {
 
 struct Keyword : Node {
 	const char* name;
-public:
-	virtual std::string str(void) const;
 };
 
 Keyword* keywordFromString(const char* name) G_5D_GNUC_PURE;

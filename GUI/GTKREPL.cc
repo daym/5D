@@ -83,6 +83,7 @@ void REPL_queue_scroll_down(struct REPL* self);
 using namespace GUI;
 #include "REPL/REPLEnvironment"
 namespace GUI {
+using namespace Evaluators;
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 bool REPL_save_content_to(struct REPL* self, FILE* output_file);
 bool REPL_load_contents_by_name(struct REPL* self, const char* file_name);
@@ -786,7 +787,7 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 	//std::cout << resultString << " X" << std::endl;
 	{
 		char* alt_text;
-		alt_text = strdup(node ? node->str().c_str() : "");
+		alt_text = strdup(str(node).c_str());
 		if(alt_text && strchr(alt_text, '"')) /* contains string */
 			nodeText = NULL;
 		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? strdup(nodeText) : NULL, alt_text, destination);

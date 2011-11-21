@@ -294,4 +294,5 @@ AST::Node* listFromStr(AST::Str* node) {
 	return(listFromCharZ(node->text.c_str()));
 }
 
+
 }; // end namespace Evaluators.

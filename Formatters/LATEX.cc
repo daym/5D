@@ -12,8 +12,10 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Formatters/LATEX"
 #include "Scanners/MathParser"
 #include "Formatters/UTFStateMachine"
+#include "Evaluators/Builtins"
 
 namespace Formatters {
+using namespace Evaluators;
 
 static inline bool maybe_print_opening_brace(std::ostream& output, int precedence, int precedence_limit, bool B_brace_equal_levels) {
 	if(precedence < precedence_limit) {
@@ -135,7 +137,7 @@ void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list
 		}
 		// TODO cons etc
 	} else if(node)
-		output << "\\mathrm{" << node->str() << "}";
+		output << "\\mathrm{" << str(node) << "}";
 	else
 		output << "nil";
 }

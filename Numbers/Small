@@ -7,23 +7,14 @@ struct P : AST::Node { \
 	P(T value) { \
 		this->value = value; \
 	} \
-	virtual std::string str(void) const { \
-		std::stringstream sst; \
-		sst.precision(7); /* 17 for some */ \
-		sst << this->value; \
-		return(sst.str()); \
-	} \
 };
 
 #define DECLARE_SIMPLE_OPERATION_BODY(P, N, B) \
 struct P : AST::BuiltinOperation { \
 	P(AST::Node* fallback) : AST::BuiltinOperation(fallback) {} \
 	virtual AST::Node* execute(AST::Node* argument) B \
-	virtual std::string str(void) const { \
-		/*return(std::string("(N" ") + (fallback ? fallback->str() : std::string("()")) + ")"); f... off */ \
-		return(N); \
-	} \
 };
+
 #define DECLARE_SIMPLE_OPERATION(P, N) \
 	DECLARE_SIMPLE_OPERATION_BODY(P, N, ;)
 
@@ -37,11 +28,8 @@ struct P : AST::BuiltinOperation { \
 	} \
 	P(AST::Node* fallback) : AST::BuiltinOperation(fallback) {} \
 	virtual AST::Node* execute(AST::Node* argument) B \
-	virtual std::string str(void) const { \
-		/*return(std::string("(N" ") + (fallback ? fallback->str() : std::string("()")) + ")"); f... off */ \
-		return(N); \
-	} \
 };
+
 #define DECLARE_UNEAGER_OPERATION(P, N) \
 	DECLARE_UNEAGER_OPERATION_BODY(P, N, ;)
 

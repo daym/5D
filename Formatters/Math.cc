@@ -7,6 +7,7 @@
 #include "Formatters/Math"
 #include "Evaluators/Evaluators"
 #include "Scanners/OperatorPrecedenceList"
+#include "Evaluators/Builtins"
 
 namespace Formatters {
 using namespace Evaluators;
@@ -135,7 +136,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
 		/* FIXME braces for these? */
-		std::string value = node->str();
+		std::string value = str(node);
 		print_text_raw(output, position, value.c_str());
 	}
 }

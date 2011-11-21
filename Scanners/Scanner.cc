@@ -13,9 +13,11 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/Scanner"
 #include "AST/AST"
 #include "AST/Keyword"
+#include "Evaluators/Builtins"
 
 namespace Scanners {
 using namespace AST;
+using namespace Evaluators;
 
 ParseException::ParseException(const char* s) throw() {
 	message = strdup(s);
@@ -64,14 +66,14 @@ bool Scanner::EOFP(void) const {
 }
 void Scanner::ensure_end(void) {
 	if(!EOFP())
-		raise_error("<EOF>", input_value->str());
+		raise_error("<EOF>", str(input_value));
 }
 /* returns the PREVIOUS value */
 AST::Node* Scanner::consume(AST::Node* expected_value) {
 	AST::Node* previous_value;
 	previous_value = input_value;
 	if(expected_value && expected_value != input_value)
-		raise_error(expected_value ? expected_value->str() : "<nothing>", input_value ? input_value->str() : "<nothing>");
+		raise_error(str(expected_value), str(input_value));
 	previous_position = position;
 	parse_token();
 	return(previous_value);

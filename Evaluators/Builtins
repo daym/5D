@@ -1,12 +1,37 @@
 #ifndef __5D_BUILTINS_H
 #define __5D_BUILTINS_H
 #include <sstream>
+#include "AST/AST"
+namespace Evaluators {
+std::string str(AST::Node* cons);
+struct StrRegistration {
+	virtual std::string call(AST::Node* node) const = 0;
+};
+StrRegistration* registerStr(StrRegistration* n);
+#define REGISTER_STR(typ, body) \
+struct StrRegistration##typ : Evaluators::StrRegistration { \
+	struct StrRegistration* next; \
+	StrRegistration##typ(void) { \
+		next = Evaluators::registerStr(this); \
+	} \
+	virtual std::string call(AST::Node* xxxnode) const { \
+		typ* node; \
+		if((node = dynamic_cast<typ*>(xxxnode)) != NULL) { \
+			body \
+		} else if(next) \
+			return(next->call(xxxnode)); \
+		else \
+			return("<node>"); \
+	} \
+}; \
+static StrRegistration##typ fStrRegistration##typ;
+};
+
 #include "Numbers/Small"
 #include "Numbers/Integer"
 #include "Numbers/Real"
 #include "AST/Keyword"
 #include "AST/Symbol"
-#include "AST/AST"
 #include "Evaluators/Evaluators"
 
 namespace Evaluators {
@@ -26,10 +51,6 @@ struct P : AST::BuiltinOperation { \
 	AST::Node* fArgument; \
 	P(AST::Operation* parent, AST::Node* fallback, AST::Node* argument) : AST::BuiltinOperation(fallback), fParent(parent), fArgument(argument) {} \
 	virtual AST::Node* execute(AST::Node* argument); \
-	virtual std::string str(void) const { \
-		/*return(std::string("(N" ") + (fallback ? fallback->str() : std::string("()")) + ")"); f... off */ \
-		return(std::string("(") + N + std::string(") ") + (fArgument ? fArgument->str() : std::string("()"))); \
-	} \
 };
 
 #define DECLARE_BINARY_OPERATION(P, N) \
@@ -55,12 +76,13 @@ DECLARE_BINARY_OPERATION(Multiplicator, "*")
 DECLARE_BINARY_OPERATION(LEComparer, "<=")
 DEFINE_SIMPLE_OPERATION(Interner, "intern", (dynamic_cast<AST::Str*>(argument) ? internNative(((AST::Str*)argument)->text.c_str()) : FALLBACK));
 DEFINE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::keywordFromString(((AST::Str*)argument)->text.c_str()) : FALLBACK))
-DEFINE_SIMPLE_OPERATION(KeywordStr, "keywordStr", dynamic_cast<AST::Keyword*>(argument) ? AST::makeStr(((AST::Keyword*)argument)->name) : FALLBACK)
+DEFINE_SIMPLE_OPERATION(KeywordStr, "keywordStr", dynamic_cast<AST::Keyword*>(argument) ? (AST::Node*) AST::makeStr(((AST::Keyword*)argument)->name) : FALLBACK)
 
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
 AST::Node* provide_dynamic_builtins(AST::Node* body);
 extern AST::Node* churchFalse;
 extern AST::Node* churchTrue;
+
 
 };
 

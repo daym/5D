@@ -40,7 +40,6 @@ struct FFIClosure : AST::Operation {
 		this->B_has_result = 0;
 	}
 	virtual AST::Node* execute(AST::Node* state);
-	virtual std::string str(void) const;
 };
 struct SymArgCacheFFI : AST::BuiltinOperation {
 private:
@@ -48,7 +47,6 @@ private:
 public:
 	SymArgCacheFFI(AST::Node* fallback);
 	virtual AST::Node* execute(AST::Node* argument);
-	/* FIXME str for fallback */
 };
 
 };

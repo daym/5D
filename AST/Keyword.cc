@@ -31,8 +31,4 @@ Keyword* keywordFromString(const char* name) {
 	}
 }
 
-std::string Keyword::str(void) const {
-	return std::string("@") + (name);
-}
-
 }; /* end namespace AST */

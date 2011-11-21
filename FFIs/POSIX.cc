@@ -26,9 +26,7 @@ struct LibraryLoaderP {
 LibraryLoader::LibraryLoader(AST::Node* fallback) : AST::BuiltinOperation(fallback) {
 	p = new LibraryLoaderP();
 }
-std::string LibraryLoader::str(void) const {
-	return("fromLibrary");
-}
+REGISTER_STR(LibraryLoader, return("fromLibrary");)
 AST::Node* LibraryLoader::execute(AST::Node* libraryName) {
 	if(str_P(libraryName))
 		libraryName = AST::intern(((AST::Str*)libraryName)->text.c_str());
@@ -87,16 +85,11 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 		return(p->knownProcedures[nameSymbol]);
 	}
 }
-std::string CLibrary::str(void) const {
-	return(makeApplication(AST::intern("fromLibrary"), AST::makeStr(p->name.c_str()))->str());
-	//return(std::string("(fromLibrary '") + p->name + ")"); // FIXME nicer
-}
+REGISTER_STR(CLibrary, return(str(makeApplication(AST::intern("fromLibrary"), AST::makeStr(node->p->name.c_str()))));)
 CProcedure::CProcedure(void* native) : 
 	AST::Box(native)
 {
 }
-std::string CProcedure::str(void) const {
-	return("<CProcedure>"); // FIXME nicer
-}
+REGISTER_STR(CProcedure, return("<CProcedure>");)
 
 };

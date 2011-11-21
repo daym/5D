@@ -36,7 +36,7 @@ char* get_native_string(AST::Node* root) {
 	if(rootString)
 		return(strdup(rootString->text.c_str()));
 	else {
-		std::string value = root->str(); /* FIXME */
+		std::string value = str(root); /* FIXME */
 		return(strdup(value.c_str()));
 	}
 }
@@ -58,10 +58,11 @@ AST::Node* FFIClosure::execute(AST::Node* state) {
 	else
 		return(NULL);
 }
-std::string FFIClosure::str(void) const {
-	return(std::string("(FFIClosure ") + (argument ? argument->str() : "nil") + ")"); // FIXME nicer
+std::string strFFIClosure(FFIClosure* s) {
+	return(std::string("(FFIClosure ") + str(s->argument) + ")"); // FIXME nicer
 	//return(AST::cons(AST::intern("loadFromLibrary"), AST::cons(new AST::String(p->name), NULL)))->str();
 }
+REGISTER_STR(FFIClosure, return(std::string("(FFIClosure ") + str(node->argument) + ")");)
 SymArgCacheFFI::SymArgCacheFFI(AST::Node* fallback) : BuiltinOperation(fallback) {
 }
 AST::Node* SymArgCacheFFI::execute(AST::Node* argument) {

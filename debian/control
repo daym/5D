@@ -2,7 +2,7 @@ Source: 5d
 Section: unknown
 Priority: extra
 Maintainer: Danny Milosavljevic <danny_milo@yahoo.com>
-Build-Depends: debhelper7 (>= 7.0.50~)
+Build-Depends: debhelper7 (>= 7.0.50~), libreadline5-dev
 Standards-Version: 3.9.1
 Homepage: http://www.scratchpost.org/software/5D/
 #Vcs-Git: git://git.debian.org/collab-maint/5d.git
@@ -10,6 +10,6 @@ Homepage: http://www.scratchpost.org/software/5D/
 
 Package: 5d
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libreadline5
 Description: 5D programming language
  5D is a functional programming language.

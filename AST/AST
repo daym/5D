@@ -12,49 +12,45 @@ You should have received a copy of the GNU General Public License along with thi
 namespace AST {
 
 struct Node {
-	virtual std::string str(void) const;
+	//virtual std::string str(void) const;
+	virtual ~Node(void);
 };
 struct Cons : Node {
 	Node* head;
 	Node* tail; /* Cons or Application */
-	virtual std::string str(void) const;
+	// FIXME virtual std::string str(void) const;
 };
 struct Application : Node {
 	Node* operator_;
 	Node* operand;
 	Node* result;
 	bool bResult;
-	virtual std::string str(void) const;
+	//virtual std::string str(void) const;
 };
 struct Abstraction : Node {
 	Node* parameter;
 	Node* body;
-	virtual std::string str(void) const;
+	//virtual std::string str(void) const;
 };
-std::string str(const Cons& a);
-struct Atom : Node {
+struct Str : Node {
 	std::string text; // char* text;
-	virtual std::string str(void) const;
-};
-struct Str : Atom {
 	Str(const std::string& value) {
 		text = value;
 	}
-	virtual std::string str(void) const;
+	//virtual std::string str(void) const;
 };
 struct Operation : Node {
 	virtual bool eager_P() const;
 	virtual AST::Node* execute(AST::Node* argument) = 0;
 	virtual AST::Node* repr(AST::Node* selfName) const;
 };
-struct Box : Atom {
+struct Box : Node {
 	void* native;
 	Box(void* native) {
 		this->native = native;
 	}
-	virtual std::string str(void) const;
+	//virtual std::string str(void) const;
 };
-std::string str(const Atom& a);
 
 Cons* makeCons(Node* head, Node* tail);
 Str* makeStr(const char* text);

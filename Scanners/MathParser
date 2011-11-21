@@ -30,7 +30,6 @@ private:
 	AST::Node* parse_defrec(AST::Node* operand_1);
 	AST::Node* parse_quote(AST::Node* operand_1);
 	AST::Node* parse_list(void);
-	AST::Node* maybe_parse_macro(AST::Node* node);
 protected:
 	AST::Node* parse_expression(void);
 	AST::Cons* parse_S_list_body(void);

@@ -272,10 +272,6 @@ AST::Node* internNative(NativeInt value) {
 		return(&integers[value]);
 	return(new Int(value));
 }
-
-std::string Integer::str(void) const {
-	return("FIXME");
-}
 AST::Node* operator+(const Int& a, const Int& b) {
 	return(internNative(a.value + b.value)); /* FIXME */
 }
@@ -317,5 +313,12 @@ AST::Node* IntSucc::execute(AST::Node* argument) {
 Integer::Integer(int position, int offset) {
 	// FIXME
 }
+
+REGISTER_STR(Int, {
+	std::stringstream sst;
+	sst << node->value;
+	return(sst.str());
+})
+REGISTER_STR(Integer, return("FIXME");)
 
 }; /* end namespace Numbers */

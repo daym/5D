@@ -5,8 +5,10 @@
 #include "AST/Symbol"
 #include "Formatters/SExpression"
 #include "Evaluators/Evaluators"
+#include "Evaluators/Builtins"
 
 namespace Formatters {
+using namespace Evaluators;
 
 static void print_text(std::ostream& output, int& visible_position, const char* text) {
 	output << text;
@@ -98,7 +100,7 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		++position;
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
-		std::string value = node->str();
+		std::string value = str(node);
 		print_text(output, position, value.c_str());
 	}
 }

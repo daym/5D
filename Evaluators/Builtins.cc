@@ -94,7 +94,15 @@ AST::Node* Curried##N::execute(AST::Node* argument) { \
 			return(promoteToFloat(*aInt) op *bFloat); \
 	} \
 	return(makeOperation(AST::intern(#op), a, b)); \
-}
+} \
+REGISTER_STR(N, return(#op);) \
+REGISTER_STR(Curried##N, { \
+	/*return(std::string("(N" ") + (fallback ? str(fallback) : std::string("()")) + ")"); f... off */ \
+	std::stringstream sst; \
+	sst << "(" << #op << ") (" << str(node->fArgument) << ")"; \
+	return(sst.str()); \
+})
+
 #define IMPLEMENT_BINARY_BUILTIN(N, op, fn) \
 AST::Node* N::execute(AST::Node* argument) { \
 	return(new Curried ## N(this, NULL/*FIXME*/, argument)); \
@@ -103,11 +111,88 @@ AST::Node* Curried##N::execute(AST::Node* argument) { \
 	AST::Node* a = fArgument; \
 	AST::Node* b = argument; \
 	return(fn(a, b)); \
-}
+} \
+REGISTER_STR(N, return(#op);) \
+REGISTER_STR(Curried##N, { \
+	/*return(std::string("(N" ") + (fallback ? str(fallback) : std::string("()")) + ")"); f... off */ \
+	std::stringstream sst; \
+	sst << "(" << #op << ") (" << str(node->fArgument) << ")"; \
+	return(sst.str()); \
+})
+
+using namespace AST;
+
 IMPLEMENT_NUMERIC_BUILTIN(Adder, +)
 IMPLEMENT_NUMERIC_BUILTIN(Subtractor, -)
 IMPLEMENT_NUMERIC_BUILTIN(Multiplicator, *)
 IMPLEMENT_NUMERIC_BUILTIN(LEComparer, <=)
+
+REGISTER_STR(Cons, {
+	std::stringstream result;
+	result << '[';
+	result << str(node->head);
+	for(Cons* vnode = Evaluators::evaluateToCons(node->tail); vnode; vnode = Evaluators::evaluateToCons(vnode->tail)) {
+		result << ' ' << str(vnode->head);
+	}
+	result << ']';
+	return(result.str());
+})
+
 IMPLEMENT_BINARY_BUILTIN(Conser, :, makeCons)
+
+
+REGISTER_STR(Str, {
+	std::stringstream sst;
+	const char* item;
+	char c;
+	sst << "\"";
+	for(item = node->text.c_str(); (c = *item); ++item) {
+		if(c == '"')
+			sst << '\\';
+		else if(c == '\\')
+			sst << '\\';
+		/* TODO escape other things? not that useful... */
+		sst << c;
+	}
+	sst << "\"";
+	return(sst.str());
+})
+REGISTER_STR(Box, return("box");)
+REGISTER_STR(Application,  {
+	std::stringstream result;
+	result << '(';
+	result << str(node->operator_);
+	result << ' ';
+	result << str(node->operand);
+	result << ')';
+	return(result.str());
+})
+REGISTER_STR(Abstraction, {
+	std::stringstream result;
+	result << "(\\";
+	result << str(node->parameter);
+	result << str(node->body);
+	result << ')';
+	return(result.str());
+})
+REGISTER_STR(Keyword, return(std::string("@") + (node->name));)
+REGISTER_STR(Symbol, return(node->name);)
+REGISTER_STR(SymbolReference, return(node->symbol->name);)
+
+static StrRegistration* root;
+StrRegistration* registerStr(StrRegistration* n) {
+	StrRegistration* oldRoot = root;
+	root = n;
+	return(oldRoot);
+}
+
+// TODO move this into the language runtime
+std::string str(Node* node) {
+	if(root)
+		return(root->call(node));
+	else
+		return("<node>");
+}
+
 
 }; /* end namespace Evaluators */

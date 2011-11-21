@@ -15,12 +15,14 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/Symbol"
 #include "AST/AST"
 #include "AST/Keyword"
+#include "Evaluators/Builtins"
 #ifdef _WIN32
 /* for fmemopen used in parse_simple... */
 #include "stdafx.h"
 #endif
 namespace Scanners {
 using namespace AST;
+using namespace Evaluators;
 
 MathParser::MathParser(void) : Scanner() {
 	B_process_macros = true;
@@ -37,19 +39,21 @@ AST::Node* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 bool macro_operator_P(AST::Node* operator_) {
 	return(operator_ == intern("define") || operator_ == intern("defrec") || operator_ == intern("'") || operator_ == intern("["));
 }
+/*
 AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 	if(B_process_macros && macro_operator_P(node))
 		return(parse_macro(node));
 	else
 		return(NULL);
 }
+*/
 AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 	bool B_extended = (input_value == AST::intern("("));
 	if(B_extended)
 		consume();
 	AST::Node* parameter = consume();
 	if(dynamic_cast<AST::Symbol*>(parameter) == NULL) {
-		raise_error("<symbol>", parameter ? parameter->str() : std::string("<nothing>"));
+		raise_error("<symbol>", str(parameter));
 	}
 	if(B_extended)
 		consume(AST::intern(")"));
@@ -67,7 +71,7 @@ AST::Node* MathParser::parse_defrec(AST::Node* operand_1) {
 		consume();
 	AST::Node* parameter = consume();
 	if(dynamic_cast<AST::Symbol*>(parameter) == NULL) {
-		raise_error("<symbol>", parameter ? parameter->str() : std::string("<nothing>"));
+		raise_error("<symbol>", str(parameter));
 	}
 	if(B_extended)
 		consume(AST::intern(")"));
@@ -112,7 +116,7 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 }
 AST::Node* MathParser::parse_abstraction(void) {
 	if(dynamic_cast<AST::Symbol*>(input_value) == NULL) {
-		raise_error("<symbol>", input_value ? input_value->str() : "nothing");
+		raise_error("<symbol>", str(input_value));
 		return(NULL);
 	} else {
 		AST::Node* parameter = consume();
@@ -140,7 +144,7 @@ AST::Node* MathParser::parse_value(void) {
 			else
 				result = parse_expression();
 			if(opening_brace != intern("(") || input_value != intern(")")) {
-				raise_error(")", input_value ? input_value->str() : "<nothing>");
+				raise_error(")", str(input_value));
 				return(NULL);
 			}
 			consume(intern(")"));
@@ -154,13 +158,10 @@ AST::Node* MathParser::parse_value(void) {
 #endif
 			result = consume();
 		}
-		{
-			AST::Node* macro_result;
-			macro_result = maybe_parse_macro(result);
-			if(macro_result)
-				return(macro_result);
-		}
-		return(result);
+		if(B_process_macros && macro_operator_P(result))
+			return(parse_macro(result));
+		else
+			return(result);
 	}
 }
 AST::Node* MathParser::parse_binary_operation(int precedence_level) {
