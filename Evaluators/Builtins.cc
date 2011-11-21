@@ -120,6 +120,12 @@ REGISTER_STR(Curried##N, { \
 	return(sst.str()); \
 })
 
+static AST::Node* addrEqualsP(AST::Node* a, AST::Node* b) {
+	return(internNative(a == b));
+}
+
+IMPLEMENT_BINARY_BUILTIN(SymbolEqualityChecker, "symbolsEqual?", addrEqualsP)
+
 using namespace AST;
 
 IMPLEMENT_NUMERIC_BUILTIN(Adder, +)

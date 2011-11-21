@@ -73,6 +73,7 @@ DEFINE_SIMPLE_OPERATION(ListFromStringGetter, "listFromStr", (dynamic_cast<AST::
 DECLARE_BINARY_OPERATION(Adder, "+")
 DECLARE_BINARY_OPERATION(Subtractor, "-")
 DECLARE_BINARY_OPERATION(Multiplicator, "*")
+DECLARE_BINARY_OPERATION(SymbolEqualityChecker, "symbol=")
 DECLARE_BINARY_OPERATION(LEComparer, "<=")
 DEFINE_SIMPLE_OPERATION(Interner, "intern", (dynamic_cast<AST::Str*>(argument) ? internNative(((AST::Str*)argument)->text.c_str()) : FALLBACK));
 DEFINE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::keywordFromString(((AST::Str*)argument)->text.c_str()) : FALLBACK))
@@ -83,6 +84,29 @@ AST::Node* provide_dynamic_builtins(AST::Node* body);
 extern AST::Node* churchFalse;
 extern AST::Node* churchTrue;
 
+struct BaseSuperAwareOperation : AST::Operation {
+	virtual AST::Node* dummyOperation(void) = 0;
+};
+template<class T>
+struct SuperAwareOperation : BaseSuperAwareOperation { /* will be immediately executed, returns actualOperation but has mutable data which is the super. */
+	virtual bool eager_P(void) const {
+		return(false);
+	}
+	SuperAwareOperation(void) {
+	}
+	virtual AST::Node* dummyOperation(void) {
+		return(new T(NULL));
+	}
+	virtual AST::Node* execute(AST::Node* argument) {
+		AST::Operation* actualOperation = new T(argument);
+		return(actualOperation);
+	}
+};
+
+template<class T>
+static AST::Node* buildSuperAwareOperation(AST::Symbol* name) {
+	return(AST::makeApplication(AST::intern("reduce"), AST::makeApplication(new SuperAwareOperation<T>(), name)));
+}
 
 };
 
