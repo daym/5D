@@ -12,7 +12,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/AST"
 namespace Scanners {
 
-#undef SIMPLE_APPLICATION
+#define SIMPLE_APPLICATION
 
 /* DIY cons for no good reason. TODO change? */
 struct OperatorPrecedenceItem : AST::Node {
