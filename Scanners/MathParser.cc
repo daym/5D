@@ -37,7 +37,7 @@ AST::Node* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 	return(result);
 }
 bool macro_operator_P(AST::Node* operator_) {
-	return(operator_ == intern("define") || operator_ == intern("defrec") || operator_ == intern("'") || operator_ == intern("["));
+	return(operator_ == intern("define") || operator_ == intern("def") || operator_ == intern("defrec") || operator_ == intern("'") || operator_ == intern("["));
 }
 /*
 AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
@@ -63,7 +63,7 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 		raise_error("<define-body>", "<incomplete>");
 		return(NULL);
 	}
-	return(makeApplication(operand_1, makeAbstraction(parameter, body)));
+	return(makeApplication(AST::intern("define"), makeAbstraction(parameter, body)));
 }
 AST::Node* MathParser::parse_defrec(AST::Node* operand_1) {
 	bool B_extended = (input_value == AST::intern("("));
@@ -103,7 +103,9 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 	// TODO let|where, include, cond, make-list, quote, case.
 	if(operand_1 == intern("define"))
 		return(parse_define(operand_1));
-	if(operand_1 == intern("defrec"))
+	else if(operand_1 == intern("def"))
+		return(parse_define(operand_1));
+	else if(operand_1 == intern("defrec"))
 		return(parse_defrec(operand_1));
 	else if(operand_1 == intern("'"))
 		return(parse_quote(operand_1));
