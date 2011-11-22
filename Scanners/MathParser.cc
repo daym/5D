@@ -175,20 +175,20 @@ AST::Node* MathParser::parse_value(void) {
 			return(result);
 	}
 }
-AST::Node* MathParser::parse_binary_operation(int precedence_level) {
+AST::Node* MathParser::parse_binary_operation(bool B_allow_args, int precedence_level) {
 	struct AST::Symbol* associativity;
 	bool B_visible_operator, B_unary_operator = false;
 	//printf("level is %d, input is: %s\n", precedence_level, input_value->str().c_str());
 	if(operator_precedence_list->empty_P(precedence_level))
-		return(parse_application());
+		return(B_allow_args ? parse_application() : parse_value());
 	/* special case for unary - */
-	AST::Node* result = (precedence_level == MINUS_PRECEDENCE_LEVEL && input_value == intern("-")) ? (B_unary_operator = true, intern("0")) : parse_binary_operation(operator_precedence_list->next_precedence_level(precedence_level));
+	AST::Node* result = (precedence_level == MINUS_PRECEDENCE_LEVEL && input_value == intern("-")) ? (B_unary_operator = true, intern("0")) : parse_binary_operation(B_allow_args, operator_precedence_list->next_precedence_level(precedence_level));
 	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator)) {
 		while(actual_token) {
 			AST::Node* operator_ = B_visible_operator ? consume() : intern(" ");
 			if(input_value == intern(")")) // premature end.
 				return(B_unary_operator ? operator_ : makeApplication(operator_, result)); /* default to the binary operator */
-			AST::Node* b = parse_binary_operation(associativity != intern("right") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level);
+			AST::Node* b = parse_binary_operation(B_allow_args, associativity != intern("right") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level);
 			if(B_unary_operator && !b) // -nil
 				return(operator_);
 			result = operation(operator_, result, b);
@@ -203,13 +203,13 @@ AST::Node* MathParser::parse_binary_operation(int precedence_level) {
 }
 AST::Node* MathParser::parse_expression(void) {
 	if(operator_precedence_list)
-		return parse_binary_operation(operator_precedence_list->next_precedence_level(-1));
+		return parse_binary_operation(true, operator_precedence_list->next_precedence_level(-1));
 	else
 		return parse_application();
 }
 AST::Node* MathParser::parse_argument(void) {
 	assert(operator_precedence_list->apply_level != 0);
-	return parse_binary_operation(operator_precedence_list->apply_level);
+	return parse_binary_operation(false, operator_precedence_list->apply_level);
 }
 AST::Node* MathParser::parse(OperatorPrecedenceList* operator_precedence_list) {
 	this->operator_precedence_list = operator_precedence_list;
