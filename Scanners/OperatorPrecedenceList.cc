@@ -14,12 +14,8 @@ You should have received a copy of the GNU General Public License along with thi
 namespace Scanners {
 using namespace AST;
 
-std::string OperatorPrecedenceList::str(void) const {
-	return("FIXME");
-}
-std::string OperatorPrecedenceItem::str(void) const {
-	return("FIXME");
-}
+// TODO REGISTER_STR(OperatorPrecedenceList, return(...);)
+// TODO REGISTER_STR(OperatorPrecedenceItem, return(...);)
 int OperatorPrecedenceList::get_operator_precedence_and_associativity(AST::Symbol* symbol, AST::Symbol*& associativity_out) {
 	if(symbol != NULL)
 		for(int i = 0; i < MAX_PRECEDENCE_LEVELS; ++i) {

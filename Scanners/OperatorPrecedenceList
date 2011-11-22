@@ -19,7 +19,6 @@ struct OperatorPrecedenceItem : AST::Node {
 	struct OperatorPrecedenceItem* next;
 	struct AST::Symbol* operator_;
 	struct AST::Symbol* associativity;
-	virtual std::string str(void) const;
 	OperatorPrecedenceItem(struct OperatorPrecedenceItem* next, struct AST::Symbol* operator_, struct AST::Symbol* associativity) {
 		this->next = next;
 		this->operator_ = operator_;
@@ -33,7 +32,6 @@ struct OperatorPrecedenceList : AST::Node {
 	short prefix_usages[256];
 	struct OperatorPrecedenceItem* levels[MAX_PRECEDENCE_LEVELS];
 	OperatorPrecedenceList(bool bInitDefaults = true);
-	virtual std::string str(void) const;
 	int get_operator_precedence(AST::Symbol* symbol);
 	int get_operator_precedence_and_associativity(AST::Symbol* symbol, struct AST::Symbol*& associativity_out);
 	int empty_P(int precedence_level) {
