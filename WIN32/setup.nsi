@@ -110,7 +110,7 @@ Pop $1
 Pop $0
 
 ; Processing [HKEY_CLASSES_ROOT\5DEnvironmentFile\shell\open\command]
-WriteRegStr HKEY_CLASSES_ROOT "5DEnvironmentFile\shell\open\command" "" &apos;"$SYSDIR\javaw.exe" -jar "$INSTDIR\dist\jTibcoTraceNG.jar" "%1"&apos;
+WriteRegStr HKEY_CLASSES_ROOT "5DEnvironmentFile\shell\open\command" "" '"$INSTDIR\bin\5D.exe" "%1"'
 ; Processing [HKEY_CLASSES_ROOT\.5D]
 WriteRegStr HKEY_CLASSES_ROOT .5D "" 5DEnvironmentFile
 SectionEnd
