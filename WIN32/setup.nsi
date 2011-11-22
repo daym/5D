@@ -56,31 +56,22 @@ ShowUninstDetails show
 
 # Installer sections
 Section -Main SEC0000
-    SetOutPath $INSTDIR\externals
+    SetOutPath $INSTDIR\bin
     SetOverwrite on
-    File /r /x .svn /x *.zip /x ./externals/NSIS/ /x ./externals/nsisant/ externals\*
-    SetOutPath $INSTDIR\lib 
-    File /r /x .svn /x *.zip lib\*
+    File /r /x .svn /x *.zip /x ./externals/NSIS/ /x ./externals/nsisant/ 5D.exe
     SetOutPath $INSTDIR\doc
-    File /r /x .svn doc\*
-    SetOutPath $INSTDIR\dist
-    File dist\jTibcoTraceNG.jar
-    File dist\icon.ico
-    File dist\start.bat
-    File dist\start-debug.bat
+    File /r /x .svn ..\doc\*
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
     
     ;CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" $INSTDIR\dist\jTibcoTraceNG.jar "" "$INSTDIR\res\icon.ico" "" SW_SHOWMAXIMIZED "" "jTibcoTraceNG"
     SetOutPath $SMPROGRAMS\$StartMenuGroup
-    SetOutPath $INSTDIR\dist
-    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" "$INSTDIR\dist\jTibcoTraceNG.jar" "" "$INSTDIR\dist\icon.ico" "" SW_SHOWNORMAL "" "jTibcoTraceNG"
-    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name) - Debug Mode.lnk" "$INSTDIR\dist\start-debug.bat" "" "$INSTDIR\dist\icon.ico" "" SW_SHOWNORMAL "" "jTibcoTraceNG - Debug Mode"
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" "$INSTDIR\bin\5D.exe" "" "$INSTDIR\dist\icon.ico" "" SW_SHOWNORMAL "" "jTibcoTraceNG"
 
-    ; Processing [HKEY_CLASSES_ROOT\TibcoTraceFile]
+    ; Processing [HKEY_CLASSES_ROOT\5DEnvironmentFile]
 Push $0
 Push $1
 ;HKEY_CLASSES_ROOT = 0x80000000, REG_CREATE_SUBKEY = 0x0004
-System::Call /NOUNLOAD "Advapi32::RegCreateKeyExA(i, t, i, t, i, i, i, *i, i) i(0x80000000, &apos;TibcoTraceFile&apos;, 0, &apos;&apos;, 0, 0x0004, 0, .r0, 0) .r1"
+System::Call /NOUNLOAD "Advapi32::RegCreateKeyExA(i, t, i, t, i, i, i, *i, i) i(0x80000000, &apos;5DEnvironmentFile&apos;, 0, &apos;&apos;, 0, 0x0004, 0, .r0, 0) .r1"
 StrCmp $1 0 +2
 SetErrors
 StrCmp $0 0 +2
@@ -89,14 +80,14 @@ System::Free 0
 Pop $1
 Pop $0
 
-; Processing [HKEY_CLASSES_ROOT\TibcoTraceFile\DefaultIcon]
-WriteRegStr HKEY_CLASSES_ROOT TibcoTraceFile\DefaultIcon "" "$INSTDIR\dist\icon.ico"
+; Processing [HKEY_CLASSES_ROOT\5DEnvironmentFile\DefaultIcon]
+WriteRegStr HKEY_CLASSES_ROOT 5DEnvironmentFile\DefaultIcon "" "$INSTDIR\dist\icon.ico"
 
-; Processing [HKEY_CLASSES_ROOT\TibcoTraceFile\shell]
+; Processing [HKEY_CLASSES_ROOT\5DEnvironmentFile\shell]
 Push $0
 Push $1
 ;HKEY_CLASSES_ROOT = 0x80000000, REG_CREATE_SUBKEY = 0x0004
-System::Call /NOUNLOAD "Advapi32::RegCreateKeyExA(i, t, i, t, i, i, i, *i, i) i(0x80000000, &apos;TibcoTraceFile\shell&apos;, 0, &apos;&apos;, 0, 0x0004, 0, .r0, 0) .r1"
+System::Call /NOUNLOAD "Advapi32::RegCreateKeyExA(i, t, i, t, i, i, i, *i, i) i(0x80000000, &apos;5DEnvironmentFile\shell&apos;, 0, &apos;&apos;, 0, 0x0004, 0, .r0, 0) .r1"
 StrCmp $1 0 +2
 SetErrors
 StrCmp $0 0 +2
@@ -105,11 +96,11 @@ System::Free 0
 Pop $1
 Pop $0
 
-; Processing [HKEY_CLASSES_ROOT\TibcoTraceFile\shell\open]
+; Processing [HKEY_CLASSES_ROOT\5DEnvironmentFile\shell\open]
 Push $0
 Push $1
 ;HKEY_CLASSES_ROOT = 0x80000000, REG_CREATE_SUBKEY = 0x0004
-System::Call /NOUNLOAD "Advapi32::RegCreateKeyExA(i, t, i, t, i, i, i, *i, i) i(0x80000000, &apos;TibcoTraceFile\shell\open&apos;, 0, &apos;&apos;, 0, 0x0004, 0, .r0, 0) .r1"
+System::Call /NOUNLOAD "Advapi32::RegCreateKeyExA(i, t, i, t, i, i, i, *i, i) i(0x80000000, &apos;5DEnvironmentFile\shell\open&apos;, 0, &apos;&apos;, 0, 0x0004, 0, .r0, 0) .r1"
 StrCmp $1 0 +2
 SetErrors
 StrCmp $0 0 +2
@@ -118,10 +109,10 @@ System::Free 0
 Pop $1
 Pop $0
 
-; Processing [HKEY_CLASSES_ROOT\TibcoTraceFile\shell\open\command]
-WriteRegStr HKEY_CLASSES_ROOT "TibcoTraceFile\shell\open\command" "" &apos;"$SYSDIR\javaw.exe" -jar "$INSTDIR\dist\jTibcoTraceNG.jar" "%1"&apos;
-; Processing [HKEY_CLASSES_ROOT\.tibcotrace]
-WriteRegStr HKEY_CLASSES_ROOT .tibcotrace "" TibcoTraceFile
+; Processing [HKEY_CLASSES_ROOT\5DEnvironmentFile\shell\open\command]
+WriteRegStr HKEY_CLASSES_ROOT "5DEnvironmentFile\shell\open\command" "" &apos;"$SYSDIR\javaw.exe" -jar "$INSTDIR\dist\jTibcoTraceNG.jar" "%1"&apos;
+; Processing [HKEY_CLASSES_ROOT\.5D]
+WriteRegStr HKEY_CLASSES_ROOT .5D "" 5DEnvironmentFile
 SectionEnd
 
 Section -post SEC0001
@@ -164,10 +155,9 @@ SectionEnd
 
 Section -un.post UNSEC0001
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
-    DeleteRegKey HKCR TibcoTraceFile
-    DeleteRegKey HKCR .tibcotrace
+    DeleteRegKey HKCR 5DEnvironmentFile
+    DeleteRegKey HKCR .5D
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name) - Debug Mode.lnk.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk.lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
