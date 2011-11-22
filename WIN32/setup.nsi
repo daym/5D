@@ -58,13 +58,16 @@ ShowUninstDetails show
 Section -Main SEC0000
     SetOutPath $INSTDIR\bin
     SetOverwrite on
-    File /r /x .svn /x *.zip /x ./externals/NSIS/ /x ./externals/nsisant/ 5D.exe
+    File /x .svn /x *.zip /x ./externals/NSIS/ /x ./externals/nsisant/ 5D.exe
+    SetOutPath $INSTDIR\share
+    SetOverwrite on
+    File /x .svn /x *.zip /x ./externals/NSIS/ /x ./externals/nsisant/ 5D.ico
     SetOutPath $INSTDIR\doc
     File /r /x .svn ..\doc\*
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
     
     SetOutPath $SMPROGRAMS\$StartMenuGroup
-    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" "$INSTDIR\bin\5D.exe" "" "$INSTDIR\dist\icon.ico" "" SW_SHOWNORMAL "" "5D"
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" "$INSTDIR\bin\5D.exe" "" "$INSTDIR\share\5D.ico" "" SW_SHOWNORMAL "" "5D"
 
     ; Processing [HKEY_CLASSES_ROOT\5DEnvironmentFile]
 Push $0
@@ -80,7 +83,7 @@ Pop $1
 Pop $0
 
 ; Processing [HKEY_CLASSES_ROOT\5DEnvironmentFile\DefaultIcon]
-WriteRegStr HKEY_CLASSES_ROOT 5DEnvironmentFile\DefaultIcon "" "$INSTDIR\dist\icon.ico"
+WriteRegStr HKEY_CLASSES_ROOT 5DEnvironmentFile\DefaultIcon "" "$INSTDIR\share\5D.ico"
 
 ; Processing [HKEY_CLASSES_ROOT\5DEnvironmentFile\shell]
 Push $0
@@ -157,13 +160,17 @@ Section -un.post UNSEC0001
     DeleteRegKey HKCR 5DEnvironmentFile
     DeleteRegKey HKCR .5D
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
+    Delete /REBOOTOK $INSTDIR\bin\5D.exe
+    Delete /REBOOTOK $INSTDIR\share\5D.ico
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
     RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
+    RmDir /REBOOTOK $INSTDIR\share
+    RmDir /REBOOTOK $INSTDIR\bin
     RmDir /REBOOTOK $INSTDIR
     Push $R0
     StrCpy $R0 $StartMenuGroup 1
