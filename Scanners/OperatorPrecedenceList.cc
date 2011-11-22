@@ -90,7 +90,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(8, I("<"), N);
 		cons(8, I("<="), N);
 		cons(8, I(">"), N);
-		cons(8, I(">="), N); /*, intern("≤"), intern("≥")*/
+		cons(8, I(">="), N);
 		cons(8, I("≤"), N);
 		cons(8, I("≥"), N);
 		cons(7, I("&&"), L);
