@@ -15,7 +15,7 @@ Name 5D
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER JTibcoTraceNG
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER 5D
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall-colorful.ico"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
@@ -40,7 +40,7 @@ Var StartMenuGroup
 
 # Installer attributes
 OutFile setup.exe
-InstallDir $PROGRAMFILES\JTibcoTraceNG
+InstallDir $PROGRAMFILES\5D
 CRCCheck on
 XPStyle on
 ShowInstDetails show
@@ -63,9 +63,8 @@ Section -Main SEC0000
     File /r /x .svn ..\doc\*
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
     
-    ;CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" $INSTDIR\dist\jTibcoTraceNG.jar "" "$INSTDIR\res\icon.ico" "" SW_SHOWMAXIMIZED "" "jTibcoTraceNG"
     SetOutPath $SMPROGRAMS\$StartMenuGroup
-    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" "$INSTDIR\bin\5D.exe" "" "$INSTDIR\dist\icon.ico" "" SW_SHOWNORMAL "" "jTibcoTraceNG"
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" "$INSTDIR\bin\5D.exe" "" "$INSTDIR\dist\icon.ico" "" SW_SHOWNORMAL "" "5D"
 
     ; Processing [HKEY_CLASSES_ROOT\5DEnvironmentFile]
 Push $0
