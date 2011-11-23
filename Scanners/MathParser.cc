@@ -52,8 +52,9 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 	if(B_extended)
 		consume();
 	AST::Node* parameter = consume();
-	if(dynamic_cast<AST::Symbol*>(parameter) == NULL) {
-		raise_error("<symbol>", str(parameter));
+	if(dynamic_cast<AST::Symbol*>(parameter) == NULL) { /* probably an abstraction directly - not recommended, but... */
+		return(makeApplication(AST::intern("define"), parse_abstraction()));
+		//raise_error("<symbol>", str(parameter));
 	}
 	if(B_extended)
 		consume(AST::intern(")"));
