@@ -51,11 +51,19 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 	bool B_extended = (input_value == AST::intern("("));
 	if(B_extended)
 		consume();
-	AST::Node* parameter = consume();
-	if(dynamic_cast<AST::Symbol*>(parameter) == NULL) { /* probably an abstraction directly - not recommended, but... */
-		return(makeApplication(AST::intern("define"), parse_abstraction()));
+	if(dynamic_cast<AST::Symbol*>(input_value) == NULL) {
+		raise_error("<symbol>", str(input_value));
+		return(NULL);
+	}
+	if(dynamic_cast<AST::Symbol*>(input_value) == AST::intern("\\")) { /* probably an abstraction directly - not recommended, but... */
+		consume();
+		AST::Node* abstraction = parse_abstraction();
+		if(B_extended)
+			consume(AST::intern(")"));
+		return(makeApplication(AST::intern("define"), abstraction));
 		//raise_error("<symbol>", str(parameter));
 	}
+	AST::Node* parameter = consume();
 	if(B_extended)
 		consume(AST::intern(")"));
 	//AST::Node* parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
