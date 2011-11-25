@@ -105,7 +105,7 @@ X Integer::convertToUnsignedPrimitive() const {
 		throw "Integer::to<Primitive>: "
 			"Cannot convert a negative integer to an unsigned type";
 	else
-		return convertBigUnsignedToPrimitiveAccess<X>(mag);
+		return mag.convertToPrimitive<X>(); // convertBigUnsignedToPrimitiveAccess<X>(mag);
 }
 
 /* Similar to BigUnsigned::convertToPrimitive, but split into two cases for
