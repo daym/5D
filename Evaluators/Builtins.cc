@@ -352,4 +352,14 @@ AST::Node* WorldRunner::execute(AST::Node* argument) {
 	return(reduce(AST::makeApplication(argument, Numbers::internNative((Numbers::NativeInt) 42))));
 }
 REGISTER_STR(WorldRunner, return("internalRunWorld2");)
+
+AST::Node* operator/(const Integer& a, const Integer& b) {
+	if (b.isZero()) throw Evaluators::EvaluationException("Integer::operator /: division by zero");
+	Integer q, r;
+	r = a;
+	r.divideWithRemainder(b, q);
+	// FIXME
+	return new Integer(q);
+}
+
 }; /* end namespace Evaluators */

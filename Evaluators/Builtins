@@ -34,7 +34,9 @@ static StrRegistration##typ fStrRegistration##typ;
 #include "AST/Symbol"
 #include "Evaluators/Evaluators"
 
+
 namespace Evaluators {
+AST::Node* operator/(const Numbers::Integer& a, const Numbers::Integer& b);
 AST::Node* internNative(bool value);
 static inline AST::Node* internNative(AST::Node* n) {
 	return(n);

@@ -141,7 +141,7 @@ public:
 	Integer operator +(const Integer &x) const;
 	Integer operator -(const Integer &x) const;
 	Integer operator *(const Integer &x) const;
-	Integer operator /(const Integer &x) const;
+	//Integer operator /(const Integer &x) const;
 	Integer operator %(const Integer &x) const;
 	Integer operator -() const;
 
@@ -177,13 +177,6 @@ inline Integer Integer::operator *(const Integer &x) const {
 	Integer ans;
 	ans.multiply(*this, x);
 	return ans;
-}
-inline Integer Integer::operator /(const Integer &x) const {
-	if (x.isZero()) throw Evaluators::EvaluationException("Integer::operator /: division by zero");
-	Integer q, r;
-	r = *this;
-	r.divideWithRemainder(x, q);
-	return q;
 }
 inline Integer Integer::operator %(const Integer &x) const {
 	if (x.isZero()) throw Evaluators::EvaluationException("Integer::operator %: division by zero");
