@@ -45,6 +45,25 @@ int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node*
 void REPL_queue_scroll_down(REPL* self) {
         // TODO
 }
+
+int REPL_insert_into_output_buffer(struct REPL* self, int destination, const char* text) {
+	printf("%s\n", text);
+	return(destination);
+}
+Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self);
+
+static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destination) {
+	// TODO LATEX
+	int position = 0; // TODO use actual horizontal position at the destination.
+	std::stringstream buffer;
+	std::string v;
+	if(result)
+		Formatters::print_math_CXX(REPL_ensure_operator_precedence_list(self), buffer, position, result, 0, false);
+	else
+		buffer << "nil";
+	v = buffer.str();
+	REPL_insert_into_output_buffer(self, destination, v.c_str());
+}
         
 };
 
@@ -149,35 +168,6 @@ void REPL_append_to_output_buffer(struct REPL* self, char const* text) {
 	}
 }
 
-bool REPL_execute(struct REPL* self, AST::Node* input) {
-	bool B_ok = false;
-	try {
-		AST::Node* result = input;
-		if(!Evaluators::define_P(input)) {
-			result = REPL_close_environment(self, result);
-			result = Evaluators::provide_dynamic_builtins(result);
-			result = Evaluators::annotate(result);
-			result = Evaluators::reduce(result);
-		}
-		/*std::string v = result ? result->str() : "OK";
-		v = " => " + v + "\n";
-		gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
-		//if(result)
-		//	printf("%s\n", result->str().c_str());
-		Formatters::print_math(REPL_ensure_operator_precedence_list(self), stdout, 0, 0, result);
-		fprintf(stdout, "\n");
-		fflush(stdout);
-		/*REPL_enqueue_LATEX(self, result, destination);*/
-		REPL_add_to_environment(self, result);
-		B_ok = true;
-	} catch(Evaluators::EvaluationException e) {
-		std::string v = e.what() ? e.what() : "error";
-		v = " => " + v + "\n";
-		fprintf(stderr, "%s\n", v.c_str());
-		// FIXME gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
-	}
-	return(B_ok);
-}
 struct REPL* REPL_new(void) {
 	struct REPL* result;
 	result = new REPL; // (struct REPL*) calloc(1, sizeof(struct REPL));
@@ -233,7 +223,7 @@ void run(struct REPL* REPL, const char* text) {
 		result = parser.parse(operator_precedence_list);
 		parser.ensure_end();
 		fclose(input_file);
-		REPL_execute(REPL, result);
+		REPL_execute(REPL, result, 0);
 	} catch(Scanners::ParseException exception) {
 		AST::Node* err = Evaluators::makeError(exception.what());
 		std::string errStr = str(err);

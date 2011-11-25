@@ -507,7 +507,6 @@ static void REPL_handle_environment_row_activation(struct REPL* self, HWND list,
 		try {
 			AST::Node* getter = REPL_parse(self, commandStr.c_str(), -1);
 			//((cons (quote define)) ((cons (quote cons)) ((cons cons) nil)))
-			Evaluators::resetWorld();
 			B_ok = REPL_execute(self, getter, -1);
 		} catch(Scanners::ParseException& e) {
 			std::string v = e.what() ? e.what() : "error";

@@ -226,6 +226,7 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 	bool B_ok = false;
 	try {
 		AST::Node* result = input;
+		Evaluators::resetWorld();
 		if(!Evaluators::define_P(input)) {
 			result = REPL_close_environment(self, result);
 			result = Evaluators::provide_dynamic_builtins(result);
