@@ -755,7 +755,7 @@ static std::string strInteger(Integer* node) {
 	if (v.getSign() == Integer::negative)
 		sst << "-";
 	std::string result = sst.str();
-	//std::reverse(result.begin(), result.end());
+	std::reverse(result.begin(), result.end());
 	return(result);
 }
 REGISTER_STR(Integer, {
