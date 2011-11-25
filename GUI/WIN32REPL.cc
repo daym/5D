@@ -39,7 +39,7 @@ struct REPL {
 	AST::Node* fTailUserEnvironmentFrontier;
 	WNDPROC oldEditBoxProc;
 	struct Completer* fCompleter;
-	struct std::set<AST::Symbol*>* fEnvironmentKeys;
+	std::set<AST::Symbol*>* fEnvironmentKeys;
 	HMENU fEnvironmentMenu;
 };
 }; /* end namespace REPLX */
@@ -57,7 +57,7 @@ int REPL_insert_into_output_buffer(struct REPL* self, int destination, const cha
 
 static void ShowWIN32Diagnostics(void) {
 	LPVOID lpMsgBuf;
-	LPVOID lpDisplayBuf;
+	//LPVOID lpDisplayBuf;
 	DWORD dw = GetLastError(); 
 	if(FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL) > 0) {
 		MessageBoxW(NULL, (LPCWSTR)lpMsgBuf, _T("Error"), MB_OK);
@@ -202,8 +202,10 @@ static LPARAM GetListViewItemUserData(HWND control, int index) {
 	item.mask = LVIF_PARAM;
 	if(SendMessageW(control, LVM_GETITEM, 0, (LPARAM) &item))
 		return(item.lParam);
-	else
+	else {
 		abort();
+		return(0);
+	}
 }
 static void ClearListView(HWND control) {
 	ListView_DeleteAllItems(control);
@@ -629,7 +631,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		{
 			RECT clientRect;
 			RECT executeButtonRect;
-			RECT windowRect;
+			//RECT windowRect;
 			RECT outputRect;
 			RECT commandEntryRect;
 			RECT environmentRect;
