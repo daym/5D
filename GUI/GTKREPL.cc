@@ -246,34 +246,11 @@ static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePat
 		gtk_tree_model_get(model, &iter, 0, &command, -1);
 		if(!command)
 			return;
-		/*gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-		gtk_text_buffer_insert(self->fOutputBuffer, &end, "\ndefine ", -1);
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-		gtk_text_buffer_insert(self->fOutputBuffer, &end, command, -1);
-		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-		gtk_text_buffer_insert(self->fOutputBuffer, &end, " ", -1);*/
-		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-		/* TODO ensure newline */
-		escapedCommand = AST::intern(command)->str(); /* escaped */
-		g_free(command);
-		command = g_strdup_printf("(cons (quote define) (cons (quote %s) ((cons %s) nil)))", escapedCommand.c_str(), escapedCommand.c_str());
-		//command = g_strdup_printf("(cons (quote define) (cons (quote quote) ((cons quote) nil)))", escapedCommand.c_str(), escapedCommand.c_str());
-		// EXEC:                  ((cons (quote define)) ((cons (quote quote)) (cons (quote nil))))
-		/* TODO if an parse error happens here, it can happen that the actual text that was the culprit is nowhere to be found in the output buffer. Add it. */
-		try {
-			AST::Node* getter = REPL_parse(self, command, &end);
-			//((cons (quote define)) ((cons (quote cons)) ((cons cons) nil)))
-			gtk_text_buffer_insert(self->fOutputBuffer, &end, "\n", -1);
-			/* automatic gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end); */
-			B_ok = REPL_execute(self, getter, &end);
-		} catch(Scanners::ParseException& e) {
-			std::string v = e.what() ? e.what() : "error";
-			REPL_insert_error_message(self, &end, std::string("\n") + command, v);
-		} catch(Evaluators::EvaluationException& e) {
-			std::string v = e.what() ? e.what() : "error";
-			REPL_insert_error_message(self, &end, std::string("\n") + command, v);
-		}
-		g_free(command);
+		command = g_strdup_printf("#info %s", command); // FIXME make sure it's the right one
+		AST::Node* body = REPL_eval_info(self, command);
+		REPL_enqueue_LATEX(self, body, &end);
+		B_ok = true;
 	}
 	if(B_ok)
 		gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(self->fEnvironmentView));
