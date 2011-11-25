@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "Integer"
+#include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 
 namespace Evaluators {
@@ -24,7 +25,7 @@ Integer::Integer(const Blk *b, Index blen, Sign s) : mag(b, blen) {
 	switch (s) {
 	case zero:
 		if (!mag.isZero())
-			throw "Integer::Integer(const Blk *, Index, Sign): Cannot use a sign of zero with a nonzero magnitude";
+			throw EvaluationException("Integer::Integer(const Blk *, Index, Sign): Cannot use a sign of zero with a nonzero magnitude");
 		sign = zero;
 		break;
 	case positive:
@@ -35,7 +36,7 @@ Integer::Integer(const Blk *b, Index blen, Sign s) : mag(b, blen) {
 	default:
 		/* g++ seems to be optimizing out this case on the assumption
 		 * that the sign is a valid member of the enumeration.  Oh well. */
-		throw "Integer::Integer(const Blk *, Index, Sign): Invalid sign";
+		throw EvaluationException("Integer::Integer(const Blk *, Index, Sign): Invalid sign");
 	}
 }
 #endif
@@ -44,7 +45,7 @@ Integer::Integer(const BigUnsigned &x, Sign s) : mag(x) {
 	switch (s) {
 	case zero:
 		if (!mag.isZero())
-			throw "Integer::Integer(const BigUnsigned &, Sign): Cannot use a sign of zero with a nonzero magnitude";
+			throw EvaluationException("Integer::Integer(const BigUnsigned &, Sign): Cannot use a sign of zero with a nonzero magnitude");
 		sign = zero;
 		break;
 	case positive:
@@ -55,7 +56,7 @@ Integer::Integer(const BigUnsigned &x, Sign s) : mag(x) {
 	default:
 		/* g++ seems to be optimizing out this case on the assumption
 		 * that the sign is a valid member of the enumeration.  Oh well. */
-		throw "Integer::Integer(const BigUnsigned &, Sign): Invalid sign";
+		throw EvaluationException("Integer::Integer(const BigUnsigned &, Sign): Invalid sign");
 	}
 }
 
@@ -103,8 +104,8 @@ inline X convertBigUnsignedToPrimitiveAccess(const BigUnsigned &a) {
 template <class X>
 X Integer::convertToUnsignedPrimitive() const {
 	if (sign == negative)
-		throw "Integer::to<Primitive>: "
-			"Cannot convert a negative integer to an unsigned type";
+		throw EvaluationException("Integer::to<Primitive>: "
+			"Cannot convert a negative integer to an unsigned type");
 	else
 		return mag.convertToPrimitive<X>(); // convertBigUnsignedToPrimitiveAccess<X>(mag);
 }
@@ -131,8 +132,8 @@ X Integer::convertToSignedPrimitive() const {
 		}
 		// Otherwise fall through.
 	}
-	throw "Integer::to<Primitive>: "
-		"Value is too big to fit in the requested type";
+	throw EvaluationException("Integer::to<Primitive>: "
+		"Value is too big to fit in the requested type");
 }
 
 NativeInt Integer::toNativeInt() const {
@@ -167,7 +168,7 @@ Integer::CmpRes Integer::compareTo(const Integer &x) const {
 		// Compare the magnitudes, but return the opposite result
 		return CmpRes(-mag.compareTo(x.mag));
 	default:
-		throw "Integer internal error";
+		throw EvaluationException("Integer internal error");
 	}
 }
 
@@ -299,7 +300,7 @@ void Integer::divideWithRemainder(const Integer &b, Integer &q) {
 	// Defend against aliased calls;
 	// same idea as in BigUnsigned::divideWithRemainder .
 	if (this == &q)
-		throw "Integer::divideWithRemainder: Cannot write quotient and remainder into the same variable";
+		throw EvaluationException("Integer::divideWithRemainder: Cannot write quotient and remainder into the same variable");
 	if (this == &b || &q == &b) {
 		Integer tmpB(b);
 		divideWithRemainder(tmpB, q);

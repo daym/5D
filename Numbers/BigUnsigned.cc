@@ -1,4 +1,7 @@
+#include "Evaluators/Evaluators"
 #include "Numbers/BigUnsigned"
+
+using namespace Evaluators;
 
 // Memory management definitions have moved to the bottom of NumberlikeArray.hh.
 
@@ -186,8 +189,8 @@ void BigUnsigned::subtract(const BigUnsigned &a, const BigUnsigned &b) {
 		return;
 	} else if (a.size() < b.size())
 		// If a is shorter than b, the result is negative.
-		throw "BigUnsigned::subtract: "
-			"Negative result in unsigned calculation";
+		throw EvaluationException("BigUnsigned::subtract: "
+			"Negative result in unsigned calculation");
 	// Some variables...
 	bool borrowIn, borrowOut;
 	Blk temp;
@@ -219,7 +222,7 @@ void BigUnsigned::subtract(const BigUnsigned &a, const BigUnsigned &b) {
 	 * predictable state. */
 	if (borrowIn) {
 		clear();
-		throw "BigUnsigned::subtract: Negative result in unsigned calculation";
+		throw EvaluationException("BigUnsigned::subtract: Negative result in unsigned calculation");
 	} else
 		// Copy over the rest of the blocks
 		for (; i < a.size(); i++)
@@ -381,7 +384,7 @@ void BigUnsigned::divideWithRemainder(const BigUnsigned &b, BigUnsigned &q) {
 	 * It would be silly to try to write quotient and remainder to the
 	 * same variable.  Rule that out right away. */
 	if (this == &q)
-		throw "BigUnsigned::divideWithRemainder: Cannot write quotient and remainder into the same variable";
+		throw EvaluationException("BigUnsigned::divideWithRemainder: Cannot write quotient and remainder into the same variable");
 	/* Now *this and q are separate, so the only concern is that b might be
 	 * aliased to one of them.  If so, use a temporary copy of b. */
 	if (this == &b || &q == &b) {
@@ -589,8 +592,8 @@ void BigUnsigned::bitShiftLeft(const BigUnsigned &a, int b) {
 	DTRT_ALIASED(this == &a, bitShiftLeft(a, b));
 	if (b < 0) {
 		if (b << 1 == 0)
-			throw "BigUnsigned::bitShiftLeft: "
-				"Pathological shift amount not implemented";
+			throw EvaluationException("BigUnsigned::bitShiftLeft: "
+				"Pathological shift amount not implemented");
 		else {
 			bitShiftRight(a, -b);
 			return;
@@ -614,8 +617,8 @@ void BigUnsigned::bitShiftRight(const BigUnsigned &a, int b) {
 	DTRT_ALIASED(this == &a, bitShiftRight(a, b));
 	if (b < 0) {
 		if (b << 1 == 0)
-			throw "BigUnsigned::bitShiftRight: "
-				"Pathological shift amount not implemented";
+			throw EvaluationException("BigUnsigned::bitShiftRight: "
+				"Pathological shift amount not implemented");
 		else {
 			bitShiftLeft(a, -b);
 			return;
@@ -668,7 +671,7 @@ void BigUnsigned::operator ++(int) {
 // Prefix decrement
 void BigUnsigned::operator --() {
 	if (size() == 0)
-		throw "BigUnsigned::operator --(): Cannot decrement an unsigned zero";
+		throw EvaluationException("BigUnsigned::operator --(): Cannot decrement an unsigned zero");
 	Index i;
 	bool borrow = true;
 	for (i = 0; borrow; i++) {
