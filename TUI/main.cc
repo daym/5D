@@ -217,10 +217,19 @@ void run(struct REPL* REPL, const char* text) {
 	Scanners::MathParser parser;
 	FILE* input_file;
 	if(strncmp(text, "#info", strlen("#info")) == 0) {
-		const char* arg = text + strlen("#info");
+		char* arg = strdup(text + strlen("#info"));
+		size_t backOffset;
 		while(*arg && isspace(*arg))
 			++arg;
-		AST::Node* definition = REPL_get_definition_backwards(REPL, AST::intern(arg), 0/*FIXME*/);
+		char* x_space = strchr(arg, ' ');
+		if(x_space) {
+			*x_space = 0;
+			++x_space;
+			backOffset = (size_t) atoi(x_space);
+		} else {
+			backOffset = 0;
+		}
+		AST::Node* definition = REPL_get_definition_backwards(REPL, AST::intern(arg), backOffset);
 		REPL_enqueue_LATEX(REPL, definition, 0);
 		return;
 	}
