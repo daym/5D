@@ -116,6 +116,10 @@ AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
 	} else {
 		backOffset = 0;
 	}
+	if(arg[0] == '(')
+		++arg;
+	if(strlen(arg) > 0 && arg[strlen(arg) - 1] == ')')
+		arg[strlen(arg) - 1] = 0;
 	AST::Node* body = REPL_get_definition_backwards(self, AST::intern(arg), backOffset);
 	return(body);
 }
