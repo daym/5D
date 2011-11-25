@@ -15,7 +15,7 @@ namespace Numbers {
  * A Integer is just an aggregate of a BigUnsigned and a sign.  (It is no
  * longer derived from BigUnsigned because that led to harmful implicit
  * conversions.) */
-class Integer : AST::Node {
+class Integer : public AST::Node {
 
 public:
 	typedef BigUnsigned::Blk Blk;

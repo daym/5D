@@ -114,7 +114,7 @@ template <class X, class UX>
 X Integer::convertToSignedPrimitive() const {
 	if (sign == zero)
 		return 0;
-	else if (mag.getLength() == 1) {
+	else if (mag.size() == 1) {
 		// The single block might fit in an X.  Try the conversion.
 		Blk b = mag.getBlock(0);
 		if (sign == positive) {
@@ -710,12 +710,13 @@ AST::Node* IntP::execute(AST::Node* argument) {
         bool result = dynamic_cast<Int*>(argument) != NULL;
         return(Evaluators::internNative(result));
 }
+static Integer integer1(1);
 AST::Node* IntSucc::execute(AST::Node* argument) {
         Int* int1 = dynamic_cast<Int*>(argument);
         if(int1) {
                 NativeInt value = int1->value;
-                if(value + 1 < value) /* overflow */
-                        return(new Integer(value, 1)); /* FIXME bigger numbers */
+				if(value + 1 < value) /* overflow */
+                        return(operator+(Integer(value), integer1)); /* FIXME bigger numbers */
                 return(internNative(value + 1));
         } else
                 return(NULL);

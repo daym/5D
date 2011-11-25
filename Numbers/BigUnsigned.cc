@@ -23,21 +23,19 @@ short          BigUnsigned::toShort        () const { return convertToSignedPrim
 
 void BigUnsigned::setBlock(Index i, Blk newBlock) {
 	if (newBlock == 0) {
-		if (i < len) {
-			blk[i] = 0;
+		if (i < size()) {
+			(*this)[i] = 0;
 			zapLeadingZeros();
 		}
 		// If i >= len, no effect.
 	} else {
-		if (i >= len) {
+		if (i >= size()) {
 			// The nonzero block extends the number.
-			allocateAndCopy(i+1);
-			// Zero any added blocks that we aren't setting.
-			for (Index j = len; j < i; j++)
-				blk[j] = 0;
-			len = i+1;
+			for (Index j = size(); j < i+1; j++)
+				push_back(0);
+			//len = i+1;
 		}
-		blk[i] = newBlock;
+		(*this)[i] = newBlock;
 	}
 }
 
@@ -48,13 +46,13 @@ BigUnsigned::Index BigUnsigned::bitLength() const {
 	if (isZero())
 		return 0;
 	else {
-		Blk leftmostBlock = getBlock(len - 1);
+		Blk leftmostBlock = getBlock(size() - 1);
 		Index leftmostBlockLen = 0;
 		while (leftmostBlock != 0) {
 			leftmostBlock >>= 1;
 			leftmostBlockLen++;
 		}
-		return leftmostBlockLen + (len - 1) * N;
+		return leftmostBlockLen + (size() - 1) * N;
 	}
 }
 
@@ -68,18 +66,18 @@ void BigUnsigned::setBit(Index bi, bool newBit) {
 // COMPARISON
 BigUnsigned::CmpRes BigUnsigned::compareTo(const BigUnsigned &x) const {
 	// A bigger length implies a bigger number.
-	if (len < x.len)
+	if (size() < x.size())
 		return less;
-	else if (len > x.len)
+	else if (size() > x.size())
 		return greater;
 	else {
 		// Compare blocks one by one from left to right.
-		Index i = len;
+		Index i = size();
 		while (i > 0) {
 			i--;
-			if (blk[i] == x.blk[i])
+			if ((*this)[i] == x[i])
 				continue;
-			else if (blk[i] > x.blk[i])
+			else if ((*this)[i] > x[i])
 				return greater;
 			else
 				return less;
@@ -124,10 +122,10 @@ BigUnsigned::CmpRes BigUnsigned::compareTo(const BigUnsigned &x) const {
 void BigUnsigned::add(const BigUnsigned &a, const BigUnsigned &b) {
 	DTRT_ALIASED(this == &a || this == &b, add(a, b));
 	// If one argument is zero, copy the other.
-	if (a.len == 0) {
+	if (a.size() == 0) {
 		operator =(b);
 		return;
-	} else if (b.len == 0) {
+	} else if (b.size() == 0) {
 		operator =(a);
 		return;
 	}
@@ -138,7 +136,7 @@ void BigUnsigned::add(const BigUnsigned &a, const BigUnsigned &b) {
 	Index i;
 	// a2 points to the longer input, b2 points to the shorter
 	const BigUnsigned *a2, *b2;
-	if (a.len >= b.len) {
+	if (a.size() >= b.size()) {
 		a2 = &a;
 		b2 = &b;
 	} else {
@@ -146,48 +144,47 @@ void BigUnsigned::add(const BigUnsigned &a, const BigUnsigned &b) {
 		b2 = &a;
 	}
 	// Set prelimiary length and make room in this BigUnsigned
-	len = a2->len + 1;
-	allocate(len);
+	allocate(a2->size() + 1);
 	// For each block index that is present in both inputs...
-	for (i = 0, carryIn = false; i < b2->len; i++) {
+	for (i = 0, carryIn = false; i < b2->size(); i++) {
 		// Add input blocks
-		temp = a2->blk[i] + b2->blk[i];
+		temp = (*a2)[i] + (*b2)[i];
 		// If a rollover occurred, the result is less than either input.
 		// This test is used many times in the BigUnsigned code.
-		carryOut = (temp < a2->blk[i]);
+		carryOut = (temp < (*a2)[i]);
 		// If a carry was input, handle it
 		if (carryIn) {
 			temp++;
 			carryOut |= (temp == 0);
 		}
-		blk[i] = temp; // Save the addition result
+		(*this)[i] = temp; // Save the addition result
 		carryIn = carryOut; // Pass the carry along
 	}
 	// If there is a carry left over, increase blocks until
 	// one does not roll over.
-	for (; i < a2->len && carryIn; i++) {
-		temp = a2->blk[i] + 1;
+	for (; i < a2->size() && carryIn; i++) {
+		temp = (*a2)[i] + 1;
 		carryIn = (temp == 0);
-		blk[i] = temp;
+		(*this)[i] = temp;
 	}
 	// If the carry was resolved but the larger number
 	// still has blocks, copy them over.
-	for (; i < a2->len; i++)
-		blk[i] = a2->blk[i];
+	for (; i < a2->size(); i++)
+		(*this)[i] = (*a2)[i];
 	// Set the extra block if there's still a carry, decrease length otherwise
 	if (carryIn)
-		blk[i] = 1;
+		(*this)[i] = 1;
 	else
-		len--;
+		pop_back();
 }
 
 void BigUnsigned::subtract(const BigUnsigned &a, const BigUnsigned &b) {
 	DTRT_ALIASED(this == &a || this == &b, subtract(a, b));
-	if (b.len == 0) {
+	if (b.size() == 0) {
 		// If b is zero, copy a.
 		operator =(a);
 		return;
-	} else if (a.len < b.len)
+	} else if (a.size() < b.size())
 		// If a is shorter than b, the result is negative.
 		throw "BigUnsigned::subtract: "
 			"Negative result in unsigned calculation";
@@ -196,38 +193,37 @@ void BigUnsigned::subtract(const BigUnsigned &a, const BigUnsigned &b) {
 	Blk temp;
 	Index i;
 	// Set preliminary length and make room
-	len = a.len;
-	allocate(len);
+	allocate(a.size());
 	// For each block index that is present in both inputs...
-	for (i = 0, borrowIn = false; i < b.len; i++) {
-		temp = a.blk[i] - b.blk[i];
+	for (i = 0, borrowIn = false; i < b.size(); i++) {
+		temp = a[i] - b[i];
 		// If a reverse rollover occurred,
 		// the result is greater than the block from a.
-		borrowOut = (temp > a.blk[i]);
+		borrowOut = (temp > a[i]);
 		// Handle an incoming borrow
 		if (borrowIn) {
 			borrowOut |= (temp == 0);
 			temp--;
 		}
-		blk[i] = temp; // Save the subtraction result
+		(*this)[i] = temp; // Save the subtraction result
 		borrowIn = borrowOut; // Pass the borrow along
 	}
 	// If there is a borrow left over, decrease blocks until
 	// one does not reverse rollover.
-	for (; i < a.len && borrowIn; i++) {
-		borrowIn = (a.blk[i] == 0);
-		blk[i] = a.blk[i] - 1;
+	for (; i < a.size() && borrowIn; i++) {
+		borrowIn = (a[i] == 0);
+		(*this)[i] = a[i] - 1;
 	}
 	/* If there's still a borrow, the result is negative.
 	 * Throw an exception, but zero out this object so as to leave it in a
 	 * predictable state. */
 	if (borrowIn) {
-		len = 0;
+		clear();
 		throw "BigUnsigned::subtract: Negative result in unsigned calculation";
 	} else
 		// Copy over the rest of the blocks
-		for (; i < a.len; i++)
-			blk[i] = a.blk[i];
+		for (; i < a.size(); i++)
+			(*this)[i] = a[i];
 	// Zap leading zeros
 	zapLeadingZeros();
 }
@@ -292,16 +288,16 @@ void BigUnsigned::subtract(const BigUnsigned &a, const BigUnsigned &b) {
  */
 inline BigUnsigned::Blk getShiftedBlock(const BigUnsigned &num,
 	BigUnsigned::Index x, unsigned int y) {
-	BigUnsigned::Blk part1 = (x == 0 || y == 0) ? 0 : (num.blk[x - 1] >> (BigUnsigned::N - y));
-	BigUnsigned::Blk part2 = (x == num.len) ? 0 : (num.blk[x] << y);
+	BigUnsigned::Blk part1 = (x == 0 || y == 0) ? 0 : (num[x - 1] >> (BigUnsigned::N - y));
+	BigUnsigned::Blk part2 = (x == num.size()) ? 0 : (num[x] << y);
 	return part1 | part2;
 }
 
 void BigUnsigned::multiply(const BigUnsigned &a, const BigUnsigned &b) {
 	DTRT_ALIASED(this == &a || this == &b, multiply(a, b));
 	// If either a or b is zero, set to zero.
-	if (a.len == 0 || b.len == 0) {
-		len = 0;
+	if (a.size() == 0 || b.size() == 0) {
+		clear();
 		return;
 	}
 	/*
@@ -317,16 +313,15 @@ void BigUnsigned::multiply(const BigUnsigned &a, const BigUnsigned &b) {
 	Blk temp;
 	bool carryIn, carryOut;
 	// Set preliminary length and make room
-	len = a.len + b.len;
-	allocate(len);
+	allocate(a.size() + b.size());
 	// Zero out this object
-	for (i = 0; i < len; i++)
-		blk[i] = 0;
+	for (i = 0; i < size(); i++)
+		(*this)[i] = 0;
 	// For each block of the first number...
-	for (i = 0; i < a.len; i++) {
+	for (i = 0; i < a.size(); i++) {
 		// For each 1-bit of that block...
 		for (i2 = 0; i2 < N; i2++) {
-			if ((a.blk[i] & (Blk(1) << i2)) == 0)
+			if ((a[i] & (Blk(1) << i2)) == 0)
 				continue;
 			/*
 			 * Add b to this, shifted left i blocks and i2 bits.
@@ -341,31 +336,31 @@ void BigUnsigned::multiply(const BigUnsigned &a, const BigUnsigned &b) {
 			 * Instead, this loop runs an additional time with j == b.len.
 			 * These changes were made on 2005.01.11.
 			 */
-			for (j = 0, k = i, carryIn = false; j <= b.len; j++, k++) {
+			for (j = 0, k = i, carryIn = false; j <= b.size(); j++, k++) {
 				/*
 				 * The body of this loop is very similar to the body of the first loop
 				 * in `add', except that this loop does a `+=' instead of a `+'.
 				 */
-				temp = blk[k] + getShiftedBlock(b, j, i2);
-				carryOut = (temp < blk[k]);
+				temp = (*this)[k] + getShiftedBlock(b, j, i2);
+				carryOut = (temp < (*this)[k]);
 				if (carryIn) {
 					temp++;
 					carryOut |= (temp == 0);
 				}
-				blk[k] = temp;
+				(*this)[k] = temp;
 				carryIn = carryOut;
 			}
 			// No more extra iteration to deal with `bHigh'.
 			// Roll-over a carry as necessary.
 			for (; carryIn; k++) {
-				blk[k]++;
-				carryIn = (blk[k] == 0);
+				(*this)[k]++;
+				carryIn = ((*this)[k] == 0);
 			}
 		}
 	}
 	// Zap possible leading zero
-	if (blk[len - 1] == 0)
-		len--;
+	if (back() == 0)
+		pop_back();
 }
 
 /*
@@ -404,8 +399,8 @@ void BigUnsigned::divideWithRemainder(const BigUnsigned &b, BigUnsigned &q) {
 	 * that a mod 0 == a and the useful property that
 	 * (a / b) * b + (a % b) == a.
 	 */
-	if (b.len == 0) {
-		q.len = 0;
+	if (b.size() == 0) {
+		q.clear();
 		return;
 	}
 
@@ -413,8 +408,8 @@ void BigUnsigned::divideWithRemainder(const BigUnsigned &b, BigUnsigned &q) {
 	 * If *this.len < b.len, then *this < b, and we can be sure that b doesn't go into
 	 * *this at all.  The quotient is 0 and *this is already the remainder (so leave it alone).
 	 */
-	if (len < b.len) {
-		q.len = 0;
+	if (size() < b.size()) {
+		q.clear();
 		return;
 	}
 
@@ -456,30 +451,28 @@ void BigUnsigned::divideWithRemainder(const BigUnsigned &b, BigUnsigned &q) {
 	 * extra zero block ensures sensible behavior; we need
 	 * an extra block in `subtractBuf' for exactly the same reason.
 	 */
-	Index origLen = len; // Save real length.
+	Index origLen = size(); // Save real length.
 	/* To avoid an out-of-bounds access in case of reallocation, allocate
 	 * first and then increment the logical length. */
-	allocateAndCopy(len + 1);
-	len++;
-	blk[origLen] = 0; // Zero the added block.
+	push_back(0); // Zero the added block.
 
 	// subtractBuf holds part of the result of a subtraction; see above.
-	Blk *subtractBuf = new Blk[len];
+	Blk *subtractBuf = new Blk[size()];
 
 	// Set preliminary length for quotient and make room
-	q.len = origLen - b.len + 1;
-	q.allocate(q.len);
+	std::vector<Blk>::size_type qlen = origLen - b.size() + 1;
 	// Zero out the quotient
-	for (i = 0; i < q.len; i++)
-		q.blk[i] = 0;
+	q.clear();
+	for(i = 0; i < qlen; ++i)
+		q.push_back(0);
 
 	// For each possible left-shift of b in blocks...
-	i = q.len;
+	i = q.size();
 	while (i > 0) {
 		i--;
 		// For each possible left-shift of b in bits...
 		// (Remember, N is the number of bits in a Blk.)
-		q.blk[i] = 0;
+		q[i] = 0;
 		i2 = N;
 		while (i2 > 0) {
 			i2--;
@@ -491,9 +484,9 @@ void BigUnsigned::divideWithRemainder(const BigUnsigned &b, BigUnsigned &q) {
 			 * are in many ways analogous.  See especially the discussion
 			 * of `getShiftedBlock'.
 			 */
-			for (j = 0, k = i, borrowIn = false; j <= b.len; j++, k++) {
-				temp = blk[k] - getShiftedBlock(b, j, i2);
-				borrowOut = (temp > blk[k]);
+			for (j = 0, k = i, borrowIn = false; j <= b.size(); j++, k++) {
+				temp = (*this)[k] - getShiftedBlock(b, j, i2);
+				borrowOut = (temp > (*this)[k]);
 				if (borrowIn) {
 					borrowOut |= (temp == 0);
 					temp--;
@@ -505,8 +498,8 @@ void BigUnsigned::divideWithRemainder(const BigUnsigned &b, BigUnsigned &q) {
 			// No more extra iteration to deal with `bHigh'.
 			// Roll-over a borrow as necessary.
 			for (; k < origLen && borrowIn; k++) {
-				borrowIn = (blk[k] == 0);
-				subtractBuf[k] = blk[k] - 1;
+				borrowIn = ((*this)[k] == 0);
+				subtractBuf[k] = (*this)[k] - 1;
 			}
 			/*
 			 * If the subtraction was performed successfully (!borrowIn),
@@ -519,17 +512,17 @@ void BigUnsigned::divideWithRemainder(const BigUnsigned &b, BigUnsigned &q) {
 			 * the region of subtractBuf we copy is just [i, k).
 			 */
 			if (!borrowIn) {
-				q.blk[i] |= (Blk(1) << i2);
+				q[i] |= (Blk(1) << i2);
 				while (k > i) {
 					k--;
-					blk[k] = subtractBuf[k];
+					(*this)[k] = subtractBuf[k];
 				}
 			} 
 		}
 	}
 	// Zap possible leading zero in quotient
-	if (q.blk[q.len - 1] == 0)
-		q.len--;
+	if (q.back() == 0)
+		q.pop_back();
 	// Zap any/all leading zeros in remainder
 	zapLeadingZeros();
 	// Deallocate subtractBuf.
@@ -544,11 +537,11 @@ void BigUnsigned::divideWithRemainder(const BigUnsigned &b, BigUnsigned &q) {
 void BigUnsigned::bitAnd(const BigUnsigned &a, const BigUnsigned &b) {
 	DTRT_ALIASED(this == &a || this == &b, bitAnd(a, b));
 	// The bitwise & can't be longer than either operand.
-	len = (a.len >= b.len) ? b.len : a.len;
-	allocate(len);
+	std::vector<Blk>::size_type len = (a.size() >= b.size()) ? b.size() : a.size();
+	clear();
 	Index i;
 	for (i = 0; i < len; i++)
-		blk[i] = a.blk[i] & b.blk[i];
+		push_back(a[i] & b[i]);
 	zapLeadingZeros();
 }
 
@@ -556,19 +549,19 @@ void BigUnsigned::bitOr(const BigUnsigned &a, const BigUnsigned &b) {
 	DTRT_ALIASED(this == &a || this == &b, bitOr(a, b));
 	Index i;
 	const BigUnsigned *a2, *b2;
-	if (a.len >= b.len) {
+	if (a.size() >= b.size()) {
 		a2 = &a;
 		b2 = &b;
 	} else {
 		a2 = &b;
 		b2 = &a;
 	}
-	allocate(a2->len);
-	for (i = 0; i < b2->len; i++)
-		blk[i] = a2->blk[i] | b2->blk[i];
-	for (; i < a2->len; i++)
-		blk[i] = a2->blk[i];
-	len = a2->len;
+	clear();
+	for (i = 0; i < b2->size(); i++)
+		push_back((*a2)[i] | (*b2)[i]);
+	for (; i < a2->size(); i++)
+		push_back((*a2)[i]);
+	//len = a2->size();
 	// Doesn't need zapLeadingZeros.
 }
 
@@ -576,19 +569,19 @@ void BigUnsigned::bitXor(const BigUnsigned &a, const BigUnsigned &b) {
 	DTRT_ALIASED(this == &a || this == &b, bitXor(a, b));
 	Index i;
 	const BigUnsigned *a2, *b2;
-	if (a.len >= b.len) {
+	if (a.size() >= b.size()) {
 		a2 = &a;
 		b2 = &b;
 	} else {
 		a2 = &b;
 		b2 = &a;
 	}
-	allocate(a2->len);
-	for (i = 0; i < b2->len; i++)
-		blk[i] = a2->blk[i] ^ b2->blk[i];
-	for (; i < a2->len; i++)
-		blk[i] = a2->blk[i];
-	len = a2->len;
+	allocate(a2->size());
+	for (i = 0; i < b2->size(); i++)
+		(*this)[i] = (*a2)[i] ^ (*b2)[i];
+	for (; i < a2->size(); i++)
+		(*this)[i] = (*a2)[i];
+	// len = a2->size();
 	zapLeadingZeros();
 }
 
@@ -606,16 +599,15 @@ void BigUnsigned::bitShiftLeft(const BigUnsigned &a, int b) {
 	Index shiftBlocks = b / N;
 	unsigned int shiftBits = b % N;
 	// + 1: room for high bits nudged left into another block
-	len = a.len + shiftBlocks + 1;
-	allocate(len);
+	allocate(a.size() + shiftBlocks + 1);
 	Index i, j;
 	for (i = 0; i < shiftBlocks; i++)
-		blk[i] = 0;
-	for (j = 0, i = shiftBlocks; j <= a.len; j++, i++)
-		blk[i] = getShiftedBlock(a, j, shiftBits);
+		(*this)[i] = 0;
+	for (j = 0, i = shiftBlocks; j <= a.size(); j++, i++)
+		(*this)[i] = getShiftedBlock(a, j, shiftBits);
 	// Zap possible leading zero
-	if (blk[len - 1] == 0)
-		len--;
+	if ((*this)[size() - 1] == 0)
+		pop_back();
 }
 
 void BigUnsigned::bitShiftRight(const BigUnsigned &a, int b) {
@@ -635,22 +627,21 @@ void BigUnsigned::bitShiftRight(const BigUnsigned &a, int b) {
 	unsigned int leftShiftBits = N * rightShiftBlocks - b;
 	// Now (N * rightShiftBlocks - leftShiftBits) == b
 	// and 0 <= leftShiftBits < N.
-	if (rightShiftBlocks >= a.len + 1) {
+	if (rightShiftBlocks >= a.size() + 1) {
 		// All of a is guaranteed to be shifted off, even considering the left
 		// bit shift.
-		len = 0;
+		clear();
 		return;
 	}
 	// Now we're allocating a positive amount.
 	// + 1: room for high bits nudged left into another block
-	len = a.len + 1 - rightShiftBlocks;
-	allocate(len);
+	allocate(a.size() + 1 - rightShiftBlocks);
 	Index i, j;
-	for (j = rightShiftBlocks, i = 0; j <= a.len; j++, i++)
-		blk[i] = getShiftedBlock(a, j, leftShiftBits);
+	for (j = rightShiftBlocks, i = 0; j <= a.size(); j++, i++)
+		(*this)[i] = getShiftedBlock(a, j, leftShiftBits);
 	// Zap possible leading zero
-	if (blk[len - 1] == 0)
-		len--;
+	if (back() == 0)
+		pop_back();
 }
 
 // INCREMENT/DECREMENT OPERATORS
@@ -659,15 +650,13 @@ void BigUnsigned::bitShiftRight(const BigUnsigned &a, int b) {
 void BigUnsigned::operator ++() {
 	Index i;
 	bool carry = true;
-	for (i = 0; i < len && carry; i++) {
-		blk[i]++;
-		carry = (blk[i] == 0);
+	for (i = 0; i < size() && carry; i++) {
+		(*this)[i]++;
+		carry = ((*this)[i] == 0);
 	}
 	if (carry) {
 		// Allocate and then increase length, as in divideWithRemainder
-		allocateAndCopy(len + 1);
-		len++;
-		blk[i] = 1;
+		push_back(1);
 	}
 }
 
@@ -678,20 +667,26 @@ void BigUnsigned::operator ++(int) {
 
 // Prefix decrement
 void BigUnsigned::operator --() {
-	if (len == 0)
+	if (size() == 0)
 		throw "BigUnsigned::operator --(): Cannot decrement an unsigned zero";
 	Index i;
 	bool borrow = true;
 	for (i = 0; borrow; i++) {
-		borrow = (blk[i] == 0);
-		blk[i]--;
+		borrow = ((*this)[i] == 0);
+		--(*this)[i];
 	}
 	// Zap possible leading zero (there can only be one)
-	if (blk[len - 1] == 0)
-		len--;
+	if (back() == 0)
+		pop_back();
 }
 
 // Postfix decrement: same as prefix
 void BigUnsigned::operator --(int) {
 	operator --();
+}
+
+void BigUnsigned::allocate(std::vector<Blk>::size_type sz) {
+	clear();
+	for(std::vector<Blk>::size_type i = 0; i < sz; ++i)
+		push_back(0);
 }
