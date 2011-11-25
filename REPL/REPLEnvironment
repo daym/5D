@@ -160,6 +160,8 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::intern("int?"), Numbers::IntP);
 	REPL_add_static_builtin_binding(self, AST::intern("int0"), Numbers::internNative((Numbers::NativeInt) 0));
 	REPL_add_builtin_method(self, AST::intern("intSucc"), Numbers::IntSucc);
+	REPL_add_builtin_method(self, AST::intern("integer?"), Numbers::IntegerP);
+	REPL_add_builtin_method(self, AST::intern("integerSucc"), Numbers::IntegerSucc);
 	REPL_add_builtin_method(self, AST::intern("+"), Evaluators::Adder);
 	REPL_add_builtin_method(self, AST::intern("-"), Evaluators::Subtractor);
 	REPL_add_builtin_method(self, AST::intern("*"), Evaluators::Multiplicator);

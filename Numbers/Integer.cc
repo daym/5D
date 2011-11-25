@@ -1,7 +1,7 @@
 #include <algorithm>
-#include "Integer"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
+#include "Integer"
 
 namespace Evaluators {
 AST::Node* internNative(bool value);
@@ -717,22 +717,33 @@ bool operator<=(const Int& a, const Int& b) {
 /*AST::Node* operator<=(const Integer& a, const Integer& b) {
         return(Evaluators::internNative(a.compareTo(b) != Integer::greater));
 }*/
-AST::Node* IntP::execute(AST::Node* argument) {
-        bool result = dynamic_cast<Int*>(argument) != NULL;
-        return(Evaluators::internNative(result));
-}
-static Integer integer1(1);
+static Integer xinteger1(1);
 AST::Node* IntSucc::execute(AST::Node* argument) {
-        Int* int1 = dynamic_cast<Int*>(argument);
-        if(int1) {
-                NativeInt value = int1->value;
-				if(value + 1 < value) /* overflow */
-                        return new Integer(Integer(value) + integer1); /* FIXME bigger numbers */
-                return(internNative(value + 1));
-        } else
-                return(NULL);
+	Int* int1 = dynamic_cast<Int*>(argument);
+	if(int1) {
+		NativeInt value = int1->value;
+		if(value + 1 < value) /* overflow */
+			return new Integer(Integer(value) + xinteger1);
+		return(internNative(value + 1));
+	} else
+		return(NULL);
 }
-
+REGISTER_STR(IntSucc, return("intSucc");)
+AST::Node* IntegerSucc::execute(AST::Node* argument) {
+	Integer* integer1 = dynamic_cast<Integer*>(argument);
+	if(integer1) {
+		return(new Integer((*integer1) + xinteger1));
+	}
+	Int* int1 = dynamic_cast<Int*>(argument);
+	if(int1) {
+		NativeInt value = int1->value;
+		if(value + 1 < value) /* overflow */
+			return new Integer(Integer(value) + xinteger1);
+		return(internNative(value + 1));
+	} else
+		return(NULL);
+}
+REGISTER_STR(IntegerSucc, return("integerSucc");)
 REGISTER_STR(Int, {
         std::stringstream sst;
         sst << node->value;
