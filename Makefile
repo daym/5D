@@ -155,3 +155,9 @@ dist: all
 	for s in $(EXECUTABLES) ; do rm -f "$(DISTDIR)"/"$$s" ; done
 	tar zcf "$(DISTDIR).tar.gz" "$(DISTDIR)/"* 
 	rm -rf "$(DISTDIR)"
+
+install:
+	install -m 755 -d $(DESTDIR)/usr
+	install -m 755 -d $(DESTDIR)/usr/bin
+	install -m 755 TUI/TUI $(DESTDIR)/usr/bin/T5D
+	install -m 755 GUI/5D $(DESTDIR)/usr/bin/5D
