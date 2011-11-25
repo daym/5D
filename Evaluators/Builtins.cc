@@ -27,6 +27,25 @@ AST::Node* Int0::execute(AST::Node* argument) {
 	return(internNative(0)); /* i.e. integers[0] */
 }
 #endif
+static Integer integers[] = {
+	Integer(0),
+	Integer(1),
+	Integer(2),
+	Integer(3),
+	Integer(4),
+	Integer(5),
+	Integer(6),
+	Integer(7),
+	Integer(8),
+	Integer(9),
+	Integer(10),
+	Integer(11),
+	Integer(12),
+	Integer(13),
+	Integer(14),
+	Integer(15),
+	Integer(16),
+};
 static std::map<AST::Symbol*, AST::Node*> cachedDynamicBuiltins;
 static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 	const char* name;
@@ -44,7 +63,21 @@ static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 				return(NULL);
 		} else { /* maybe too big anyway */
 			if(value == LONG_MIN || value == LONG_MAX) {
-				return(symbol); // TODO allow to hook into this.
+				const char* nrString;
+				if(name[0] == '-') {
+					nrString = name + 1;
+				} else {
+					nrString = name;
+				}
+				Integer v;
+				for(; *nrString; ++nrString) {
+					char c = (*nrString);
+					if(c < '0' || c > '9')
+						return(symbol);
+					v = v * integers[10] + integers[c - '0'];
+				}
+				return(new Integer(v));
+				//return(symbol); // TODO allow to hook into this.
 			}
 		}
 		return(Numbers::internNative((NativeInt) value));

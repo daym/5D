@@ -688,23 +688,25 @@ AST::Node* operator*(const Int& a, const Int& b) {
 AST::Node* operator/(const Int& a, const Int& b) {
         return(internNative((float) a.value / (float) b.value)); /* FIXME */
 }
+/*
 Integer* operator+(const Integer& a, const Integer& b) {
-        return(NULL); /* FIXME */
+        return(NULL); // FIXME
 }
 Integer* operator-(const Integer& a, const Integer& b) {
-        return(NULL); /* FIXME */
+        return(NULL); // FIXME
 }
 Integer* operator*(const Integer& a, const Integer& b) {
-        return(NULL); /* FIXME */
+        return(NULL); // FIXME
 }
 Integer* operator/(const Integer& a, const Integer& b) {
-        return(NULL); /* FIXME */
+        return(NULL); // FIXME
 }
+*/
 AST::Node* operator<=(const Int& a, const Int& b) {
         return(Evaluators::internNative(a.value <= b.value));
 }
 AST::Node* operator<=(const Integer& a, const Integer& b) {
-        return(Evaluators::internNative(false)); /* FIXME */
+        return(Evaluators::internNative(a.compareTo(b) != Integer::greater));
 }
 AST::Node* IntP::execute(AST::Node* argument) {
         bool result = dynamic_cast<Int*>(argument) != NULL;
@@ -716,7 +718,7 @@ AST::Node* IntSucc::execute(AST::Node* argument) {
         if(int1) {
                 NativeInt value = int1->value;
 				if(value + 1 < value) /* overflow */
-                        return(operator+(Integer(value), integer1)); /* FIXME bigger numbers */
+                        return new Integer(Integer(value) + integer1); /* FIXME bigger numbers */
                 return(internNative(value + 1));
         } else
                 return(NULL);

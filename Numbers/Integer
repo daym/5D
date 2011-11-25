@@ -235,15 +235,16 @@ AST::Node* internNative(NativeInt value);
 DECLARE_SIMPLE_OPERATION(IntegerP, "integer?")
 DECLARE_SIMPLE_OPERATION(IntegerSucc, "integerSucc")
 
-/* XXX */
 AST::Node* operator+(const Int& a, const Int& b);
 AST::Node* operator-(const Int& a, const Int& b);
 AST::Node* operator*(const Int& a, const Int& b);
 AST::Node* operator/(const Int& a, const Int& b);
+/*
 Integer* operator+(const Integer& a, const Integer& b);
 Integer* operator-(const Integer& a, const Integer& b);
 Integer* operator*(const Integer& a, const Integer& b);
 Integer* operator/(const Integer& a, const Integer& b);
+*/
 AST::Node* operator<=(const Int& a, const Int& b);
 AST::Node* operator<=(const Integer& a, const Integer& b);
 
