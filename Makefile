@@ -15,7 +15,7 @@ LDFLAGS += -lreadline -ldl
 GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
 GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
 
-NUMBER_OBJECTS = Numbers/Integer.o Numbers/Real.o
+NUMBER_OBJECTS = Numbers/Integer.o Numbers/Real.o Numbers/BigUnsigned.o
 
 .SUFFIXES:            # Delete the default suffixes
 %.o: %.cc
@@ -37,7 +37,7 @@ Linear_Algebra/test-Tensor: Linear_Algebra/test-Tensor.o
 Scanners/test-Scanner: Scanners/test-Scanner.o Scanners/Scanner.o AST/Symbol.o AST/AST.o AST/Keyword.o
 	g++ -o $@ $^ $(CXXFLAGS)
 
-Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/MathParser.o Scanners/Scanner.o AST/Symbol.o AST/AST.o Scanners/OperatorPrecedenceList.o AST/Keyword.o Evaluators/Builtins.o Evaluators/Evaluators.o Numbers/Integer.o Numbers/Real.o
+Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/MathParser.o Scanners/Scanner.o AST/Symbol.o AST/AST.o Scanners/OperatorPrecedenceList.o AST/Keyword.o Evaluators/Builtins.o Evaluators/Evaluators.o Numbers/Integer.o Numbers/BigUnsigned.o Numbers/Real.o
 	g++ -o $@ $^ $(CXXFLAGS)
 	
 AST/test-AST: AST/test-AST.o
@@ -127,8 +127,9 @@ GUI/5D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/
 GUI/GTKTerminalEmulator.o: GUI/GTKTerminalEmulator.cc GUI/TerminalEmulator
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-Numbers/Integer.o: Numbers/Integer.cc Numbers/Integer Numbers/Small Evaluators/Builtins
+Numbers/Integer.o: Numbers/Integer.cc Numbers/Integer Numbers/Small Evaluators/Builtins Numbers/BigUnsigned
 Numbers/Real.o: Numbers/Real.cc Numbers/Real Numbers/Small Evaluators/Builtins
+Numbers/BigUnsigned.o: Numbers/BigUnsigned.cc Numbers/BigUnsigned
 
 clean:
 	rm -f Linear_Algebra/*.o

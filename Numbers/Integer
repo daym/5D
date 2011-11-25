@@ -7,6 +7,17 @@
 #include "Numbers/BigUnsigned"
 
 namespace Numbers {
+#ifdef __SIZEOF_LONG__
+#if __SIZEOF_LONG__ != __SIZEOF_INT__
+/* TODO only do this for 64 bits? */
+typedef long int NativeInt; /* register type */
+#else
+typedef long int NativeInt; /* register type */
+#endif
+#else
+typedef int NativeInt; /* register type */
+#endif
+
 
 /* A Integer object represents a signed integer of size limited only by
  * available memory.  BigUnsigneds support most mathematical operators and can
@@ -69,12 +80,13 @@ public:
 	/* Converters to primitive integer types
 	 * The implicit conversion operators caused trouble, so these are now
 	 * named. */
-	unsigned long  toUnsignedLong () const;
-	long           toLong         () const;
-	unsigned int   toUnsignedInt  () const;
-	int            toInt          () const;
-	unsigned short toUnsignedShort() const;
-	short          toShort        () const;
+	//unsigned long  toUnsignedLong () const;
+	//long           toLong         () const;
+	//unsigned int   toUnsignedInt  () const;
+	//int            toInt          () const;
+	//unsigned short toUnsignedShort() const;
+	//short          toShort        () const;
+	NativeInt        toNativeInt() const;
 protected:
 	// Helper
 	template <class X> X convertToUnsignedPrimitive() const;
@@ -217,16 +229,6 @@ inline void Integer::flipSign() {
 	sign = Sign(-sign);
 }
 
-#ifdef __SIZEOF_LONG__
-#if __SIZEOF_LONG__ != __SIZEOF_INT__
-/* TODO only do this for 64 bits? */
-typedef long int NativeInt; /* register type */
-#else
-typedef long int NativeInt; /* register type */
-#endif
-#else
-typedef int NativeInt; /* register type */
-#endif
 
 DECLARE_SMALL_VALUE(Int, Numbers::NativeInt)
 DECLARE_SIMPLE_OPERATION(IntP, "int?")

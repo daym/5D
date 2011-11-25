@@ -134,12 +134,16 @@ X Integer::convertToSignedPrimitive() const {
 		"Value is too big to fit in the requested type";
 }
 
-unsigned long  Integer::toUnsignedLong () const { return convertToUnsignedPrimitive<unsigned long >       (); }
-unsigned int   Integer::toUnsignedInt  () const { return convertToUnsignedPrimitive<unsigned int  >       (); }
-unsigned short Integer::toUnsignedShort() const { return convertToUnsignedPrimitive<unsigned short>       (); }
-long           Integer::toLong         () const { return convertToSignedPrimitive  <long , unsigned long> (); }
-int            Integer::toInt          () const { return convertToSignedPrimitive  <int  , unsigned int>  (); }
-short          Integer::toShort        () const { return convertToSignedPrimitive  <short, unsigned short>(); }
+NativeInt Integer::toNativeInt() const {
+	return convertToUnsignedPrimitive<NativeInt>();
+}
+
+//unsigned long  Integer::toUnsignedLong () const { return convertToUnsignedPrimitive<unsigned long >       (); }
+//unsigned int   Integer::toUnsignedInt  () const { return convertToUnsignedPrimitive<unsigned int  >       (); }
+//unsigned short Integer::toUnsignedShort() const { return convertToUnsignedPrimitive<unsigned short>       (); }
+//long           Integer::toLong         () const { return convertToSignedPrimitive  <long , unsigned long> (); }
+//int            Integer::toInt          () const { return convertToSignedPrimitive  <int  , unsigned int>  (); }
+//short          Integer::toShort        () const { return convertToSignedPrimitive  <short, unsigned short>(); }
 
 // COMPARISON
 Integer::CmpRes Integer::compareTo(const Integer &x) const {

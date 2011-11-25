@@ -66,3 +66,4 @@ div with negative args.
 arrays.
 string processing.
 catch bodyless lambda in math parser.
+degrade from Integer to int when possible.
