@@ -79,6 +79,7 @@ DECLARE_BINARY_OPERATION(LEComparer, "<=")
 DEFINE_SIMPLE_OPERATION(Interner, "intern", (dynamic_cast<AST::Str*>(argument) ? internNative(((AST::Str*)argument)->text.c_str()) : FALLBACK));
 DEFINE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::keywordFromString(((AST::Str*)argument)->text.c_str()) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(KeywordStr, "keywordStr", dynamic_cast<AST::Keyword*>(argument) ? (AST::Node*) AST::makeStr(((AST::Keyword*)argument)->name) : FALLBACK)
+DECLARE_SIMPLE_OPERATION(WorldRunner, "runWorld2")
 
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
 AST::Node* provide_dynamic_builtins(AST::Node* body);
@@ -108,6 +109,8 @@ template<class T>
 static AST::Node* buildSuperAwareOperation(AST::Symbol* name) {
 	return(AST::makeApplication(AST::intern("reduce"), AST::makeApplication(new SuperAwareOperation<T>(), name)));
 }
+
+void resetWorld(void);
 
 };
 

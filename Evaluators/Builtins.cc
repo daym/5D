@@ -204,5 +204,16 @@ std::string str(Node* node) {
 		return("<node>");
 }
 
-
+static bool bDidWorldRun = false;
+void resetWorld(void) {
+	bDidWorldRun = false;
+}
+AST::Node* WorldRunner::execute(AST::Node* argument) {
+	if(bDidWorldRun) {
+		fprintf(stderr, "warning: can only run world once.\n");
+	}
+	bDidWorldRun = true;
+	return(reduce(AST::makeApplication(argument, Numbers::internNative(42))));
+}
+REGISTER_STR(WorldRunner, return("runWorld2");)
 }; /* end namespace Evaluators */
