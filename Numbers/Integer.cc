@@ -738,7 +738,7 @@ REGISTER_STR(Int, {
         sst << node->value;
         return(sst.str());
 })
-REGISTER_STR(Integer, {
+static std::string strInteger(Integer* node) {
 	Integer& v = *node;
 	std::stringstream sst;
 	BigUnsigned q(v.getMagnitude());
@@ -758,6 +758,9 @@ REGISTER_STR(Integer, {
 	std::string result = "XY"; // sst.str();
 	//std::reverse(result.begin(), result.end());
 	return(result);
+}
+REGISTER_STR(Integer, {
+	return(strInteger(node));
 })
 
 }; /* namespace Numbers */

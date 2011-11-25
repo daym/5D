@@ -6,12 +6,12 @@
 #ifdef __SIZEOF_LONG__
 #if __SIZEOF_LONG__ != __SIZEOF_INT__
 /* TODO only do this for 64 bits? */
-typedef long int NativeUInt; /* register type */
+typedef unsigned long int NativeUInt; /* register type */
 #else
-typedef long int NativeUInt; /* register type */
+typedef unsigned long int NativeUInt; /* register type */
 #endif
 #else
-typedef int NativeUInt; /* register type */
+typedef unsigned int NativeUInt; /* register type */
 #endif
 
 /* A BigUnsigned object represents a nonnegative integer of size limited only by
