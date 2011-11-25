@@ -110,6 +110,13 @@ define f \x x⋅x
 define f \x x⋅x
 5 + (f 3)*2 =&gt; 23
 </pre>
+<h3>Reflection</h3>
+<p>Sometimes you want to know how a function was originally defined (as opposed to how it was actually implemented).</p>
+<p>Therefore, the REPL has a command to retrieve the original definition:</p>
+<pre>
+define f \x x*x
+#info f =&gt; \x x*x
+</pre>
 <h3>Conditionals</h3>
 <pre>
 define abs \x if (x ≥ 0)  (x)
