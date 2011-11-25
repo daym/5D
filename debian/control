@@ -10,6 +10,6 @@ Homepage: http://www.scratchpost.org/software/5D/
 
 Package: 5d
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libreadline5
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: 5D programming language
  5D is a functional programming language.

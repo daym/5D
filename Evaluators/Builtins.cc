@@ -350,5 +350,5 @@ AST::Node* WorldRunner::execute(AST::Node* argument) {
 	bDidWorldRun = true;
 	return(reduce(AST::makeApplication(argument, Numbers::internNative((Numbers::NativeInt) 42))));
 }
-REGISTER_STR(WorldRunner, return("runWorld2");)
+REGISTER_STR(WorldRunner, return("internalRunWorld2");)
 }; /* end namespace Evaluators */

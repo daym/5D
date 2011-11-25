@@ -80,7 +80,7 @@ DECLARE_BINARY_OPERATION(QModulator, "divmod")
 DEFINE_SIMPLE_OPERATION(Interner, "intern", (dynamic_cast<AST::Str*>(argument) ? internNative(((AST::Str*)argument)->text.c_str()) : FALLBACK));
 DEFINE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::keywordFromString(((AST::Str*)argument)->text.c_str()) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(KeywordStr, "keywordStr", dynamic_cast<AST::Keyword*>(argument) ? (AST::Node*) AST::makeStr(((AST::Keyword*)argument)->name) : FALLBACK)
-DECLARE_SIMPLE_OPERATION(WorldRunner, "runWorld2")
+DECLARE_SIMPLE_OPERATION(WorldRunner, "internalRunWorld")
 
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
 AST::Node* provide_dynamic_builtins(AST::Node* body);
