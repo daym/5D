@@ -228,7 +228,7 @@ static AST::Node* divmodInteger(const Numbers::Integer& a, const Numbers::Intege
 static AST::Node* divmodFloat(const Numbers::Float& a, const Numbers::Float& b) {
 	// FIXME
 	//return(divmodInt((NativeInt) a.value, (NativeInt) b.value));
-	return(makeOperation(AST::intern("divmod"), a, b));
+	return(makeOperation(AST::intern("divmod"), toHeap(a), toHeap(b)));
 }
 static AST::Node* divmod(AST::Node* a, AST::Node* b) {
 	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a); \
