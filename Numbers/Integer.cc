@@ -752,6 +752,8 @@ static std::string strInteger(Integer* node) {
 		NativeInt rf = r.convertToSignedPrimitive<NativeInt>();
 		sst << rf;
 	}
+	if(sst.str().empty())
+		sst << "0";
 	if (v.getSign() == Integer::negative)
 		sst << "-";
 	std::string result = sst.str();
