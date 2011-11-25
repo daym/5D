@@ -111,6 +111,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::intern("-"), Evaluators::Subtractor);
 	REPL_add_builtin_method(self, AST::intern("*"), Evaluators::Multiplicator);
 	REPL_add_builtin_method(self, AST::intern("/"), Evaluators::Divider);
+	REPL_add_builtin_method(self, AST::intern("divmod"), Evaluators::QModulator);
 	REPL_add_builtin_method(self, AST::intern("<="), Evaluators::LEComparer);
 	REPL_add_builtin_method(self, AST::intern("float?"), Numbers::FloatP);
 	REPL_add_builtin_method(self, AST::intern("str?"), Evaluators::StrP);

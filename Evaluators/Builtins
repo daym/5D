@@ -73,9 +73,10 @@ DEFINE_SIMPLE_OPERATION(ListFromStringGetter, "listFromStr", (dynamic_cast<AST::
 DECLARE_BINARY_OPERATION(Adder, "+")
 DECLARE_BINARY_OPERATION(Subtractor, "-")
 DECLARE_BINARY_OPERATION(Multiplicator, "*")
-DECLARE_BINARY_OPERATION(Divider, "*")
+DECLARE_BINARY_OPERATION(Divider, "/")
 DECLARE_BINARY_OPERATION(SymbolEqualityChecker, "symbol=")
 DECLARE_BINARY_OPERATION(LEComparer, "<=")
+DECLARE_BINARY_OPERATION(QModulator, "divmod")
 DEFINE_SIMPLE_OPERATION(Interner, "intern", (dynamic_cast<AST::Str*>(argument) ? internNative(((AST::Str*)argument)->text.c_str()) : FALLBACK));
 DEFINE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::keywordFromString(((AST::Str*)argument)->text.c_str()) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(KeywordStr, "keywordStr", dynamic_cast<AST::Keyword*>(argument) ? (AST::Node*) AST::makeStr(((AST::Keyword*)argument)->name) : FALLBACK)

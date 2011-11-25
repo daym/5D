@@ -214,11 +214,60 @@ IMPLEMENT_BINARY_BUILTIN(SymbolEqualityChecker, "symbolsEqual?", addrEqualsP)
 
 using namespace AST;
 
+static AST::Node* divmodInt(const Numbers::Int& a, const Numbers::Int& b) {
+	NativeInt q = a.value / b.value;
+	NativeInt r = a.value % b.value; // FIXME semantics for negative numbers.
+	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
+}
+static AST::Node* divmodInteger(const Numbers::Integer& a, const Numbers::Integer& b) {
+	Numbers::Integer r(a);
+	Numbers::Integer q;
+	r.divideWithRemainder(b, q);
+	return(AST::makeCons(toHeap(q), AST::makeCons(toHeap(r), NULL)));
+}
+static AST::Node* divmodFloat(const Numbers::Float& a, const Numbers::Float& b) {
+	// FIXME
+	return(divmodInt((NativeInt) a.value, (NativeInt) b.value));
+}
+static AST::Node* divmod(AST::Node* a, AST::Node* b) {
+	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a); \
+	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b); \
+	if(aInt && bInt) { \
+		return toHeap(divmodInt(*aInt, *bInt)); \
+	} else { \
+		Numbers::Integer* aInteger = dynamic_cast<Numbers::Integer*>(a);
+		Numbers::Integer* bInteger = dynamic_cast<Numbers::Integer*>(b);
+		if(aInteger && bInteger) {
+			return toHeap(divmodInteger((*aInteger), (*bInteger)));
+		} else {
+			if(aInteger && bInt)
+				return toHeap(divmodInteger((*aInteger), Integer(bInt->value)));
+			else if(aInt && bInteger)
+				return toHeap(divmodInteger(Integer(aInt->value), (*bInteger)));
+			Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
+			Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
+			if(aFloat && bFloat)
+				return toHeap(divmodFloat(*aFloat, *bFloat));
+			else if(aFloat && bInt) \
+				return toHeap(divmodFloat(*aFloat, promoteToFloat(*bInt)));
+			else if(aInt && bFloat) \
+				return toHeap(divmodFloat(promoteToFloat(*aInt), *bFloat));
+			else if(aFloat && bInteger) \
+				return toHeap(divmodFloat(*aFloat, promoteToFloat(*bInteger)));
+			else if(aInteger && bFloat) \
+				return toHeap(divmodFloat(promoteToFloat(*aInteger), *bFloat));
+		}
+	}
+	return(makeOperation(AST::intern("divmod"), a, b));
+
+}
+
 IMPLEMENT_NUMERIC_BUILTIN(Adder, +)
 IMPLEMENT_NUMERIC_BUILTIN(Subtractor, -)
 IMPLEMENT_NUMERIC_BUILTIN(Multiplicator, *)
 IMPLEMENT_NUMERIC_BUILTIN(Divider, /)
 IMPLEMENT_NUMERIC_BUILTIN(LEComparer, <=)
+IMPLEMENT_BINARY_BUILTIN(QModulator, "divmod", divmod)
 
 REGISTER_STR(Cons, {
 	std::stringstream result;
