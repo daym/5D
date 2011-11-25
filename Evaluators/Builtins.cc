@@ -210,7 +210,7 @@ static AST::Node* addrEqualsP(AST::Node* a, AST::Node* b) {
 	return(internNative(a == b));
 }
 
-IMPLEMENT_BINARY_BUILTIN(SymbolEqualityChecker, "symbolsEqual?", addrEqualsP)
+IMPLEMENT_BINARY_BUILTIN(SymbolEqualityChecker, symbolsEqual?, addrEqualsP)
 
 using namespace AST;
 
@@ -267,7 +267,7 @@ IMPLEMENT_NUMERIC_BUILTIN(Subtractor, -)
 IMPLEMENT_NUMERIC_BUILTIN(Multiplicator, *)
 IMPLEMENT_NUMERIC_BUILTIN(Divider, /)
 IMPLEMENT_NUMERIC_BUILTIN(LEComparer, <=)
-IMPLEMENT_BINARY_BUILTIN(QModulator, "divmod", divmod)
+IMPLEMENT_BINARY_BUILTIN(QModulator, divmod, divmod)
 
 REGISTER_STR(Cons, {
 	std::stringstream result;
