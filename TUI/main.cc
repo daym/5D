@@ -216,8 +216,8 @@ void run(struct REPL* REPL, const char* text) {
 	AST::Node* result;
 	Scanners::MathParser parser;
 	FILE* input_file;
-	if(strncmp(text, "#reflect", strlen("#reflect")) == 0) {
-		const char* arg = text + strlen("#reflect");
+	if(strncmp(text, "#info", strlen("#info")) == 0) {
+		const char* arg = text + strlen("#info");
 		while(*arg && isspace(*arg))
 			++arg;
 		AST::Node* definition = REPL_get_definition_backwards(REPL, AST::intern(arg), 0/*FIXME*/);
