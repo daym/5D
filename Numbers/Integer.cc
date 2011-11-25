@@ -750,12 +750,11 @@ static std::string strInteger(Integer* node) {
 		r = q;
 		r.divideWithRemainder(divisor, q);
 		NativeInt rf = r.convertToSignedPrimitive<NativeInt>();
-		sst << rf << 'X';
+		sst << rf;
 	}
 	if (v.getSign() == Integer::negative)
 		sst << "-";
-	sst << "XX";
-	std::string result = "XY"; // sst.str();
+	std::string result = sst.str();
 	//std::reverse(result.begin(), result.end());
 	return(result);
 }
