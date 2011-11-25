@@ -564,6 +564,13 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destina
 
 static void REPL_handle_execute(struct REPL* self, const char* text, int destination, bool B_from_entry) {
 	AST::Node* input;
+	if(info_P(text)) {
+		REPL_insert_into_output_buffer(self, destination, g_strdup_printf("\n%s", text));
+		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+		AST::Node* body = REPL_eval_info(self, text);
+		REPL_enqueue_LATEX(self, body, destination + strlen(text) + 1);
+		return;
+	}
 	try {
 		input = REPL_parse(self, text, destination);
 	} catch(Scanners::ParseException& e) {
