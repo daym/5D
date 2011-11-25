@@ -137,6 +137,9 @@ X Integer::convertToSignedPrimitive() const {
 NativeInt Integer::toNativeInt() const {
 	return convertToUnsignedPrimitive<NativeInt>();
 }
+NativeUInt Integer::toNativeUInt() const {
+	return convertToUnsignedPrimitive<NativeUInt>();
+}
 
 //unsigned long  Integer::toUnsignedLong () const { return convertToUnsignedPrimitive<unsigned long >       (); }
 //unsigned int   Integer::toUnsignedInt  () const { return convertToUnsignedPrimitive<unsigned int  >       (); }
