@@ -215,6 +215,7 @@ IMPLEMENT_BINARY_BUILTIN(SymbolEqualityChecker, symbolsEqual?, addrEqualsP)
 using namespace AST;
 
 static AST::Node* divmodInt(const Numbers::Int& a, const Numbers::Int& b) {
+	// FIXME handle division by zero
 	NativeInt q = a.value / b.value;
 	NativeInt r = a.value % b.value; // FIXME semantics for negative numbers.
 	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
