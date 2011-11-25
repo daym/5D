@@ -1,5 +1,6 @@
 #ifndef __REPL_REPLENVIRONMENT_H
 #define __REPL_REPLENVIRONMENT_H
+#include <deque>
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
 #include "Evaluators/Evaluators"
@@ -66,6 +67,24 @@ static void getEnvEntry(AST::Node* entry, AST::Node*& name, AST::Node*& body, AS
 	name = get_abstraction_parameter(abstraction);
 	next = get_abstraction_body(abstraction);
 	body = get_application_operand(entry);
+}
+AST::Node* REPL_get_definition_backwards(struct REPL* self, AST::Symbol* name, size_t backOffset) {
+	// envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL);
+	AST::Node* x_name;
+	AST::Node* x_body;
+	AST::Node* x_next;
+	std::deque<AST::Node*> matches;
+	for(AST::Node* entry = envEntryGetTail(self->fTailEnvironment); getEnvEntry(entry, x_name, x_body, x_next), true; entry = x_next) {
+		if(x_name == name) {
+			matches.push_front(x_body);
+		}
+		if(entry == self->fTailUserEnvironmentFrontier)
+			break;
+	}
+	if(backOffset >= 0 && backOffset < matches.size())
+		return(matches[backOffset]);
+	else
+		return(NULL);
 }
 //fTailEnvironment
 //fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */

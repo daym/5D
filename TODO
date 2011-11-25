@@ -32,7 +32,7 @@ define monadWorld \monad \world head (tail (monad world))
 
 define (;) \monad \consumer \world
 	if (stop? value) (stop:world2:nil)
-	                 (consumer (monadValue monad world) (monadWorld monad world))
+	                 (consumer (monadValue (monad world)) (monadWorld (monad world)))
 -- returns value2:world3:nil
 
 Y\parse\args

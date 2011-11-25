@@ -216,6 +216,14 @@ void run(struct REPL* REPL, const char* text) {
 	AST::Node* result;
 	Scanners::MathParser parser;
 	FILE* input_file;
+	if(strncmp(text, "#reflect", strlen("#reflect")) == 0) {
+		const char* arg = text + strlen("#reflect");
+		while(*arg && isspace(*arg))
+			++arg;
+		AST::Node* definition = REPL_get_definition_backwards(REPL, AST::intern(arg), 0/*FIXME*/);
+		REPL_enqueue_LATEX(REPL, definition, 0);
+		return;
+	}
 	try {
 		input_file = fmemopen((void*) text, strlen(text), "r");
 		parser.push(input_file, 0, false);
