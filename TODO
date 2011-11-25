@@ -68,4 +68,6 @@ string processing.
 catch bodyless lambda in math parser.
 degrade from Integer to int when possible.
 (/) a :: Integer -> b :: Integer -> Float
-MathParser: indentation for 'if, 'rec
+MathParser: indentation for 'if, 'rec, 'let
+pattern-match a:b:c:nil back to the [] macro.
+pattern-match env entry back to the let macro.
