@@ -161,6 +161,10 @@ AST::Node* Curried##N::execute(AST::Node* argument) { \
 		if(aInteger && bInteger) { \
 			return toHeap((*aInteger) op (*bInteger)); \
 		} else { \
+			if(aInteger && bInt) \
+				return toHeap((*aInteger) op Integer(bInt->value)); \
+			else if(aInt && bInteger) \
+				return toHeap(Integer(aInt->value) op (*bInteger)); \
 			Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a); \
 			Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b); \
 			if(aFloat && bFloat) \
