@@ -727,6 +727,8 @@ REGISTER_STR(Int, {
         sst << node->value;
         return(sst.str());
 })
-REGISTER_STR(Integer, return("FIXME");)
+REGISTER_STR(Integer, {
+        return("FIXME");
+})
 
 }; /* namespace Numbers */

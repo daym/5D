@@ -200,6 +200,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Numbers\BigUnsigned.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\Compilers\X86\BorlandFastCallGen.cc"
 				>
 			</File>
@@ -354,6 +358,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Numbers\BigUnsigned"
+				>
+			</File>
+			<File
 				RelativePath="..\Compilers\X86\BorlandFastCallGen"
 				>
 			</File>
@@ -374,11 +382,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\X86\CodeGen"
+				RelativePath="..\Compilers\CodeGen"
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\CodeGen"
+				RelativePath="..\Compilers\X86\CodeGen"
 				>
 			</File>
 			<File

@@ -276,6 +276,7 @@ AST::Node* MathParser::parse_simple(const char* text, OperatorPrecedenceList* op
 	} catch(ParseException& exception) {
 		fprintf(stderr, "could not parse \"%s\" because: %s\n", text, exception.what());
 		abort();
+		return(NULL);
 	}
 }
 void MathParser::parse_closing_brace(void) {
