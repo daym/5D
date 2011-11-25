@@ -1,10 +1,12 @@
 #include "Integer"
-
-namespace Numbers {
+#include "Evaluators/Builtins"
 
 namespace Evaluators {
 AST::Node* internNative(bool value);
 };
+
+namespace Numbers {
+using namespace Evaluators;
 
 void Integer::operator =(const Integer &x) {
 	// Calls like a = a have no effect
@@ -16,6 +18,7 @@ void Integer::operator =(const Integer &x) {
 	mag = x.mag;
 }
 
+#if 0
 Integer::Integer(const Blk *b, Index blen, Sign s) : mag(b, blen) {
 	switch (s) {
 	case zero:
@@ -34,6 +37,7 @@ Integer::Integer(const Blk *b, Index blen, Sign s) : mag(b, blen) {
 		throw "Integer::Integer(const Blk *, Index, Sign): Invalid sign";
 	}
 }
+#endif
 
 Integer::Integer(const BigUnsigned &x, Sign s) : mag(x) {
 	switch (s) {
