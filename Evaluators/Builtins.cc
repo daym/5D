@@ -213,7 +213,7 @@ AST::Node* WorldRunner::execute(AST::Node* argument) {
 		fprintf(stderr, "warning: can only run world once.\n");
 	}
 	bDidWorldRun = true;
-	return(reduce(AST::makeApplication(argument, Numbers::internNative(42))));
+	return(reduce(AST::makeApplication(argument, Numbers::internNative((Numbers::NativeInt) 42))));
 }
 REGISTER_STR(WorldRunner, return("runWorld2");)
 }; /* end namespace Evaluators */
