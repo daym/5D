@@ -86,6 +86,20 @@ AST::Node* REPL_get_definition_backwards(struct REPL* self, AST::Symbol* name, s
 	else
 		return(NULL);
 }
+AST::Node* REPL_get_definition(struct REPL* self, size_t offset) {
+	// envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL);
+	AST::Node* x_name;
+	AST::Node* x_body;
+	AST::Node* x_next;
+	std::deque<AST::Node*> matches;
+	for(AST::Node* entry = envEntryGetTail(self->fTailEnvironment); getEnvEntry(entry, x_name, x_body, x_next), true; entry = x_next, --offset) {
+		if(offset == 0)
+			return(x_body);
+		if(entry == self->fTailUserEnvironmentFrontier)
+			break;
+	}
+	return(NULL);
+}
 bool info_P(const char* text) {
 	return(strncmp(text, "#info", strlen("#info")) == 0);
 }

@@ -247,8 +247,7 @@ static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePat
 		if(!command)
 			return;
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-		command = g_strdup_printf("#info %s", command); // FIXME make sure it's the right one
-		AST::Node* body = REPL_eval_info(self, command);
+		AST::Node* body = REPL_get_definition(self, *gtk_tree_path_get_indices(path));
 		REPL_enqueue_LATEX(self, body, &end);
 		B_ok = true;
 	}
