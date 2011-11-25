@@ -358,8 +358,11 @@ AST::Node* operator/(const Integer& a, const Integer& b) {
 	Integer q, r;
 	r = a;
 	r.divideWithRemainder(b, q);
-	// FIXME
-	return new Integer(q);
+	if(r.isZero()) {
+		return new Integer(q);
+	} else { // float...
+		return toHeap(promoteToFloat(a) / promoteToFloat(b)); // FIXME faster?
+	}
 }
 
 }; /* end namespace Evaluators */
