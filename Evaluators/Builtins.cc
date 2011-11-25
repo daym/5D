@@ -110,6 +110,38 @@ AST::Node* provide_dynamic_builtins(AST::Node* body) {
 Float promoteToFloat(const Int& v) {
 	return(Float((NativeFloat) v.value));
 }
+Float promoteToFloat(const Integer& v) {
+	float result = 0.0f;
+	float sign = (v.getSign() != Integer::negative) ? 1.0f : (-1.0f);
+	BigUnsigned q(v.getMagnitude());
+	for(int i = 0; i < 10000; ++i) {
+		BigUnsigned r(10);
+		if(q.isZero())
+			break;
+		q.divideWithRemainder(r, q);
+		NativeInt rf = r.convertToSignedPrimitive<NativeInt>();
+		result = result * 10.0f + rf;
+	}
+	return(Float(result * sign));
+}
+static Integer* toHeap(const Integer& v) {
+	return(new Integer(v));
+}
+static AST::Node* toHeap(AST::Node* v) {
+	return(v);
+}
+static Int* toHeap(const Int& v) {
+	return(new Int(v));
+}
+static Float* toHeap(const Float& v) {
+	return(new Float(v));
+}
+static Real* toHeap(const Real& v) {
+	return(new Real(v));
+}
+static AST::Node* toHeap(bool v) {
+	return(internNative(v));
+}
 #define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
 AST::Node* N::execute(AST::Node* argument) { \
 	return(new Curried ## N(this, NULL/*FIXME*/, argument)); \
@@ -120,16 +152,26 @@ AST::Node* Curried##N::execute(AST::Node* argument) { \
 	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a); \
 	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b); \
 	if(aInt && bInt) { \
-		return(*aInt op *bInt); \
+		return toHeap(*aInt op *bInt); \
 	} else { \
-		Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a); \
-		Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b); \
-		if(aFloat && bFloat) \
-			return(*aFloat op *bFloat); \
-		else if(aFloat && bInt) \
-			return(*aFloat op promoteToFloat(*bInt)); \
-		else if(aInt && bFloat) \
-			return(promoteToFloat(*aInt) op *bFloat); \
+		Numbers::Integer* aInteger = dynamic_cast<Numbers::Integer*>(a); \
+		Numbers::Integer* bInteger = dynamic_cast<Numbers::Integer*>(b); \
+		if(aInteger && bInteger) { \
+			return toHeap((*aInteger) op (*bInteger)); \
+		} else { \
+			Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a); \
+			Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b); \
+			if(aFloat && bFloat) \
+				return toHeap(*aFloat op *bFloat); \
+			else if(aFloat && bInt) \
+				return toHeap(*aFloat op promoteToFloat(*bInt)); \
+			else if(aInt && bFloat) \
+				return toHeap(promoteToFloat(*aInt) op *bFloat); \
+			else if(aFloat && bInteger) \
+				return toHeap(*aFloat op promoteToFloat(*bInteger)); \
+			else if(aInteger && bFloat) \
+				return toHeap(promoteToFloat(*aInteger) op *bFloat); \
+		} \
 	} \
 	return(makeOperation(AST::intern(#op), a, b)); \
 } \

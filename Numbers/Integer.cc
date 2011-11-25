@@ -709,12 +709,12 @@ Integer* operator/(const Integer& a, const Integer& b) {
         return(NULL); // FIXME
 }
 */
-AST::Node* operator<=(const Int& a, const Int& b) {
-        return(Evaluators::internNative(a.value <= b.value));
+bool operator<=(const Int& a, const Int& b) {
+        return(a.value <= b.value);
 }
-AST::Node* operator<=(const Integer& a, const Integer& b) {
+/*AST::Node* operator<=(const Integer& a, const Integer& b) {
         return(Evaluators::internNative(a.compareTo(b) != Integer::greater));
-}
+}*/
 AST::Node* IntP::execute(AST::Node* argument) {
         bool result = dynamic_cast<Int*>(argument) != NULL;
         return(Evaluators::internNative(result));
