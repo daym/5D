@@ -114,11 +114,13 @@ Float promoteToFloat(const Integer& v) {
 	float result = 0.0f;
 	float sign = (v.getSign() != Integer::negative) ? 1.0f : (-1.0f);
 	BigUnsigned q(v.getMagnitude());
+	BigUnsigned divisor(10);
 	for(int i = 0; i < 10000; ++i) {
-		BigUnsigned r(10);
 		if(q.isZero())
 			break;
-		q.divideWithRemainder(r, q);
+		BigUnsigned r;
+		r = q;
+		r.divideWithRemainder(divisor, q);
 		NativeInt rf = r.convertToSignedPrimitive<NativeInt>();
 		result = result * 10.0f + rf;
 	}
