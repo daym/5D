@@ -175,14 +175,14 @@ inline Integer Integer::operator *(const Integer &x) const {
 	return ans;
 }
 inline Integer Integer::operator /(const Integer &x) const {
-	if (x.isZero()) throw "Integer::operator /: division by zero";
+	if (x.isZero()) throw Evaluators::EvaluationException("Integer::operator /: division by zero");
 	Integer q, r;
 	r = *this;
 	r.divideWithRemainder(x, q);
 	return q;
 }
 inline Integer Integer::operator %(const Integer &x) const {
-	if (x.isZero()) throw "Integer::operator %: division by zero";
+	if (x.isZero()) throw Evaluators::EvaluationException("Integer::operator %: division by zero");
 	Integer q, r;
 	r = *this;
 	r.divideWithRemainder(x, q);
@@ -211,7 +211,7 @@ inline void Integer::operator *=(const Integer &x) {
 	multiply(*this, x);
 }
 inline void Integer::operator /=(const Integer &x) {
-	if (x.isZero()) throw "Integer::operator /=: division by zero";
+	if (x.isZero()) throw Evaluators::EvaluationException("Integer::operator /=: division by zero");
 	/* The following technique is slightly faster than copying *this first
 	 * when x is large. */
 	Integer q;
@@ -220,7 +220,7 @@ inline void Integer::operator /=(const Integer &x) {
 	*this = q;
 }
 inline void Integer::operator %=(const Integer &x) {
-	if (x.isZero()) throw "Integer::operator %=: division by zero";
+	if (x.isZero()) throw Evaluators::EvaluationException("Integer::operator %=: division by zero");
 	Integer q;
 	// Mods *this by x.  Don't care about quotient left in q.
 	divideWithRemainder(x, q);
