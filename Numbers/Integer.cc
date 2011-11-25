@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Integer"
 #include "Evaluators/Builtins"
 
@@ -737,7 +738,23 @@ REGISTER_STR(Int, {
         return(sst.str());
 })
 REGISTER_STR(Integer, {
-        return("FIXME");
+	Integer& v = *node;
+	std::stringstream sst;
+	BigUnsigned q(v.getMagnitude());
+	for(int i = 0; i < 10000; ++i) {
+		BigUnsigned r(10);
+		if(q.isZero())
+			break;
+		q.divideWithRemainder(r, q);
+		NativeInt rf = r.convertToSignedPrimitive<NativeInt>();
+		sst << rf << 'X';
+	}
+	if (v.getSign() == Integer::negative)
+		sst << "-";
+	sst << "XX";
+	std::string result = "XY"; // sst.str();
+	//std::reverse(result.begin(), result.end());
+	return(result);
 })
 
 }; /* namespace Numbers */
