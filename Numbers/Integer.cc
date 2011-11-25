@@ -741,11 +741,13 @@ REGISTER_STR(Integer, {
 	Integer& v = *node;
 	std::stringstream sst;
 	BigUnsigned q(v.getMagnitude());
+	BigUnsigned divisor(10);
+	BigUnsigned r;
 	for(int i = 0; i < 10000; ++i) {
-		BigUnsigned r(10);
 		if(q.isZero())
 			break;
-		q.divideWithRemainder(r, q);
+		r = q;
+		r.divideWithRemainder(divisor, q);
 		NativeInt rf = r.convertToSignedPrimitive<NativeInt>();
 		sst << rf << 'X';
 	}
