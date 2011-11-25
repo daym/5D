@@ -71,4 +71,3 @@ degrade from Integer to int when possible.
 MathParser: indentation for 'if, 'rec, 'let
 pattern-match a:b:c:nil back to the [] macro.
 pattern-match env entry back to the let macro.
-division for Integer => Float.
