@@ -35,6 +35,7 @@ struct P : AST::BuiltinOperation { \
 	DECLARE_UNEAGER_OPERATION_BODY(P, N, ;)
 
 #define DEFINE_UNEAGER_OPERATION(P, N, B) \
-	DECLARE_UNEAGER_OPERATION_BODY(P, N, { return(B); })
+	DECLARE_UNEAGER_OPERATION_BODY(P, N, { return(B); }) \
+	REGISTER_STR(P, return(N);)
 
 #endif /* ndef __NUMBERS_SMALL_H */
