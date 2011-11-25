@@ -56,7 +56,6 @@ struct Completer* Completer_new(HWND entry, std::set<AST::Symbol*>* haystack) {
 static int GetTextCursorPositionCXX(HWND control) {
 	WPARAM beginning = 0;
 	LPARAM end = 0;
-	WCHAR buffer[20000];
 	SendMessage(control, EM_GETSEL, (WPARAM) &beginning, (LPARAM) &end);
 	return(end);
 }

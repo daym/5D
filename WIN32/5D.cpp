@@ -17,7 +17,7 @@ static TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 //static TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
 static BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
-   HWND hWnd;
+   //HWND hWnd;
    using namespace GUI;
 
    hInst = hInstance; // Store instance handle in our global variable
