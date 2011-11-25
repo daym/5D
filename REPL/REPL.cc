@@ -156,5 +156,6 @@ void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 	}
 }
 
+
 }; // end namespace GUI
 

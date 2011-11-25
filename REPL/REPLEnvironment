@@ -86,6 +86,26 @@ AST::Node* REPL_get_definition_backwards(struct REPL* self, AST::Symbol* name, s
 	else
 		return(NULL);
 }
+bool info_P(const char* text) {
+	return(strncmp(text, "#info", strlen("#info")) == 0);
+}
+AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
+	char* arg = strdup(text + strlen("#info"));
+	size_t backOffset;
+	while(*arg && isspace(*arg))
+		++arg;
+	char* x_space = strchr(arg, ' ');
+	if(x_space) {
+		*x_space = 0;
+		++x_space;
+		backOffset = (size_t) atoi(x_space);
+	} else {
+		backOffset = 0;
+	}
+	AST::Node* body = REPL_get_definition_backwards(self, AST::intern(arg), backOffset);
+	return(body);
+}
+
 //fTailEnvironment
 //fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */
 //fTailUserEnvironmentFrontier
