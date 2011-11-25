@@ -27,24 +27,24 @@ AST::Node* Int0::execute(AST::Node* argument) {
 	return(internNative(0)); /* i.e. integers[0] */
 }
 #endif
-static Integer integers[] = {
-	Integer(0),
-	Integer(1),
-	Integer(2),
-	Integer(3),
-	Integer(4),
-	Integer(5),
-	Integer(6),
-	Integer(7),
-	Integer(8),
-	Integer(9),
-	Integer(10),
-	Integer(11),
-	Integer(12),
-	Integer(13),
-	Integer(14),
-	Integer(15),
-	Integer(16),
+static BigUnsigned unsigneds[] = {
+	BigUnsigned(0),
+	BigUnsigned(1),
+	BigUnsigned(2),
+	BigUnsigned(3),
+	BigUnsigned(4),
+	BigUnsigned(5),
+	BigUnsigned(6),
+	BigUnsigned(7),
+	BigUnsigned(8),
+	BigUnsigned(9),
+	BigUnsigned(10),
+	BigUnsigned(11),
+	BigUnsigned(12),
+	BigUnsigned(13),
+	BigUnsigned(14),
+	BigUnsigned(15),
+	BigUnsigned(16),
 };
 static std::map<AST::Symbol*, AST::Node*> cachedDynamicBuiltins;
 static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
@@ -64,19 +64,24 @@ static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 		} else { /* maybe too big anyway */
 			if(value == LONG_MIN || value == LONG_MAX) {
 				const char* nrString;
+				bool B_negative = false;
 				if(name[0] == '-') {
 					nrString = name + 1;
+					B_negative = true;
 				} else {
 					nrString = name;
 				}
-				Integer v;
+				BigUnsigned v;
+				bool B_zero = true;
 				for(; *nrString; ++nrString) {
 					char c = (*nrString);
 					if(c < '0' || c > '9')
 						return(symbol);
-					v = v * integers[10] + integers[c - '0'];
+					if(c != '0')
+						B_zero = false;
+					v = v * unsigneds[10] + unsigneds[c - '0'];
 				}
-				return(new Integer(v));
+				return(new Integer(v, B_zero ? Integer::zero : B_negative ? Integer::negative : Integer::positive));
 				//return(symbol); // TODO allow to hook into this.
 			}
 		}
