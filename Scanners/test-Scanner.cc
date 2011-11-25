@@ -9,8 +9,12 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace Evaluators {
 
+struct StrRegistration;
+
 std::string str(AST::Node* node) {
-	return("mock");
+	return("none");
+}
+void registerStr(StrRegistration* r) {
 }
 
 };

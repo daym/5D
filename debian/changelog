@@ -1,3 +1,9 @@
+5d (0.0.3) unstable; urgency=low
+
+  * add support for (big) Integer
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Fri, 25 Nov 2011 18:55:29 +0100
+
 5d (0.0.2) unstable; urgency=low
 
   * Change config file format.
