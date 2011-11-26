@@ -6,7 +6,7 @@ list comprehensions in []
 = Builtin Types =
 
 numbers: 1. Int (done), 2. Integer (done), 3. Q, 4. Float (done), 5. arbitrary-precision fixed point
-equality (numbers, strings(?) and booleans (?) and symbols (?) and list (?))
+equality (numbers, strings(?) and booleans (?) and symbols (?) and lists (?)) and non-equality.
 Builtin ops: print braces?
 Builtin ops: power
 
