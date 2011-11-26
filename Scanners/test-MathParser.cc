@@ -13,6 +13,12 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/OperatorPrecedenceList"
 #include "Evaluators/Builtins"
 
+namespace GUI {
+bool interrupted_P(void) {
+	return(false);
+}
+};
+
 using namespace Evaluators;
 
 void test_expression(const char* source, const char* expected_tree) {
