@@ -54,7 +54,6 @@ struct Box : Node {
 
 Cons* makeCons(Node* head, Node* tail);
 Str* makeStr(const char* text);
-AST::Cons* follow_tail(AST::Cons* list);
 bool str_P(AST::Node* node);
 /*typedef Operation BuiltinOperation;*/
 struct BuiltinOperation : AST::Operation { /* FIXME make this string out the fallback, too */

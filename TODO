@@ -53,20 +53,17 @@ unary posfix operators like "!"?
 TUI: if trying to pass a path to a file that does not exist, it doesn't create it on exit. Should it?
 Builtin ops: print braces?
 Builtin ops: power
-implement division
 performance optimisation: use the lowest bit to signify pointers (1=it is one). This will have problems with native pointers maybe, so also override the native allocator.
 move str() to the actual language
 packages (namespaces)
 $! strict applicator
-get rid of follow_tail
 sorting: quick sort, merge sort.
 searching: binary search, bisect.
 trees: binary trees, tries, red black trees.
 div with negative args.
 arrays.
 string processing.
-catch bodyless lambda in math parser.
-degrade from Integer to int when possible.
+degrade from Integer to Int when possible.
 (/) a :: Integer -> b :: Integer -> Float
 MathParser: indentation for 'if, 'rec, 'let, ';, ':
 pattern-match a:b:c:nil back to the [] macro.
@@ -76,3 +73,4 @@ import xyz (a,b,c)
 import qualified ...
 import foo
 merge Str and Integer into one (for integer, the str() is reversed, though).
+There's max. 1 dot in a number, so stop if a second dot is encountered.
