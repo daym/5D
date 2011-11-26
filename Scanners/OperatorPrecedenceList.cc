@@ -101,11 +101,11 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(7, I("&&"), L);
 		cons(5, I("||"), L);
 		cons(4, I(","), L), // FIXME R
-		cons(3, I(";"), L);
-		//cons(3, I(">>"), L);
-		//cons(3, I(">>="), L);
-		//cons(2, I("$"), L);
-		cons(2, I("|"), L);
+		cons(3, I("|"), L);
+		//cons(?, I(">>"), L);
+		//cons(?, I(">>="), L);
+		//cons(?, I("$"), L);
+		cons(2, I(";"), L);
 		cons(1, I("=>"), L); // FIXME precedence.
 		cons(0, I("$"), R);
 	}
