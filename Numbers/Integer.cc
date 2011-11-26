@@ -686,13 +686,28 @@ AST::Node* internNative(NativeInt value) {
         return(new Int(value));
 }
 AST::Node* operator+(const Int& a, const Int& b) {
-        return(internNative(a.value + b.value)); /* FIXME */
+	NativeInt truncatedResult = a.value + b.value;
+	Integer result = Integer(a.value) + Integer(b.value);
+	if(result == truncatedResult) // TOOD speed up.
+	        return(internNative(truncatedResult));
+	else
+		return(new Integer(result));
 }
 AST::Node* operator-(const Int& a, const Int& b) {
-        return(internNative(a.value - b.value)); /* FIXME */
+	NativeInt truncatedResult = a.value - b.value;
+	Integer result = Integer(a.value) - Integer(b.value);
+	if(result == truncatedResult) // TODO speed up.
+	        return(internNative(truncatedResult));
+	else
+		return(new Integer(result));
 }
 AST::Node* operator*(const Int& a, const Int& b) {
-        return(internNative(a.value * b.value)); /* FIXME */
+	NativeInt truncatedResult = a.value * b.value;
+	Integer result = Integer(a.value) * Integer(b.value);
+	if(result == truncatedResult) // TODO speed up.
+	        return(internNative(truncatedResult));
+	else
+		return(new Integer(result));
 }
 AST::Node* operator/(const Int& a, const Int& b) {
         return(internNative((float) a.value / (float) b.value)); /* FIXME */
