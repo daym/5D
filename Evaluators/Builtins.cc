@@ -210,7 +210,7 @@ static AST::Node* addrEqualsP(AST::Node* a, AST::Node* b) {
 	return(internNative(a == b));
 }
 static AST::Node* addrLEP(AST::Node* a, AST::Node* b) {
-	return(internNative(a < b));
+	return(internNative(a <= b));
 }
 
 IMPLEMENT_BINARY_BUILTIN(SymbolEqualityChecker, symbolsEqual?, addrEqualsP)
