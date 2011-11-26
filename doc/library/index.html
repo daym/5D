@@ -292,6 +292,27 @@ tail (5:6:7:8:nil) =&gt; (6:7:8:nil)
 tail (8:nil) =&gt; nil
 </pre>
 <hr/>
+<h3>take \count \l</h3>
+<p>Result is a list with the first <span class="pre">count</span> elements of <span class="pre">l</span>.</p>
+<p>Example:</p>
+<pre>
+take 2 (5:6:7:8:nil) =&gt; (5:6:nil)
+take (-2) (5:6:7:8:nil) =&gt; nil
+</pre>
+<h3>drop \count \l</h3>
+<p>Result is a list with all elements of <span class="pre">l</span> except for the first <span class="pre">count</span>.</p>
+<p>Example:</p>
+<pre>
+drop 2 (5:6:7:8:nil) =&gt; (7:8:nil)
+drop (-2) (5:6:7:8:nil) =&gt; (5:6:7:8:nil)
+</pre>
+<h3>length \l</h3>
+<p>Result is the length of the list <span class="pre">l</span>. This is quite slow.</p>
+<p>Example:</p>
+<pre>
+drop 2 (5:6:7:8:nil) =&gt; (7:8:nil)
+drop (-2) (5:6:7:8:nil) =&gt; (5:6:7:8:nil)
+</pre>
 <h3>range \beginning \frontier \step</h3>
 <p>Result is a list of numbers.</p>
 <p>The list starts with <span class="pre">beginning</span> (inclusive), listing all the numbers until <span class="pre">frontier</span>, spaced <span class="pre">step</span> apart.</p>
