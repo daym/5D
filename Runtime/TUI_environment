@@ -1468,4 +1468,63 @@ define (=) rec \\eq \\a \\b if (cons? a || cons? b) (if (cons? a && cons? b) (eq
 [1 2 3]=[1 2] |toBool 
 [1 2 3] = [1 2 3] |toBool 
 [1 2 3] = [1 2] |toBool 
-") environment) ((\id ((\if ((\else ((\otherwise ((\|| ((\&& ((\not ((\implies? ((\equivalent? ((\Y ((\rec ((\| ((\compose ((\toBool ((\flip ((\< ((\> ((\>= ((\≤ ((\≥ ((\= ((\/= ((\abs ((\list? ((\rangeLL ((\range ((\range1 ((\foldr ((\foldl ((\map ((\filter ((\= ((\filter ((\rdivp ((\rdivp ((\rdivp ((\rdivp ((\rmodp ((\reverse ((\strInt ((\fac ((\zipWith ((\take ((\rdivp ((\rdivp ((\rdivp ((\monadValue ((\runWorld ((\monadLift ((\; ((\monadWorld ((\; ((\zip ((\% ((\lift ((\list? ((\div ((\mod ((\= ((\= ((\= ((\= nil) (rec (\eq (\a (\b (((if ((|| (cons? a)) (cons? b))) (((if ((&& (cons? a)) (cons? b))) ((&& ((eq (head a)) (head b))) ((eq (tail a)) (tail b)))) #f)) ((= a) b)))))))) (rec (\eq (\a (\b (((if ((|| (cons? a)) (cons? b))) (((if ((&& (cons? a)) (cons? b))) ((&& ((eq (head a)) (head b))) ((eq (tail a)) (tail b)))) #f)) ((= a) b)))))))) (\a (\b (((if ((&& (nil? a)) (nil? b))) #t) ((= a) b)))))) (\a (\b (((((if ((&& (symbol? a)) (symbol? b))) symbolsEqual?) =) a) b))))) (\a (\b ((| ((| ((divmod a) b)) tail)) head))))) (\a (\b ((| ((divmod a) b)) head))))) (\v ((|| (cons? v)) (nil? v))))) monadLift)) (\a (\b (head (tail ((divmod a) b))))))) (\l1 (\l2 (((zipWith (\x (\y ((: x) ((: y) nil))))) l1) l2))))) (\monad (\consumer (\world ((consumer (monadValue (monad world))) (monadWorld (monad world)))))))) (\monad (head (tail monad))))) (\monad (\consumer (\world ((consumer (monadValue (monad world))) (monadWorld (monad world)))))))) (\v (\world ((: v) ((: world) nil)))))) ((compose monadValue) internalRunWorld2))) (\m (head m)))) (\d (rec (\rdiv (\n (((if ((< ((- n) d)) 0)) 0) ((+ 1) (rdiv ((- n) d)))))))))) (\d (rec (\rdiv (\n ((((if ((< ((- n) d)) 0)) 0) else) ((+ 1) (rdiv ((- n) d)))))))))) (\d (rec (\rdiv (\n ((+ ((((if ((< ((- n) d)) 0)) 0) else) 1)) (rdiv ((- n) d))))))))) (\n (\list (((zipWith (\x (\y y))) ((range1 0) n)) list))))) (\f (rec (\zipWith (\l1 (\l2 (((if ((|| (nil? l1)) (nil? l2))) nil) ((: ((f (head l1)) (head l2))) ((zipWith (tail l1)) (tail l2))))))))))) (\v a))) (rec (\strInt (\v (((if ((= v) 0)) nil) ((: ((rmodp 10) v)) (strInt ((rdivp 10) v))))))))) (\list (((foldl (flip :)) nil) list)))) (\d (\n ((- n) ((* d) ((rdivp d) n))))))) (\d (rec (\rdivp (\n (((if ((< ((- n) d)) 0)) 0) ((+ 1) (rdivp ((- n) d)))))))))) (\d (rec (\rdivp (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d))))))))) (\d (rec (\rdivp (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d))))))))) (\d (rec (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d)))))))) (\f (rec (\filter (\list ((((if (nil? list)) nil) (((if (f (head list))) (: (head list))) id)) (filter (tail list))))))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) (\f (rec (\filter (\list ((((if (nil? list)) nil) (((if (f (head list))) (: (head list))) id)) (filter (tail list))))))))) (\f (\list (((foldr ((compose :) f)) nil) list))))) (\folder (rec (\foldl (\value (\list (((if (nil? list)) value) ((foldl ((folder value) (head list))) (tail list)))))))))) (\folder (\value (rec (\foldr (\list (((if (nil? list)) value) ((folder (head list)) (foldr (tail list))))))))))) (\beginning (\frontier (((rangeLL 1) frontier) beginning))))) (\beginning (\frontier (\step (((rangeLL step) frontier) beginning)))))) (\step (\frontier (rec (\rangeLL (\beginning (((if ((<= frontier) beginning)) nil) ((: beginning) (rangeLL ((+ beginning) step))))))))))) (\a ((|| (cons? a)) (nil? a))))) (\a (((if ((<= 0) a)) a) ((- 0) a))))) (\a (\b (not ((= a) b)))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) >=)) <=)) (\a (\b ((<= b) a))))) (flip <))) (\a (\b ((&& ((<= a) b)) (not ((<= b) a))))))) (\f (\a (\b ((f b) a)))))) (\v ((v (' t)) (' f))))) (\f (\g (\x (f (g x))))))) (\a (\b (b a))))) Y)) (\f ((\x (f (x x))) (\x (f (x x))))))) (\a (\b ((|| ((&& a) b)) ((&& (not a)) (not b))))))) (\a (\b ((|| (not a)) b))))) (\a (\t (\f ((a f) t)))))) (\a (\b (\t (\f ((a ((b t) f)) f))))))) (\a (\b (\t (\f ((a t) ((b t) f)))))))) id)) id)) id)) (\f f))) nil)
+1+5
+2<3
+2<3 |toBool 
+2+5
+listFromStr \"abc\" = listFromStr \"def\"
+listFromStr \"abc\" = listFromStr \"def\" |toBool 
+listFromStr \"abc\" = listFromStr \"abc\" |toBool 
+a=b
+a=a
+a=a
+b=b
+c=c
+a=a
+a=a |toBool 
+Y
+rec
+range
+symbol? 
+symbol? 'a
+not #t
+not #t |toBool 
+not #f |toBool 
+map (\\x x) 1
+map (\\x x) []
+map (\\x x) a
+#info map
+#info foldp
+#info foldr
+abs 5
+abs 5.2
+abs 5.2.3
+abs 5.2.obj
+abs 5.2
+take 2 [1 2 3 4 5]
+reverse [1 2 3]
+reverse [1 2 3 4]
+lines
+toBool 
+toBool toBool 
+toBool b
+take 2
+take 2 [1 2 3]
+take (-7) [1 2 3]
+drop
+#info take
+define drop rec \\drop \\count \\list if (count > 0) (drop (tail list)) list 
+drop 0 [1 2 3 4]
+drop 1 [1 2 3 4]
+define drop rec \\drop \\count \\list if (count > 0) (drop (count - 1) (tail list)) list 
+drop 1 [1 2 3 4]
+drop 2 [1 2 3 4]
+drop 3 [1 2 3 4]
+drop 4 [1 2 3 4]
+drop 5 [1 2 3 4]
+drop 6 [1 2 3 4]
+drop (-7) [1 2 3 4]
+define drop rec \\drop \\count \\list if (nil? list) [] (if (count > 0) (drop (count - 1) (tail list)) list)
+drop 5 [1 2 3]
+drop 6 [1 2 3]
+") environment) ((\id ((\if ((\else ((\otherwise ((\|| ((\&& ((\not ((\implies? ((\equivalent? ((\Y ((\rec ((\| ((\compose ((\toBool ((\flip ((\< ((\> ((\>= ((\≤ ((\≥ ((\= ((\/= ((\abs ((\list? ((\rangeLL ((\range ((\range1 ((\foldr ((\foldl ((\map ((\filter ((\= ((\filter ((\rdivp ((\rdivp ((\rdivp ((\rdivp ((\rmodp ((\reverse ((\strInt ((\fac ((\zipWith ((\take ((\rdivp ((\rdivp ((\rdivp ((\monadValue ((\runWorld ((\monadLift ((\; ((\monadWorld ((\; ((\zip ((\% ((\lift ((\list? ((\div ((\mod ((\= ((\= ((\= ((\= ((\drop ((\drop ((\drop nil) (rec (\drop (\count (\list (((if (nil? list)) nil) (((if ((> count) 0)) ((drop ((- count) 1)) (tail list))) list)))))))) (rec (\drop (\count (\list (((if ((> count) 0)) ((drop ((- count) 1)) (tail list))) list))))))) (rec (\drop (\count (\list (((if ((> count) 0)) (drop (tail list))) list))))))) (rec (\eq (\a (\b (((if ((|| (cons? a)) (cons? b))) (((if ((&& (cons? a)) (cons? b))) ((&& ((eq (head a)) (head b))) ((eq (tail a)) (tail b)))) #f)) ((= a) b)))))))) (rec (\eq (\a (\b (((if ((|| (cons? a)) (cons? b))) (((if ((&& (cons? a)) (cons? b))) ((&& ((eq (head a)) (head b))) ((eq (tail a)) (tail b)))) #f)) ((= a) b)))))))) (\a (\b (((if ((&& (nil? a)) (nil? b))) #t) ((= a) b)))))) (\a (\b (((((if ((&& (symbol? a)) (symbol? b))) symbolsEqual?) =) a) b))))) (\a (\b ((| ((| ((divmod a) b)) tail)) head))))) (\a (\b ((| ((divmod a) b)) head))))) (\v ((|| (cons? v)) (nil? v))))) monadLift)) (\a (\b (head (tail ((divmod a) b))))))) (\l1 (\l2 (((zipWith (\x (\y ((: x) ((: y) nil))))) l1) l2))))) (\monad (\consumer (\world ((consumer (monadValue (monad world))) (monadWorld (monad world)))))))) (\monad (head (tail monad))))) (\monad (\consumer (\world ((consumer (monadValue (monad world))) (monadWorld (monad world)))))))) (\v (\world ((: v) ((: world) nil)))))) ((compose monadValue) internalRunWorld2))) (\m (head m)))) (\d (rec (\rdiv (\n (((if ((< ((- n) d)) 0)) 0) ((+ 1) (rdiv ((- n) d)))))))))) (\d (rec (\rdiv (\n ((((if ((< ((- n) d)) 0)) 0) else) ((+ 1) (rdiv ((- n) d)))))))))) (\d (rec (\rdiv (\n ((+ ((((if ((< ((- n) d)) 0)) 0) else) 1)) (rdiv ((- n) d))))))))) (\n (\list (((zipWith (\x (\y y))) ((range1 0) n)) list))))) (\f (rec (\zipWith (\l1 (\l2 (((if ((|| (nil? l1)) (nil? l2))) nil) ((: ((f (head l1)) (head l2))) ((zipWith (tail l1)) (tail l2))))))))))) (\v a))) (rec (\strInt (\v (((if ((= v) 0)) nil) ((: ((rmodp 10) v)) (strInt ((rdivp 10) v))))))))) (\list (((foldl (flip :)) nil) list)))) (\d (\n ((- n) ((* d) ((rdivp d) n))))))) (\d (rec (\rdivp (\n (((if ((< ((- n) d)) 0)) 0) ((+ 1) (rdivp ((- n) d)))))))))) (\d (rec (\rdivp (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d))))))))) (\d (rec (\rdivp (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d))))))))) (\d (rec (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d)))))))) (\f (rec (\filter (\list ((((if (nil? list)) nil) (((if (f (head list))) (: (head list))) id)) (filter (tail list))))))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) (\f (rec (\filter (\list ((((if (nil? list)) nil) (((if (f (head list))) (: (head list))) id)) (filter (tail list))))))))) (\f (\list (((foldr ((compose :) f)) nil) list))))) (\folder (rec (\foldl (\value (\list (((if (nil? list)) value) ((foldl ((folder value) (head list))) (tail list)))))))))) (\folder (\value (rec (\foldr (\list (((if (nil? list)) value) ((folder (head list)) (foldr (tail list))))))))))) (\beginning (\frontier (((rangeLL 1) frontier) beginning))))) (\beginning (\frontier (\step (((rangeLL step) frontier) beginning)))))) (\step (\frontier (rec (\rangeLL (\beginning (((if ((<= frontier) beginning)) nil) ((: beginning) (rangeLL ((+ beginning) step))))))))))) (\a ((|| (cons? a)) (nil? a))))) (\a (((if ((<= 0) a)) a) ((- 0) a))))) (\a (\b (not ((= a) b)))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) >=)) <=)) (\a (\b ((<= b) a))))) (flip <))) (\a (\b ((&& ((<= a) b)) (not ((<= b) a))))))) (\f (\a (\b ((f b) a)))))) (\v ((v (' t)) (' f))))) (\f (\g (\x (f (g x))))))) (\a (\b (b a))))) Y)) (\f ((\x (f (x x))) (\x (f (x x))))))) (\a (\b ((|| ((&& a) b)) ((&& (not a)) (not b))))))) (\a (\b ((|| (not a)) b))))) (\a (\t (\f ((a f) t)))))) (\a (\b (\t (\f ((a ((b t) f)) f))))))) (\a (\b (\t (\f ((a t) ((b t) f)))))))) id)) id)) id)) (\f f))) nil)
