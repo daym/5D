@@ -175,7 +175,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::intern("float?"), Numbers::FloatP);
 	REPL_add_builtin_method(self, AST::intern("str?"), Evaluators::StrP);
 	REPL_add_builtin_method(self, AST::intern("symbol?"), Evaluators::SymbolP);
-	REPL_add_builtin_method(self, AST::intern("addrsLE?"), Evaluators::AddrLEChecker);
+	REPL_add_builtin_method(self, AST::intern("addrsLE?"), Evaluators::AddrLEComparer);
 	REPL_add_builtin_method(self, AST::intern("keyword?"), Evaluators::KeywordP);
 	REPL_add_builtin_method(self, AST::intern("translateFFI"), FFIs::ResultMarshaller);
 	REPL_add_builtin_method(self, AST::intern("intern"), Evaluators::Interner);
