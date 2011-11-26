@@ -180,7 +180,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::intern("symbolsEqual?"), Evaluators::SymbolEqualityChecker);
 	REPL_add_builtin_method(self, AST::intern("keyword?"), Evaluators::KeywordP);
 	REPL_add_builtin_method(self, AST::intern("translateFFI"), FFIs::ResultMarshaller);
-	REPL_add_builtin_method(self, AST::intern("intern"), Evaluators::Interner);
+	REPL_add_builtin_method(self, AST::intern("symbolFromStr"), Evaluators::Interner);
 	REPL_add_builtin_method(self, AST::intern("keywordFromStr"), Evaluators::KeywordFromStringGetter);
 	REPL_add_builtin_method(self, AST::intern("keywordStr"), Evaluators::KeywordStr);
 	REPL_add_builtin_method(self, AST::intern("listFromStr"), Evaluators::ListFromStringGetter);
