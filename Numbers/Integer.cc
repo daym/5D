@@ -741,7 +741,7 @@ AST::Node* IntSucc::execute(AST::Node* argument) {
 			return new Integer(Integer(value) + xinteger1);
 		return(internNative(value + 1));
 	} else
-		return(reduce(AST::makeApplication(fallback, argument)));
+		return(FALLBACK);
 }
 REGISTER_STR(IntSucc, return("intSucc");)
 AST::Node* IntegerSucc::execute(AST::Node* argument) {
@@ -756,7 +756,7 @@ AST::Node* IntegerSucc::execute(AST::Node* argument) {
 			return new Integer(Integer(value) + xinteger1);
 		return(internNative(value + 1));
 	} else
-		return(reduce(AST::makeApplication(fallback, argument)));
+		return(FALLBACK);
 }
 REGISTER_STR(IntegerSucc, return("integerSucc");)
 REGISTER_STR(Int, {
