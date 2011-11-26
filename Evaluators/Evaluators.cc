@@ -8,6 +8,10 @@
 #include "AST/AST"
 #include "Scanners/MathParser"
 
+namespace GUI {
+bool interrupted_P(void);
+};
+
 namespace Evaluators {
 using namespace AST;
 
@@ -190,7 +194,10 @@ int increaseGeneration(void) {
 		fGeneration = 0;
 	return(fGeneration);
 }
+
 AST::Node* reduce(AST::Node* term) {
+	if(GUI::interrupted_P())
+		throw EvaluationException("evaluation was interrupted");
 	if(recursionLevel > 1000) {
 		recursionLevel = 0;
 		throw EvaluationException("recursion was too deep");

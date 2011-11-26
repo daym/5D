@@ -12,6 +12,11 @@
 #include "Evaluators/Builtins"
 #include "REPL/REPL"
 
+namespace GUI {
+bool interrupted_P(void) {
+	return(false);
+}
+};
 namespace REPLX {
 using namespace Evaluators;
 
