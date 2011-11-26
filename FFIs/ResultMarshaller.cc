@@ -1,5 +1,6 @@
 #include "FFIs/ResultMarshaller"
 #include "FFIs/ArgumentMarshaller"
+#include "Evaluators/Builtins"
 
 namespace FFIs {
 
@@ -7,9 +8,6 @@ AST::Node* ResultMarshaller::executeLowlevel(AST::Node* argument) /* argument is
 {
 	return(new ArgumentMarshaller(dynamic_cast<AST::Symbol*>(argument)));
 }
-std::string ResultMarshaller::str(void) const {
-	// FIXME the argument
-	return("translateFFI");
-}
+REGISTER_STR(ResultMarshaller, return("translateFFI");)
 
 };
