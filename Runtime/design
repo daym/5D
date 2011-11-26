@@ -1,0 +1,66 @@
+
+= Basics =
+
+id
+if
+else
+flip
+rec
+otherwise
+compose
+toBool
+|
+
+= logical operations =
+
+&&
+||
+not
+implies?
+equivalent?
+
+= comparison operations =
+
+<
+=
+/=
+>
+>=
+≤
+<=
+≥
+
+= Arithmetic =
+
+%
+*
++
+-
+/
+div
+divmod
+mod
+
+= Monads =
+
+monadWorld
+lift
+monadLift
+;
+monadValue
+runWorld
+
+= Higher-Order Functionals =
+
+filter
+foldl
+foldr
+range
+take
+range1
+rangeLL
+zip
+zipWith
+map
+reverse
+
