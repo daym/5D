@@ -30,7 +30,8 @@ public:
 	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the name (symbol). Result is a CProcedure */
 };
 struct CProcedure : AST::Box {
-	CProcedure(void* native);
+	AST::Node* fRepr;
+	CProcedure(void* native, AST::Node* aRepr);
 };
 
 };

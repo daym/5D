@@ -39,8 +39,10 @@ AST::Node* LibraryLoader::execute(AST::Node* libraryName) {
 	if(iter != p->knownLibraries.end())
 		return(iter->second);
 	else {
-		p->knownLibraries[libraryNameSymbol] = new CLibrary(libraryNameSymbol->name);
-		return(p->knownLibraries[libraryNameSymbol]);
+		CLibrary* library = new CLibrary(libraryNameSymbol->name);
+		if(library->goodP())
+			p->knownLibraries[libraryNameSymbol] = library;
+		return(library);
 	}
 }
 struct CLibraryP {
@@ -71,20 +73,22 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 	if(iter != p->knownProcedures.end())
 		return(iter->second);
 	else {
-		FARPROC sym = GetProcAddress(p->library, nameSymbol->name);
-		if(!sym) {
+		AST::Node* fRepr = AST::makeApplication(AST::makeApplication(AST::intern("fromLibrary"), AST::makeStr(p->name.c_str())), AST::makeApplication(AST::intern("'"), nameSymbol));
+		FARPROC proc = GetProcAddress(p->library, nameSymbol->name);
+		if(!proc) {
 			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", nameSymbol->name, p->name.c_str());
 			return(NULL);
 		}
-		p->knownProcedures[nameSymbol] = new CProcedure((void*) sym);
+		p->knownProcedures[nameSymbol] = new CProcedure((void*) proc, fRepr);
 		return(p->knownProcedures[nameSymbol]);
 	}
 }
 REGISTER_STR(CLibrary, return(str(AST::makeApplication(AST::intern("fromLibrary"), internNative(node->p->name.c_str()))));)
-CProcedure::CProcedure(void* native) : 
-	AST::Box(native)
+CProcedure::CProcedure(void* native, AST::Node* aRepr) : 
+	AST::Box(native),
+	fRepr(aRepr)
 {
 }
-REGISTER_STR(CProcedure, return("<CProcedure>");) // FIXME nicer
+REGISTER_STR(CProcedure, return(str(node->fRepr);)
 
 };

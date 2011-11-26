@@ -43,8 +43,7 @@ AST::Node* LibraryLoader::execute(AST::Node* libraryName) {
 			p->knownLibraries[libraryNameSymbol] = library;
 			return(p->knownLibraries[libraryNameSymbol]);
 		} else {
-			// TODO delete instance?
-			return(NULL);
+			return(library); // junk
 		}
 	}
 }
@@ -76,20 +75,24 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 	if(iter != p->knownProcedures.end())
 		return(iter->second);
 	else {
-		void* sym = dlsym(p->library, nameSymbol->name);
-		if(!sym) {
+		void* proc = dlsym(p->library, nameSymbol->name);
+		AST::Node* fRepr = AST::makeApplication(AST::makeApplication(AST::intern("fromLibrary"), AST::makeStr(p->name.c_str())), AST::makeApplication(AST::intern("'"), nameSymbol));
+		if(!proc) {
 			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", nameSymbol->name, p->name.c_str());
-			return(NULL);
+			return(fRepr);
 		}
-		p->knownProcedures[nameSymbol] = new CProcedure(sym);
+		p->knownProcedures[nameSymbol] = new CProcedure(proc, fRepr);
 		return(p->knownProcedures[nameSymbol]);
 	}
 }
 REGISTER_STR(CLibrary, return(str(makeApplication(AST::intern("fromLibrary"), AST::makeStr(node->p->name.c_str()))));)
-CProcedure::CProcedure(void* native) : 
-	AST::Box(native)
+CProcedure::CProcedure(void* native, AST::Node* aRepr) : 
+	AST::Box(native),
+	fRepr(aRepr)
 {
 }
-REGISTER_STR(CProcedure, return("<CProcedure>");)
+REGISTER_STR(CProcedure, {
+	return(str(node->fRepr));
+})
 
 };
