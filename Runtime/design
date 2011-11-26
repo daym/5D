@@ -50,7 +50,7 @@ monadLift
 monadValue
 runWorld
 
-= Higher-Order Functionals =
+= List Functionals =
 
 filter
 foldl
@@ -64,4 +64,5 @@ zip
 zipWith
 map
 reverse
+length
 
