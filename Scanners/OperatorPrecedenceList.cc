@@ -46,8 +46,10 @@ void OperatorPrecedenceList::cons(int precedence_level, struct AST::Symbol* oper
 	}
 	++prefix_usages[(unsigned char) operator_->name[0]];
 	levels[precedence_level] = new OperatorPrecedenceItem(levels[precedence_level], operator_, associativity);
-	if(apply_level == 0 && operator_ == intern("+"))
+#ifndef SIMPLE_APPLICATION
+	if(operator_ == intern("+"))
 		apply_level = next_precedence_level(precedence_level);
+#endif
 	if(operator_ == intern("-"))
 		minus_level = precedence_level;
 }
