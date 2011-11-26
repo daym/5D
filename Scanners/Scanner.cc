@@ -234,6 +234,9 @@ void Scanner::parse_unicode(int input) {
 		return;
 	}
 }
+static bool structural_P(int input) {
+	return(input == '(' || input == ')' || input == '[' || input == ']');
+}
 void Scanner::parse_structural(int input) {
 	switch(input) {
 	case '(':
@@ -384,7 +387,7 @@ void Scanner::parse_operator(int input) {
 	while(operatorCharP(input)) {
 		sst << (char) input;
 		++position, input = fgetc(input_file);
-		if(input == '\'') // whoops, quote after the first char...
+		if(input == '\'' || structural_P(input))
 			break;
 	}
 	ungetc(input, input_file), --position;
