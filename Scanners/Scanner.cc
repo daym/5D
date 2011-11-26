@@ -205,6 +205,16 @@ void Scanner::parse_unicode(int input) {
 				input_value = intern("⨯");
 				return;
 			}
+		} else if(input == 0x9F) {
+			++position, input = fgetc(input_file);
+			switch(input) {
+			case 0xA8: /* ⟨ */
+				input_value = intern("⟨");
+				return;
+			case 0xA9: /* ⟩ */
+				input_value = intern("⟩");
+				return;
+			}
 		} else { // E2 88 AB integral.
 			parse_symbol(input, 0xE2);
 			//raise_error("<expression>", input);
