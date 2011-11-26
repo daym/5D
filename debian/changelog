@@ -2,6 +2,7 @@
 
   * add support for (big) Integer.
   * rename "intern" to "symbolFromStr".
+  * fix operator precedences of '| '; '$ '=>
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Sat, 26 Nov 2011 23:55:29 +0100
 
