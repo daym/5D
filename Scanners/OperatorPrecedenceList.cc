@@ -36,11 +36,12 @@ void OperatorPrecedenceList::cons(int precedence_level, struct AST::Symbol* oper
 	assert(precedence_level >= 0 && precedence_level < MAX_PRECEDENCE_LEVELS);
 	if(prefix_usages[(unsigned char) operator_->name[0]] > 0) { /* someone has something like this in use, maybe hapless caller */
 		int level = get_operator_precedence(operator_);
-		if(level != -1) {
+		while(level != -1) {
 			fprintf(stderr, "warning: the same operator \"%s\" previously had precedence level %d, defusing it.\n", operator_->name, level);
 			for(struct OperatorPrecedenceItem* item = levels[level]; item; item = item->next)
 				if(item->operator_ == operator_)
 					item->operator_ = NULL; // XXX
+			level = get_operator_precedence(operator_);
 		}
 	}
 	++prefix_usages[(unsigned char) operator_->name[0]];
