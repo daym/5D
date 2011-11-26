@@ -219,18 +219,24 @@ IMPLEMENT_BINARY_BUILTIN(AddrLEComparer, addrsLE?, addrLEP)
 using namespace AST;
 
 static AST::Node* divmodInt(const Numbers::Int& a, const Numbers::Int& b) {
-	// FIXME handle division by zero
+	if(b.value == 0)
+		throw EvaluationException("division by zero");
 	NativeInt q = a.value / b.value;
 	NativeInt r = a.value % b.value; // FIXME semantics for negative numbers.
 	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
 }
+static Integer integer00(0);
 static AST::Node* divmodInteger(const Numbers::Integer& a, const Numbers::Integer& b) {
+	if(b == integer00)
+		throw EvaluationException("division by zero");
 	Numbers::Integer r(a);
 	Numbers::Integer q;
 	r.divideWithRemainder(b, q);
 	return(AST::makeCons(toHeap(q), AST::makeCons(toHeap(r), NULL)));
 }
 static AST::Node* divmodFloat(const Numbers::Float& a, const Numbers::Float& b) {
+	if(b.value == 0.0)
+		throw EvaluationException("division by zero");
 	// FIXME
 	//return(divmodInt((NativeInt) a.value, (NativeInt) b.value));
 	return(makeOperation(AST::intern("divmod"), toHeap(a), toHeap(b)));
