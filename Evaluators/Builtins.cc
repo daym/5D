@@ -209,8 +209,12 @@ REGISTER_STR(Curried##N, { \
 static AST::Node* addrEqualsP(AST::Node* a, AST::Node* b) {
 	return(internNative(a == b));
 }
+static AST::Node* addrLEP(AST::Node* a, AST::Node* b) {
+	return(internNative(a < b));
+}
 
 IMPLEMENT_BINARY_BUILTIN(SymbolEqualityChecker, symbolsEqual?, addrEqualsP)
+IMPLEMENT_BINARY_BUILTIN(AddrLEComparer, addrsLE?, addrLEP)
 
 using namespace AST;
 
