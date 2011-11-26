@@ -84,12 +84,12 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(16, I("⨯"), R);
 		cons(15, I("*"), L);
 		cons(15, I("/"), L);
-		cons(15, I("%"), L);
 		// TODO div rem quot 17 L
 		cons(14, I(":"), R);
 		cons(13, I("++"), L);
 		cons(11, I("+"), L);
 		cons(11, I("-"), L);
+		cons(10, I("%"), L);
 		cons(9, I("="), N);
 		cons(9, I("/="), N);
 		cons(8, I("<"), N);
