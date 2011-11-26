@@ -1,0 +1,1398 @@
+(((((REPLV1 textBufferText) "[1 2 3]
+5+2
+1+2
+5+5
+define id \\f f
+define if id
+define else id
+define otherwise id
+define (||) \\a \\b \\t \\f a t (b t f)
+define (&&) \\a \\b \\t \\f a (b t f) f
+define not \\a \\t \\f a f t
+define implies? \\a \\b (not a) || b
+define equivalent? \\a \\b (a&&b) || ((not a) && (not b))
+equivalent? 
+||
+||
+||
+[1 2 3]
+2
+2+3
+||
+||
+define Y \\f (\\x f (x x)) (\\x f (x x))
+define rec Y
+define (|) \\a \\b b a
+define compose \\f \\g \\x (f (g x))
+define toBool \\v v 't 'f
+#t&&#t |toBool
+#t&&#f |toBool
+nil? nil
+[]
+[ ]
+()
+nil
+[
+[]
+[1 2 3]
+[]
+5+2
+5.3
+-23
+5*3
+5*33
+5*33+1
+5+5+5
+define flip \\f \\a \\b f b a
+rec id
+if
+define (<) \\a \\b (a<=b && not (b<=a))
+define (>) flip (<)
+define (>=) \\a \\b (b <= a)
+define (≤) <=
+define (≥) >=
+define (=) \\a \\b a<=b && b<=a
+define (/=) \\a \\b not (a=b)
+define abs \\a if (0 <= a) a (-a)
+abs 5
+abs (-5)
+abs (0)
+list?
+define list? \\a (cons? a) || (nil? a)
+define rangeLL \\step \\frontier rec \\rangeLL \\beginning if(frontier<=beginning) nil beginning:(rangeLL (beginning + step))
+define range \\beginning \\frontier \\step rangeLL step frontier beginning
+range 0 10 1
+define range1 \\beginning \\frontier rangeLL 1 frontier beginning
+range1 0 10
+range1 0 0
+range1 10 10
+range1 10 -1
+range1 10 (-1)
+range1 1 10
+range1 1 15
+range1 1 16
+range1 1 100
+range1 1 1000
+range1 1 999
+range1 1 99
+2+3
+-0.3
+-.3
+5+5
+define foldr \\folder \\value rec \\foldr \\list if (nil? list) value (folder (head list) (foldr (tail list)))
+foldr (+) 0 [1 2 3]
+foldr (-) 0 [1 2 3]
+define foldl \\folder rec \\foldl \\value \\list if (nil? list) value (foldl (folder value (head list)) (tail list)
+define foldl \\folder rec \\foldl \\value \\list if (nil? list) value (foldl (folder value (head list)) (tail list))
+foldl (+) 0 [1 2 3]
+foldl (-) 0 [1 2 3]
+define map \\f \\list foldr (compose (:) f) [] list
+map (\\x x*x) [1 2 3]
+define filter \\f rec \\filter \\list if (nil? list) nil (if (f (head list)) ((:) (head list)) id) (filter (tail list))
+filter (\\x x<3) [1 2 3 4 5 6]
+filter (\\x x>3) [1 2 3 4 5 6]
+filter (\\x x=2) [1 2 3 4 5 6]
+filter (\\x x=42) [1 2 3 4 5 6]
+==
+=
+&&
+define (=) \\a \\b (a<=b) && (b<=a)
+&&
+=
+2<=3
+2<=3 && 3<=2
+(2<=3) && (3<=2)
+(2<=3) && (3<=2) |toBool
+filter (\\x x=42) [1 2 3 4 5 6]
+filter (\\x (x=42)) [1 2 3 4 5 6]
+filter (\\x (x=2)) [1 2 3 4 5 6]
+42
+2
+filter (\\x #t) [1 2 3 4 5 6]
+filter (\\x #f) [1 2 3 4 5 6]
+define filter \\f rec \\filter \\list if (nil? list) nil (if (f (head list)) ((:) (head list)) id) (filter (tail list))
+filter (\\x #f) [1 2 3 4 5 6]
+filter (\\x x>1) [1 2 3 4 5 6]
+filter (\\x x>2) [1 2 3 4 5 6]
+filter (\\x x>5) [1 2 3 4 5 6]
+filter (\\x x>6) [1 2 3 4 5 6]
+id ni
+id nil
+filter (\\x x>6) []
+filter (\\x #t) []
+nil? nil
+filter (\\x #t) nil
+filter
+head list
+tail head
+tail head
+filter
+2+3
+99*8
+filter
+filter
+77+55
+range 1 10
+range1 1 10
+filter
+head
+filter
+filter
+filter
+99+8
+filter
+head
+head tail
+tail head
+2+3
+float? 1.2
+rec id
+range1 1 10
+range1 (-10) 55
+5+2
+5+2.3
+5+2.3+5+4
+1+999
+div 1000 10
+define rdivp \\d rec \\n if (n - d < 0) 0 1+(rdivp (n - d))
+rdivp 2 
+rdivp 2 5
+define rdivp \\d rec \\rdivp \\n if (n - d < 0) 0 1+(rdivp (n - d))
+rdivp 2 5
+define rdivp \\d rec \\rdivp \\n if ((n - d) < 0) 0 1+(rdivp (n - d))
+rdivp 2 5
+define rdivp \\d rec \\rdivp \\n if ((n - d) < 0) 0 (1+(rdivp (n - d)))
+rdivp 2 5
+rdivp 1 5
+rdivp 0 5
+rdivp 3 5
+rdivp 4 5
+rdivp 4 50
+rdivp 1234 10
+rdivp 10 1234 
+define rmodp \\d \\n n-(d*(rdivp d n))
+rmodp 10 1234 
+rdivp 10 1234 
+rmodp 10 123
+rdivp 10 123
+rmodp 10 12
+rdivp 10 1
+rmodp 10 1
+define reverse \\list foldl (flip (:)) [] list
+define strInt rec \\strInt \\v if (v=0) nil ((rmodp 10 v):(strInt (rdivp 10 v)))
+strInt 1234
+reverse (strInt 1234)
+reverse (strInt 42)
+reverse (strInt 1000323)
+reverse (strInt 100323)
+reverse (strInt 100323)
+reverse (strInt 10323)
+reverse (strInt 1323)
+reverse (strInt 1323.2)
+1+2
+1+2⋅33
+range1 0 10
+2+3
+2+3⋅5
+2+f⋅x
+(2+f)⋅x
+2+f x
+(2+f) x
+2+f x
+2⋅f(x)
+2⋅(f(x))
+2⋅f x
+2⋅(f x)
+2⋅f x
+(2⋅f) x
+2+f⋅x
+2+(f⋅x)
+2⋅f x
+(2⋅f) x
+f⋅x
+1+f⋅x
+(1+f)⋅x
+1+f⋅x
+5+3
+5⋅3
+5⨯3
+1+5
+99+99
+99+999
+symbol= 'a 'a
+symbol= 'a 'a |toBool
+symbol= 'a 'a 
+'a === 'b
+('a === 'b) |toBool
+('a === 'c) |toBool
+((===) 'a 'c) |toBool
+((===) 'a 'a) |toBool
+symbolsEqual? 'a 'a
+symbolsEqual? 'a 'b
+symbolsEqual? 'a 'a
+2+3
+2+3+55
+1⋅2
+1⋅2⋅3
+define fac \\v rec \\fac if(v=0) 1 v⋅(fac (v-1))
+define fac \\v rec \\fac if(v=0) 1 v⋅(fac (v-1))
+define fac \\v rec \\fac if(v=0) 1 v⋅(fac (v-1))
+\\x x
+rec
+define fac \\v rec \\fac if(v=0) 1 (v⋅(fac (v-1)))
+define fac \\v rec \\fac 1
+define fac \\v a
+define fac \\v rec \\fac
+define fac \\v rec \\fac a
+define fac \\v rec \\fac 1
+define foldr \\folder \\value rec \\foldr \\list if (nil? list) value (folder (head list) (foldr (tail list)))
+foldr (-) 0 [1 2 3]
+foldr (-) 0 [1 2 3]
+2⋅f x
+2⋅f x+2
+2⋅f x⋅2
+2⋅f (x⋅2)
+2⋅f x⋅2
+f x⋅2
+2⋅f x
+2⋅f x⋅3
+2⋅f x
+2⋅f x
+2⋅f x⋅3
+2⋅(f x)⋅3
+2⋅f x
+2⋅f x+2
+\\x
+\\x
+\\x
+\\x
+\\x
+[]
+\\x
+2+5
+2⋅fx
+2⋅f x
+2⋅f x+3
+2⋅f x+3+5
+f g h
+f g h
+(f g) h
+f (g h)
+(f g) h
+compose f g
+f g h
+99⋅9
+f g h
+(f g) h
+(f g)
+(f g) h
+5+5
+5⋅5
+sin sin x
+f f x
+f f x
+f f x
+f g x
+f g h
+a b c
+f g h
+2
+f g h
+a b c
+aa
+9
+f g h
+a b c
+f g h
+5+553
+5⋅55
+f g h
+2⋅f x
+(2⋅f) x
+2⋅(f x)
+2⋅f x
+2+f x
+1+2⋅3
+1+2⋅b
+f x
+f g x
+list
+head
+list
+head
+head
+tail
+1+2⋅a
+1+f x
+1+f x+g
+1+f x⋅3+g
+1+f x⋅y+g
+1+f x⨯y+g
+2⋅f x
+2⋅(f x)
+a+b+c
+a+b⋅c+c
+5⋅2
+5⋅f x
+3⋅2
+3⋅2+5
+[1 2 3]
+f x
+2⋅f x
+2⋅(f x)
+(2⋅f) x
+2+3
+2+f x
+(2+f) x
+2+f x
+(2+f) x
+2+f x
+2+sin x
+rdiv
+rdivp
+2⋅f
+2⋅f x
+2⋅3
+2222⋅44
+1/2
+1 / 2
+2.3 / 1.2
+1/2
+2.3/5.3
+2⋅3
+1/2
+1/4
+1/4*4
+(1/4)*4
+1/(4*4)
+1+11⋅5
+f x
+5⋅f x
+(5⋅f) x
+5⋅f x
+f 5⋅g x
+f 5⨯g x
+5⋅f x
+f g⋅x
+f g⨯x
+f 5⋅g h
+f 5⨯g h
+f (5⨯g) h
+f 5⨯(g h)
+5⋅f x
+5⋅f x
+5+2
+5⋅3
+5⋅3 f
+5⋅3 f
+5⋅(3 f)
+f⋅5
+define zipWith \\f rec \\zipWith \\l1 \\l2 if (nil? l1 || nil? l2) nil (f (head l1) (head l2)):(zipWith (tail l1) (tail l2))
+zipWith (+) [1 2 3] [4 5 6]
+zipWith (+) [1 2 3] [4 5]
+zipWith (+) [1 2 3] []
+take 2
+take 2 [5 6 7]
+range 0 10 1
+range1 0 10
+def take \\n \\list zip (\\x \\y y) (range1 0 n) list
+take 2 [5 6 7]
+def take \\n \\list zipWith (\\x \\y y) (range1 0 n) list
+take 2 [5 6 7]
+zipWith
+zipWith (\\x \\y x) [1 2 3] [4 5 6]
+zipWith (\\x \\y y) [1 2 3] [4 5 6]
+def take \\n \\list (zipWith (\\x \\y y) (range1 0 n) list)
+take 5 [5 6 7]
+take 5 [5 6 7]
+take 5 ([5 6 7])
+zipWith (\\x \\y y) [1 2 3] [4 5 6]
+(\\list zipWith (\\x \\y y) [1 2 3] list) [4 5 6]
+(\\list zipWith (\\x \\y y) (range1 0 10) list) [4 5 6]
+\\n (\\list zipWith (\\x \\y y) (range1 0 n) list) [4 5 6] 2
+(\\n (\\list zipWith (\\x \\y y) (range1 0 n) list) [4 5 6]) 2
+(\\n (\\list zipWith (\\x \\y y) (range1 0 n) list) 
+(\\n (\\list zipWith (\\x \\y y) (range1 0 n) list)) [4 5 6] 2
+(\\n \\list zipWith (\\x \\y y) (range1 0 n) list) [4 5 6] 2
+((\\n \\list zipWith (\\x \\y y) (range1 0 n) list) [4 5 6]) 2
+(\\n \\list zipWith (\\x \\y y) (range1 0 n) list) 2 [4 5 6]
+define take \\n \\list zipWith (\\x \\y y) (range1 0 n) list
+take 5 [1 2 3]
+take 3 [1 2 3]
+take 1 [1 2 3]
+take 0 [1 2 3]
+take (-1) [1 2 3]
+take 200 [1 2 3]
+take 20 [1 2 3]
+1/2
+1/0
+1/2
+inf
+1/2
+1/0
+take 3 (range 1 100)
+take 3 (range 1 100 1)
+take 1 (range 1 100 1)
+take 0 (range 1 100 1)
+take 1 (range 1 100 1)
+take 3 (range 1 100 1)
+take 30 (range 1 100 1)
+2⋅3
+2⋅3+5
+5+3
+5⋅3
+5⋅3+55
+div
+rdiv
+define rdivp \\d rec \\rdiv \\n if ((n-d) < 0) 0 else 1+(rdiv (n-d))
+rdiv 2 5
+rdivp 2 5
+define rdivp \\d rec \\rdiv \\n if ((n-d) < 0) 0 else (1+(rdiv (n-d)))
+rdivp 2 5
+define rdivp \\d rec \\rdiv \\n if ((n-d) < 0) 0 (1+(rdiv (n-d)))
+rdivp 2 5
+rdivp 2 50
+rdivp 2 49
+rdivp 2 48
+rdivp 2 50
+rdivp 5 1745
+rdiv
+rdivp
+42
+zipWith
+3+5
+3+5⋅3
+3+5⋅3⋅66
+3+5⋅3⋅66⋅6666
+3+5⋅3⋅66⋅6666⋅666
+99+99
+99⋅99
+100⋅100
+199⋅199
+999⋅999
+3/4
+1/2
+1/0
+inf
+2+3
+2+3⋅5
+999999999999999999999999999999
+999999999999999999999999999999+222222222222222222222222222222222
+999999999999999999999999999999+222222222222222222222222222222222
+9999999999999999999999999999+9
+9999999999999999999999999999+9
+99999999999999999999+9
+999999999999999999999+9
+999999999999999999999+999
+999999999999999999999+9999999999999999999
+999999999999999999999+9999999999999999999
+999999999999999999999+99999999999999999999
+9999999999999999999999999+9
+99999999999999999999999999999999999999
+1111111111111111111111111111111111111111
+999999999999999995334342222222222222222222
+999999999999999995334342222222222222222222 + 2
+9999999999999999999+5
+9999999999999999999999+5
+9999999999999999999999+5555555555555555555555555555555555555555555
+9+81
+999999999999999999999999999+3
+3+999999999999999999999999999
+3+999999999999999999999999999.2
+2+3
+2+3.3
+22222222222222222222222222222222222222222222222222222222+3.3
+2222222222222222222222222222222222222222222+3.3
+22222222222222222222222222222222+3.3
+222222222222222222222222+3.3
+22222222222222222222+3.3
+22222222222222+3.3
+555555555555555555+5555555555555555555555555555555555
+555555555555555555+55555555555555555555555555555555551
+555555555555555555+555555555555555555555555555555555512
+555555555555555555+5555555555555555555555555555555555124
+555555555555555555+55555555555555555555555555555555551245
+1.2+4.3
+1.2+4.3+666
+1.2+4.3+666+888
+1.2+4.3+666+888.8
+1.2+4.3+666+888.8/2
+1.2+4.3+666+888888888888888888888888888888888888888888888888.8/2
+88888888888888888888888888888888888888888888888888.8/2
+divmod
+1+5
+1+5555
+1+55553
+1+555532
+1+555532666
+1+5
+divmod 1 5
+divmod 5 1
+divmod 5 2
+divmod 5 3
+divmod 5 4
+divmod 5 5
+divmod 5 6
+divmod 5 7
+divmod (-5) 23
+divmod (-5) 23
+5+5
+divmod 5.2 3
+divmod 52 1
+divmod 52 55
+divmod 10 1
+divmod 10 99
+divmod 99999999999999999999999999999 444444444444444444444444444444
+3+3
+3+33333333333333333333333
+divmod 1
+divmod 1 2
+2+5
+2+5+3.4
+1111111111111111111111111111111111111111+555555555555555555555555555555
+1111111111111111111111111111111111111111+5555555555555555555555555555555222
+2+5
+2+5+5555555555555
+2+5+5555555555555+2
+2+5+5555555555555+26666666666
+2+5+5555555555555+26666666666.3
+2+5+5555555555555+2666666.2
+2+5+5555555555555+26666.2
+2+5+5555555555+26666.2
+2+5+5555555555+26666
+2+5+55555555554+26666
+2+5+55555555554+2336666
+ls
+1+2
+55+5
+divmod 5 2
+divmod 500000000000000000000000000000000000000000000000000000000000000 2
+divmod 500000000000000000000000000000000000000000000000000000000000000 22
+runWorld2 
+runWorld2 \\world 
+runWorld2 \\world 
+runWorld2 \\world world
+runWorld2 \\world 1:world:nil
+runWorld2 \\world 1:world:nil
+runWorld2 \\world 42
+runWorld2 \\world 42
+1
+1+2
+1/0
+(
+2
+3
+2+5
+runWorld2 
+runWorld2 \\world 42
+runWorld2 \\world 42
+runWorld2 \\world 42
+runWorld2 \\world 42
+runWorld2 \\world 1
+runWorld2 \\world 1:world:nil
+define monadValue \\m head m
+runWorld2 \\world 1:world:nil |monadValue
+define runWorld compose monadValue runWorld2 
+runWorld \\world 2
+runWorld \\world 1:world:nil
+runWorld \\world 1:world:nil
+2+5
+runWorld 
+5+42
+runWorld 
+runWorld \\world 2
+runWorld \\world 1:world:nil
+runWorld \\world [1 world]
+define monadLift \\v \\world [v world]
+monadLift 42
+runWorld (monadLift 42)
+runWorld (monadLift 1)
+monadValue 
+monadValue 21
+runWorld (monadLift 1) ;\\v v
+runWorld (monadLift 1) ;\\v v
+runWorld ((monadLift 1) ;\\v v)
+runWorld ((monadLift 1) ;\\v monadLift v)
+runWorld ((monadLift 1) ;\\v (monadLift v))
+;
+define (;) \\monad \\consumer \\world (consumer (monadValue (monad world)) (monadWorld (monad world))) 
+define monadWorld \\monad head (tail monad)
+define (;) \\monad \\consumer \\world (consumer (monadValue (monad world)) (monadWorld (monad world))) 
+;
+runWorld (monadLift 1)
+runWorld (monadLift 1);\\v v
+runWorld ((monadLift 1);\\v v)
+runWorld ((monadLift 1);\\v monadLift v)
+runWorld ((monadLift 1);\\v monadLift 42)
+runWorld ((monadLift 1);\\v monadLift v+1)
+runWorld ((monadLift 1);\\v monadLift (v + 1))
+runWorld ((monadLift 1);\\v monadLift (v + 1))
+runWorld ((monadLift 1);\\v monadLift (v + 1))
+87+2
+87+11
+87+1111
+87+1111
+87+111111
+87+11111111
+87+111111111111
+87+11111111111111111
+87+1111111111111111111111
+87+111111111111111111111111111
+87+11111111111111111111111111111111
+monadLift 1 ;\\v monadLift (v + 1) | runWorld
+runWorld (monadLift 1 ;\\v monadLift (v + 1))
+runWorld (monadLift 1 ;\\v monadLift (v + 55))
+runWorld (monadLift 1 ;\\v monadLift (v + 51))
+87+11111111111111111111111111111111
+87+111111111111111111111111111111113
+1+55
+1+55+2
+5+2
+define zip \\l1 \\l2 zipWith (\\x \\y [x y]) l1 l2
+zip [1 2 3] [4 5 6]
+5+2
+22+3
+22+3+5555
+2+55
+2+551
+2+551+2
+2+551+2+999999999
+2+551+2+99999999999999999999999999999
+5555555555555+3333333333333333333333333333333333333
+%
+define (%) \\a \\b head (tail (divmod a b))
+5%2
+5/2
+5%2
+strInt 22
+listFromStr \"hello\"
+99999999999+8
+999999999900000000000000000000000000000000000000009+8
+999999999900000000000000000000000000000000000000009+000000000000000008
+999999999900000000000000000000000000000000000000009+000000000000000008000000000000000000
+999999999900000000000000000000000000000000000000009+8000000000000000000
+999999999900000000000000000000000000000000000000009+800000000000000000
+999999999900000000000000000000000000000000000000009+80000000000000000
+999999999900000000000000000000000000000000000000009+8000000000000000
+999999999900000000000000000000000000000000000000009+800000000000000
+999999999900000000000000000000000000000000000000009+80000000000000
+999999999900000000000000000000000000000000000000009+8000000000000
+999999999900000000000000000000000000000000000000009+800000000000
+999999999900000000000000000000000000000000000000009
+999999999900000000000000000000000000000000000000009+9
+999999999900000000000000000000000000000000000000009+8
+999999999900000000000000000000000000000000000000009+8000
+999999999900000000000000000000000000000000000000009+80000
+999999999900000000000000000000000000000000000000009+800000
+999999999900000000000000000000000000000000000000009+800000
+999999999900000000000000000000000000000000000000009+8000000
+999999999900000000000000000000000000000000000000009+80000000
+999999999900000000000000000000000000000000000000009+800000000
+7+3
+^^
+&&
+||
+info
+:info
+:info
+:info a
+: info a
+: info nil
+: info : a
+reflect
+/reflect
+#reflect
+#reflect 1
+#reflect 
+#reflect a
+#reflect runWorld
+#reflect runWorld 
+#reflect runWorld2
+#reflect internalRunWorld2
+runWorld 
+#reflect runWorld
+#reflect monadValue
+2+3
+#info abs
+#info compose
+#info nil
+#info nil?
+#info range
+#info
+#info define
+#info defrec
+#info divmod
+#info int?
+#info not
+#info not 1
+#info not 0
+#info defrec 
+#info divmod
+#info str?
+#info take
+#info zipWith
+2+3
+55+5
+2+3
+1+23
+#info if
+#info monadLift
+else
+#info if
+#info nil
+#info otherwise
+#info take
+int? 
+int? 2
+int? 1
+intSucc
+int?
+#info int?
+1+5
+integerSucc 1
+integerSucc 1999999999999999999999999999999999999999
+integerSucc 19999999999999999999999999999999999999999
+integer? 1
+#info filter
+#info filter
+#rec
+#info rec
+#info Y
+#info ≤
+#info <=
+#info ||
+#info (||)
+#info ||
+#info #f
+#info #t
+#info %
+#info (%)
+#info (&&)
+#info (')
+#info (*)
+#info (+)
+#info (-)
+#info (/)
+#info (/=)
+#info (:)
+#info (;)
+#info (<)
+#info (<=)
+#info (=)
+#info (>)
+#info (>=)
+#info (Y)
+#info (abs)
+#info (compose)
+#info (cons?)
+#info (define)
+#info (defrec)
+#info (divmod)
+#info (else)
+#info (equivalent?)
+#info (fac)
+#info (filter)
+#info (flip)
+#info (float?)
+#info (foldl)
+#info (foldr)
+#info (fromLibrary)
+#info (head)
+#info (id)
+#info (if)
+#info (implies?)
+#info (int0)
+#info (int?)
+#info (intSucc)
+#info (integer?)
+#info (integerSucc)
+#info (intern)
+#info (internalRunWorld2)
+#info (keyword?)
+#info (keywordFromStr)
+#info (keywordStr)
+#info (list?)
+#info (listFromStr)
+#info (map)
+#info (monadList)
+#info (monadLift)
+#info (monadValue)
+#info (nil)
+#info (nil?)
+#info (not)
+#info (otherwise)
+#info (range)
+#info (rangeLL)
+#info (range1)
+#info (rdivp)
+#info (rec)
+#info (reduce)
+#info (reverse)
+#info (rmodp)
+#info (runWorld)
+#info (str?)
+#info (strInt)
+#info (symbol?)
+#info (symbolsEqual?)
+#info (tail)
+#info (take)
+#info (toBool)
+#info (translateFFI)
+#info (zip)
+#info (zipWith)
+#info (|)
+#info (||)
+#info (≤)
+#info (≥)
+'
+'x
+#info '
+#info define
+#info defrec
+#info >
+#info flip
+#info integer?
+#info runWorld
+#info strInt
+#info translateFFI 
+defiune
+λ
+runWorld \\world w
+runWorld \\world world
+runWorld \\world 42:world:nil
+runWorld \\world monadLift 42
+runWorld \\world monadLift 1
+runWorld monadLift 1
+runWorld (monadLift 1)
+runWorld (monadLift 1 ; \\v v)
+runWorld (monadLift 1 ; \\v monadLift v)
+define lift monadLift
+runWorld (lift 1; \\v lift 2)
+runWorld (lift 1; \\v lift 2)
+runWorld (lift 1 ;\\v lift 2)
+runWorld (lift 1 ;\\v lift (2 + v))
+1+2
+define
+#info define
+nil?
+nil? nil
+nil? []
+symbolsEqual? nil ni
+symbolsEqual? nil nil
+symbolsEqual? nil []
+range 0 10 1
+range 0 10 11
+range 0 1000 1
+range 0 100 1
+range 1 100 0
+range 1 100 1
+range 1 1000 1
+range 1 999 1
+range 1 509 1
+range 1 500 1
+range 1 499 1
+range 1 399 1
+range 1 299 1
+range 1 199 1
+range 1 19 1
+range 1 109 1
+range 1 129 1
+range 1 149 1
+range 1 169 1
+range 1 189 1
+range 1 179 1
+range 1 184 1
+range 1 183 1
+range 1 182 1
+range 1 181 1
+range 1 180 1
+abs
+#info abs
+abs 1
+abs 99999999999999999999999999999999999999999999999999999
+abs 999999999999999999999999999999999999999999999999999999999
+abs (-999999999999999999999999999999999999999999999999999999999)
+fac
+fac 1
+toBool 
+|toBool 
+a|toBool 
+fold\\r |toBool 
+foldr
+foldr (+) 
+foldr (+) 0 
+foldr (+) 0 [1 2 3]
+foldr (+) 0 (range 0 10 1)
+foldr (+) 0 (range 0 10 1)
+10**2
+10*10
+10*10/2
+foldr (+) 0 (range 0 10 1)
+divmod 
+divmod 1 10
+divmod 15 20
+divmod 100 7
+filter 
+#info filter 
+1
+2
+3
+[2 3 4]
+[2 3 4 5]
+[2 3 4 5 6]
+[2 3 4 5 6 1]
+[2 3 4 5 6 1 2]
+[2 3 4 5 6 1 2 3]
+Y
+:info Y
+#info Y
+#info %
+#info keyword?
+#info keyword?
+#info zip
+#info Y
+1+2
+1+2+5
+1+2+5+55
+55⋅5
+55⋅5+1
+55⋅5
+2<=5
+list? [1 2 3]
+define list? \\v cons? v || nil? v
+list? [1 2 3]
+list? [1 2 3] | toBool
+:
+;
+:
+#info :
+#info ;
+abs
+abs
+#info defrec
+tail
+tail [1 2 3]
+intSucc 1
+intSucc 129929929292929929292929992292929929292992992929292
+integerSucc 129929929292929929292929992292929929292992992929292
+999
+999+999999
+2+5
+2+5555
+2+555533333
+22222222222222542+555533333
+22222222222222542+555533333+6333333333333333333333333
+22222222222222542+555533333+6333333333333333333333333.2
+22222222222222542+555533333+633333333333333333333333
+(22222222222222542+555533333+633333333333333333333333)
+(22222222222222542+555533333+633333333333333333333333) * 2
+(22222222222222542+555533333+633333333333333333333333) * 2 * 3
+(22222222222222542+555533333+633333333333333333333333) * 2 * 3 /4
+(22222222222222542+555533333+633333333333333333333333) * 2 * 3 / 4
+(22222222222222542+555533333+633333333333333333333333) * 2 * 3 / 3
+(22222222222222542+555533333+633333333333333333333333) * 2 * 3 / 6
+(22222222222222542+555533333+633333333333333333333333) * 2 * 3 / 8
+(22222222222222542+555533333+633333333333333333333333) * 2 * 3 / 9
+(22222222222222542+555533333+633333333333333333333333) * 2 * 3 / 10
+(22222222222222542+555533333+633333333333333333333333) / 10
+(22222222222222542+55552222) / 10
+99999999999999999999999999999999999999999999999999999999999/2
+999999999999999999999999999999999999999999/2
+999999999999999999999999999999999/2
+999999999999999999999999999999999/2.3
+999999999999999999999999999999999/2
+9999999999999999999999999999999/2
+999999999999999999999999999999/2
+99999999999999999999999999999999999999999/2
+9999999999999999999999999999999999999/2
+9999999999999999999999999999999999999/2
+99999999999999999999999999999999/2
+999999999999999999999999999/2
+9999999999999999999999/2
+99999999999999999/2
+99999999999/2
+999999/2
+9999999/2
+555555555555555555/2
+555555555555555/2
+555555555555/2
+5555555555/2
+55555555/2
+5555555/2
+555555/2
+55555/2
+5555/2
+555/2
+55/2
+5/2
+1/2
+0/2
+0/7
+0/7.2
+zero? (0/7.2)
+zero? (0/7.2)
+(=) 0 (0/7.2)
+(=) 0 0
+(=) 0 (0/7.2) | toBool
+(=) 0.0 (0/7.2) | toBool
+1=
+1= |toBool
+id
+if
+*
+⋅
+1⋅5
+0⋅5
+1%2
+2+5
+runWorld 
+| runWorld 
+-4
+2-4
+-4
+-a
+5+3
+5⋅3
+5⋅3+5523
+intern \"hello\"
+intern \"ha\"
+intern \"ha\" |symbol? |toBool
+intern \"hello\"
+internalRunWorld2 
+lift 42 |runWorld
+lift 1 ;\\v lift 42 |runWorld
+(lift 1) ;\\v (lift 42) |runWorld 
+((lift 1) ;\\v (lift 42)) |runWorld 
+runWorld $ 
+runWorld $ 1
+runWorld $ 12
+runWorld (lift 42)
+runWorld (lift 42)
+runWorld (lift 42)
+runWorld (lift 42)
+runWorld (lift 42)
+runWorld (lift 1)
+runWorld (lift 1 ; \\v lift 2)
+runWorld (lift 1 ; \\v lift 2 ; \\v lift 3)
+runWorld (lift 1 ; \\v lift 2 ; \\v2 lift (3 + v))
+runWorld (lift 1 ; \\v lift 2 ; \\v2 lift (3 + v + v2))
+;
+5+56
+5 + 56
+a+b
+5⋅3 + 2
+integerSucc 9999999999999999999999999999999999999999999999999999999999999999999999999
+(\\s \\z s z) integerSucc int0
+(\\s \\z s.s.s z) integerSucc int0
+(\\s \\z (compose s s) z) integerSucc int0
+#info lift
+#info monadLift
+#info world
+%
+2%2
+2%100
+2<=3
+2<=5
+2<=5 |toBool
+2<=5 |toBool
+9999999999⋅455
+9999999999⋅455⋅222
+9999999999⋅455⋅222⋅4
+9999999999⋅455⋅222⋅4⋅55555555555
+9999999999*455*222*4*55555555555
+9999999999*455
+9999999999*455*222
+9999999999*455*222*4
+9999999999*455*222*4*55555555555
+4040399999595960*55555555555
+4040399999595960*55555555555
+4040399999595960*55555555555
+4040399999595960000000000*5555555555500000000000
+int? 4040399999595960000000000
+int? 404039999959596000000000
+int? 40403999995959600000000
+int? 4040399999595960000000
+int? 404039999959596000000
+int? 40403999995959600000
+int? 4040399999595960000
+5+533
+5+533⋅9
+5+533⋅9⋅9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+5/3
+9/8
+8/32
+8/2
+899999999999999999999999999999999999999999999999999999999999999/2
+8999999999999999999999999999999999999999999999999999999999999/2
+800000000000000000000000000000000000000000000000000000000000/2
+8000000000000000000000000000000000000000000000000000000000000/2
+runWorld 
+runWorld (display \"hello world\")
+listFromStr
+listFromStr \"a\"
+listFromStr \"hellooo\"
+listFromStr \"helloooooooo\"
+listFromStr \"helloooooooo\"| head
+listFromStr \"helloooooooo\" | head
+listFromStr \"helloooooooo\" | tail |head
+listFromStr \"helloooooooo\" | tail |tail | head
+5%2
+translateFFI 
+fromLibrary 
+fromLibrary \"\"
+fromLibrary \"libc\"
+fromLibrary \"libc.so.6\"
+fromLibrary \"libc.so.6\" 'open
+fromLibrary \"libc.so.6\" 'opena
+fromLibrary \"libc.so.6\" 'open
+(fromLibrary \"libc.so.6\" 'open)
+'[int int[
+'int int]
+8999999999999999999999999999999999999999999999999999999999999/2
+'(int int int)
+'(int int int fromLibrary)
+:
+fac
+'(int int int fac)
+' []
+' [1 2 3]
+integerSucc 1
+integerSucc 2
+integerSucc 100
+integerSucc 100
+integerSucc 100
+' [1 2 3]
+'[]
+'[8 9 0]
+'[]
+'[]
+'w
+'[]
+'[2 3 4 ]
+'[2 3 4]
+'[2 3 4 9]
+'[2 3 4 9 42]
+'[int x]
+'[[int x]]
+'[[int x], []
+'[[int x], []]
+'[[int x] []]
+'[[int x]]
+'[[int x] []]
+'[[int x][]]
+'[[int x]]
+'[[int x]]
+'[[int x] [9]]
+'[[int x] []]
+'[[int x] []]
+3+
+'[[int x] []]
+'[[int x] [float y]]
+'[int [int x] [float y]]
+'[[int result] [int x] [float y]]
+'[[result int] [int x] [float y]]
+'[[result int] [int x] [float y]]
+5%2
+5/2
+div 5 2
+define div \\a \\b (divmod a b) | head
+div 5 2
+div 5 2
+(div 5 2) * 2
+5 - (div 5 2) * 2
+mod
+define mod \\a \\b divmod a b |tail | head
+mod 5 2
+%
+mod
+abs 54
+abs 540999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+abs (-540999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+foldl
+foldl (+) 0 [1 2 3]
+foldl (+) 0 [1 2 3 5]
+foldl (+) 0 [1 2 3 4 5]
+translateFFI 
+fromLibrary 
+fromLibrary \"a\"
+fromLibrary \"libc.so.6\"
+fromLibrary \"libc.so.6\" 'open
+fromLibrary \"libc.so.6\" 'ope
+fromLibrary \"libc.so.6\" 'open
+5555⋅55552
+5555⋅55552
+5555⋅5555211111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+-5555⋅5555211111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+-5555⋅-5555211111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+-5555⋅(-5555211111111111111111111111111111111111111111111111111111111111111111111111111111111111111)
+reverse [1 2 3]
+[4 3 2 ]
+[4 3 2 1]
+[4 3 2 sin x]
+[4 3 2 (sin x)]
+55555552+544444444444444444444444444444
+55555552+544444444444444444444444444444.2
+55555552+5444444444444444.2
+55555552+54444444444.2
+55555552+54444444.2
+keywordStr 
+keywordStr \"a\"
+keywordStr @a:
+<
+1<4
+1<4 |toBool
+if(1<4) 't 'f
+if(1<4) 't else 'f
+if(1<4) 't (else 'f)
+foldr (+) 0 [1 2 3]
+foldr (-) 0 [1 2 3]
+foldr (*) 0 [1 2 3]
+foldr (*) 1 [1 2 3]
+foldr (/) 1 [1 2 3]
+foldl (/) 1 [1 2 3]
+foldl (*) 1 [1 2 3]
+rec
+#info rec
+#info reverse
+#info zip
+#info zip 2
+#info zip 1
+#info zip 0
+#info zip
+#info compose
+1=5
+1=5 |toBool
+1=5 |runWorld
+1=5 |toBool
+9999999999999999999999999999999999999999999999999999999999999999999999 + 8
+9999999999999999999999999999999999999999999999999999999999999999999999 + 9
+1+5
+['int 'result]
+[['int 'result]]
+7777777777777777777777⋅999
+#info Y
+#info mod
+#info map
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+tail []
+tail [1]
+5 + 5
+5 ⋅555
+abs 99432
+abs (-99432)
+abs 0.2
+abs (-0.2)
+nil
+[]
+nil? nil
+#info nil
+nil? nil
+nil? []
+nil? [1]
+nil? tail [1]
+nil? (tail [1])
+tail [1] |nil?
+tail [1] |nil? |toBool
+#info a
+#info #f
+2<3 |to
+2<3 |toBool 
+29<3 |toBool 
+29<30 |toBool 
+'k = 'k
+'k = 'k |toBool
+9=9
+9=9|toBool 
+3 + 5
+3 + 5 | toBool
+3 + 5 | toBool
+if (1 < 2) 't 'f
+zip
+#info zip
+#info zipWith
+rmodp 
+#info rmodp
+rmodp
+rmodp 1 2
+rmodp 4 2
+rmodp 2 2
+div 5 2
+filter
+#info filter
+1/=2
+1/=2 |toBool 
+2<3
+2<3 | toBool 
+range 0 10 1
+range 0 10 1
+range 0 10 1
+range 0 100 1
+range 0 1000 1
+range 0 400 1
+int0
+integerSucc int0
+integerSucc a
+integerSucc a
+integerSucc 0
+integerSucc a
+integerSucc a
+a+b
+1 + 5
+55 + 5
+'
+''
+'''
+' quote
+''
+'[]
+'x
+'y
+5 + 52
+15 + 2
+range 0 10 1
+range 0 10 2
+cons? [1 2 3]
+list? [1 2 3]
+list? [1 2 3] | toBool 
+'define
+1+5
+1 + 5
+div 5 2
+=
+1=2
+1/=2 |toBool 
+if (1/=2) 't 'f
+Y
+*
+'
+'
+'
+'[]
+'a
+'nil
+'*
+a '* b
+'* a b
+'* a b + c
+range 0 10 1
+2+3
+ls
+ls
+system \"ls\"
+obj 'foo
+2.5
+2.5.foo
+\\x
+\\
+;
+") environment) ((\id ((\if ((\else ((\otherwise ((\|| ((\&& ((\not ((\implies? ((\equivalent? ((\Y ((\rec ((\| ((\compose ((\toBool ((\flip ((\< ((\> ((\>= ((\≤ ((\≥ ((\= ((\/= ((\abs ((\list? ((\rangeLL ((\range ((\range1 ((\foldr ((\foldl ((\map ((\filter ((\= ((\filter ((\rdivp ((\rdivp ((\rdivp ((\rdivp ((\rmodp ((\reverse ((\strInt ((\fac ((\zipWith ((\take ((\rdivp ((\rdivp ((\rdivp ((\monadValue ((\runWorld ((\monadLift ((\; ((\monadWorld ((\; ((\zip ((\% ((\lift ((\list? ((\div ((\mod nil) (\a (\b ((| ((| ((divmod a) b)) tail)) head))))) (\a (\b ((| ((divmod a) b)) head))))) (\v ((|| (cons? v)) (nil? v))))) monadLift)) (\a (\b (head (tail ((divmod a) b))))))) (\l1 (\l2 (((zipWith (\x (\y ((: x) ((: y) nil))))) l1) l2))))) (\monad (\consumer (\world ((consumer (monadValue (monad world))) (monadWorld (monad world)))))))) (\monad (head (tail monad))))) (\monad (\consumer (\world ((consumer (monadValue (monad world))) (monadWorld (monad world)))))))) (\v (\world ((: v) ((: world) nil)))))) ((compose monadValue) internalRunWorld2))) (\m (head m)))) (\d (rec (\rdiv (\n (((if ((< ((- n) d)) 0)) 0) ((+ 1) (rdiv ((- n) d)))))))))) (\d (rec (\rdiv (\n ((((if ((< ((- n) d)) 0)) 0) else) ((+ 1) (rdiv ((- n) d)))))))))) (\d (rec (\rdiv (\n ((+ ((((if ((< ((- n) d)) 0)) 0) else) 1)) (rdiv ((- n) d))))))))) (\n (\list (((zipWith (\x (\y y))) ((range1 0) n)) list))))) (\f (rec (\zipWith (\l1 (\l2 (((if ((|| (nil? l1)) (nil? l2))) nil) ((: ((f (head l1)) (head l2))) ((zipWith (tail l1)) (tail l2))))))))))) (\v a))) (rec (\strInt (\v (((if ((= v) 0)) nil) ((: ((rmodp 10) v)) (strInt ((rdivp 10) v))))))))) (\list (((foldl (flip :)) nil) list)))) (\d (\n ((- n) ((* d) ((rdivp d) n))))))) (\d (rec (\rdivp (\n (((if ((< ((- n) d)) 0)) 0) ((+ 1) (rdivp ((- n) d)))))))))) (\d (rec (\rdivp (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d))))))))) (\d (rec (\rdivp (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d))))))))) (\d (rec (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d)))))))) (\f (rec (\filter (\list ((((if (nil? list)) nil) (((if (f (head list))) (: (head list))) id)) (filter (tail list))))))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) (\f (rec (\filter (\list ((((if (nil? list)) nil) (((if (f (head list))) (: (head list))) id)) (filter (tail list))))))))) (\f (\list (((foldr ((compose :) f)) nil) list))))) (\folder (rec (\foldl (\value (\list (((if (nil? list)) value) ((foldl ((folder value) (head list))) (tail list)))))))))) (\folder (\value (rec (\foldr (\list (((if (nil? list)) value) ((folder (head list)) (foldr (tail list))))))))))) (\beginning (\frontier (((rangeLL 1) frontier) beginning))))) (\beginning (\frontier (\step (((rangeLL step) frontier) beginning)))))) (\step (\frontier (rec (\rangeLL (\beginning (((if ((<= frontier) beginning)) nil) ((: beginning) (rangeLL ((+ beginning) step))))))))))) (\a ((|| (cons? a)) (nil? a))))) (\a (((if ((<= 0) a)) a) ((- 0) a))))) (\a (\b (not ((= a) b)))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) >=)) <=)) (\a (\b ((<= b) a))))) (flip <))) (\a (\b ((&& ((<= a) b)) (not ((<= b) a))))))) (\f (\a (\b ((f b) a)))))) (\v ((v (' t)) (' f))))) (\f (\g (\x (f (g x))))))) (\a (\b (b a))))) Y)) (\f ((\x (f (x x))) (\x (f (x x))))))) (\a (\b ((|| ((&& a) b)) ((&& (not a)) (not b))))))) (\a (\b ((|| (not a)) b))))) (\a (\t (\f ((a f) t)))))) (\a (\b (\t (\f ((a ((b t) f)) f))))))) (\a (\b (\t (\f ((a t) ((b t) f)))))))) id)) id)) id)) (\f f))) nil)
