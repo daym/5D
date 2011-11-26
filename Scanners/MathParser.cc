@@ -198,7 +198,7 @@ AST::Node* MathParser::parse_binary_operation(bool B_allow_args, int precedence_
 	/* special case for unary - */
 	AST::Node* result = (precedence_level == operator_precedence_list->minus_level && input_value == intern("-")) ? (B_unary_operator = true, intern("0")) : parse_binary_operation(B_allow_args, operator_precedence_list->next_precedence_level(precedence_level));
 	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator)) {
-		while(actual_token) {
+		while(actual_token && actual_token != AST::intern("<EOF>")) {
 			AST::Node* operator_ = B_visible_operator ? consume() : intern(" ");
 			if(input_value == intern(")")) // premature end.
 				return(B_unary_operator ? operator_ : makeApplication(operator_, result)); /* default to the binary operator */
