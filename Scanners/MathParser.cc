@@ -32,8 +32,8 @@ MathParser::MathParser(void) : Scanner() {
 using namespace AST;
 AST::Node* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
 	AST::Node* result = makeOperation(operator_, operand_1, operand_2);
-	if(result == NULL)
-		raise_error("<second_operand>", "<nothing>");
+	//if(result == NULL)
+	//	raise_error("<second_operand>", "<nothing>");
 	return(result);
 }
 bool macro_operator_P(AST::Node* operator_) {
