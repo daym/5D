@@ -37,7 +37,7 @@ AST::Node* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 	return(result);
 }
 bool macro_operator_P(AST::Node* operator_) {
-	return(operator_ == intern("define") || operator_ == intern("def") || operator_ == intern("defrec") || operator_ == intern("'") || operator_ == intern("["));
+	return(operator_ == intern("define") || operator_ == intern("def") || operator_ == intern("defrec") || operator_ == intern("'") || operator_ == intern("[") || operator_ == intern("let"));
 }
 /*
 AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
@@ -99,6 +99,22 @@ AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
 	B_process_macros = true;
 	return(result);
 }
+AST::Node* MathParser::parse_let_form(void) {
+	if(EOFP()) {
+		raise_error("<let-form-body>", "<incomplete>");
+		return(NULL);
+	}
+	AST::Symbol* name = dynamic_cast<AST::Symbol*>(consume());
+	if(name == NULL) {
+		raise_error("<let-form-symbol>", "<incomplete>");
+		return(NULL);
+	}
+	consume(AST::intern("="));
+	AST::Node* value = parse_value();
+	consume(AST::intern("in"));
+	AST::Node* rest = parse_expression();
+	return(AST::makeApplication(AST::makeAbstraction(name, rest), value));
+}
 AST::Node* MathParser::parse_list(void) {
 	if(EOFP() || input_value == intern("]")) {
 		consume(intern("]"));
@@ -120,6 +136,8 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 		return(parse_quote(operand_1));
 	else if(operand_1 == intern("["))
 		return(parse_list());
+	else if(operand_1 == intern("let"))
+		return(parse_let_form());
 	else {
 		raise_error("<known_macro>", "<unknown_macro>");
 		return(NULL);
