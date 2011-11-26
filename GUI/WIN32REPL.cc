@@ -491,30 +491,14 @@ static void REPL_handle_environment_row_activation(struct REPL* self, HWND list,
 	char* command;
 	bool B_ok = false;
 	if(index > -1) {
-		command = NULL;
-		std::wstring name = GetListViewEntryStringCXX(GetDlgItem(self->dialog, IDC_ENVIRONMENT), index);
-		command = ToUTF8(name);
-		if(!command)
-			return;
-		/* TODO ensure newline */
-		std::stringstream sst;
-		std::string escapedName = AST::intern(command)->str();
-		//sst << "(cons (quote define) (cons (quote " << escapedName << "X) (cons (quote X) nil)))"; /* (makeList 'define 'escapedName escapedName) */
-		//sst << "(cons (' define) (cons (' " << escapedName << ") (cons " << escapedName << " nil)))"; /* (makeList 'define 'escapedName escapedName) */
-		sst << "('define):('" << escapedName << "):(" << escapedName << ":nil)";
-		std::string commandStr = sst.str();
-		//command = g_strdup_printf("(cons (quote define) (cons (quote %s) (cons %s nil)))", command, command);
-		try {
-			AST::Node* getter = REPL_parse(self, commandStr.c_str(), -1);
-			//((cons (quote define)) ((cons (quote cons)) ((cons cons) nil)))
-			B_ok = REPL_execute(self, getter, -1);
-		} catch(Scanners::ParseException& e) {
-			std::string v = e.what() ? e.what() : "error";
-			REPL_insert_error_message(self, -1, std::string("\n") + command, v);
-		} catch(Evaluators::EvaluationException& e) {
-			std::string v = e.what() ? e.what() : "error";
-			REPL_insert_error_message(self, -1, std::string("\n") + command, v);
-		}
+		//command = NULL;
+		//std::wstring name = GetListViewEntryStringCXX(GetDlgItem(self->dialog, IDC_ENVIRONMENT), index);
+		//command = ToUTF8(name);
+		//if(!command)
+		//	return;
+		AST::Node* body = REPL_get_definition(self, index);
+		REPL_enqueue_LATEX(self, body, &end);
+		B_ok = true;
 	}
 	/*if(B_ok)
 		UnselectAllListViewItems(list);*/
