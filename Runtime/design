@@ -30,6 +30,13 @@ equivalent?
 <=
 ≥
 
+The following things can be extras:
+- fractions.
+- vectors.
+- matrices.
+- complex numbers.
+Note that some things can be = and /= compared, but NOT the others. Example: Complex numbers.
+
 = Arithmetic =
 
 %
@@ -40,6 +47,12 @@ equivalent?
 div
 divmod
 mod
+
+The following things can be extras:
+- fractions.
+- vectors.
+- matrices.
+- complex numbers.
 
 = Monads =
 
