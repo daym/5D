@@ -110,6 +110,8 @@ void Scanner::parse_token(void) {
 	case ')':
 	case '[':
 	case ']':
+	case '{':
+	case '}':
 		parse_structural(input);
 		break;
 	case '"':
@@ -245,7 +247,7 @@ void Scanner::parse_unicode(int input) {
 	}
 }
 static bool structural_P(int input) {
-	return(input == '(' || input == ')' || input == '[' || input == ']');
+	return(input == '(' || input == ')' || input == '[' || input == ']' || input == '{' || input == '}');
 }
 void Scanner::parse_structural(int input) {
 	switch(input) {
@@ -260,6 +262,12 @@ void Scanner::parse_structural(int input) {
 		return;
 	case ']':
 		input_value = intern("]");
+		return;
+	case '{':
+		input_value = intern("{");
+		return;
+	case '}':
+		input_value = intern("}");
 		return;
 	/* TODO other kind of braces? */
 	default:
