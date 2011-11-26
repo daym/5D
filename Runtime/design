@@ -57,6 +57,7 @@ foldl
 foldr
 range
 take
+drop
 range1
 rangeLL
 zip
