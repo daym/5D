@@ -29,7 +29,7 @@ import foo
 
 = Data Structures =
 
-sorting: quick sort, merge sort.
+sorting: quicksort (?), mergesort.
 uniq
 searching: binary search, bisect.
 trees: binary trees, tries, red black trees.
@@ -62,8 +62,9 @@ TUI: if trying to pass a path to a file that does not exist, it doesn't create i
 
 = Beauty =
 
-Math: indentation for 'if, 'rec, 'let, ';, ':
+Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).
+nested lists: line-break only for the second list if the first list is short enough.
 pattern-match env entry back to the let macro.
 
 = Performance =
