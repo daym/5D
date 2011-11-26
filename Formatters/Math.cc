@@ -26,6 +26,8 @@ static void print_text(std::ostream& output, int& visible_position, const char* 
 		output << text;
 	else if(*text == '\'' && *(text + 1) == 0) // unary operator
 		output << '\'';
+	else if(text[0] == '[' && text[1] == ']')
+		output << "[]";
 	else
 		output << '(' << text << ')';
 	for(; *text; ++text) {
@@ -86,7 +88,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 	}
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);	
 	if(node == NULL)
-		print_text(output, position, "nil");
+		print_text(output, position, "[]");
 	else if(symbolNode)
 		print_text(output, position, symbolNode->name);
 	else if(abstraction_P(node)) { /* abstraction */

@@ -57,10 +57,7 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destina
 	int position = 0; // TODO use actual horizontal position at the destination.
 	std::stringstream buffer;
 	std::string v;
-	if(result)
-		Formatters::print_math_CXX(REPL_ensure_operator_precedence_list(self), buffer, position, result, 0, false);
-	else
-		buffer << "nil";
+	Formatters::print_math_CXX(REPL_ensure_operator_precedence_list(self), buffer, position, result, 0, false);
 	v = buffer.str();
 	REPL_insert_into_output_buffer(self, destination, v.c_str());
 }
