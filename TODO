@@ -9,8 +9,6 @@ list comprehensions in []
 --x
 "# " as line comment starter (=> rem)
 unary posfix operators like "!"?
-There's max. 1 dot in a number, so stop if a second dot is encountered.
-if there's a dot and then a non-number, backtrack, you've made a mistake.
 
 = Builtin Types =
 
