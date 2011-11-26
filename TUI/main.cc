@@ -272,7 +272,7 @@ bool REPL_save(struct REPL* self, bool B_force_dialog) {
 }
 int main(int argc, char* argv[]) {
 	struct REPL* REPL;
-	using namespace TUI;
+	using namespace GUI;
 	const char* line;
 	REPL = REPL_new();
 	REPL1 = REPL;

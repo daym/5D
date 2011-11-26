@@ -44,7 +44,7 @@ Application* makeApplication(Node* fn, Node* argument) {
 	result->operator_ = fn;
 	result->operand = argument;
 	result->result = NULL;
-	result->bResult = false;
+	result->resultGeneration = 0;
 	return(result);
 }
 Abstraction* makeAbstraction(Node* parameter, Node* body) {
