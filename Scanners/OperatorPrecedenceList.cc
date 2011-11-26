@@ -78,7 +78,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 #endif
 	if(bInitDefaults) {
 		cons(19, I("_"), R);
-		cons(19, I("."), R);
+		cons(19, I("."), L);
 		cons(19, I("^"), R);
 		cons(17, I("**"), R);
 		cons(16, I("⨯"), R);
