@@ -1,6 +1,5 @@
 = Macros = 
 
-let a=b+c in ...
 list comprehensions in []
 
 = Builtin Types =
@@ -12,7 +11,7 @@ Builtin ops: power
 
 = FFI =
 
-arrays?
+arrays ?
 translateFFI resulttype argtypes procedure => translator used when calling:
 define libc fromLibrary "/lib/x86_64-linux-gnu/libc.so.6"
 define writeProc libc 'write
@@ -31,10 +30,12 @@ import foo
 = Data Structures =
 
 sorting: quick sort, merge sort.
+uniq
 searching: binary search, bisect.
 trees: binary trees, tries, red black trees.
 
 = Error Handling =
+
 ... `catch` \e error e
 
 = Pie-in-the-Sky =
