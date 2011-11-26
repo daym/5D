@@ -62,7 +62,7 @@ TUI: if trying to pass a path to a file that does not exist, it doesn't create i
 = Beauty =
 
 Math: indentation for 'if, 'rec, 'let, ';, ':
-pattern-match a:b:c:nil back to the [] macro.
+pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).
 pattern-match env entry back to the let macro.
 
 = Performance =
