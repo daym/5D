@@ -384,6 +384,8 @@ void Scanner::parse_operator(int input) {
 	while(operatorCharP(input)) {
 		sst << (char) input;
 		++position, input = fgetc(input_file);
+		if(input == '\'') // whoops, quote after the first char...
+			break;
 	}
 	ungetc(input, input_file), --position;
 	input_value = intern(sst.str().c_str());
