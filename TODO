@@ -71,3 +71,8 @@ degrade from Integer to int when possible.
 MathParser: indentation for 'if, 'rec, 'let
 pattern-match a:b:c:nil back to the [] macro.
 pattern-match env entry back to the let macro.
+import xyz hiding (a, b, c)
+import xyz (a,b,c)
+import qualified ...
+import foo
+merge Str and Integer into one (for integer, the str() is reversed, though).

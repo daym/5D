@@ -193,7 +193,7 @@ AST::Node* MathParser::parse_binary_operation(bool B_allow_args, int precedence_
 	if(operator_precedence_list->empty_P(precedence_level))
 		return(B_allow_args ? parse_application() : parse_value());
 	/* special case for unary - */
-	AST::Node* result = (precedence_level == MINUS_PRECEDENCE_LEVEL && input_value == intern("-")) ? (B_unary_operator = true, intern("0")) : parse_binary_operation(B_allow_args, operator_precedence_list->next_precedence_level(precedence_level));
+	AST::Node* result = (precedence_level == operator_precedence_list->minus_level && input_value == intern("-")) ? (B_unary_operator = true, intern("0")) : parse_binary_operation(B_allow_args, operator_precedence_list->next_precedence_level(precedence_level));
 	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator)) {
 		while(actual_token) {
 			AST::Node* operator_ = B_visible_operator ? consume() : intern(" ");

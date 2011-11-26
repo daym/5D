@@ -48,6 +48,8 @@ void OperatorPrecedenceList::cons(int precedence_level, struct AST::Symbol* oper
 	levels[precedence_level] = new OperatorPrecedenceItem(levels[precedence_level], operator_, associativity);
 	if(apply_level == 0 && operator_ == intern("+"))
 		apply_level = next_precedence_level(precedence_level);
+	if(operator_ == intern("-"))
+		minus_level = precedence_level;
 }
 void OperatorPrecedenceList::uncons(int precedence_level, struct AST::Symbol* operator_, struct AST::Symbol* associativity) {
 	struct OperatorPrecedenceItem* item;
@@ -84,7 +86,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		// TODO div rem quot 17 L
 		cons(14, I(":"), R);
 		cons(13, I("++"), L);
-		cons(11, I("+"), L); // keep in sync with MINUS_PRECEDENCE_LEVEL
+		cons(11, I("+"), L);
 		cons(11, I("-"), L);
 		cons(9, I("="), N);
 		cons(9, I("/="), N);
