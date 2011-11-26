@@ -94,9 +94,9 @@ AST::Node* MathParser::parse_defrec(AST::Node* operand_1) {
 }
 AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
 	AST::Node* result;
-	//B_process_macros = false; /* to make (' define) work; TODO do this in a nicer way? How? */
+	B_process_macros = false; /* to make it possible to (quote quote) and (quote define); TODO make it possible to use other macros anyway? */
 	result = makeApplication(operand_1, parse_value());
-	//B_process_macros = true;
+	B_process_macros = true;
 	return(result);
 }
 AST::Node* MathParser::parse_list(void) {
