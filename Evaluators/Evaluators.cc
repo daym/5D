@@ -165,10 +165,30 @@ static bool wants_its_argument_reduced_P(AST::Node* fn) {
 	return(fnOperation ? fnOperation->eager_P() : fn == &reducer);
 }
 static int recursionLevel = 0; /* anti-endless-loop */
+
+// caching results.
+static int fGeneration = 1;
+static bool application_result_P(AST::Node* app) {
+	return(((AST::Application*) app)->resultGeneration == fGeneration);
+}
 static AST::Node* remember(AST::Node* app, AST::Node* result) {
 	((AST::Application*) app)->result = result;
-	//((AST::Application*) app)->bResult = true;
+	((AST::Application*) app)->resultGeneration = fGeneration;
 	return(result);
+}
+AST::Node* get_application_result(AST::Node* n) {
+	AST::Application* app = (AST::Application*) n;
+	if(app->resultGeneration != fGeneration) {
+		app->result = NULL;
+		reduce(app);
+	}
+	return(app->result);
+}
+int increaseGeneration(void) {
+	++fGeneration;
+	if(fGeneration < 0) // sigh
+		fGeneration = 0;
+	return(fGeneration);
 }
 AST::Node* reduce(AST::Node* term) {
 	if(recursionLevel > 1000) {
@@ -176,7 +196,7 @@ AST::Node* reduce(AST::Node* term) {
 		throw EvaluationException("recursion was too deep");
 	}
 	if(application_P(term)) {
-		if(((AST::Application*) term)->bResult)
+		if(application_result_P(term))
 			return(((AST::Application*) term)->result);
 		AST::Node* fn;
 		AST::Node* argument;
@@ -244,15 +264,6 @@ AST::Node* makeError(const char* reason) {
 }
 bool define_P(AST::Node* input) {
 	return(input != NULL && application_P(input) && get_application_operator(input) == AST::intern("define"));
-}
-AST::Node* get_application_result(AST::Node* n) {
-	AST::Application* app = (AST::Application*) n;
-	if(!app->bResult) {
-		app->bResult = true;
-		app->result = NULL;
-		reduce(app);
-	}
-	return(app->result);
 }
 AST::Node* evaluate(AST::Node* computation) {
 	if(application_P(computation))

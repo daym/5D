@@ -24,6 +24,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent);
 GtkWidget* REPL_get_widget(struct REPL* self);
 struct REPL* REPL_new(GtkWindow* parent);
 void REPL_clear(struct REPL* self);
+bool interrupted_P(void);
 
 }; // end namespace GUI
 #endif /* ndef __GTKREPL_H */

@@ -2,11 +2,14 @@
 #include <stdlib.h>
 #include "TUI/Interrupt"
 
-namespace TUI {
+namespace GUI {
 
 static volatile bool B_SIGINT_happened = false;
 static void handle_SIGQUIT(int s) { /* ctrl-backslash */
 	exit(1);
+}
+bool interrupted_P(void) {
+	return(B_SIGINT_happened);
 }
 static void handle_SIGINT(int s) {
 	signal(SIGINT, handle_SIGINT);

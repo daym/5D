@@ -21,6 +21,12 @@
 #include "GUI/WIN32Completer"
 #include "Formatters/Math"
 
+namespace GUI {
+bool interrupted_P(void) {
+	return(false); // TODO
+}
+
+};
 namespace REPLX {
 	static void REPL_init_builtins(struct REPL* self);
 	static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node);

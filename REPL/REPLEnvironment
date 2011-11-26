@@ -217,6 +217,7 @@ void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::N
 static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node) {
 	if(self->fTailUserEnvironmentFrontier) {
 		envEntrySetTail(self->fTailUserEnvironmentFrontier, node);
+		increaseGeneration();
 		return(envEntryGetTail(self->fTailEnvironment));
 	} else
 		return(node);

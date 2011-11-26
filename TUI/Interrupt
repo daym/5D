@@ -1,9 +1,10 @@
 #ifndef __TUI_INTERRUPT_H
 #define __TUI_INTERRUPT_H
-namespace TUI {
+namespace GUI {
 
 void install_SIGINT_handler(void);
 void install_SIGQUIT_handler(void);
+bool interrupted_P(void);
 
-}; /* TUI */
+}; /* GUI */
 #endif /* ndef __TUI_INTERRUPT_H */

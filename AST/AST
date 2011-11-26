@@ -24,7 +24,7 @@ struct Application : Node {
 	Node* operator_;
 	Node* operand;
 	Node* result;
-	bool bResult;
+	int resultGeneration;
 	//virtual std::string str(void) const;
 };
 struct Abstraction : Node {

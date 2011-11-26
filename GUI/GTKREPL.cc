@@ -39,6 +39,13 @@ You should have received a copy of the GNU General Public License along with thi
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(REPL_handle_##name), self)
 #define connect_accelerator(key, modifiers, action_name) REPL_connect_accelerator(self, key, modifiers, get_action(action_name), "<Actions>/actiongroup/"#action_name)
 
+namespace GUI {
+bool interrupted_P(void) {
+	return(false); // TODO
+}
+
+};
+
 namespace REPLX {
 
 struct Completer;

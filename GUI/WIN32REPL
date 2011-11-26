@@ -19,6 +19,7 @@ void REPL_load(struct REPL* self);
 HWND REPL_get_window(struct REPL* self);
 HWND REPL_get_search_window(struct REPL* self);
 PHANDLE REPL_get_waiting_handles(struct REPL* REPL, DWORD* handleCount);
+bool interrupted_P(void);
 
 }
 
