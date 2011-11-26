@@ -4,7 +4,6 @@
 namespace FFIs {
 struct ResultMarshaller : Evaluators::SymArgCacheFFI {
 	ResultMarshaller(AST::Node* fallback) : Evaluators::SymArgCacheFFI(fallback) {}
-	virtual std::string str(void) const;
 	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the result type signature. Result is a ArgumentMarshaller */
 };
 };
