@@ -151,8 +151,9 @@ static void REPL_init_builtins(struct REPL* self) {
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
 	}
 	REPL_add_static_builtin_binding(self, AST::intern("'"), &quoter); /* keep at the beginning */
-	REPL_add_static_builtin_binding(self, AST::intern("define"), &quoter);
-	REPL_add_static_builtin_binding(self, AST::intern("defrec"), &quoter);
+	REPL_add_static_builtin_binding(self, AST::intern("define"), &quoter); // dummy
+	REPL_add_static_builtin_binding(self, AST::intern("defrec"), &quoter); // dummy
+	REPL_add_static_builtin_binding(self, AST::intern("let"), &quoter); // dummy
 	REPL_add_static_builtin_binding(self, AST::intern("reduce"), &Evaluators::reducer);
 	REPL_add_builtin_method(self, AST::intern("fromLibrary"), FFIs::LibraryLoader);
 	REPL_add_static_builtin_binding(self, AST::intern("nil"), NULL);
