@@ -153,6 +153,9 @@ AST::Node* MathParser::parse_value(void) {
 	if(input_value == intern(")")) {
 		raise_error("<value>", ')');
 		return(NULL);
+	} else if(input_value == intern("<EOF>")) {
+		raise_error("<value>", "<EOF>");
+		return(NULL);
 	} else if(input_value == intern("\\")) { // function abstraction
 		consume();
 		return(parse_abstraction());

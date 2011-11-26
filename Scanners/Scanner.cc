@@ -62,7 +62,7 @@ void Scanner::raise_error(const std::string& expected_text, int got_text) {
 }
 
 bool Scanner::EOFP(void) const {
-	return(input_value == NULL);
+	return(input_value == AST::intern("<EOF>"));
 }
 void Scanner::ensure_end(void) {
 	if(!EOFP())
@@ -116,7 +116,7 @@ void Scanner::parse_token(void) {
 		parse_string(input);
 		break;
 	case EOF:
-		input_value = NULL;
+		input_value = AST::intern("<EOF>");
 		break;
 	case '@': // FIXME remove this for S expressions?
 		parse_keyword(input);
