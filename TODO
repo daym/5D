@@ -3,13 +3,6 @@
 let a=b+c in ...
 list comprehensions in []
 
-= Parser =
-
-1+2⋅ => error or partial application
---x
-"# " as line comment starter (=> rem)
-unary posfix operators like "!"?
-
 = Builtin Types =
 
 numbers: 1. Int (done), 2. Integer (done), 3. Q, 4. Float (done), 5. arbitrary-precision fixed point
@@ -77,3 +70,11 @@ pattern-match env entry back to the let macro.
 performance optimisation: use the lowest bit to signify pointers (1=it is one). This will have problems with native pointers maybe, so also override the native allocator.
 degrade from Integer to Int when possible.
 $! strict applicator
+
+= Parser =
+
+1+2⋅ => error or partial application
+--x
+"# " as line comment starter (=> rem)
+unary posfix operators like "!"?
+
