@@ -1527,4 +1527,597 @@ drop (-7) [1 2 3 4]
 define drop rec \\drop \\count \\list if (nil? list) [] (if (count > 0) (drop (count - 1) (tail list)) list)
 drop 5 [1 2 3]
 drop 6 [1 2 3]
-") environment) ((\id ((\if ((\else ((\otherwise ((\|| ((\&& ((\not ((\implies? ((\equivalent? ((\Y ((\rec ((\| ((\compose ((\toBool ((\flip ((\< ((\> ((\>= ((\≤ ((\≥ ((\= ((\/= ((\abs ((\list? ((\rangeLL ((\range ((\range1 ((\foldr ((\foldl ((\map ((\filter ((\= ((\filter ((\rdivp ((\rdivp ((\rdivp ((\rdivp ((\rmodp ((\reverse ((\strInt ((\fac ((\zipWith ((\take ((\rdivp ((\rdivp ((\rdivp ((\monadValue ((\runWorld ((\monadLift ((\; ((\monadWorld ((\; ((\zip ((\% ((\lift ((\list? ((\div ((\mod ((\= ((\= ((\= ((\= ((\drop ((\drop ((\drop nil) (rec (\drop (\count (\list (((if (nil? list)) nil) (((if ((> count) 0)) ((drop ((- count) 1)) (tail list))) list)))))))) (rec (\drop (\count (\list (((if ((> count) 0)) ((drop ((- count) 1)) (tail list))) list))))))) (rec (\drop (\count (\list (((if ((> count) 0)) (drop (tail list))) list))))))) (rec (\eq (\a (\b (((if ((|| (cons? a)) (cons? b))) (((if ((&& (cons? a)) (cons? b))) ((&& ((eq (head a)) (head b))) ((eq (tail a)) (tail b)))) #f)) ((= a) b)))))))) (rec (\eq (\a (\b (((if ((|| (cons? a)) (cons? b))) (((if ((&& (cons? a)) (cons? b))) ((&& ((eq (head a)) (head b))) ((eq (tail a)) (tail b)))) #f)) ((= a) b)))))))) (\a (\b (((if ((&& (nil? a)) (nil? b))) #t) ((= a) b)))))) (\a (\b (((((if ((&& (symbol? a)) (symbol? b))) symbolsEqual?) =) a) b))))) (\a (\b ((| ((| ((divmod a) b)) tail)) head))))) (\a (\b ((| ((divmod a) b)) head))))) (\v ((|| (cons? v)) (nil? v))))) monadLift)) (\a (\b (head (tail ((divmod a) b))))))) (\l1 (\l2 (((zipWith (\x (\y ((: x) ((: y) nil))))) l1) l2))))) (\monad (\consumer (\world ((consumer (monadValue (monad world))) (monadWorld (monad world)))))))) (\monad (head (tail monad))))) (\monad (\consumer (\world ((consumer (monadValue (monad world))) (monadWorld (monad world)))))))) (\v (\world ((: v) ((: world) nil)))))) ((compose monadValue) internalRunWorld2))) (\m (head m)))) (\d (rec (\rdiv (\n (((if ((< ((- n) d)) 0)) 0) ((+ 1) (rdiv ((- n) d)))))))))) (\d (rec (\rdiv (\n ((((if ((< ((- n) d)) 0)) 0) else) ((+ 1) (rdiv ((- n) d)))))))))) (\d (rec (\rdiv (\n ((+ ((((if ((< ((- n) d)) 0)) 0) else) 1)) (rdiv ((- n) d))))))))) (\n (\list (((zipWith (\x (\y y))) ((range1 0) n)) list))))) (\f (rec (\zipWith (\l1 (\l2 (((if ((|| (nil? l1)) (nil? l2))) nil) ((: ((f (head l1)) (head l2))) ((zipWith (tail l1)) (tail l2))))))))))) (\v a))) (rec (\strInt (\v (((if ((= v) 0)) nil) ((: ((rmodp 10) v)) (strInt ((rdivp 10) v))))))))) (\list (((foldl (flip :)) nil) list)))) (\d (\n ((- n) ((* d) ((rdivp d) n))))))) (\d (rec (\rdivp (\n (((if ((< ((- n) d)) 0)) 0) ((+ 1) (rdivp ((- n) d)))))))))) (\d (rec (\rdivp (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d))))))))) (\d (rec (\rdivp (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d))))))))) (\d (rec (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d)))))))) (\f (rec (\filter (\list ((((if (nil? list)) nil) (((if (f (head list))) (: (head list))) id)) (filter (tail list))))))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) (\f (rec (\filter (\list ((((if (nil? list)) nil) (((if (f (head list))) (: (head list))) id)) (filter (tail list))))))))) (\f (\list (((foldr ((compose :) f)) nil) list))))) (\folder (rec (\foldl (\value (\list (((if (nil? list)) value) ((foldl ((folder value) (head list))) (tail list)))))))))) (\folder (\value (rec (\foldr (\list (((if (nil? list)) value) ((folder (head list)) (foldr (tail list))))))))))) (\beginning (\frontier (((rangeLL 1) frontier) beginning))))) (\beginning (\frontier (\step (((rangeLL step) frontier) beginning)))))) (\step (\frontier (rec (\rangeLL (\beginning (((if ((<= frontier) beginning)) nil) ((: beginning) (rangeLL ((+ beginning) step))))))))))) (\a ((|| (cons? a)) (nil? a))))) (\a (((if ((<= 0) a)) a) ((- 0) a))))) (\a (\b (not ((= a) b)))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) >=)) <=)) (\a (\b ((<= b) a))))) (flip <))) (\a (\b ((&& ((<= a) b)) (not ((<= b) a))))))) (\f (\a (\b ((f b) a)))))) (\v ((v (' t)) (' f))))) (\f (\g (\x (f (g x))))))) (\a (\b (b a))))) Y)) (\f ((\x (f (x x))) (\x (f (x x))))))) (\a (\b ((|| ((&& a) b)) ((&& (not a)) (not b))))))) (\a (\b ((|| (not a)) b))))) (\a (\t (\f ((a f) t)))))) (\a (\b (\t (\f ((a ((b t) f)) f))))))) (\a (\b (\t (\f ((a t) ((b t) f)))))))) id)) id)) id)) (\f f))) nil)
+drop 2 [1 2 3]
+length
+length 1
+length [1]
+reduce
+define length \\list foldl (+) 0 (map (\\x 1) list)
+length [1 2 3 4]
+length [5 5 5 5]
+length [5 5 5]
+length []
+length []-2
+range 1 100
+range 1 100 1
+(range 1 100 1)
+reverse (range 1 100 1)
+reverse (range 1 10 1)
+5 + 4444444444444444444
+5 + 4444444444444444444 + 999999999999999999999999999999999999999999999999999999999999999999999999999999
+5 + 4444444444444444444 + 999999999999999999999999999999999999999999999999999999999999999999999999999999
+runWorld (lift 42)
+runWorld (lift 1)
+runWorld (lift 1 ; \\v lift 2)
+runWorld (lift 1 ; \\v lift 2 + v)
+runWorld (lift 1 ; \\v lift (2 + v))
+flip
+#info 
+#info (>)
+#info (>)
+#info (<)
+int? 1
+int? 2.3
+integer? 2.3
+integer? 2
+rec
+#info rec
+#info Y
+#x43
+#x10
+#o10
+#r10
+#5r10
+#5r11
+toBool 
+5 | toBool 
+#t | toBool 
+not #t
+not #t |toBool 
+5 + 5
+5 + 5⋅3
+5 + 5⋅3 + 14
+5+3
+define (+) rec \\(p) \\a \\b if (list? a && list? b) (if (nil? a && nil? b) nil (p (head a) (head b)):(p (tail a) (tail b)) (+ a b)
+define (+) rec \\(p) \\a \\b if (list? a && list? b) (if (nil? a && nil? b) nil (p (head a) (head b)):(p (tail a) (tail b)) (+ a b)
+define (+) rec \\p \\a \\b if (list? a && list? b) (if (nil? a && nil? b) nil ((p (head a) (head b)):(p (tail a) (tail b)))) (+ a b)
+[1 1]+[2 1]
+[1 1] + [2 1]
+[1 1] + [2 (-1)]
+[1 2 3] + [4 5 6]
+define (-) rec \\p \\a \\b if (list? a && list? b) (if (nil? a && nil? b) nil ((p (head a) (head b)):(p (tail a) (tail b)))) ((-) a b)
+[1 2 3] + [4 5 6]
+[1 2 3] - [4 5 6]
+[]+[]
+[1 2 3]+[4 5 6]
+[1 2 3]+ [4 5 6]
+[1 2 3]+[7 2 3]
+[1 2 3]+[4 5 6]
+5 + 43
+5 + 42
+8 + 64
+2 + 42
+2 + 42 + 5555
+2 + 42 + 5555 - 2
+[1 2 3]-[4 5 6]
+[1 2 3]-[4 5]
+[1 2]-[4 5]
+[1]-[4 5]
+1-[4 5]
+[1 2 3]-[4 5 6]
+[1 2 3]-[4 5 6]
+[[1 2 3]
+[[1 2 3] [4 5 6]] + [6 7 8]
+[[1 2 3] [4 5 6]] + [[6 7 8] [9 10 11]]
+[[1 2 3] [4 5 6]]
+[[1 2 3] [4 5 6]] [[4 5 6] [7 8 9]]
+#t && #t
+#t && #t |toBool 
+#f || #t |toBool 
+and
+#f || #t |toBool 
+:
+;
+:
+#info :
+Y
+%
+2%3
+6%3
+5⋅32
+5⋅32 + 42
+a⋅32 + 42
+a⋅32 + 42 ; 2
+'; a⋅32 + 42 2
+'; (a⋅32 + 42) 2
+filter
+filter int? [1 2 3]
+filter int? [1 2 3 'hello]
+filter int? [1 'hello 2]
+filter int? [1 'hello 2 \"hello\"]
+[1 2 3]+[4 5 6]
+[1 2 3] + [4 5 6]
+[1 2 (-5)] + [4 5 6]
+[7 6 5]
+[7 6 5] + [2 1 1]
+666 + 32
+[666] + [32]
+dim
+zipWith (zipWith (+)) [1 2 3]
+zipWith (zipWith (+)) [1 2 3] [4 5 6]
+define transpose \\m (foldr (zipWith (:)) [[] [] [] [] [] [] [] []])
+define transpose \\m (foldr (zipWith (:)) [[] [] [] [] [] [] [] []]) m
+transpose [[1 2 3] [4 5 6]]
+define transpose \\m (foldr (zipWith (:)) [nil nil nil]) m
+define transpose \\m (foldr (zipWith (:)) [nil nil nil nil]) m
+transpose [[1 2 3] [4 5 6]]
+define transpose \\m (foldr (zipWith (:)) [nil nil nil nil nil]) m
+transpose [[1 2 3] [4 5 6]]
+transpose [1 2 3] [4 5 6]
+transpose [[1 2 3] [4 5 6]]
+[[]]
+[[] []]
+[[] [] []]
+]
+[[] [] []]
+list? []
+list? [1 2 3]
+1 + 2
+1 + 2
+\\x x
+(\\x x)
+(\\x x) 2
+5
+[]
+5 + 2
+5 + 2 + []
+5 + 2 
+5 + 2
+[5 2]+[8 3]
+[5 2] + [8 3]
+transpose [[1 2] [3 4] [5 6]]
+repeat
+repeat
+[[1 2 3] [4 5 6]
+[[1 2 3] [4 5 6]]
+[[1 2 3] [4 5 6]]
+1 + 2
+6 + 5
+rec 
+#info transpose
+#info transpose 1
+#info transpose 2
+#info transpose 3
+#info transpose 4
+#info transpose 5
+#info transpose
+[1 2 3] + [4 5 6]
+[1 2 3] + [4 5 6.3]
+mm [[1 2 3] [4 5 6]] [[1 2 3 4] [2 3 4 5] [3 4 5 6]]
+transpose []
+define transpose \\m if (nil? m) [] ((foldr (zipWith (:)) [nil nil nil nil nil]) m)
+transpose []
+transpose [[1 2] [3 4] [5 6]]
+mm [[1 2 3] [4 5 6]] [[1 2 3 4] [2 3 4 5] [3 4 5 6]]
+define mmul \\a \\b zipWith (\\xs \\ys foldl (+) 0 (zipWith (\\a \\b ⋅) xs ys)) a (transpose b)
+mmul [[1 2 3] [4 5 6]] [[1 2 3 4] [2 3 4 5] [3 4 5 6]]
+define mmul \\a \\b zipWith (\\xs \\ys [xs ys]) a (transpose b)
+mmul [[1 2 3] [4 5 6]] [[1 2 3 4] [2 3 4 5] [3 4 5 6]]
+define mmul \\a \\b zipWith (\\xs \\ys foldl (+) 0 (zipWith (\\a \\b ⋅) xs ys)) a (transpose b)
+[1 2 3]
+[1 2 3] + [4 5 6]
+[6 7 8] + [9 10 11]
+\"a\"
+\"abc\"
+\"abc\"
+\\x \"abc\"
+\\x \"abc\" |x
+\\x \"abc\" |toBool 
+(\\x \"abc\") |toBool 
+reverse [1 2 3]
+[2 3 4]+[5 6 7]
+abs 5
+abs (-5)
+zip [1 2 3] [4 5 6]
+otherwise 
+id
+if
+#info if
+#info id
+div 5 2
+addrsLE? 1 2
+addrsLE? 2 1
+addrsLE? 'a 'a
+addrsLE? 'a 'b
+addrsLE? 'a 'a
+addrsLE? 'a 'b
+addrsLE? 'a 'a
+addrsLE? [] []
+let a=3
+let a=3 in 
+let a=3 in a
+let a = 3 in a
+let a = 3 in a+2
+let a = 3 in a+a
+let a = 3 in a+b
+let a = 3 in a + a
+let a = 3 in (a + a)
+let a = 3 in (a + a ⋅ b)
+let a = 3 in:
+[1 2 3] + [4 5 6]
+drop 2 []
+drop 2 [1 2 3]
+addrsLE? 1 2
+addrsLE? 1 1
+addrsLE? 'a 'a
+addrsLE? 'a 'b
+addrsLE? 'b 'a
+runWorld (display \"hello world\")
+[1 2 3]
+[1 2 3] < [4 5 7]
+[1 2 3] + [4 5 6]
+[1 2 3] + [4 5 6] + [7 8 9]
+[1 2 3] + [4 5 6] + [7 8 9] + [10 11 12]
+[1 2 3]+[4 5 6]+[7 8 9]+[10 11 12]
+[1 2 3]+[4 5 6]+[7 8 9]+[10 11 12]
+[1 2 3] + [4 5 6] + [7 8 9] + [10 11 12]
+[1 2 3] + [4 5 6] + [7 8 9] + [10 11 12]
+[1 2 3] + [4 5 6] + [7 8 9] + [10 11 12]
+[1 2 3] + [4 5 6]
+#t |toBool 
++
++
+#info +
+#info + 1
+#info + 2
+#info + 3
+id
+if
+5>2
+5>2 |toBool 
+reverse (range 0 10 1)
+reverse (range 0 100 1)
+reverse (range 0 100 1)
+#f && #t
+#t && #t
+#t && #t |toBool 
+runWorld 
+lift 42 | runWorld 
+list? [1 2 3]
+list? [1 2 3]
+list? [1 2 3] |toBool 
+mmul 
+mmul 
+abs 5
+abs 5522
+abs 5522.2
+abs [1 2 3]
+map abs [1 2 3]
+zipWith (+) [1 2 3] [4 5 6]
+int? 42
+drop 42 []
+drop 42 (range 0 10 1)
+drop 42 (range 0 100 1)
+drop 42 (range 0 1000 1)
+drop 42 (range 0 700 1)
+drop 42 (range 0 400 1)
+drop 42 (range 0 00 1)
+drop 42 (range 0 200 1)
+reverse (range 0 200 1)
+[1 2 3] |list? |toBool 
+fac
+define fac rec \\fac \\v if (v=0) 1 (v * fac (v-1))
+define fac rec \\fac \\v if (v=0) 1 (v * (fac (v-1)))
+fac 5
+define fac rec \\fac \\v if (v=0) 1 (v * (fac (v-1)))
+fac 2
+fac 5
+fac 10
+fac 100
+drop 2 []
+drop 2 1
+drop 2 [1 2 3]
+define uniq rec \\uniq \\previous \\list if (nil? list) nil (if (previous=(head list)) (head list):(uniq (head list) (tail list)) (tail list))
+uniq nil [a b c]
+uniq nil ['a 'b 'c]
+uniq nil [1 2 3]
+define uniq rec \\uniq \\previous \\list if (nil? list) nil (if (previous = (head list)) ((head list):(uniq (head list) (tail list))) (tail list))
+uniq nil [1 2 3]
+1=1
+1=1 |toBool 
+uniq nil [1]
+uniq nil []
+uniq nil [1]
+uniq nil [1 2]
+uniq nil [1]
+define uniq rec \\uniq \\previous \\list if (nil? list) nil (if (previous = (head list)) ((head list):(uniq (head list) (tail list))) (tail list))
+uniq nil [1]
+define uniq rec \\uniq \\previous \\list if (nil? list) nil (uniq (head list) (tail list))) (tail list)
+define uniq rec \\uniq \\previous \\list if (nil? list) nil (uniq (head list) (tail list))
+uniq nil [1]
+uniq nil [1 2]
+define uniq rec \\uniq \\previous \\list if (nil? list) nil (head list):(uniq (head list) (tail list))
+uniq nil [1 2]
+define uniq rec \\uniq \\previous \\list if (nil? list) nil (if (1=2) (head list):(uniq (head list) (tail list)) (uniq (head list) (tail list)))
+uniq nil [1 2]
+define uniq rec \\uniq \\previous \\list if (nil? list) nil (if ((head list)=previous) (head list):(uniq (head list) (tail list)) (uniq (head list) (tail list)))
+define uniq rec \\uniq \\previous \\list if (nil? list) nil (if ((head list)=previous) (uniq (head list) (tail list)) (head list):(uniq (head list) (tail list)))
+uniq nil [1 2]
+head [1 2]
+head [1 2] = 1
+head [1 2] = 1 |toBool 
+define uniq rec \\uniq \\previous \\list if (nil? list) nil (if ((head list)=previous) (uniq previous (tail list)) (head list):(uniq (head list) (tail list)))
+head [1 1 2] = 1 |toBool 
+uniq nil [1 2]
+head [1 2] = 1 |toBool 
+uniq nil [1 1 2]
+uniq nil []
+uniq [] []
+uniq [] []
+abs 5
+abs (-5)
+abs (-5.2)
+2/3
+5/4
+5/2
+4/2
+1/0
+1.0/0
+1.0/0.0
+111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111/0
+1.0/0.0
+inf
+inf
+-inf
+abs 5
+-3
+lift 4 
+lift 4  |runWorld 
+lift 4  |runWorld 
+(lift 4 ; \\v lift 3) |runWorld 
+define display \\world \\v lift v
+runWorld (display \"hello\")
+define display \\v lift v
+runWorld (display \"hello\")
+runWorld (display \"hello\")
+display \"hello\"
+runWorld (display \"hello\")
+runWorld (display \"hello\")
+runWorld (display \"hello\")
+runWorld (display \"hello\")
+runWorld (display \"hello\")
+runWorld (display \"hello\")
+runWorld (display \"hello\" ;\\v display \"world\")
+runWorld (display \"hello\" ;\\v display v \"world\")
+int0
+int
+int0
+int0 
+intSucc 
+intSucc 1
+intSucc 20
+intSucc 2.3
+intSucc 2
+(+1)
+(+1) 2
+(+1) 100
+(+1) 10000
+5 + 5
+5 + 5 ⋅ f
+5 + 5 ⋅ f x
+runWorld (lift 1)
+runWorld (lift 1 ; \\v lift 2)
+runWorld (lift 1 ; \\v lift 2)
+runWorld (lift 1 ; \\v lift 2 + v)
+runWorld (lift 1 ; \\v lift (2 + v))
+runWorld (lift 1 ; \\v lift 2⋅v)
+runWorld (lift 4 ; \\v lift 2⋅v)
+#t && #f
+#t && #f |toBool 
+lift 1 ;\\v lift 42
+lift 1 ;\\v lift 42 | runWorld
+(lift 1 ;\\v lift 42 | id) runWorld
+(lift 1 ;\\v lift 42 | id) | runWorld
+(lift 1 ;\\v lift 42 | square) | runWorld
+(lift 1 ;\\v lift 42 | (\\x x*x)) | runWorld
+(lift 1 ;\\v lift (42 | (\\x x*x))) | runWorld
+42*42
+fac
+fac 5
+addrsLE? 
+addrsLE? 'a 'a
+addrsLE? 'a 'a && addrsLE? 'a 'a
+addrsLE? 'b 'a && addrsLE? 'a 'b
+addrsLE? 'b 'a && addrsLE? 'a 'b | toBool 
+addrsLE? 'a 'a && addrsLE? 'a 'a | toBool 
+intern \"G\"
+abs 5
+abs (-5)
+99999999999999999999999999999999999999999999999/2
+99999999999999999999999999999999999999999999999/3
+abs 5
+⟨⟩
+⟨x⟩
+⟨x⟩
+⟨ x ⟩
+runWorld (lift 42)
+runWorld (lift 42 ; \\v lift 1)
+runWorld (lift 42 ;\\v lift 1)
+runWorld (lift 42 ;\\v lift 1)
+runWorld (lift 42 ;\\v lift 2⋅v)
+rem
+⟨x⟩
+{x}
+{x}
+{x}
+{a}
+⟨⟩
+⟨k⟩
+Δx
+∂x
+δx
+addrsLE? 
+2 + 3 ⋅ 5
+2 + 3⋅5
+2 + 3⋅5 + 5
+f + x
+f + 2
+a + 2
+abs 5
+abs (-5)
+ls |grep \"a\"
+let
+let
+let
+let
+let 
+define
+let
+if
+defrec
+let
+5/0
+5%0
+int0
+rec id
+rec id
+uniq nil [1 2 3]
+uniq nil (range 1 100 1)
+uniq nil (range 1 300 1)
+reverse (range 1 300 1)
+reverse (range 1 200 1)
+reverse (range 1 200 1)
+1%0
+1%0
+1%0
+divmod 1 0
+intern \"A\"
+intern \"abc\"
+intern 'a
+map (\\x x) [1 2 3]
+map (\\x x) [1 2 3]
+map (\\x x) [3 4 5]
+map (\\x x) [3 4 5]
+2<=2
+2<=3
+2≤3
+length [1 2 3]
+length [4 5 6 7]
+drop 2 [4 5 6 7]
+drop (-2) [4 5 6 7]
+intern \"A\"
+symbolFromStr \"a\"
+symbolFromStr 
+symbolFromStr \"a\"
+fac 5
+fac 2
+fac 3
+fac 9
+fac 15
+fac 20
+fac 25
+fac 30
+fac 40
+fac 50
+fac 60
+fac 70
+fac 80
+fac 90
+fac 10
+abs
+abs 2
+abs (-3)
+abs (-3)
+abs (-4)
+map id [1 2 3]
+1/=2
+1/=2 |toBool 
+1/=2 | toBool 
+a | b
+{}
+transpose [[1 2 3] [4 5 6]
+transpose [[1 2 3] [4 5 6]]
+[[1 2 3] [4 5 6] [7 8 9]] + transpose [[1 2 3] [4 5 6] [7 8 9]]
+nil
+|
+||
+||
+&&
+range 0 10 5
+range 0 100 5
+range 0 1000 5
+length (range 0 1000 5)
+2=2
+2=2 |toBool 
+[1 2 3] ++ [4 5 6]
+++
+define (++) \\a \\b foldr (:) b a
+[1 2 3] ++ [4 5 6]
+merge
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (if (nil? l1 || head l2 < head l1) ((head l2):merge (l1 (tail l2))) (head l1):merge ((tail l1) l2))))
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (if (nil? l1 || head l2 < head l1) ((head l2):merge (l1 (tail l2))) (head l1):merge ((tail l1) l2)))
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (if (nil? l1 || head l2 < head l1) ((head l2):merge (l1 (tail l2))) (head l1):merge ((tail l1) l2))
+merge [1 2 3] [1 2 3]
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (if (nil? l1 || (not (nil? l2) && (head l2) < (head l1))) ((head l2):merge (l1 (tail l2))) (head l1):merge ((tail l1) l2))
+merge [1 2 3] [1 2 3]
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (if (nil? l2 || (head l1) <= (head l2)) ((head l1):merge ((tail l1) l2)) (head l2):merge (l1 (tail l2)))
+merge [1 2 3] [1 2 3]
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (if (nil? l2 || (head l1) <= (head l2)) ((head l1):merge ((tail l1) l2)) (head l2):merge (l1 (tail l2)))
+merge [1 2 3] [1 2 3]
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (if (nil? l2 || (head l1) <= (head l2)) ((head l1):(merge ((tail l1) l2))) (head l2):(merge (l1 (tail l2))))
+merge [1 2 3] [1 2 3]
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (if (nil? l2 || ((not (nil? l1)) && (head l1) <= (head l2))) ((head l1):(merge ((tail l1) l2))) (head l2):(merge (l1 (tail l2))))
+merge [1 2 3] [1 2 3]
+merge [1 2 3] [2 3]
+merge [3 4 5] [2 3]
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (let take1 = (merge ((tail l1) l2)) in let take2 = (merge (l1 (tail l2))) in if (nil? l1) take2 (if nil? l2) take1 (if ((head l1) <= (head l2)) take1 take2)))
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (let take1 = (merge ((tail l1) l2)) in let take2 = (merge (l1 (tail l2))) in if (nil? l1) take2 (if nil? l2) take1 (if ((head l1) <= (head l2)) take1 take2))
+merge [3 4 5] [2 3]
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (let take1 = (merge (tail l1) l2) in let take2 = (merge l1 (tail l2)) in if (nil? l1) take2 (if nil? l2) take1 (if ((head l1) <= (head l2)) take1 take2))
+merge [3 4 5] [2 3]
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (if (nil? l2 ((head l1):(merge (tail l1) l2))  (if (nil? l1)) && (head l1) <= (head l2))) ((head l1):(merge (tail l1) l2)) (head l2):(merge l1 (tail l2)))
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (if (nil? l2 ((head l1):(merge (tail l1) l2))  (if (nil? l1)) && (head l1) <= (head l2))) ((head l1):(merge (tail l1) l2)) (head l2):(merge l1 (tail l2))
+merge [3 4 5] [2 3]
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil (if (nil? l2 ((head l1):(merge (tail l1) l2))  (if (nil? l1)) || (head l1) <= (head l2))) ((head l1):(merge (tail l1) l2)) (head l2):(merge l1 (tail l2))
+merge [3 4 5] [2 3]
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1)) || (head l1) <= (head l2)))                                                              ((head l1):(merge (tail l1) l2))                                                                   (head l2):(merge l1 (tail l2))
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1)) || (head l1) <= (head l2)))                                                              ((head l1):(merge (tail l1) l2))                                                                   (head l2):(merge l1 (tail l2)
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1 || (head l1) <= (head l2))                                                               (head l1):(merge (tail l1) l2)                                                                     (head l2):(merge l1 (tail l2)))
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1 || (head l1) <= (head l2))                                                               (head l1):(merge (tail l1) l2)                                                                     (head l2):(merge l1 (tail l2))
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1 || (head l1) <= (head l2))                                                               (head l1):(merge (tail l1) l2)                                                                     (head l2):(merge l1 (tail l2)
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1 || (head l1) <= (head l2))                                                               (head l1):(merge (tail l1) l2)                                                                     (head l2):(merge l1 (tail l2)))
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1 || (head l1) <= (head l2))                                                               (head l1):(merge (tail l1) l2)                                                                     (head l2):(merge l1 (tail l2))))
+merge [3 4 5] [2 3]
+merge [3 4 5] [2 3]
+merge [] []
+merge [] [2]
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1) (head l2):(merge l1 (tail l2)))                                                                    (if ((head l1) <= (head l2))                                                               (head l1):(merge (tail l1) l2)                                                                     (head l2):(merge l1 (tail l2))))
+merge [] [2]
+merge [2] []
+merge [2] []
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1) (head l2):(merge l1 (tail l2)))                                                                    (if ((head l1) <= (head l2))                                                               (head l1):(merge (tail l1) l2)                                                                     (head l2):(merge l1 (tail l2))))
+merge [2] []
+merge [2] [2]
+merge [2] []
+merge [2] []
+merge [2] [2]
+merge [2] [2 3]
+merge [] []
+merge [] [2]
+merge [2] []
+merge [2] []
+merge [ 2 ] []
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1) ((head l2):(merge l1 (tail l2))))                                                                    (if ((head l1) <= (head l2))                                                               (head l1):(merge (tail l1) l2)                                                                     (head l2):(merge l1 (tail l2))))
+merge [ 2 ] []
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1) ((head l2):(merge l1 (tail l2)))                                                                    (if ((head l1) <= (head l2))                                                               (head l1):(merge (tail l1) l2)                                                                     (head l2):(merge l1 (tail l2))))
+define merge rec \\merge \\l1 \\l2 if (nil? l1 && nil? l2) nil                                                                           (if (nil? l2) ((head l1):(merge (tail l1) l2))                                                                   (if (nil? l1) ((head l2):(merge l1 (tail l2)))                                                                    (if ((head l1) <= (head l2))                                                               (head l1):(merge (tail l1) l2)                                                                     (head l2):(merge l1 (tail l2)))))
+merge [ 2 ] []
+merge [2] []
+merge [2] [ 3]
+merge [2] [3 4]
+merge [2 5] [3 4]
+merge [2 5 6] [3 4]
+merge [2 5 6 7] [3 4]
+merge [2 5 6 7] [3 4 8]
+merge
+") environment) ((\id ((\if ((\else ((\otherwise ((\|| ((\&& ((\not ((\implies? ((\equivalent? ((\Y ((\rec ((\| ((\compose ((\toBool ((\flip ((\< ((\> ((\>= ((\≤ ((\≥ ((\= ((\/= ((\abs ((\list? ((\rangeLL ((\range ((\range1 ((\foldr ((\foldl ((\map ((\filter ((\= ((\filter ((\rdivp ((\rdivp ((\rdivp ((\rdivp ((\rmodp ((\reverse ((\strInt ((\fac ((\zipWith ((\take ((\rdivp ((\rdivp ((\rdivp ((\monadValue ((\runWorld ((\monadLift ((\; ((\monadWorld ((\; ((\zip ((\% ((\lift ((\list? ((\div ((\mod ((\= ((\= ((\= ((\= ((\drop ((\drop ((\drop ((\length ((\+ ((\- ((\transpose ((\transpose ((\transpose ((\transpose ((\transpose ((\transpose ((\mmul ((\mmul ((\mmul ((\fac ((\fac ((\fac ((\uniq ((\uniq ((\uniq ((\uniq ((\uniq ((\uniq ((\uniq ((\uniq ((\uniq ((\display ((\display ((\++ ((\merge ((\merge ((\merge ((\merge ((\merge ((\merge ((\merge ((\merge ((\merge ((\merge ((\merge ((\merge ((\merge ((\merge ((\merge nil) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) (((if (nil? l2)) ((: (head l1)) ((merge (tail l1)) l2))) (((if (nil? l1)) ((: (head l2)) ((merge l1) (tail l2)))) (((if ((<= (head l1)) (head l2))) ((: (head l1)) ((merge (tail l1)) l2))) ((: (head l2)) ((merge l1) (tail l2))))))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) ((((if (nil? l2)) ((: (head l1)) ((merge (tail l1)) l2))) ((if (nil? l1)) ((: (head l2)) ((merge l1) (tail l2))))) (((if ((<= (head l1)) (head l2))) ((: (head l1)) ((merge (tail l1)) l2))) ((: (head l2)) ((merge l1) (tail l2)))))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) ((((if (nil? l2)) ((: (head l1)) ((merge (tail l1)) l2))) ((if (nil? l1)) ((: (head l2)) ((merge l1) (tail l2))))) (((if ((<= (head l1)) (head l2))) ((: (head l1)) ((merge (tail l1)) l2))) ((: (head l2)) ((merge l1) (tail l2)))))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) ((((if (nil? l2)) ((: (head l1)) ((merge (tail l1)) l2))) ((if (nil? l1)) ((: (head l2)) ((merge l1) (tail l2))))) (((if ((<= (head l1)) (head l2))) ((: (head l1)) ((merge (tail l1)) l2))) ((: (head l2)) ((merge l1) (tail l2)))))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) (((if (nil? l2)) ((: (head l1)) ((merge (tail l1)) l2))) (((if ((|| (nil? l1)) ((<= (head l1)) (head l2)))) ((: (head l1)) ((merge (tail l1)) l2))) ((: (head l2)) ((merge l1) (tail l2)))))))))))) (rec (\merge (\l1 (\l2 (((((if ((&& (nil? l1)) (nil? l2))) nil) (if ((|| (((nil? l2) ((: (head l1)) ((merge (tail l1)) l2))) (if (nil? l1)))) ((<= (head l1)) (head l2))))) ((: (head l1)) ((merge (tail l1)) l2))) ((: (head l2)) ((merge l1) (tail l2)))))))))) (rec (\merge (\l1 (\l2 (((((if ((&& (nil? l1)) (nil? l2))) nil) (if ((&& (((nil? l2) ((: (head l1)) ((merge (tail l1)) l2))) (if (nil? l1)))) ((<= (head l1)) (head l2))))) ((: (head l1)) ((merge (tail l1)) l2))) ((: (head l2)) ((merge l1) (tail l2)))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) ((\take1 ((\take2 (((((if (nil? l1)) take2) ((if nil?) l2)) take1) (((if ((<= (head l1)) (head l2))) take1) take2))) ((merge l1) (tail l2)))) ((merge (tail l1)) l2))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) ((\take1 ((\take2 (((((if (nil? l1)) take2) ((if nil?) l2)) take1) (((if ((<= (head l1)) (head l2))) take1) take2))) (merge (l1 (tail l2))))) (merge ((tail l1) l2)))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) (((if ((|| (nil? l2)) ((&& (not (nil? l1))) ((<= (head l1)) (head l2))))) ((: (head l1)) (merge ((tail l1) l2)))) ((: (head l2)) (merge (l1 (tail l2)))))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) (((if ((|| (nil? l2)) ((<= (head l1)) (head l2)))) ((: (head l1)) (merge ((tail l1) l2)))) ((: (head l2)) (merge (l1 (tail l2)))))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) ((((if ((|| (nil? l2)) ((<= (head l1)) (head l2)))) (((: (head l1)) merge) ((tail l1) l2))) ((: (head l2)) merge)) (l1 (tail l2)))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) ((((if ((|| (nil? l2)) ((<= (head l1)) (head l2)))) (((: (head l1)) merge) ((tail l1) l2))) ((: (head l2)) merge)) (l1 (tail l2)))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) ((((if ((|| (nil? l1)) ((&& (not (nil? l2))) ((< (head l2)) (head l1))))) (((: (head l2)) merge) (l1 (tail l2)))) ((: (head l1)) merge)) ((tail l1) l2))))))))) (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) ((((if ((|| (nil? l1)) ((< (head l2)) (head l1)))) (((: (head l2)) merge) (l1 (tail l2)))) ((: (head l1)) merge)) ((tail l1) l2))))))))) (\a (\b (((foldr :) b) a))))) (\v (lift v)))) (\world (\v (lift v))))) (rec (\uniq (\previous (\list (((if (nil? list)) nil) (((if ((= (head list)) previous)) ((uniq previous) (tail list))) ((: (head list)) ((uniq (head list)) (tail list))))))))))) (rec (\uniq (\previous (\list (((if (nil? list)) nil) (((if ((= (head list)) previous)) ((uniq (head list)) (tail list))) ((: (head list)) ((uniq (head list)) (tail list))))))))))) (rec (\uniq (\previous (\list (((if (nil? list)) nil) (((if ((= (head list)) previous)) ((: (head list)) ((uniq (head list)) (tail list)))) ((uniq (head list)) (tail list)))))))))) (rec (\uniq (\previous (\list (((if (nil? list)) nil) (((if ((= 1) 2)) ((: (head list)) ((uniq (head list)) (tail list)))) ((uniq (head list)) (tail list)))))))))) (rec (\uniq (\previous (\list (((if (nil? list)) nil) ((: (head list)) ((uniq (head list)) (tail list)))))))))) (rec (\uniq (\previous (\list (((if (nil? list)) nil) ((uniq (head list)) (tail list))))))))) (rec (\uniq (\previous (\list (((if (nil? list)) nil) (((if ((= previous) (head list))) ((: (head list)) ((uniq (head list)) (tail list)))) (tail list))))))))) (rec (\uniq (\previous (\list (((if (nil? list)) nil) (((if ((= previous) (head list))) ((: (head list)) ((uniq (head list)) (tail list)))) (tail list))))))))) (rec (\uniq (\previous (\list (((if (nil? list)) nil) (((if ((= previous) (head list))) ((: (head list)) ((uniq (head list)) (tail list)))) (tail list))))))))) (rec (\fac (\v (((if ((= v) 0)) 1) ((* v) (fac ((- v) 1))))))))) (rec (\fac (\v (((if ((= v) 0)) 1) ((* v) (fac ((- v) 1))))))))) (rec (\fac (\v (((if ((= v) 0)) 1) (((* v) fac) ((- v) 1)))))))) (\a (\b (((zipWith (\xs (\ys (((foldl +) 0) (((zipWith (\a (\b *))) xs) ys))))) a) (transpose b)))))) (\a (\b (((zipWith (\xs (\ys ((: xs) ((: ys) nil))))) a) (transpose b)))))) (\a (\b (((zipWith (\xs (\ys (((foldl +) 0) (((zipWith (\a (\b *))) xs) ys))))) a) (transpose b)))))) (\m (((if (nil? m)) nil) (((foldr (zipWith :)) ((: nil) ((: nil) ((: nil) ((: nil) ((: nil) nil)))))) m))))) (\m (((foldr (zipWith :)) ((: nil) ((: nil) ((: nil) ((: nil) ((: nil) nil)))))) m)))) (\m (((foldr (zipWith :)) ((: nil) ((: nil) ((: nil) ((: nil) nil))))) m)))) (\m (((foldr (zipWith :)) ((: nil) ((: nil) ((: nil) nil)))) m)))) (\m (((foldr (zipWith :)) nil) m)))) (\m ((foldr (zipWith :)) nil)))) (rec (\p (\a (\b (((if ((&& (list? a)) (list? b))) (((if ((&& (nil? a)) (nil? b))) nil) ((: ((p (head a)) (head b))) ((p (tail a)) (tail b))))) ((- a) b)))))))) (rec (\p (\a (\b (((if ((&& (list? a)) (list? b))) (((if ((&& (nil? a)) (nil? b))) nil) ((: ((p (head a)) (head b))) ((p (tail a)) (tail b))))) ((+ a) b)))))))) (\list (((foldl +) 0) ((map (\x 1)) list))))) (rec (\drop (\count (\list (((if (nil? list)) nil) (((if ((> count) 0)) ((drop ((- count) 1)) (tail list))) list)))))))) (rec (\drop (\count (\list (((if ((> count) 0)) ((drop ((- count) 1)) (tail list))) list))))))) (rec (\drop (\count (\list (((if ((> count) 0)) (drop (tail list))) list))))))) (rec (\eq (\a (\b (((if ((|| (cons? a)) (cons? b))) (((if ((&& (cons? a)) (cons? b))) ((&& ((eq (head a)) (head b))) ((eq (tail a)) (tail b)))) #f)) ((= a) b)))))))) (rec (\eq (\a (\b (((if ((|| (cons? a)) (cons? b))) (((if ((&& (cons? a)) (cons? b))) ((&& ((eq (head a)) (head b))) ((eq (tail a)) (tail b)))) #f)) ((= a) b)))))))) (\a (\b (((if ((&& (nil? a)) (nil? b))) #t) ((= a) b)))))) (\a (\b (((((if ((&& (symbol? a)) (symbol? b))) symbolsEqual?) =) a) b))))) (\a (\b ((| ((| ((divmod a) b)) tail)) head))))) (\a (\b ((| ((divmod a) b)) head))))) (\v ((|| (cons? v)) (nil? v))))) monadLift)) (\a (\b (head (tail ((divmod a) b))))))) (\l1 (\l2 (((zipWith (\x (\y ((: x) ((: y) nil))))) l1) l2))))) (\monad (\consumer (\world ((consumer (monadValue (monad world))) (monadWorld (monad world)))))))) (\monad (head (tail monad))))) (\monad (\consumer (\world ((consumer (monadValue (monad world))) (monadWorld (monad world)))))))) (\v (\world ((: v) ((: world) nil)))))) ((compose monadValue) internalRunWorld2))) (\m (head m)))) (\d (rec (\rdiv (\n (((if ((< ((- n) d)) 0)) 0) ((+ 1) (rdiv ((- n) d)))))))))) (\d (rec (\rdiv (\n ((((if ((< ((- n) d)) 0)) 0) else) ((+ 1) (rdiv ((- n) d)))))))))) (\d (rec (\rdiv (\n ((+ ((((if ((< ((- n) d)) 0)) 0) else) 1)) (rdiv ((- n) d))))))))) (\n (\list (((zipWith (\x (\y y))) ((range1 0) n)) list))))) (\f (rec (\zipWith (\l1 (\l2 (((if ((|| (nil? l1)) (nil? l2))) nil) ((: ((f (head l1)) (head l2))) ((zipWith (tail l1)) (tail l2))))))))))) (\v a))) (rec (\strInt (\v (((if ((= v) 0)) nil) ((: ((rmodp 10) v)) (strInt ((rdivp 10) v))))))))) (\list (((foldl (flip :)) nil) list)))) (\d (\n ((- n) ((* d) ((rdivp d) n))))))) (\d (rec (\rdivp (\n (((if ((< ((- n) d)) 0)) 0) ((+ 1) (rdivp ((- n) d)))))))))) (\d (rec (\rdivp (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d))))))))) (\d (rec (\rdivp (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d))))))))) (\d (rec (\n ((+ (((if ((< ((- n) d)) 0)) 0) 1)) (rdivp ((- n) d)))))))) (\f (rec (\filter (\list ((((if (nil? list)) nil) (((if (f (head list))) (: (head list))) id)) (filter (tail list))))))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) (\f (rec (\filter (\list ((((if (nil? list)) nil) (((if (f (head list))) (: (head list))) id)) (filter (tail list))))))))) (\f (\list (((foldr ((compose :) f)) nil) list))))) (\folder (rec (\foldl (\value (\list (((if (nil? list)) value) ((foldl ((folder value) (head list))) (tail list)))))))))) (\folder (\value (rec (\foldr (\list (((if (nil? list)) value) ((folder (head list)) (foldr (tail list))))))))))) (\beginning (\frontier (((rangeLL 1) frontier) beginning))))) (\beginning (\frontier (\step (((rangeLL step) frontier) beginning)))))) (\step (\frontier (rec (\rangeLL (\beginning (((if ((<= frontier) beginning)) nil) ((: beginning) (rangeLL ((+ beginning) step))))))))))) (\a ((|| (cons? a)) (nil? a))))) (\a (((if ((<= 0) a)) a) ((- 0) a))))) (\a (\b (not ((= a) b)))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) >=)) <=)) (\a (\b ((<= b) a))))) (flip <))) (\a (\b ((&& ((<= a) b)) (not ((<= b) a))))))) (\f (\a (\b ((f b) a)))))) (\v ((v (' t)) (' f))))) (\f (\g (\x (f (g x))))))) (\a (\b (b a))))) Y)) (\f ((\x (f (x x))) (\x (f (x x))))))) (\a (\b ((|| ((&& a) b)) ((&& (not a)) (not b))))))) (\a (\b ((|| (not a)) b))))) (\a (\t (\f ((a f) t)))))) (\a (\b (\t (\f ((a ((b t) f)) f))))))) (\a (\b (\t (\f ((a t) ((b t) f)))))))) id)) id)) id)) (\f f))) nil)
