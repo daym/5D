@@ -141,9 +141,23 @@ void Scanner::parse_optional_whitespace(void) {
 void Scanner::parse_number(int input) {
 	using namespace AST;
 	std::stringstream matchtext;
+	char oldInput;
+	bool hadDot = false;
 	while((input >= '0' && input <= '9') || input == '.') {
+		if(input == '.') {
+			if(hadDot)
+				break;
+			hadDot = true;
+		}
 		matchtext << ((char) input);
+		oldInput = input;
 		++position, input = fgetc(input_file);
+		if(oldInput == '.') {
+			if(input < '0' || input > '9') { // this wasn't part of the number it seems, so maybe it's supposed to be an operator: 2.size
+				break;
+			}
+		}
+			
 	}
 	if(input == 'e' || input == 'E') {
 		matchtext << ((char) input);
