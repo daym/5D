@@ -1,6 +1,7 @@
 5d (0.0.4) unstable; urgency=low
 
   * move common symbols to AST/Symbols.
+  * add strFromList
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 27 Nov 2011 13:00:29 +0100
 
