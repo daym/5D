@@ -12,11 +12,11 @@ void BorlandFastCallGen::build(AST::Node* call_destination) {
 	for(std::vector<AST::Node*>::const_iterator iter = arguments.begin(); iter != end_iter; ++iter, ++index) {
 		AST::Node* argument = *iter;
 		if(index == 0)
-			code_gen->gen_load_register(AST::intern("%eax"), argument);
+			code_gen->gen_load_register(AST::symbolFromStr("%eax"), argument);
 		else if(index == 1)
-			code_gen->gen_load_register(AST::intern("%edx"), argument);
+			code_gen->gen_load_register(AST::symbolFromStr("%edx"), argument);
 		else if(index == 2)
-			code_gen->gen_load_register(AST::intern("%ecx"), argument);
+			code_gen->gen_load_register(AST::symbolFromStr("%ecx"), argument);
 		else
 			code_gen->gen_push(argument);
 	}

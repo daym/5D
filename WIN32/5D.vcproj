@@ -224,11 +224,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\X86\CodeGen.cc"
+				RelativePath="..\Compilers\CodeGen.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\CodeGen.cc"
+				RelativePath="..\Compilers\X86\CodeGen.cc"
 				>
 			</File>
 			<File
@@ -313,6 +313,10 @@
 			</File>
 			<File
 				RelativePath="..\AST\Symbol.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\AST\Symbols.cc"
 				>
 			</File>
 			<File
@@ -483,6 +487,10 @@
 			</File>
 			<File
 				RelativePath="..\AST\Symbol"
+				>
+			</File>
+			<File
+				RelativePath="..\AST\Symbols"
 				>
 			</File>
 			<File

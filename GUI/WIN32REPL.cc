@@ -492,6 +492,18 @@ void REPL_insert_error_message(struct REPL* self, int destination, const std::st
 	REPL_set_file_modified(self, true);
 	REPL_queue_scroll_down(self);
 }
+static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destination) {
+	// TODO LATEX
+	int position = 0; // TODO use actual horizontal position at the destination.
+	std::stringstream buffer;
+	std::string v;
+	if(result)
+		Formatters::print_math_CXX(REPL_ensure_operator_precedence_list(self), buffer, position, result, 0, false);
+	else
+		buffer << "nil";
+	v = buffer.str();
+	REPL_insert_into_output_buffer(self, destination, v.c_str());
+}
 static void REPL_handle_environment_row_activation(struct REPL* self, HWND list, int index) {
 	using namespace AST;
 	char* command;
@@ -503,7 +515,7 @@ static void REPL_handle_environment_row_activation(struct REPL* self, HWND list,
 		//if(!command)
 		//	return;
 		AST::Node* body = REPL_get_definition(self, index);
-		REPL_enqueue_LATEX(self, body, &end);
+		REPL_enqueue_LATEX(self, body, -1);
 		B_ok = true;
 	}
 	/*if(B_ok)
@@ -539,24 +551,12 @@ static void REPL_delete_environment_row(struct REPL* self, int index) {
 #define GET_Y_LPARAM HIWORD
 #endif
 
-static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destination) {
-	// TODO LATEX
-	int position = 0; // TODO use actual horizontal position at the destination.
-	std::stringstream buffer;
-	std::string v;
-	if(result)
-		Formatters::print_math_CXX(REPL_ensure_operator_precedence_list(self), buffer, position, result, 0, false);
-	else
-		buffer << "nil";
-	v = buffer.str();
-	REPL_insert_into_output_buffer(self, destination, v.c_str());
-}
 
 static void REPL_handle_execute(struct REPL* self, const char* text, int destination, bool B_from_entry) {
 	AST::Node* input;
 	if(info_P(text)) {
-		REPL_insert_into_output_buffer(self, destination, g_strdup_printf("\n%s", text));
-		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+		std::string v = std::string("\n") + text + std::string(" ");
+		REPL_insert_into_output_buffer(self, destination, v.c_str());
 		AST::Node* body = REPL_eval_info(self, text);
 		REPL_enqueue_LATEX(self, body, destination + strlen(text) + 1);
 		return;
@@ -938,7 +938,7 @@ static AST::Node* box_environment_elements(HWND dialog, int index, int count) {
 		HWND environmentList = GetDlgItem(dialog, IDC_ENVIRONMENT);
 		AST::Node* value = (AST::Node*) GetListViewItemUserData(environmentList, index);
 		std::wstring name = GetListViewEntryStringCXX(environmentList, index);
-		AST::Symbol* nameSymbol = AST::intern(ToUTF8(name));
+		AST::Symbol* nameSymbol = AST::symbolFromStr(ToUTF8(name));
 		return(makeEnvEntry(nameSymbol, value, box_environment_elements(dialog, index + 1, count)));
 	}
 }
