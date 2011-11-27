@@ -55,7 +55,7 @@ static AST::Symbol* get_variable_name(AST::Node* root) {
 	else
 		return(NULL);
 }
-static int get_variable_index(AST::Node* root) {
+static inline int get_variable_index(AST::Node* root) {
 	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
 	if(refNode)
 		return(refNode->index);
