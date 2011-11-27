@@ -182,8 +182,9 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, Symbols::StranslateFFI, FFIs::ResultMarshaller);
 	REPL_add_builtin_method(self, Symbols::SsymbolFromStr, Evaluators::Interner);
 	REPL_add_builtin_method(self, Symbols::SkeywordFromStr, Evaluators::KeywordFromStringGetter);
-	REPL_add_builtin_method(self, Symbols::SkeywordStr, Evaluators::KeywordStr);
+	REPL_add_builtin_method(self, Symbols::SstrFromKeyword, Evaluators::KeywordStr);
 	REPL_add_builtin_method(self, Symbols::SlistFromStr, Evaluators::ListFromStringGetter);
+	REPL_add_builtin_method(self, Symbols::SstrFromList, Evaluators::StrFromListGetter);
 	REPL_add_builtin_method(self, Symbols::SinternalRunWorld2, Evaluators::WorldRunner);
 	REPL_add_static_builtin_binding(self, Symbols::Shasht, Evaluators::churchTrue);
 	REPL_add_static_builtin_binding(self, Symbols::Shashf, Evaluators::churchFalse);

@@ -790,4 +790,22 @@ REGISTER_STR(Integer, {
 	return(strInteger(node));
 })
 
+NativeInt toNativeInt(AST::Node* node, bool& B_ok) {
+	Int* intNode;
+	Integer* integerNode;
+	B_ok = false;
+	node = evaluate(node);
+	if(node == NULL)
+		return(0);
+	else if((intNode = dynamic_cast<Int*>(node)) != NULL) {
+		B_ok = true;
+		return(intNode->value);
+	} else if((integerNode = dynamic_cast<Integer*>(node)) != NULL) {
+		NativeInt result = integerNode->toNativeInt();
+		B_ok = true;
+		return(result);
+	} else
+		return(0);
+}
+
 }; /* namespace Numbers */
