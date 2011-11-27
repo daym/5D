@@ -1,3 +1,9 @@
+5d (0.0.4) unstable; urgency=low
+
+  * move common symbols to AST/Symbols.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 27 Nov 2011 13:00:29 +0100
+
 5d (0.0.3) unstable; urgency=low
 
   * add support for (big) Integer.
