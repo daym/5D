@@ -79,4 +79,7 @@ map
 reverse
 length
 repeat
+mergeWith
 merge
+mergeSort
+mergeSortWith
