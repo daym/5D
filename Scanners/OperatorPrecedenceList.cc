@@ -9,6 +9,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <stdio.h>
 #include <assert.h>
 #include "AST/Symbol"
+#include "AST/Symbols"
 #include "Scanners/OperatorPrecedenceList"
 
 namespace Scanners {
@@ -47,10 +48,10 @@ void OperatorPrecedenceList::cons(int precedence_level, struct AST::Symbol* oper
 	++prefix_usages[(unsigned char) operator_->name[0]];
 	levels[precedence_level] = new OperatorPrecedenceItem(levels[precedence_level], operator_, associativity);
 #ifndef SIMPLE_APPLICATION
-	if(operator_ == intern("+"))
+	if(operator_ == symbolFromStr("+"))
 		apply_level = next_precedence_level(precedence_level);
 #endif
-	if(operator_ == intern("-"))
+	if(operator_ == symbolFromStr("-"))
 		minus_level = precedence_level;
 }
 void OperatorPrecedenceList::uncons(int precedence_level, struct AST::Symbol* operator_, struct AST::Symbol* associativity) {
@@ -68,10 +69,10 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		levels[i] = NULL;
 	for(int i = 0; i < 256; ++i)
 		prefix_usages[i] = 0;
-#define I(x) intern(x)
-#define R intern("right")
-#define L intern("left")
-#define N intern("none")
+#define I(x) symbolFromStr(x)
+#define R Symbols::Sright
+#define L Symbols::Sleft
+#define N Symbols::Snone
 #ifdef SIMPLE_APPLICATION
 	apply_level = 12;
 	cons(12, I(" "), L); // apply

@@ -7,6 +7,7 @@
 #include "Evaluators/Builtins"
 #include "AST/AST"
 #include "Scanners/MathParser"
+#include "AST/Symbols"
 
 namespace GUI {
 bool interrupted_P(void);
@@ -62,11 +63,11 @@ static int get_variable_index(AST::Node* root) {
 		return(-1);
 }
 static bool quote_P(AST::Node* root) {
-	if(root == AST::intern("'"))
+	if(root == Symbols::Squote)
 		return(true);
 	else {
 		AST::SymbolReference* ref = dynamic_cast<AST::SymbolReference*>(root);
-		return(ref && ref->symbol == AST::intern("'"));
+		return(ref && ref->symbol == Symbols::Squote);
 	}
 }
 AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& boundNamesSet) {
@@ -270,7 +271,7 @@ AST::Node* makeError(const char* reason) {
 	return(AST::makeStr(reason));
 }
 bool define_P(AST::Node* input) {
-	return(input != NULL && application_P(input) && get_application_operator(input) == AST::intern("define"));
+	return(input != NULL && application_P(input) && get_application_operator(input) == Symbols::Sdefine);
 }
 AST::Node* evaluate(AST::Node* computation) {
 	if(application_P(computation))
@@ -285,7 +286,7 @@ AST::Node* programFromSExpression(AST::Node* root) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	if(consNode) {
 		// application or abstraction
-		if(consNode->head == AST::intern("\\")) { // abstraction
+		if(consNode->head == Symbols::Sbackslash) { // abstraction
 			assert(consNode->tail);
 			assert(evaluateToCons(consNode->tail)->tail);
 			assert(evaluateToCons(evaluateToCons(consNode->tail)->tail)->tail == NULL);

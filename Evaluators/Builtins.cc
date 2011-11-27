@@ -178,8 +178,8 @@ AST::Node* Curried##N::execute(AST::Node* argument) { \
 			else if(aInteger && bFloat) \
 				return toHeap(promoteToFloat(*aInteger) op *bFloat); \
 		} \
-	} \
-	return(makeOperation(AST::intern(#op), a, b)); \
+	} /* TODO optimize this: */ \
+	return(makeOperation(AST::symbolFromStr(#op), a, b)); \
 } \
 REGISTER_STR(N, return(#op);) \
 REGISTER_STR(Curried##N, { \
@@ -239,7 +239,7 @@ static AST::Node* divmodFloat(const Numbers::Float& a, const Numbers::Float& b) 
 		throw EvaluationException("division by zero");
 	// FIXME
 	//return(divmodInt((NativeInt) a.value, (NativeInt) b.value));
-	return(makeOperation(AST::intern("divmod"), toHeap(a), toHeap(b)));
+	return(makeOperation(Symbols::Sdivmod, toHeap(a), toHeap(b)));
 }
 static AST::Node* divmod(AST::Node* a, AST::Node* b) {
 	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a); \
@@ -270,7 +270,7 @@ static AST::Node* divmod(AST::Node* a, AST::Node* b) {
 				return toHeap(divmodFloat(promoteToFloat(*aInteger), *bFloat));
 		}
 	}
-	return(makeOperation(AST::intern("divmod"), a, b));
+	return(makeOperation(Symbols::Sdivmod, a, b));
 }
 
 IMPLEMENT_NUMERIC_BUILTIN(Adder, +)

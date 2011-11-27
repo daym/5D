@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
 #include "FFIs/FFIs"
+#include "AST/Symbols"
 /*include "FFIs/Trampoline"*/
 
 namespace FFIs {
@@ -29,7 +30,7 @@ LibraryLoader::LibraryLoader(AST::Node* fallback) : AST::BuiltinOperation(fallba
 REGISTER_STR(LibraryLoader, return("fromLibrary");)
 AST::Node* LibraryLoader::execute(AST::Node* libraryName) {
 	if(str_P(libraryName))
-		libraryName = AST::intern(((AST::Str*)libraryName)->text.c_str());
+		libraryName = AST::symbolFromStr(((AST::Str*)libraryName)->text.c_str());
 	AST::Symbol* libraryNameSymbol = dynamic_cast<AST::Symbol*>(libraryName);
 	if(libraryNameSymbol == NULL)
 		return(NULL);
@@ -67,7 +68,7 @@ CLibrary::CLibrary(const char* name) {
 AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 	/* argument is the name (symbol). Result is a CProcedure */
 	if(str_P(argument))
-		argument = AST::intern(((AST::Str*)argument)->text.c_str());
+		argument = AST::symbolFromStr(((AST::Str*)argument)->text.c_str());
 	AST::Symbol* nameSymbol = dynamic_cast<AST::Symbol*>(argument);
 	if(nameSymbol == NULL)
 		return(NULL);
@@ -76,7 +77,7 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 		return(iter->second);
 	else {
 		void* proc = dlsym(p->library, nameSymbol->name);
-		AST::Node* fRepr = AST::makeApplication(AST::makeApplication(AST::intern("fromLibrary"), AST::makeStr(p->name.c_str())), AST::makeApplication(AST::intern("'"), nameSymbol));
+		AST::Node* fRepr = AST::makeApplication(AST::makeApplication(Symbols::SfromLibrary, AST::makeStr(p->name.c_str())), AST::makeApplication(Symbols::Squote, nameSymbol));
 		if(!proc) {
 			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", nameSymbol->name, p->name.c_str());
 			return(fRepr);
@@ -85,7 +86,7 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 		return(p->knownProcedures[nameSymbol]);
 	}
 }
-REGISTER_STR(CLibrary, return(str(makeApplication(AST::intern("fromLibrary"), AST::makeStr(node->p->name.c_str()))));)
+REGISTER_STR(CLibrary, return(str(makeApplication(Symbols::SfromLibrary, AST::makeStr(node->p->name.c_str()))));)
 CProcedure::CProcedure(void* native, AST::Node* aRepr) : 
 	AST::Box(native),
 	fRepr(aRepr)

@@ -463,7 +463,7 @@ void REPL_load_tips(struct REPL* self) {
 		contents = parser.parse_S_Expression();
 		fclose(input_file);
 		AST::Cons* contentsCons = dynamic_cast<AST::Cons*>(contents);
-		if(contentsCons && contentsCons->head == AST::intern("tips5DV1"))
+		if(contentsCons && contentsCons->head == AST::symbolFromStr("tips5DV1"))
 			tips = dynamic_cast<AST::Cons*>(contentsCons->tail);
 		else
 			tips = NULL;

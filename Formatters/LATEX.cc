@@ -9,6 +9,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <stdexcept>
 #include "AST/AST"
 #include "AST/Symbol"
+#include "AST/Symbols"
 #include "Formatters/LATEX"
 #include "Scanners/MathParser"
 #include "Formatters/UTFStateMachine"
@@ -44,8 +45,7 @@ void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list
 	if(symbolReference)
 		symbolNode = symbolReference->symbol;
 	if(symbolNode) {
-		bool B_mathrm = symbolNode != AST::intern("**") && symbolNode != AST::intern("^") && symbolNode != AST::intern("_");
-		// && symbolNode != AST::intern("<") && symbolNode != AST::intern(">") && symbolNode != AST::intern("≤") && symbolNode != AST::intern("≥");
+		bool B_mathrm = symbolNode != Symbols::Sasteriskasterisk && symbolNode != Symbols::Scircumflex && symbolNode != Symbols::Sunderscore;
 		if(B_mathrm)
 			output << "\\mathrm{";
 		std::string text = symbolNode->str();
@@ -97,7 +97,7 @@ void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list
 			output << "\\frac{";
 			while(abstraction_P(node2)) {
 				AST::Node* parameter = get_abstraction_parameter(node2);
-				limited_to_LATEX(operator_precedence_list, AST::intern("\\"), output, operator_precedence, false); /* lambda */
+				limited_to_LATEX(operator_precedence_list, Symbols::Sbackslash, output, operator_precedence, false); /* lambda */
 				/* parameter */
 				limited_to_LATEX(operator_precedence_list, parameter, output, operator_precedence, false); /* FIXME precedence */
 				node2 = get_abstraction_body(node2);
@@ -109,7 +109,7 @@ void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list
 			output << "}";
 			if(B_braced)
 				output << "\\right)";
-		} else if(operator_precedence != -1 && innerApplication && get_application_operator(innerApplication) == AST::intern("/")) { /* fraction */
+		} else if(operator_precedence != -1 && innerApplication && get_application_operator(innerApplication) == Symbols::Sslash) { /* fraction */
 			output << "{\\frac{";
 			limited_to_LATEX(operator_precedence_list, get_application_operand(innerApplication), output, operator_precedence, false);
 			output << "}{";
@@ -118,10 +118,10 @@ void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list
 			output << "}}";
 		} else if(operator_precedence != -1) { /* actual binary math operator */
 			bool B_braced = maybe_print_opening_brace(output, operator_precedence, operator_precedence_limit, B_brace_equal_levels);
-			limited_to_LATEX(operator_precedence_list, get_application_operand(innerApplication), output, operator_precedence, operatorAssociativity != AST::intern("left"));
+			limited_to_LATEX(operator_precedence_list, get_application_operand(innerApplication), output, operator_precedence, operatorAssociativity != Symbols::Sleft);
 			limited_to_LATEX(operator_precedence_list, get_application_operator(innerApplication), output, operator_precedence, true);
 			//	throw std::runtime_error("invalid binary math operation");
-			limited_to_LATEX(operator_precedence_list, get_application_operand(node), output, operator_precedence, operatorAssociativity != AST::intern("right")); /* operator */
+			limited_to_LATEX(operator_precedence_list, get_application_operand(node), output, operator_precedence, operatorAssociativity != Symbols::Sright); /* operator */
 			if(B_braced)
 				output << "\\right)";
 		} else { /* function call */

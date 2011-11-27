@@ -120,7 +120,7 @@ AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
 		++arg;
 	if(strlen(arg) > 0 && arg[strlen(arg) - 1] == ')')
 		arg[strlen(arg) - 1] = 0;
-	AST::Node* body = REPL_get_definition_backwards(self, AST::intern(arg), backOffset);
+	AST::Node* body = REPL_get_definition_backwards(self, AST::symbolFromStr(arg), backOffset);
 	return(body);
 }
 
@@ -146,47 +146,47 @@ static void REPL_init_builtins(struct REPL* self) {
 		return;
 	}
 	if(!self->fTailEnvironment) { /* first init */
-		self->fTailEnvironment = makeApplication(makeAbstraction(AST::intern("nil"), NULL/*mutable*/), NULL);
+		self->fTailEnvironment = makeApplication(makeAbstraction(Symbols::Snil, NULL/*mutable*/), NULL);
 		self->fTailUserEnvironment = self->fTailEnvironment;
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
 	}
-	REPL_add_static_builtin_binding(self, AST::intern("'"), &quoter); /* keep at the beginning */
-	REPL_add_static_builtin_binding(self, AST::intern("define"), &quoter); // dummy
-	REPL_add_static_builtin_binding(self, AST::intern("defrec"), &quoter); // dummy
-	REPL_add_static_builtin_binding(self, AST::intern("let"), &quoter); // dummy
-	REPL_add_static_builtin_binding(self, AST::intern("reduce"), &Evaluators::reducer);
-	REPL_add_builtin_method(self, AST::intern("fromLibrary"), FFIs::LibraryLoader);
-	REPL_add_static_builtin_binding(self, AST::intern("nil"), NULL);
-	REPL_add_builtin_method(self, AST::intern(":"), Evaluators::Conser);
-	REPL_add_builtin_method(self, AST::intern("cons?"), Evaluators::ConsP);
-	REPL_add_builtin_method(self, AST::intern("nil?"), Evaluators::NilP);
-	REPL_add_builtin_method(self, AST::intern("head"), Evaluators::HeadGetter);
-	REPL_add_builtin_method(self, AST::intern("tail"), Evaluators::TailGetter);
-	REPL_add_builtin_method(self, AST::intern("int?"), Numbers::IntP);
-	REPL_add_static_builtin_binding(self, AST::intern("int0"), Numbers::internNative((Numbers::NativeInt) 0));
-	REPL_add_builtin_method(self, AST::intern("intSucc"), Numbers::IntSucc);
-	REPL_add_builtin_method(self, AST::intern("integer?"), Numbers::IntegerP);
-	REPL_add_builtin_method(self, AST::intern("integerSucc"), Numbers::IntegerSucc);
-	REPL_add_builtin_method(self, AST::intern("+"), Evaluators::Adder);
-	REPL_add_builtin_method(self, AST::intern("-"), Evaluators::Subtractor);
-	REPL_add_builtin_method(self, AST::intern("*"), Evaluators::Multiplicator);
-	REPL_add_builtin_method(self, AST::intern("/"), Evaluators::Divider);
-	REPL_add_builtin_method(self, AST::intern("divmod"), Evaluators::QModulator);
-	REPL_add_builtin_method(self, AST::intern("<="), Evaluators::LEComparer);
-	REPL_add_builtin_method(self, AST::intern("float?"), Numbers::FloatP);
-	REPL_add_builtin_method(self, AST::intern("str?"), Evaluators::StrP);
-	REPL_add_builtin_method(self, AST::intern("symbol?"), Evaluators::SymbolP);
-	REPL_add_builtin_method(self, AST::intern("addrsLE?"), Evaluators::AddrLEComparer);
-	REPL_add_builtin_method(self, AST::intern("symbolsEqual?"), Evaluators::SymbolEqualityChecker);
-	REPL_add_builtin_method(self, AST::intern("keyword?"), Evaluators::KeywordP);
-	REPL_add_builtin_method(self, AST::intern("translateFFI"), FFIs::ResultMarshaller);
-	REPL_add_builtin_method(self, AST::intern("symbolFromStr"), Evaluators::Interner);
-	REPL_add_builtin_method(self, AST::intern("keywordFromStr"), Evaluators::KeywordFromStringGetter);
-	REPL_add_builtin_method(self, AST::intern("keywordStr"), Evaluators::KeywordStr);
-	REPL_add_builtin_method(self, AST::intern("listFromStr"), Evaluators::ListFromStringGetter);
-	REPL_add_builtin_method(self, AST::intern("internalRunWorld2"), Evaluators::WorldRunner);
-	REPL_add_static_builtin_binding(self, AST::intern("#t"), Evaluators::churchTrue);
-	REPL_add_static_builtin_binding(self, AST::intern("#f"), Evaluators::churchFalse);
+	REPL_add_static_builtin_binding(self, Symbols::Squote, &quoter); /* keep at the beginning */
+	REPL_add_static_builtin_binding(self, Symbols::Sdefine, &quoter); // dummy
+	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &quoter); // dummy
+	REPL_add_static_builtin_binding(self, Symbols::Slet, &quoter); // dummy
+	REPL_add_static_builtin_binding(self, Symbols::Sreduce, &Evaluators::reducer);
+	REPL_add_builtin_method(self, Symbols::SfromLibrary, FFIs::LibraryLoader);
+	REPL_add_static_builtin_binding(self, Symbols::Snil, NULL);
+	REPL_add_builtin_method(self, Symbols::Scolon, Evaluators::Conser);
+	REPL_add_builtin_method(self, Symbols::SconsP, Evaluators::ConsP);
+	REPL_add_builtin_method(self, Symbols::SnilP, Evaluators::NilP);
+	REPL_add_builtin_method(self, Symbols::Shead, Evaluators::HeadGetter);
+	REPL_add_builtin_method(self, Symbols::Stail, Evaluators::TailGetter);
+	REPL_add_builtin_method(self, Symbols::SintP, Numbers::IntP);
+	REPL_add_static_builtin_binding(self, Symbols::Sintzero, Numbers::internNative((Numbers::NativeInt) 0));
+	REPL_add_builtin_method(self, Symbols::SintSucc, Numbers::IntSucc);
+	REPL_add_builtin_method(self, Symbols::SintegerP, Numbers::IntegerP);
+	REPL_add_builtin_method(self, Symbols::SintegerSucc, Numbers::IntegerSucc);
+	REPL_add_builtin_method(self, Symbols::Splus, Evaluators::Adder);
+	REPL_add_builtin_method(self, Symbols::Sdash, Evaluators::Subtractor);
+	REPL_add_builtin_method(self, Symbols::Sasterisk, Evaluators::Multiplicator);
+	REPL_add_builtin_method(self, Symbols::Sslash, Evaluators::Divider);
+	REPL_add_builtin_method(self, Symbols::Sdivmod, Evaluators::QModulator);
+	REPL_add_builtin_method(self, Symbols::Slessequal, Evaluators::LEComparer);
+	REPL_add_builtin_method(self, Symbols::SfloatP, Numbers::FloatP);
+	REPL_add_builtin_method(self, Symbols::SstrP, Evaluators::StrP);
+	REPL_add_builtin_method(self, Symbols::SsymbolP, Evaluators::SymbolP);
+	REPL_add_builtin_method(self, Symbols::SaddrsLEP, Evaluators::AddrLEComparer);
+	REPL_add_builtin_method(self, Symbols::SsymbolsEqualP, Evaluators::SymbolEqualityChecker);
+	REPL_add_builtin_method(self, Symbols::SkeywordP, Evaluators::KeywordP);
+	REPL_add_builtin_method(self, Symbols::StranslateFFI, FFIs::ResultMarshaller);
+	REPL_add_builtin_method(self, Symbols::SsymbolFromStr, Evaluators::Interner);
+	REPL_add_builtin_method(self, Symbols::SkeywordFromStr, Evaluators::KeywordFromStringGetter);
+	REPL_add_builtin_method(self, Symbols::SkeywordStr, Evaluators::KeywordStr);
+	REPL_add_builtin_method(self, Symbols::SlistFromStr, Evaluators::ListFromStringGetter);
+	REPL_add_builtin_method(self, Symbols::SinternalRunWorld2, Evaluators::WorldRunner);
+	REPL_add_static_builtin_binding(self, Symbols::Shasht, Evaluators::churchTrue);
+	REPL_add_static_builtin_binding(self, Symbols::Shashf, Evaluators::churchFalse);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }
@@ -229,14 +229,14 @@ static void REPL_unfilter_environment(struct REPL* self, AST::Node* environment)
 	AST::Node* name;
 	AST::Node* body;
 	AST::Node* next;
-	if(environment == AST::intern("nil")) {
+	if(environment == Symbols::Snil) {
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
 		return;
 	}
 	for(; environment; environment = next) {
 		getEnvEntry(environment, name, body, next);
 		REPL_add_to_environment_simple_GUI(self, dynamic_cast<AST::Symbol*>(name), body);
-		if(next == NULL || next == AST::intern("nil")) { // used as a tail marker
+		if(next == NULL || next == Symbols::Snil) { // used as a tail marker
 			self->fTailUserEnvironmentFrontier = environment;
 			envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL);
 			break;

@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/MathParser"
 #include "Scanners/OperatorPrecedenceList"
 #include "AST/Symbol"
+#include "AST/Symbols"
 #include "AST/AST"
 #include "AST/Keyword"
 #include "Evaluators/Builtins"
@@ -37,7 +38,7 @@ AST::Node* MathParser::operation(AST::Node* operator_, AST::Node* operand_1, AST
 	return(result);
 }
 bool macro_operator_P(AST::Node* operator_) {
-	return(operator_ == intern("define") || operator_ == intern("def") || operator_ == intern("defrec") || operator_ == intern("'") || operator_ == intern("[") || operator_ == intern("let"));
+	return(operator_ == Symbols::Sdefine || operator_ == Symbols::Sdef || operator_ == Symbols::Sdefrec || operator_ == Symbols::Squote || operator_ == Symbols::Sleftbracket || operator_ == Symbols::Slet);
 }
 /*
 AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
@@ -48,34 +49,34 @@ AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 }
 */
 AST::Node* MathParser::parse_define(AST::Node* operand_1) {
-	bool B_extended = (input_value == AST::intern("("));
+	bool B_extended = (input_value == Symbols::Sleftparen);
 	if(B_extended)
 		consume();
 	if(dynamic_cast<AST::Symbol*>(input_value) == NULL) {
 		raise_error("<symbol>", str(input_value));
 		return(NULL);
 	}
-	if(dynamic_cast<AST::Symbol*>(input_value) == AST::intern("\\")) { /* probably an abstraction directly - not recommended, but... */
+	if(dynamic_cast<AST::Symbol*>(input_value) == Symbols::Sbackslash) { /* probably an abstraction directly - not recommended, but... */
 		consume();
 		AST::Node* abstraction = parse_abstraction();
 		if(B_extended)
-			consume(AST::intern(")"));
-		return(makeApplication(AST::intern("define"), abstraction));
+			consume(Symbols::Srightparen);
+		return(makeApplication(Symbols::Sdefine, abstraction));
 		//raise_error("<symbol>", str(parameter));
 	}
 	AST::Node* parameter = consume();
 	if(B_extended)
-		consume(AST::intern(")"));
+		consume(Symbols::Srightparen);
 	//AST::Node* parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
 	AST::Node* body = parse_expression();
 	if(!parameter||!body||!operand_1) {
 		raise_error("<define-body>", "<incomplete>");
 		return(NULL);
 	}
-	return(makeApplication(AST::intern("define"), makeAbstraction(parameter, body)));
+	return(makeApplication(Symbols::Sdefine, makeAbstraction(parameter, body)));
 }
 AST::Node* MathParser::parse_defrec(AST::Node* operand_1) {
-	bool B_extended = (input_value == AST::intern("("));
+	bool B_extended = (input_value == Symbols::Sleftparen);
 	if(B_extended)
 		consume();
 	AST::Node* parameter = consume();
@@ -83,14 +84,14 @@ AST::Node* MathParser::parse_defrec(AST::Node* operand_1) {
 		raise_error("<symbol>", str(parameter));
 	}
 	if(B_extended)
-		consume(AST::intern(")"));
+		consume(Symbols::Srightparen);
 	//AST::Node* parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
 	AST::Node* body = parse_expression();
 	if(!parameter||!body||!operand_1) {
 		raise_error("<define-body>", "<incomplete>");
 		return(NULL);
 	}
-	return(makeApplication(AST::intern("define"), makeAbstraction(parameter, makeApplication(AST::intern("rec"), makeAbstraction(parameter, body)))));
+	return(makeApplication(Symbols::Sdefine, makeAbstraction(parameter, makeApplication(Symbols::Srec, makeAbstraction(parameter, body)))));
 }
 AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
 	AST::Node* result;
@@ -109,34 +110,34 @@ AST::Node* MathParser::parse_let_form(void) {
 		raise_error("<let-form-symbol>", "<incomplete>");
 		return(NULL);
 	}
-	consume(AST::intern("="));
+	consume(Symbols::Sequal);
 	AST::Node* value = parse_value();
-	consume(AST::intern("in"));
+	consume(Symbols::Sin);
 	AST::Node* rest = parse_expression();
 	return(AST::makeApplication(AST::makeAbstraction(name, rest), value));
 }
 AST::Node* MathParser::parse_list(void) {
-	if(EOFP() || input_value == intern("]")) {
-		consume(intern("]"));
+	if(EOFP() || input_value == Symbols::Srightbracket) {
+		consume(Symbols::Srightbracket);
 		return(NULL);
 	} else {
 		AST::Node* value = parse_value();
-		return(operation(intern(":"), value, parse_list()));
+		return(operation(Symbols::Scolon, value, parse_list()));
 	}
 }
 AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 	// TODO let|where, include, cond, make-list, quote, case.
-	if(operand_1 == intern("define"))
+	if(operand_1 == Symbols::Sdefine)
 		return(parse_define(operand_1));
-	else if(operand_1 == intern("def"))
+	else if(operand_1 == Symbols::Sdef)
 		return(parse_define(operand_1));
-	else if(operand_1 == intern("defrec"))
+	else if(operand_1 == Symbols::Sdefrec)
 		return(parse_defrec(operand_1));
-	else if(operand_1 == intern("'"))
+	else if(operand_1 == Symbols::Squote)
 		return(parse_quote(operand_1));
-	else if(operand_1 == intern("["))
+	else if(operand_1 == Symbols::Sleftbracket)
 		return(parse_list());
-	else if(operand_1 == intern("let"))
+	else if(operand_1 == Symbols::Slet)
 		return(parse_let_form());
 	else {
 		raise_error("<known_macro>", "<unknown_macro>");
@@ -146,7 +147,7 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 AST::Node* MathParser::parse_application(void) {
 	AST::Node* hd = parse_value();
 #ifndef SIMPLE_APPLICATION
-	while(!EOFP() && input_value != AST::intern(")") && input_value != AST::intern("]") && input_value && !operator_precedence_list->any_operator_P(input_value)) {
+	while(!EOFP() && input_value != Symbols::Srightparen && input_value != Symbols::Srightbracket && input_value && !operator_precedence_list->any_operator_P(input_value)) {
 		hd = AST::makeApplication(hd, parse_argument());
 	}
 #endif
@@ -158,7 +159,7 @@ AST::Node* MathParser::parse_abstraction(void) {
 		return(NULL);
 	} else {
 		AST::Node* parameter = consume();
-		if(EOFP() || input_value == AST::intern(")") || input_value == AST::intern("]"))
+		if(EOFP() || input_value == Symbols::Srightparen || input_value == Symbols::Srightbracket)
 			raise_error("<body>", str(input_value));
 		AST::Node* expression = parse_expression();
 		if(expression)
@@ -168,32 +169,32 @@ AST::Node* MathParser::parse_abstraction(void) {
 	}
 }
 AST::Node* MathParser::parse_value(void) {
-	if(input_value == intern(")")) {
+	if(input_value == Symbols::Srightparen) {
 		raise_error("<value>", ')');
 		return(NULL);
-	} else if(input_value == intern("<EOF>")) {
+	} else if(input_value == Symbols::SlessEOFgreater) {
 		raise_error("<value>", "<EOF>");
 		return(NULL);
-	} else if(input_value == intern("\\")) { // function abstraction
+	} else if(input_value == Symbols::Sbackslash) { // function abstraction
 		consume();
 		return(parse_abstraction());
 	} else {
 		AST::Node* result;
-		if(input_value == intern("(")) {
+		if(input_value == Symbols::Sleftparen) {
 			AST::Node* opening_brace = input_value;
 			consume();
-			if(input_value == intern(")"))
+			if(input_value == Symbols::Srightparen)
 				result = NULL;
 			else
 				result = parse_expression();
-			if(opening_brace != intern("(") || input_value != intern(")")) {
+			if(opening_brace != Symbols::Sleftparen || input_value != Symbols::Srightparen) {
 				raise_error(")", str(input_value));
 				return(NULL);
 			}
-			consume(intern(")"));
+			consume(Symbols::Srightparen);
 		} else {
 #if 0
-			if(input_value == AST::intern(")")) { /* oops! */
+			if(input_value == Symbols::Srightparen) { /* oops! */
 				raise_error("<value>", ")");
 			} else if(input_value == NULL) {
 				raise_error("<value>", "<EOF>");
@@ -214,18 +215,18 @@ AST::Node* MathParser::parse_binary_operation(bool B_allow_args, int precedence_
 	if(operator_precedence_list->empty_P(precedence_level))
 		return(B_allow_args ? parse_application() : parse_value());
 	/* special case for unary - */
-	AST::Node* result = (precedence_level == operator_precedence_list->minus_level && input_value == intern("-")) ? (B_unary_operator = true, intern("0")) : parse_binary_operation(B_allow_args, operator_precedence_list->next_precedence_level(precedence_level));
+	AST::Node* result = (precedence_level == operator_precedence_list->minus_level && input_value == Symbols::Sdash) ? (B_unary_operator = true, Symbols::Szero) : parse_binary_operation(B_allow_args, operator_precedence_list->next_precedence_level(precedence_level));
 	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator)) {
-		while(actual_token && actual_token != AST::intern("<EOF>")) {
-			AST::Node* operator_ = B_visible_operator ? consume() : intern(" ");
-			if(input_value == intern(")")) // premature end.
+		while(actual_token && actual_token != Symbols::SlessEOFgreater) {
+			AST::Node* operator_ = B_visible_operator ? consume() : Symbols::Sspace;
+			if(input_value == Symbols::Srightparen) // premature end.
 				return(B_unary_operator ? operator_ : makeApplication(operator_, result)); /* default to the binary operator */
-			AST::Node* b = parse_binary_operation(B_allow_args, associativity != intern("right") ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level);
+			AST::Node* b = parse_binary_operation(B_allow_args, associativity != Symbols::Sright ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level);
 			if(B_unary_operator && !b) // -nil
 				return(operator_);
 			result = operation(operator_, result, b);
 			/* for right associative operations, the recursion will have consumed all the operators on that level and by virtue of that, the while loop will always stop after one iteration. */
-			if(associativity == intern("none"))
+			if(associativity == Symbols::Snone)
 				break;
 			actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator);
 		}
@@ -249,7 +250,7 @@ AST::Node* MathParser::parse(OperatorPrecedenceList* operator_precedence_list) {
 	return(result);
 }
 AST::Cons* MathParser::parse_S_list_body(void) {
-	if(input_value == intern(")"))
+	if(input_value == Symbols::Srightparen)
 		return(NULL);
 	else {
 		AST::Node* head;
@@ -259,16 +260,16 @@ AST::Cons* MathParser::parse_S_list_body(void) {
 }
 AST::Cons* MathParser::parse_S_list(bool B_consume_closing_brace) {
 	AST::Cons* result = NULL;
-	consume(intern("("));
+	consume(Symbols::Sleftparen);
 	/* TODO macros (if we want) */
 	result = parse_S_list_body();
 	if(B_consume_closing_brace)
-		consume(intern(")"));
+		consume(Symbols::Srightparen);
 	return(result);
 }
 AST::Node* MathParser::parse_S_Expression(void) {
 	/* TODO do this without tokenizing? How? */
-	if(input_value == intern("(")) {
+	if(input_value == Symbols::Sleftparen) {
 		return(parse_S_list(true));
 	} else if(dynamic_cast<AST::Symbol*>(input_value) != NULL) {
 		return(consume()); // & whitespace.
@@ -301,7 +302,7 @@ AST::Node* MathParser::parse_simple(const char* text, OperatorPrecedenceList* op
 	}
 }
 void MathParser::parse_closing_brace(void) {
-	consume(AST::intern(")"));
+	consume(Symbols::Srightparen);
 }
 
 };

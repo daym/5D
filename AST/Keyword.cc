@@ -16,7 +16,7 @@ static std::map<std::string, Keyword*>* keywords;
 
 /* TODO we can also just skip the whole map business for single-character names if we just return the character code instead of fumbling around (would have to make sure actual addresses are >255 then). 
    of course, str would then have to be global and we can't use the VMT anymore. Not sure whether it would be worth it. */
-Keyword* keywordFromString(const char* name) {
+Keyword* keywordFromStr(const char* name) {
 	if(keywords == NULL)
 		keywords = new std::map<std::string, Keyword*>();
 	std::string xname = name;

@@ -29,7 +29,7 @@ public:
 	SymbolReference(struct Symbol* symbol, int index);
 	virtual std::string str(void) const;
 };
-Symbol* intern(const char* name) G_5D_GNUC_PURE;
+Symbol* symbolFromStr(const char* name) G_5D_GNUC_PURE;
 
 static inline bool symbol_P(AST::Node* argument) {
 	return(dynamic_cast<Symbol*>(argument) != NULL || dynamic_cast<SymbolReference*>(argument) != NULL);

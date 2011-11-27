@@ -11,6 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <sstream>
 #include "AST/AST"
 #include "AST/Symbol"
+#include "AST/Symbols"
 
 namespace AST {
 
@@ -56,7 +57,7 @@ Abstraction* makeAbstraction(Node* parameter, Node* body) {
 Application* makeOperation(Node* operator_, Node* operand_1, Node* operand_2) {
 	if(operator_ == NULL || operand_1 == NULL/* || operand_2 == NULL*/) {
 		return(NULL);
-	} else if(operator_ == intern(" ")) // apply
+	} else if(operator_ == Symbols::Sspace) // apply
 		return(makeApplication(operand_1, operand_2));
 	else
 		return(makeApplication(makeApplication(operator_, operand_1), operand_2));

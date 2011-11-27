@@ -2,6 +2,7 @@
 #define __5D_BUILTINS_H
 #include <sstream>
 #include "AST/AST"
+#include "AST/Symbols"
 namespace Evaluators {
 std::string str(AST::Node* cons);
 struct StrRegistration {
@@ -59,7 +60,7 @@ struct P : AST::BuiltinOperation { \
 	DECLARE_SIMPLE_OPERATION(P, N) \
 	DECLARE_CURRIED_OPERATION(Curried ## P, N)
 
-#define FALLBACK (AST::Node*) reduce(makeOperation(AST::intern(" "), fallback, argument))
+#define FALLBACK (AST::Node*) reduce(makeOperation(Symbols::Sspace, fallback, argument))
 
 DEFINE_SIMPLE_OPERATION(ProcedureP, "procedure?", (dynamic_cast<Operation*>(argument) != NULL))
 DECLARE_BINARY_OPERATION(Conser, ":")
@@ -80,8 +81,8 @@ DECLARE_BINARY_OPERATION(SymbolEqualityChecker, "symbolsEqual?")
 DECLARE_BINARY_OPERATION(AddrLEComparer, "addrsLE?")
 DECLARE_BINARY_OPERATION(LEComparer, "<=")
 DECLARE_BINARY_OPERATION(QModulator, "divmod")
-DEFINE_SIMPLE_OPERATION(Interner, "symbolFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::intern(((AST::Str*)argument)->text.c_str()) : FALLBACK));
-DEFINE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::keywordFromString(((AST::Str*)argument)->text.c_str()) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(Interner, "symbolFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::symbolFromStr(((AST::Str*)argument)->text.c_str()) : FALLBACK));
+DEFINE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::keywordFromStr(((AST::Str*)argument)->text.c_str()) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(KeywordStr, "keywordStr", dynamic_cast<AST::Keyword*>(argument) ? (AST::Node*) AST::makeStr(((AST::Keyword*)argument)->name) : FALLBACK)
 DECLARE_SIMPLE_OPERATION(WorldRunner, "internalRunWorld")
 
@@ -111,7 +112,7 @@ struct SuperAwareOperation : BaseSuperAwareOperation { /* will be immediately ex
 
 template<class T>
 static AST::Node* buildSuperAwareOperation(AST::Symbol* name) {
-	return(AST::makeApplication(AST::intern("reduce"), AST::makeApplication(new SuperAwareOperation<T>(), name)));
+	return(AST::makeApplication(Symbols::Sreduce, AST::makeApplication(new SuperAwareOperation<T>(), name)));
 }
 
 void resetWorld(void);

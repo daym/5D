@@ -72,9 +72,9 @@ bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
 	using namespace AST;
 	char* buffer_text;
 	buffer_text = REPL_get_output_buffer_text(self);
-	AST::Node* tbtK = AST::makeApplication(AST::intern("REPLV1"), AST::intern("textBufferText"));
+	AST::Node* tbtK = AST::makeApplication(Symbols::SREPLV1, Symbols::StextBufferText);
 	AST::Node* tbtV = AST::makeApplication(tbtK, makeStr(buffer_text));
-	AST::Node* envK = AST::makeApplication(tbtV, AST::intern("environment"));
+	AST::Node* envK = AST::makeApplication(tbtV, Symbols::Senvironment);
 	AST::Node* envV = AST::makeApplication(envK, REPL_filter_environment(self, REPL_get_user_environment(self)));
 	AST::Node* sentinel = AST::makeApplication(envV, NULL);
 	Formatters::print_S_Expression(output_file, 0, 0, sentinel);
@@ -114,7 +114,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 		std::list<AST::Node*> arguments;
 		for(; application_P(content); content = get_application_operator(content)) {
 			arguments.push_front(get_application_operand(content));
-			if(get_application_operator(content) == AST::intern("REPLV1"))
+			if(get_application_operator(content) == Symbols::SREPLV1)
 				break;
 		}
 		std::list<AST::Node*>::const_iterator end_arguments = arguments.end();
@@ -124,14 +124,14 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 			if(iter_arguments == end_arguments) // ???
 				break;
 			AST::Node* value = *iter_arguments;
-			if(keywordName == AST::intern("textBufferText")) {
+			if(keywordName == Symbols::StextBufferText) {
 				char* text;
 				text = Evaluators::get_native_string(value);
 				REPL_append_to_output_buffer(self, text);
 				if(text)
 					free(text);
-			} else if(keywordName == AST::intern("environment")) {
-				if(value && value != AST::intern("nil"))
+			} else if(keywordName == Symbols::Senvironment) {
+				if(value && value != Symbols::Snil)
 					assert(application_P(value));
 				REPL_set_environment(self, value);
 			}
@@ -143,7 +143,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 }
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 	using namespace AST;
-	if(application_P(definition) && get_application_operator(definition) == intern("define")) {
+	if(application_P(definition) && get_application_operator(definition) == Symbols::Sdefine) {
 		AST::Node* abstraction = get_application_operand(definition);
 		if(abstraction_P(abstraction)) {
 			AST::Node* parameter = get_abstraction_parameter(abstraction);

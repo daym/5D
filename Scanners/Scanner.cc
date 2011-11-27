@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/Scanner"
 #include "AST/AST"
 #include "AST/Keyword"
+#include "AST/Symbols"
 #include "Evaluators/Builtins"
 
 namespace Scanners {
@@ -62,7 +63,7 @@ void Scanner::raise_error(const std::string& expected_text, int got_text) {
 }
 
 bool Scanner::EOFP(void) const {
-	return(input_value == AST::intern("<EOF>"));
+	return(input_value == Symbols::SlessEOFgreater);
 }
 void Scanner::ensure_end(void) {
 	if(!EOFP())
@@ -101,10 +102,10 @@ void Scanner::parse_token(void) {
 		parse_unicode(input);
 		break;
 	case '\'':
-		input_value = intern("'");
+		input_value = Symbols::Squote;
 		break;
 	case '\\':
-		input_value = intern("\\");
+		input_value = Symbols::Sbackslash;
 		break;
 	case '(':
 	case ')':
@@ -118,7 +119,7 @@ void Scanner::parse_token(void) {
 		parse_string(input);
 		break;
 	case EOF:
-		input_value = AST::intern("<EOF>");
+		input_value = Symbols::SlessEOFgreater;
 		break;
 	case '@': // FIXME remove this for S expressions?
 		parse_keyword(input);
@@ -174,7 +175,7 @@ void Scanner::parse_number(int input) {
 		}
 	}
 	ungetc(input, input_file), --position;
-	input_value = AST::intern(matchtext.str().c_str());
+	input_value = AST::symbolFromStr(matchtext.str().c_str());
 	/* actual value will be provided by provide_dynamic_builtins */
 }
 void Scanner::parse_unicode(int input) {
@@ -182,7 +183,7 @@ void Scanner::parse_unicode(int input) {
 	if(input == 0xC2) {
 		++position, input = fgetc(input_file);
 		if(input == 0xAC) { // ¬
-			input_value = intern("not");
+			input_value = Symbols::Snot;
 		} else
 			raise_error("¬", input);
 		return;
@@ -197,24 +198,24 @@ void Scanner::parse_unicode(int input) {
 			++position, input = fgetc(input_file);
 			switch(input) {
 			case 0x85: /* dot */
-				input_value = intern("*");
+				input_value = Symbols::Sasterisk;
 				return;
 			}
 		} else if(input == 0xA8) {
 			++position, input = fgetc(input_file);
 			switch(input) {
 			case 0xAF: /* ⨯ */
-				input_value = intern("⨯");
+				input_value = Symbols::Scrossproduct;
 				return;
 			}
 		} else if(input == 0x9F) {
 			++position, input = fgetc(input_file);
 			switch(input) {
 			case 0xA8: /* ⟨ */
-				input_value = intern("⟨");
+				input_value = Symbols::Sleftangle;
 				return;
 			case 0xA9: /* ⟩ */
-				input_value = intern("⟩");
+				input_value = Symbols::Srightangle;
 				return;
 			}
 		} else { // E2 88 AB integral.
@@ -226,17 +227,17 @@ void Scanner::parse_unicode(int input) {
 		++position, input = fgetc(input_file);
 	switch(input) {
 	case 0xA0:
-		input_value = intern("/=");
+		input_value = Symbols::Sslashequal;
 		return;
 	case 0xA4:
-		input_value = intern("≤");
+		input_value = Symbols::Slessequalunicode;
 		return;
 	case 0xA5:
-		input_value = intern("≥");
+		input_value = Symbols::Sgreaterequalunicode;
 		return;
 #if 0
 	case 0x88: /* approx. */
-		input_value = intern("≈");
+		input_value = Symbols::Sapprox;
 		/* TODO just pass that to the symbol processor in the general case. */
 		return;
 #endif
@@ -252,22 +253,22 @@ static bool structural_P(int input) {
 void Scanner::parse_structural(int input) {
 	switch(input) {
 	case '(':
-		input_value = intern("(");
+		input_value = Symbols::Sleftparen;
 		return;
 	case ')':
-		input_value = intern(")");
+		input_value = Symbols::Srightparen;
 		return;
 	case '[':
-		input_value = intern("[");
+		input_value = Symbols::Sleftbracket;
 		return;
 	case ']':
-		input_value = intern("]");
+		input_value = Symbols::Srightbracket;
 		return;
 	case '{':
-		input_value = intern("{");
+		input_value = Symbols::Sleftcurly;
 		return;
 	case '}':
-		input_value = intern("}");
+		input_value = Symbols::Srightcurly;
 		return;
 	/* TODO other kind of braces? */
 	default:
@@ -332,7 +333,7 @@ void Scanner::parse_keyword(int input) {
 	matchtext << (char) input;
 	//++position, input = fgetc(input_file);
 	//ungetc(input, input_file), --position;
-	input_value = keywordFromString(matchtext.str().c_str());
+	input_value = keywordFromStr(matchtext.str().c_str());
 }
 void Scanner::parse_number_with_base(int input, int base) {
 	int value = 0; /* TODO make this more general? */
@@ -352,7 +353,7 @@ void Scanner::parse_number_with_base(int input, int base) {
 	}
 	std::stringstream sst;
 	sst << value; /* decimal */
-	input_value = AST::intern(sst.str().c_str());
+	input_value = AST::symbolFromStr(sst.str().c_str());
 }
 void Scanner::parse_special_coding(int input) {
 	assert(input == '#');
@@ -409,7 +410,7 @@ void Scanner::parse_operator(int input) {
 			break;
 	}
 	ungetc(input, input_file), --position;
-	input_value = intern(sst.str().c_str());
+	input_value = AST::symbolFromStr(sst.str().c_str());
 }
 void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) {
 	std::stringstream matchtext;
@@ -439,7 +440,7 @@ void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) 
 		}
 	} else
 		ungetc(input, input_file), --position;
-	input_value = intern(matchtext.str().c_str());
+	input_value = AST::symbolFromStr(matchtext.str().c_str());
 }
 
 };

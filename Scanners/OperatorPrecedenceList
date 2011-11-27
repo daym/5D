@@ -9,6 +9,7 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #include <stdlib.h>
 #include "AST/Symbol"
+#include "AST/Symbols"
 #include "AST/AST"
 namespace Scanners {
 
@@ -45,11 +46,11 @@ struct OperatorPrecedenceList : AST::Node {
 		struct OperatorPrecedenceItem* precedence = levels[precedence_level];
 		for(; precedence; precedence = precedence->next) {
 			if(precedence->operator_ == operator_ 
-			 || (precedence->operator_ == AST::intern(" ") /* apply */ && 
+			 || (precedence->operator_ == Symbols::Sspace /* apply */ && 
 			     !any_operator_P(operator_) && 
 			     operator_ && 
-			     operator_ != AST::intern(")") &&
-			     operator_ != AST::intern("]"))) {
+			     operator_ != Symbols::Srightparen &&
+			     operator_ != Symbols::Srightbracket)) {
 				if(precedence->operator_ != operator_)
 					B_visible_operator = false;
 				associativity_out = precedence->associativity;

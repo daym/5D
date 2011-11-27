@@ -113,16 +113,16 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		int precedence = operatorSymbol ? OPL->get_operator_precedence_and_associativity(operatorSymbol, operatorAssociativity) : -1;
 		if(precedence != -1 && application_P(envelope)) { // is a (binary) operator and the envelope is not a builtin (i.e. (+))
 			bool B_braced = maybe_print_opening_brace(output, position, precedence, precedence_limit, B_brace_equal_levels);
-			print_math_CXX(OPL, output, position, get_application_operand(envelope), precedence, operatorAssociativity != AST::intern("left"));
+			print_math_CXX(OPL, output, position, get_application_operand(envelope), precedence, operatorAssociativity != Symbols::Sleft);
 			print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
 			////print_math_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
-			print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != AST::intern("right"));
+			print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != Symbols::Sright);
 			//print_text(output, position, operator_);
 			//print_math_CXX(OPL, output, position, get_application_operand(node), precedence);
 			if(B_braced)
 				++position, output << ')';
 		} else { // function application is fine and VERY greedy
-			operatorAssociativity = AST::intern("left");
+			operatorAssociativity = Symbols::Sleft;
 			precedence = OPL->apply_level;
 			bool B_braced = maybe_print_opening_brace(output, position, precedence, precedence_limit, B_brace_equal_levels);
 			operator_ = get_application_operator(node);
@@ -133,9 +133,9 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
                                 print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
 				++position, output << ')';
 			} else
-				print_math_CXX(OPL, output, position, operator_, precedence, operatorAssociativity != AST::intern("left"));
+				print_math_CXX(OPL, output, position, operator_, precedence, operatorAssociativity != Symbols::Sleft);
 			++position, output << ' ';
-			print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != AST::intern("right"));
+			print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != Symbols::Sright);
 			if(B_braced) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
 				++position, output << ')';
 		}
@@ -143,7 +143,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		/* this especially matches BuiltinOperators which will return their builtin name */
 		/* FIXME braces for these? spaces for these? */
 		std::string value = str(node);
-		int pl = OPL->get_operator_precedence(AST::intern(value.c_str()));
+		int pl = OPL->get_operator_precedence(AST::symbolFromStr(value.c_str()));
 		print_text_raw(output, position, value.c_str(), pl < OPL->apply_level && pl != -1);
 	}
 }
