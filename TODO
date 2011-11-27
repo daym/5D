@@ -79,4 +79,4 @@ $! strict applicator
 --x
 "# " as line comment starter (=> rem)
 unary posfix operators like "!"?
-
+maybe delay and force
