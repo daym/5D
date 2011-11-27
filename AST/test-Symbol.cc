@@ -10,8 +10,8 @@ You should have received a copy of the GNU General Public License along with thi
 
 int main() {
 	using namespace AST;
-	Symbol* hello = intern("hello");
-	Symbol* hello2 = intern("hello");
+	Symbol* hello = symbolFromStr("hello");
+	Symbol* hello2 = symbolFromStr("hello");
 	if(hello != hello2)
 		abort();
 	return(0);
