@@ -1,6 +1,80 @@
 <!DOCTYPE html >
 <html>
 <body>
-<p>All builtins must implement str() which must return their common name.</p>
+<h1>5D Interna</h1>
+<p>All builtins must use REGISTER_STR() which must return their common name.</p>
+<h2>REPL/REPLEnvironment</h2>
+<p>Registers builtins common to all REPL frontends (addition etc).</p>
+<h2>REPL/REPL.cc</h2>
+<p>Contains parts common to all REPL frontends (f.e. loading and saving).</p>
+<h2>REPL/main.cc</h2>
+<p>A simple automatable frontend, used for unit tests.</p>
+<h2>AST/AST.cc</h2>
+<p>Contains the Abstract Syntax Tree.</p>
+<h2>AST/Symbols.cc</h2>
+<p>Exports commonly used symbols as a speed optimization.<p>
+<h2>AST/Keyword.cc</h2>
+<p>Contains keywords (@mode:), i.e. the name of keyword arguments.</p>
+<h2>AST/Symbol.cc</h2>
+<p>Contains symbols ('foo), i.e. the smallest parts of math equations</p>
+<h2>Evaluators/Builtins.cc</h2>
+<p>Contains builtin operations except for numbers.</p>
+<h2>Evaluators/Evaluators.cc</h2>
+<p>Contains the actual evaluator. <em>This is the language core</em>.</p>
+<h2>Evaluators/FFI.cc</h2>
+<p>Contains the interface to the foreign function interface.</p>
+<h2>Evaluators/Backtracker.cc</h2>
+<p>Contains a simple backtracker that is snapshotting the stack (unused).</p>
+<h2>TUI/Interrupt.cc</h2>
+<p>Contains a signal handler for SIGINT so that KeyboardInterrupt is generated.</p>
+<h2>TUI/main.cc</h2>
+<p>A complete readline-based frontend.</p>
+<h2>Numbers/Integer.cc</h2>
+<p>Arbitrary-precision integers.</p>
+<h2>Numbers/Real.cc</h2>
+<p>Real numbers.</p>
+<h2>Numbers/BigUnsigned.cc</h2>
+<p>Implementation detail of Numbers/Integer.cc</p>
+<h2>Formatters/Math.cc</h2>
+<p>The main formatter used to display ASTs on screen.</p>
+<h2>Formatters/UTFStateMachine.cc</h2>
+<p>UTF-8 state machine used to derive LATEX character names.</p>
+<h2>Formatters/SExpression.cc</h2>
+<p>S-Expression formatter, used for the environment file.</p>
+<h2>Formatters/LATEX.cc</h2>
+<p>LATEX formatter, used in the GUI frontend for display.</p>
+<h2>GUI/GTKGUI.cc</h2>
+<p>Very complete Gtk-based frontend: main()</p>
+<h2>GUI/WIN32REPL.cc</h2>
+<p>Very complete WIN32 SDK-based frontend.</p>
+<h2>GUI/GTKView.cc</h2>
+<p>Unused</p>
+<h2>GUI/GTKCompleter.cc</h2>
+<p>Command line completer.</p>
+<h2>GUI/GTKTerminalEmulator.cc</h2>
+<p>Unused</p>
+<h2>GUI/GTKREPL.cc</h2>
+<p>Very complete Gtk-based frontend</p>
+<h2>GUI/WIN32Completer.cc</h2>
+<p>Command line completer.</p>
+<h2>GUI/GTKLATEXGenerator.cc</h2>
+<p>Calls LATEX to get images to display for the ASTs.</p>
+<h2>Scanners/OperatorPrecedenceList.cc</h2>
+<p>The Operation Precedence List used by the Math Parser.</p>
+<h2>Scanners/MathParser.cc</h2>
+<p>The main parser.</p>
+<h2>Scanners/ParenAdder.cc</h2>
+<p>A silly way to add parenthesis into a string in order to fake operator precedence without writing a full-blown parser.</p>
+<h2>Scanners/Scanner.cc</h2>
+<p>Base of MathParser.</p>
+<h2>FFIs/WIN32.cc</h2>
+<p>FFI main part for WIN32 systems.</p>
+<h2>FFIs/POSIX.cc</h2>
+<p>FFI main part for POSIX systems.</p>
+<!--
+<h2>FFIs/CallMarshaller.cc</h2>
+<h2>FFIs/ArgumentMarshaller.cc</h2>
+<h2>FFIs/ResultMarshaller.cc</h2>
+-->
 </body>
 </html>
