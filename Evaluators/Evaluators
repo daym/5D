@@ -34,6 +34,7 @@ AST::Node* programFromSExpression(AST::Node* root);
 AST::Node* evaluate(AST::Node* input);
 AST::Cons* evaluateToCons(AST::Node* input);
 AST::Node* listFromStr(AST::Str* node);
+AST::Node* strFromList(AST::Cons* node);
 int increaseGeneration(void);
 
 };

@@ -313,6 +313,17 @@ AST::Node* listFromCharZ(const char* text) {
 AST::Node* listFromStr(AST::Str* node) {
 	return(listFromCharZ(node->text.c_str()));
 }
+AST::Node* strFromList(AST::Cons* node) {
+	std::stringstream sst;
+	bool B_ok;
+	for(; node; node = evaluateToCons(node->tail)) {
+		int c = Numbers::toNativeInt(node->head, B_ok);
+		if(c < 0 || c > 255) // oops
+			return(makeApplication(Symbols::SstrFromList, node)); 
+		sst << (char) c;
+	}
+	return(makeStr(sst.str().c_str()));
+}
 
 
 }; // end namespace Evaluators.
