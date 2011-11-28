@@ -112,7 +112,7 @@ struct SuperAwareOperation : BaseSuperAwareOperation { /* will be immediately ex
 };
 
 template<class T>
-static AST::Node* buildSuperAwareOperation(AST::Symbol* name) {
+static AST::Node* buildSuperAwareOperation(AST::Node* name) {
 	return(AST::makeApplication(Symbols::Ssimplify, AST::makeApplication(new SuperAwareOperation<T>(), name)));
 }
 
