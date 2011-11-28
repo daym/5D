@@ -90,7 +90,8 @@ unary posfix operators like "!"?
 
 = Correctness =
 
-For predicates like nil?, check whether argument is an application, and if so, let it be and return an application.
+Instead of having special cases return the original application (even in the Evaluator), why not just define x 'x, define f 'f etc?
+The (+) builtin could just have a special case at the bottom that defines what to do when both are symbols.
 
 = Debugging Macros =
 

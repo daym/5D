@@ -233,11 +233,12 @@ AST::Node* reduce(AST::Node* term) {
 		} else {
 			// most of the time, SymbolReference anyway: AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(fn);
 			Evaluators::Operation* fnOperation = dynamic_cast<Evaluators::Operation*>(fn);
-			if(fnOperation && !application_P(argument)) {
+			if(fnOperation/* && !application_P(argument)*/) {
 				AST::Node* result;
 				result = fnOperation->execute(argument);
 				return(remember(term, result));
 			} else {
+				// TODO: remove this:
 				// BuiltinOperation are almost unreadable and they can't resolve it anyway, so why bother with it?
 				// note that this could be moved *into* BuiltinOperation, although I don't see any of them reacting any other way than this:
 				AST::BuiltinOperation* bnOperation = NULL;
