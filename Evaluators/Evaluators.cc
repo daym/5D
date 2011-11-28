@@ -195,7 +195,12 @@ int increaseGeneration(void) {
 		fGeneration = 0;
 	return(fGeneration);
 }
-
+static AST::Node* ensureApplication(AST::Node* term, AST::Node* fn, AST::Node* argument) {
+	if(get_application_operator(term) == fn && get_application_operand(term) == argument)
+		return(term);
+	else
+		return(makeApplication(fn, argument));
+}
 AST::Node* reduce(AST::Node* term) {
 	if(GUI::interrupted_P())
 		throw EvaluationException("evaluation was interrupted");
@@ -232,10 +237,14 @@ AST::Node* reduce(AST::Node* term) {
 				AST::Node* result;
 				result = fnOperation->execute(argument);
 				return(remember(term, result));
-			} else if(get_application_operator(term) == fn && get_application_operand(term) == argument)
-				return(remember(term, term));
-			else
-				return(remember(term, makeApplication(fn, argument))); // XXX
+			} else {
+				// BuiltinOperation are almost unreadable and they can't resolve it anyway, so why bother with it?
+				// note that this could be moved *into* BuiltinOperation, although I don't see any of them reacting any other way than this:
+				AST::BuiltinOperation* bnOperation = NULL;
+				for(; (bnOperation = dynamic_cast<AST::BuiltinOperation*>(fn)) != NULL; fn = bnOperation->fallback) {
+				}
+				return(remember(term, ensureApplication(term, fn, argument)));
+			}
 		}
 	} else if(abstraction_P(term)) {
 		/* this isn't strictly necessary, but nicer */
