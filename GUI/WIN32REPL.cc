@@ -20,6 +20,7 @@
 #include "Evaluators/Builtins"
 #include "GUI/WIN32Completer"
 #include "Formatters/Math"
+#include <shlwapi.h>
 
 namespace GUI {
 bool interrupted_P(void) {
@@ -551,7 +552,21 @@ static void REPL_delete_environment_row(struct REPL* self, int index) {
 #define GET_Y_LPARAM HIWORD
 #endif
 
-
+static std::wstring get_doc_name(const std::wstring& name) {
+	WCHAR exePath[2001];
+	DWORD len = GetModuleFileNameW(NULL, exePath, 1999);
+	if(len <= 0)
+		return(name);
+	WCHAR* p = wcsrchr(exePath, '\\');
+	if(p)
+		*(p + 1) = 0;
+	else
+		*exePath = 0;
+	return(std::wstring(exePath) + std::wstring(_T("doc\\")) + name);
+}
+static void REPL_open_webpage(struct REPL* self, const std::wstring& path) {
+	 ShellExecute(self->dialog, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+}
 static void REPL_handle_execute(struct REPL* self, const char* text, int destination, bool B_from_entry) {
 	AST::Node* input;
 	if(info_P(text)) {
@@ -789,6 +804,16 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		case IDM_EDIT_FINDNEXT:
 			{
 				REPL_handle_find_next(self);
+				break;
+			}
+		case ID_HELP_LIBRARYDOCUMENTATION:
+			{
+				REPL_open_webpage(self, get_doc_name(_T("library\\index.html")));
+				break;
+			}
+		case ID_HELP_TUTORIAL:
+			{
+				REPL_open_webpage(self, get_doc_name(_T("programming\\tutorial\\index.html")));
 				break;
 			}
 		}

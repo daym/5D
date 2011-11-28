@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Comctl32.lib Comdlg32.lib"
+				AdditionalDependencies="Comctl32.lib Comdlg32.lib shlwapi.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Comctl32.lib Comdlg32.lib"
+				AdditionalDependencies="Comctl32.lib Comdlg32.lib shlwapi.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -224,11 +224,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\CodeGen.cc"
+				RelativePath="..\Compilers\X86\CodeGen.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\X86\CodeGen.cc"
+				RelativePath="..\Compilers\CodeGen.cc"
 				>
 			</File>
 			<File
