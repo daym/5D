@@ -562,10 +562,11 @@ static std::wstring get_doc_name(const std::wstring& name) {
 		*(p + 1) = 0;
 	else
 		*exePath = 0;
-	return(std::wstring(exePath) + std::wstring(_T("doc\\")) + name);
+	return(std::wstring(exePath) + std::wstring(_T("..\\doc\\")) + name);
 }
 static void REPL_open_webpage(struct REPL* self, const std::wstring& path) {
-	 ShellExecute(self->dialog, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	//MessageBox(NULL, path.c_str(), path.c_str(), MB_OK);
+	ShellExecute(self->dialog, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 static void REPL_handle_execute(struct REPL* self, const char* text, int destination, bool B_from_entry) {
 	AST::Node* input;
