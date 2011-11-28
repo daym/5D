@@ -8,6 +8,10 @@ numbers: 1. Int (done), 2. Integer (done), 3. Q, 4. Float (done), 5. arbitrary-p
 equality (numbers, strings(?) and booleans (?) and symbols (?) and lists (?)) and non-equality.
 Builtin ops: print braces?
 Builtin ops: power
+Complex number literals: #C(3.2 2)
+Array literals: #(a b c)
+subseq "Hello, World" 2 9
+string-upcase
 
 = FFI =
 
@@ -51,6 +55,7 @@ make it possible to define custom operators in the REPL
 function to join buffers (memoryview)
 merge Str and Integer into one (for integer, the str() is reversed, though).
 move str() to the actual language
+#'print or (function print) to get the value in the function slot.
 
 = GUI =
 
@@ -66,12 +71,15 @@ Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).
 nested lists: line-break only for the second list if the first list is short enough.
 pattern-match env entry back to the let macro.
+describe
 
 = Performance =
 
 performance optimisation: use the lowest bit to signify pointers (1=it is one). This will have problems with native pointers maybe, so also override the native allocator.
 degrade from Integer to Int when possible.
 $! strict applicator
+make AST::Symbol const everywhere (best to introduce a Symbol_t or something)
+maybe delay and force
 
 = Parser =
 
@@ -79,4 +87,3 @@ $! strict applicator
 --x
 "# " as line comment starter (=> rem)
 unary posfix operators like "!"?
-maybe delay and force
