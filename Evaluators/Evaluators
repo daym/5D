@@ -18,9 +18,6 @@ struct Reducer : AST::Operation {
 		return(true);
 	}
 	virtual AST::Node* execute(AST::Node* argument);
-	virtual std::string str(void) const {
-		return("reduce");
-	}
 };
 extern Reducer reducer; /* never EVER make your own instance */
 

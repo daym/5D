@@ -10,7 +10,7 @@ extern AST::Symbol* Spercenteax;
 extern AST::Symbol* Sright;
 extern AST::Symbol* SlistFromStr;
 extern AST::Symbol* Slessequal;
-extern AST::Symbol* Sreduce;
+extern AST::Symbol* Ssimplify;
 extern AST::Symbol* Shead;
 extern AST::Symbol* SREPLV1;
 extern AST::Symbol* Snot;
@@ -88,6 +88,10 @@ extern AST::Symbol* Srightcurly;
 extern AST::Symbol* Shello;
 extern AST::Symbol* Sdef;
 extern AST::Symbol* Sleft;
+extern AST::Symbol* Stab;
+extern AST::Symbol* Snewline;
+extern AST::Symbol* Sbackspace;
+extern AST::Symbol* Sescape;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

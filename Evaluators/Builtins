@@ -113,7 +113,7 @@ struct SuperAwareOperation : BaseSuperAwareOperation { /* will be immediately ex
 
 template<class T>
 static AST::Node* buildSuperAwareOperation(AST::Symbol* name) {
-	return(AST::makeApplication(Symbols::Sreduce, AST::makeApplication(new SuperAwareOperation<T>(), name)));
+	return(AST::makeApplication(Symbols::Ssimplify, AST::makeApplication(new SuperAwareOperation<T>(), name)));
 }
 
 void resetWorld(void);

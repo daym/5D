@@ -10,7 +10,7 @@ define foldr \folder \initialValue \list Y\foldr
      else (folder (head list) (foldr folder initialValue (rest list))))
 -- foldr gives a function which replaces all cons of the list by folder and the nil of the list by initialValue.
 
-define reduce foldr
+define reduce \f foldl ( ) f
 
 
 define foldr \folder \initialValue \list Y\foldr if (empty? list) initialValue (folder (head list) (foldr folder initialValue (tail list)))

@@ -154,7 +154,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, Symbols::Sdefine, &quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Slet, &quoter); // dummy
-	REPL_add_static_builtin_binding(self, Symbols::Sreduce, &Evaluators::reducer);
+	REPL_add_static_builtin_binding(self, Symbols::Ssimplify, &Evaluators::reducer);
 	REPL_add_builtin_method(self, Symbols::SfromLibrary, FFIs::LibraryLoader);
 	REPL_add_static_builtin_binding(self, Symbols::Snil, NULL);
 	REPL_add_builtin_method(self, Symbols::Scolon, Evaluators::Conser);

@@ -6,7 +6,7 @@ AST::Symbol* Spercenteax = AST::symbolFromStr("%eax");
 AST::Symbol* Sright = AST::symbolFromStr("right");
 AST::Symbol* SlistFromStr = AST::symbolFromStr("listFromStr");
 AST::Symbol* Slessequal = AST::symbolFromStr("<=");
-AST::Symbol* Sreduce = AST::symbolFromStr("reduce");
+AST::Symbol* Ssimplify = AST::symbolFromStr("simplify");
 AST::Symbol* Shead = AST::symbolFromStr("head");
 AST::Symbol* SREPLV1 = AST::symbolFromStr("REPLV1");
 AST::Symbol* Snot = AST::symbolFromStr("not");
@@ -84,5 +84,9 @@ AST::Symbol* Srightcurly = AST::symbolFromStr("}");
 AST::Symbol* Shello = AST::symbolFromStr("hello");
 AST::Symbol* Sdef = AST::symbolFromStr("def");
 AST::Symbol* Sleft = AST::symbolFromStr("left");
+AST::Symbol* Stab = AST::symbolFromStr("tab");
+AST::Symbol* Snewline = AST::symbolFromStr("newline");
+AST::Symbol* Sbackspace = AST::symbolFromStr("backspace");
+AST::Symbol* Sescape = AST::symbolFromStr("escape");
 
 };
