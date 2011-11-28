@@ -279,7 +279,7 @@ void Scanner::parse_string(int input) {
 	std::stringstream matchtext;
 	// assert input == '"'
 	bool B_escaped = false;
-	parse_optional_whitespace();
+	// bad bad parse_optional_whitespace();
 	for(++position, input = fgetc(input_file); input != EOF && (input != '"' || B_escaped); ++position, input = fgetc(input_file)) {
 		if(input == '\n')
 			++line_number;
