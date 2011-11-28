@@ -363,7 +363,10 @@ void Scanner::parse_special_coding(int input) {
 		/* FIXME \tab, \newline, \space, \backspace, \escape, \\ ... */
 		++position, input = fgetc(input_file);   
 		if(input != EOF) {
-			parse_symbol(input);
+			if(input == '\\')
+				input_value = AST::symbolFromStr("\\");
+			else
+				parse_symbol(input);
 			// allow these to be overridden input_value = Numbers::internNative((Numbers::NativeInt) input);
 			std::stringstream sst;
 			const char* n;
