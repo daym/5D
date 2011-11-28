@@ -359,6 +359,16 @@ void Scanner::parse_special_coding(int input) {
 	assert(input == '#');
 	++position, input = fgetc(input_file);
 	switch(input) {
+	case '\\':
+		++position, input = fgetc(input_file);   
+		if(input != EOF) {
+			// allow these to be overridden input_value = Numbers::internNative((Numbers::NativeInt) input);
+			std::stringstream sst;
+			sst << input;
+			input_value = AST::symbolFromStr(sst.str().c_str());
+		} else
+			raise_error("<character>", "<EOF>");
+		break;
 	case 'o':
 	case 'x':
 	case '0':
