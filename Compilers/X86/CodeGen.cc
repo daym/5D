@@ -9,7 +9,7 @@ void CodeGen::gen_push(AST::Node* source) {
         /* if source is a symbol, we assume it means a register. */
         AST::Symbol* sourceSymbol = dynamic_cast<AST::Symbol*>(source);
 		if(sourceSymbol) {
-			if(sourceSymbol == AST::intern("%eax")) {
+			if(sourceSymbol == AST::symbolFromStr("%eax")) {
 				//0x50+r
 /*
 *    push eax  50
@@ -36,7 +36,7 @@ void CodeGen::gen_pop(AST::Node* source) {
         /* if source is a symbol, we assume it means a register. */
         AST::Symbol* sourceSymbol = dynamic_cast<AST::Symbol*>(source);
 		if(sourceSymbol) {
-			if(sourceSymbol == AST::intern("%eax")) {
+			if(sourceSymbol == AST::symbolFromStr("%eax")) {
 				//0x58+r
 /*
 *    pop eax  58
