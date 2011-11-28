@@ -211,4 +211,468 @@ mergeSortWith (<=) [5 4 3 2 1]
 define mergeSort \\list (mergeSortWith (<=) list)
 mergeSort
 mergeSort [5 4 3 2 1]
-") environment) ((\id ((\if ((\else ((\otherwise ((\flip ((\compose ((\| ((\toBool ((\Y ((\rec ((\&& ((\|| ((\not ((\implies ((\equivalent? ((\< ((\> ((\= ((\/= ((\>= ((\≤ ((\≥ ((\div ((\mod ((\% ((\monadWorld ((\monadLift ((\lift ((\monadValue ((\runWorld ((\runWorld ((\runWorld ((\; ((\rangeLL ((\rangeLL ((\range1 ((\length ((\length ((\foldr ((\foldl ((\foldl ((\map ((\range ((\$ ((\zipWith ((\zip ((\reverse ((\take ((\drop ((\filter ((\mergeWith ((\mergeWith ((\merge ((\mergeSortWith ((\mergeSortWith ((\mergeSortWith ((\take ((\drop ((\mergeSortWith ((\drop ((\take ((\mergeSortWith ((\mergeWith ((\mergeWith ((\mergeSortWith ((\mergeSortWith ((\mergeWith ((\mergeSortWith ((\mergeWith ((\mergeSortWith ((\mergeSort nil) (\list ((mergeSortWith <=) list)))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (\lessEqualComparator (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) (((if (nil? l2)) ((: (head l1)) ((merge (tail l1)) l2))) (((if (nil? l1)) ((: (head l2)) ((merge l1) (tail l2)))) (((if ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((merge (tail l1)) l2))) ((: (head l2)) ((merge l1) (tail l2)))))))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (\\ ((lessEqualComparator rec) (\\ (merge (\\ (l1 (\\ ((((l2 if) ((&& (nil? l1)) (nil? l2))) nil) (((if (nil? l2)) ((: (head l1)) ((merge (tail l1)) l2))) (((if (nil? l1)) ((: (head l2)) ((merge l1) (tail l2)))) (((if ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((merge (tail l1)) l2))) ((: (head l2)) ((merge l1) (tail l2)))))))))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) (((if ((|| (nil? l2)) ((&& (not (nil? l1))) ((lessEqualComparator (head l1)) (head l2))))) ((: (head l1)) ((mergeWith (tail l1)) l2))) (head ((: l2) ((mergeWith l1) (tail l2))))))))))))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) ((|| (nil? l2)) ((&& (not (nil? l1))) ((lessEqualComparator (head l1)) (head l2))))) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (else (head ((: l2) ((mergeWith l1) (tail l2)))))))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (rec (\take (\count (\list (($ ((if ((|| ((<= count) 0)) (nil? list))) nil)) (else ((: (head list)) ((take ((- count) 1)) (tail list))))))))))) (rec (\drop (\count (\list (($ ((if ((|| ((<= count) 0)) (nil? list))) list)) (else ((drop ((- count) 1)) (tail list)))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (rec (\drop (\count (\list (($ ((if ((<= count) ((|| nil?) list0))) list)) (else ((drop ((- count) 1)) (tail list)))))))))) (rec (\take (\count (\list (($ ((if ((<= count) ((|| nil?) list0))) nil)) (else ((: (head list)) ((take ((- count) 1)) (tail list))))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) ((mergeSortWith take) ((div (length list)) 2))) ((mergeSortWith drop) ((div (length list)) 2)))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) (((else mergeWith) lessEqualComparator) ((mergeSortWith take) ((div (length list)) 2)))))))))) (mergeWith <=))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) ((|| (nil? l2)) ((&& (not (nil? l1))) ((lessEqualComparator (head l1)) (head l2))))) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (else (head ((: l2) ((mergeWith l1) (tail l2)))))))))))))) (\lessEqualComparator (\l1 (\l2 (($ ((if ((&& (nil? l1)) (nil? l2))) nil)) ((else if) ((|| (nil? l2)) ((&& (not (nil? l1))) ((lessEqualComparator (head l1)) (head l2))))))))))) (\f (\list (((foldr (\x (\y (((((if (f x)) :) (\a (\b b))) x) y)))) nil) list))))) (rec (\drop (\count (\list (($ ((if ((<= count) 0)) list)) (else ((drop ((- count) 1)) (tail list)))))))))) (rec (\take (\count (\list (($ ((if ((<= count) 0)) nil)) (else ((: (head list)) ((take ((- count) 1)) (tail list))))))))))) (\list (((foldl (flip :)) nil) list)))) (\l1 (\l2 (((zipWith (\a (\b ((: a) ((: b) nil))))) l1) l2))))) (\zipper (rec (\zipWith (\l1 (\l2 (($ ((if (nil? l1)) nil)) (($ (((else if) (nil? l2)) nil)) (else ((: ((zipper (head l1)) (head l2))) ((zipWith (tail l1)) (tail l2))))))))))))) id)) (\beginning (\end (\step (((rangeLL step) end) beginning)))))) (\f (\list (((foldr ((compose :) f)) nil) list))))) (\folder (rec (\foldl (\v (\list (((if (nil? list)) v) ((foldl ((folder v) (head list))) (tail list)))))))))) (\folder (rec (\foldr (\v (\list (((if (nil? list)) v) ((foldl ((folder v) (head list))) (tail list)))))))))) (\folder (\v (rec (\foldr (\list (((if (nil? list)) v) ((folder (head list)) (foldr (tail list))))))))))) (rec (\length (\list (((if (nil? list)) 0) ((+ 1) (length (tail list))))))))) (rec (\length (\list ((+ (((if (nil? list)) 0) 1)) (length (tail list)))))))) (\beginning (\end (((rangeLL 1) end) beginning))))) (\step (\end (((if ((> step) 0)) (rec (\rangeLL (\beginning (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))) (rec (\rangeLL (\beginning (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))))))) (\step (\end (((if ((> step) 0)) (rec (\rangeLL (\beginning (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))) (rec (\rangeLL (\end (\beginning (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step))))))))))))) (\a (\ber (\world ((\r ((ber (monadValue r)) (monadWorld r))) (a world))))))) (\m (monadValue (internalRunWorld2 m))))) (\m (monadValue ((internalRunWorld2 m) 42))))) (monadValue (internalRunWorld2 42)))) (\m (head m)))) monadLift)) (\v (\world ((: v) ((: world) nil)))))) (\m ((| ((| m) tail)) head)))) mod)) (\a (\b ((| ((| ((divmod a) b)) tail)) head))))) (\a (\b ((| ((divmod a) b)) head))))) >=)) <=)) (\a (\b ((<= b) a))))) (\a (\b (not ((= a) b)))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) (flip <))) (\a (\b ((&& ((<= a) b)) (not ((<= b) a))))))) (\a (\b ((|| ((&& a) b)) ((&& (not a)) (not b))))))) (\a (\b ((|| (not a)) b))))) (\v (\t (\f ((v f) t)))))) (\a (\b (\t (\f ((a t) ((b t) f)))))))) (\a (\b (\t (\f ((a ((b t) f)) f))))))) Y)) (\f ((\x (f (x x))) (\x (f (x x))))))) (\v (((if v) (' t)) (' f))))) (\a (\b (b a))))) (\f (\g (\x (f (g x))))))) (\f (\a (\b ((f b) a)))))) id)) id)) id)) (\f f))) nil)
+mergeSort [5 4 3 2 1]
+mergeSort (range 1 100 1)
+mergeSort (range 1 10 1)
+mergeSort (range 1 5 1)
+mergeSort (range 5 (-1) (-1))
+mergeSort (range 5 (-1) (-1))
+mergeSort (range 9 (-1) (-1))
+mergeSort (range 15 (-1) (-1))
+mergeSort (range 15 (-1) (-1))
+mergeSort (range 15 (-1) (-1))
+mergeSort (range 30 (-1) (-1))
+mergeSort (range 50 (-1) (-1))
+mergeSort (range 1 5 1)
+mergeSort (range 1 10 1)
+mergeSort (range 1 50 1)
+mergeSort [7 5 3 2]
+5 + 3⋅4
+5 + 3⋅4 + 1
+5 + 3⋅4 + 11111
+strFromKeyword
+5 + 3
+5 + 3⋅3
+5 + 3⋅3⋅5
+5 + 3⋅3⋅5⋅100
+5 + 3⋅3⋅5⋅100⋅365
+5 + 3⋅3⋅5⋅100⋅365⋅777
+5 + 3⋅3⋅5⋅100⋅365⋅777⋅2
+5 + 3⋅3⋅5⋅100⋅365⋅777⋅2222
+5 + 3⋅3⋅5⋅100⋅365⋅777⋅2222.3
+5 + 3⋅3⋅5⋅100⋅365⋅777⋅2222
+5 + 3⋅3⋅5⋅100⋅365⋅777⋅2222
+5 + 42
+5 + 42 ⋅ 3
+5 + 42⋅3
+a + b⋅c
+'a + 'b⋅'c
+'a + 'b⋅'c + 'd⋅'e**'f
+'a + 'b⋅'c + 'd⋅e**f
+'a + 'b⋅'c + 'd⋅'e**'f
+'a + 'b⋅'c + 'e**'f
+'a + 'b⋅'c + 'e ** 'f
+'e ** 'f
+'e
+'f
+**
+**
+lift 2
+runWorld (lift 2)
+runWorld (lift 2 ;\\v lift 3)
+runWorld (lift 2 ;\\v lift (3 + v))
+runWorld (lift 2 ;\\v lift 3⋅v)
+reverse (listFromStr \"stressed\")
+reverse (listFromStr \"stressed\")
+strFromList (reverse (listFromStr \"stressed\"))
+strFromList [65]
+strFromList [65 65]
+strFromList [65]
+strFromList [65 66]
+strFromList [65]
+strFromList [65 65]
+strFromList
+str? 
+strFromList
+strFromList (reverse (listFromStr \"stressed\"))
+\"stressed\"
+listFromStr \"stressed\"
+listFromStr \"stressed\" | reverse 
+listFromStr \"stressed\" | reverse | strFromList
+\"stressed\" | listFromStr | reverse | strFromList
+range 0 10 1
+range 0 10 2
+div 5 2
+div 5 0
+monadLift 2
+monadLift 
+runWorld (lift 2)
+runWorld (lift 42)
+runWorld (lift 42 ;\\v 3)
+runWorld (lift 42 ;\\v lift 3)
+5 + 666
+55 + 42
+zipWith (+) [1 2 3] [4 5 6]
+let x=3 in x
+let x=3 in x + 5
+let x=3 in 3 + x
+let x=3 in let y = 4 in x + y
+mergeSort [5 4 3 9]
+runWorld (lift 42 ;\\v lift 2)
+runWorld (lift 42 ;\\v lift 2⋅v)
+define (++) \\a \\b foldr (:) b a
+define strConcat \\a \\b strFromList ((listFromStr a) ++ (listFromStr b))
+strConcat \"hello\" \"world\"
+strConcat \"hello\" \"world\"
+foldr strConcat \"\" [\"hello\" \"world\" \"this is a test\"]
+foldr strConcat \"\" [\"hello\" \"world\" \", \" \"this is a test\"]
+strConcat 
+strConcat \"A\" \"B\"
+zip \"hello\" \"world\"
+zip (listFromStr \"hello\") (listFromStr \"world\")
+zip (listFromStr \"hello\") (listFromStr \"world\")
+zipWith (\\x \\y (x + y) % 256) (listFromStr \"hello\") (listFromStr \"world\")
+strFromList (zipWith (\\x \\y (x + y) % 256) (listFromStr \"hello\") (listFromStr \"world\"))
+strFromList (zipWith (\\x \\y (x + y) % 128) (listFromStr \"hello\") (listFromStr \"world\"))
+strFromList (zipWith (\\x \\y (x + y) % 128) (listFromStr \"hello\") (listFromStr \"world\"))
+strFromList (zipWith (\\x \\y (x + y) % 128) (listFromStr \"hello\") (listFromStr \"world\"))
+zip
+#info ziup
+#info zip
+#info With
+#info zipWith
+[]
+[1 2 3]
+[4 5 6] ++ [1 2 3]
+[4 5 6] ++ [1 2 3] ++ [10 11 20]
+(range 0 10 1) ++ (range 10 20 1)
+(range 0 10 1) ++ (range 10 200 1)
+(range 0 200 1) ++ (range 10 20 1)
+#f
+#f && #t
+#t && #t
+length [4 3 2 1 ]
+length [4 3 2 1 0]
+filter (<2) [4 3 2 1 0]
+filter (2>) [4 3 2 1 0]
+filter (2>) [4 3 2 1 0]
+filter (>2) [4 3 2 1 0]
+filter (<2) [4 3 2 1 0]
+filter (2<) [4 3 2 1 0]
+filter (2>) [4 3 2 1 0]
+filter (2>) [4 3 2 1 0]
+filter (2<) [4 3 2 1 0]
+filter (< 2) [4 3 2 1 0]
+filter (2<) [4 3 2 1 0]
+2≤3
+2≤3 |toBool 
+runWorld 
+unsafeRunWorld2 
+runWorld 
+runWorld (lift 42)
+runWorld (lift 42 ;\\v 3)
+runWorld (lift 42 ;\\v lift 3)
+define
+$
+2 $ 3
+f $ 3
+f $ 3 $ 4
+'a
+listFromStr \"hello\"
+strFromList (listFromStr \"hello\"))
+strFromList (listFromStr \"hello\")
+strFromList (map (1+) listFromStr \"hello\"))
+strFromList (map (+ 1) listFromStr \"hello\"))
+strFromList (map (1+) listFromStr \"hello\")
+strFromList (map (\\x (x + 1)) listFromStr \"hello\")
+map (\\x x) [1 2 3]
+strFromList (map (\\x x) listFromStr \"hello\")
+strFromList (map (\\x x) (listFromStr \"hello\"))
+strFromList (map (1+) $ listFromStr \"hello\")
+strFromList (map (26+) $ listFromStr \"hello\")
+strFromList (map (\\x 97 + ((x - 97) % 26)) $ listFromStr \"hello\")
+strFromList (map (\\x 97 + ((x - 97 + 1) % 26)) $ listFromStr \"hello\")
+strFromList (map (\\x 97 + ((x - 97 + 2) % 26)) $ listFromStr \"hello\")
+strFromList (map (\\x 97 + ((x - 97 + 13) % 26)) $ listFromStr \"hello\")
+define rot13 \\s strFromList (map (\\x 97 + ((x - 97 + 13) % 26)) $ listFromStr s)
+rot13 \"hello\"
+rot13 \"hello\" |rot13
+rot13 \"blah\"
+rot13 \"stressed\"
+#info rot13
+rot13 \"hello\"
+rot13 \"hello you fool\"
+#\\c
+#\\a
+#\\a
+#\\b
+rot13 
+rot13 \"hello\"
+#info rot13
+define rot13 \\s strFromList (map (\\x #\\a + (x - #\\a + 13 % 26)) $ listFromStr s)
+rot13
+rot13 \"hello\"
+rot13 \"hello\" |rot13
+3 + 5
+3 + 5⋅222
+f x 
+f x + x
+#info strFromList
+#info rot13
+rot13 \"hello\"
+\\newlline
+\\newline
+#\\newline
+#\\newline
+#\\space
+#\\space
+#\\a
+#\\b
+#\\c
+#\\d
+#\\e
+#\\f
+#\\a
+#\\A
+#\\space
+3\\space
+#$\\space
+#\\space
+#\\tab
+#\\\\
+#\\a
+#\\\\
+div 3 2
+\"	\"
+\"	x\"
+\"a	x\"
+\"	x\"
+\"	x \"
+\"	a\"
+\"	a	\"
+3 + 2
+2 + 3
+mod 5 2
+mod 5 3
+mod 5 4
+mod 5 5
+mod 1 5
+mod 2 5
+mod 3 5
+mod 4 5
+mod 5 5
+mod 6 5
+mod 7 5
+drop 3 [2 3 4 ]
+drop 3 [2 3 4]
+drop 3 [2 3 4 5]
+fac 1000
+fac
+rot13 
+rot13 \"hello\"
+#info rot13
+foldr (+) 0 (map (\\x 1.0/x) (range 1 100 4))
+(foldr (+) 0 (map (\\x 1.0/x) (range 1 100 4))) - (foldr (+) (map (\\x 1.0/x) (range 3 100 4))
+(foldr (+) 0 (map (\\x 1.0/x) (range 1 100 4))) - (foldr (+) (map (\\x 1.0/x) (range 3 100 4)))
+(foldr (+) 0 (map (\\x 1.0/x) (range 1 100 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 100 4)))
+4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 100 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 100 4)))
+4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 100 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 100 4))))
+4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 200 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 200 4))))
+4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 300 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 300 4))))
+4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 400 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 400 4))))
+4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 500 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 500 4))))
+4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 800 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 800 4))))
+4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 900 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 900 4))))
+4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 1900 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 1900 4))))
+4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 1200 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 1200 4))))
+4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 1000 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 1000 4))))
+define pi (4 * ((foldr (+) 0 (map (\\x 1.0/x) (range 1 1000 4))) - (foldr (+) 0 (map (\\x 1.0/x) (range 3 1000 4)))))
+define π pi
+π
+π
+π
+3 ⋅ π
+2 ⋅ π
+3⋅π
+2⋅π
+2⋅π
+2⋅π
+str? \"hello\"
+reduce
+simplify
+simplify 
+simplify 1
+simplify 2
+simplify 3
+simplify 4
+1:2:3:nil
+[1 2 3]
+'[1 2 3]
+' [1 2 3]
+#t
+rot13 \"hello\"
+5 + 3
+5 + 3⋅4
+5 + 3⋅4 + 444
+5 + 3⋅4 + 444.3
+π
+#info π
+#info pi
+5 + 52
+π
+π
+π
+π
+div 5 2
+div 5 1
+div 5 55
+rot13 \"ha\"
+keyword? @a:
+2/3
+2/0
+2/1
+2.0/0
+2.0/0.0
+2000000000000000000000000000000000000/0.0
+200000000000000000000000000000000000000000000000000000000000000/0.0
+20000000000000000000000000000000000000000000000000000000000000000000000000000000000000/0.0
+20000000000000000000000000000000000000000000000000000000000000000000000000000000000000/0
+reverse (listFromStr \"hello\")
+strFromList (reverse (listFromStr \"hello\"))
+π
+99 + 888
+99 + 888
+99 + 888.9
+99 + 888.9⋅99
+99 + 888.9⋅99
+nil? (x f)
+nil? (x f) |toBool 
+nil? (f x)
+nil? (f x)
+nil? (f x)
+nil? (f x)
+nil? (f x)
+5 + 5
+5 + 5⋅43
+5 + 5⋅43 + 222
+5 + 5⋅43 + 222⋅7
+2 = 3
+2 = 3 | toBool 
+3 = 3 | toBool 
+π
+2.3
+5**2.3
+5 + 5
+5 + 5⋅42
+5 | toBool 
+#t | toBool 
+#f | toBool 
+π
+f x + g x
+f x + g x
+5+2
+f x + g x
+f x + g x
+f x + g x
+f x + g x
+f x + g x
+f x + g x
+(f x) ⋅ (g x)
+(f x)⋅(g x)
+a % b
+a $ b
+a | b
+nil?
+nil? a
+nil? b
+nil? c
+nil? a
+nil? a
+nil? b
+nil? c
+nil? (c d)
+nil? hello
+nil? k
+nil? []
+listFromStr 
+listFromStr \"a\"
+listFromStr \"abc\"
+listFromStr \"\"
+nil? (listFromStr \"\")
+5 + 52
+f 'x + g 'x
+f x + g x
+mergeSort [5 4 3 2 1]
+5+a
+b+a
+f x + g x
+a + b
+f a + g b
+a + b
+f a + f b 
+f a + f b
+5 + f
+555 + 52
+a+b
+'((+) a b)
+'(a+b)
+'(a+b)
+'(a + b)
+a + b
+a + b
+f a + f b
+f a + f b
+f a + f b c
+a + b + 2⋅c
+a + b + 2⋅f c
+a + b + 2⋅(f c)
+nil? a
+nil? (f a)
+f + g + h
+f + g + h⋅2
+f + g + h⋅2⋅3
+f + g + 5⋅h⋅2⋅3
+f + g + 5⋅2⋅h⋅2⋅3
+f + g + 5⋅2⋅h⋅2⋅3
+f + g + 5⋅2⋅3⋅h⋅2⋅3
+f + g + 5⋅2⋅3⋅4⋅h⋅2⋅3
+nil? f
+head y
+f a
+f a + f b
+f a + 2⋅3⋅(f b)
+head a
+nil? a
+nil? (f a)
+f x + g x
+f x + g x
+f a + g b
+f 2 + g b
+f 2 + 2⋅3
+(f 2 + 2⋅3)⋅2
+2⋅(f 2 + 2⋅3)
+2≤3
+2≤3 |toBool 
+d + f
+f x + g x
+f x + g x + h x
+5 + 2
+π
+2 < 2
+2 < 2 |toBool 
+2 < 5 |toBool 
+2 < 100 |toBool 
+2 <= 100 |toBool 
+5 + 2
+5 + 2
+mod 5 2
+trunc
+5 + 2
+5⋅4
+5⋅4 + 3
+5⋅4 + 3⋅4
+5⋅4 + 3⋅4 + 555⋅5
+f x + g 
+f x + g x
+f x + g x
+5 + 2
+5 + 2
++
+f + g
+mergeSort [5 4 3 2 1]
+5 + 2
+5 + 2 + 3
+f + g
++
+(+)
+-
+-2
+(-)
+⋅
+/
+%
+$
+cons?
+foldr
+#info foldr
+") environment) ((\id ((\if ((\else ((\otherwise ((\flip ((\compose ((\| ((\toBool ((\Y ((\rec ((\&& ((\|| ((\not ((\implies ((\equivalent? ((\< ((\> ((\= ((\/= ((\>= ((\≤ ((\≥ ((\div ((\mod ((\% ((\monadWorld ((\monadLift ((\lift ((\monadValue ((\runWorld ((\runWorld ((\runWorld ((\; ((\rangeLL ((\rangeLL ((\range1 ((\length ((\length ((\foldr ((\foldl ((\foldl ((\map ((\range ((\$ ((\zipWith ((\zip ((\reverse ((\take ((\drop ((\filter ((\mergeWith ((\mergeWith ((\merge ((\mergeSortWith ((\mergeSortWith ((\mergeSortWith ((\take ((\drop ((\mergeSortWith ((\drop ((\take ((\mergeSortWith ((\mergeWith ((\mergeWith ((\mergeSortWith ((\mergeSortWith ((\mergeWith ((\mergeSortWith ((\mergeWith ((\mergeSortWith ((\mergeSort ((\++ ((\strConcat ((\rot13 ((\rot13 ((\pi ((\π nil) pi)) ((* 4) ((- (((foldr +) 0) ((map (\x ((/ 1.0) x))) (((range 1) 1000) 4)))) (((foldr +) 0) ((map (\x ((/ 1.0) x))) (((range 3) 1000) 4))))))) (\s (strFromList (($ (map (\x ((+ 97) ((% ((+ ((- x) 97)) 13)) 26))))) (listFromStr s)))))) (\s (strFromList (($ (map (\x ((+ 97) ((% ((+ ((- x) 97)) 13)) 26))))) (listFromStr s)))))) (\a (\b (strFromList ((++ (listFromStr a)) (listFromStr b))))))) (\a (\b (((foldr :) b) a))))) (\list ((mergeSortWith <=) list)))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (\lessEqualComparator (rec (\merge (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) (((if (nil? l2)) ((: (head l1)) ((merge (tail l1)) l2))) (((if (nil? l1)) ((: (head l2)) ((merge l1) (tail l2)))) (((if ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((merge (tail l1)) l2))) ((: (head l2)) ((merge l1) (tail l2)))))))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (\\ ((lessEqualComparator rec) (\\ (merge (\\ (l1 (\\ ((((l2 if) ((&& (nil? l1)) (nil? l2))) nil) (((if (nil? l2)) ((: (head l1)) ((merge (tail l1)) l2))) (((if (nil? l1)) ((: (head l2)) ((merge l1) (tail l2)))) (((if ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((merge (tail l1)) l2))) ((: (head l2)) ((merge l1) (tail l2)))))))))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) (((if ((|| (nil? l2)) ((&& (not (nil? l1))) ((lessEqualComparator (head l1)) (head l2))))) ((: (head l1)) ((mergeWith (tail l1)) l2))) (head ((: l2) ((mergeWith l1) (tail l2))))))))))))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) ((|| (nil? l2)) ((&& (not (nil? l1))) ((lessEqualComparator (head l1)) (head l2))))) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (else (head ((: l2) ((mergeWith l1) (tail l2)))))))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (rec (\take (\count (\list (($ ((if ((|| ((<= count) 0)) (nil? list))) nil)) (else ((: (head list)) ((take ((- count) 1)) (tail list))))))))))) (rec (\drop (\count (\list (($ ((if ((|| ((<= count) 0)) (nil? list))) list)) (else ((drop ((- count) 1)) (tail list)))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (rec (\drop (\count (\list (($ ((if ((<= count) ((|| nil?) list0))) list)) (else ((drop ((- count) 1)) (tail list)))))))))) (rec (\take (\count (\list (($ ((if ((<= count) ((|| nil?) list0))) nil)) (else ((: (head list)) ((take ((- count) 1)) (tail list))))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) ((mergeSortWith take) ((div (length list)) 2))) ((mergeSortWith drop) ((div (length list)) 2)))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) (((else mergeWith) lessEqualComparator) ((mergeSortWith take) ((div (length list)) 2)))))))))) (mergeWith <=))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) ((|| (nil? l2)) ((&& (not (nil? l1))) ((lessEqualComparator (head l1)) (head l2))))) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (else (head ((: l2) ((mergeWith l1) (tail l2)))))))))))))) (\lessEqualComparator (\l1 (\l2 (($ ((if ((&& (nil? l1)) (nil? l2))) nil)) ((else if) ((|| (nil? l2)) ((&& (not (nil? l1))) ((lessEqualComparator (head l1)) (head l2))))))))))) (\f (\list (((foldr (\x (\y (((((if (f x)) :) (\a (\b b))) x) y)))) nil) list))))) (rec (\drop (\count (\list (($ ((if ((<= count) 0)) list)) (else ((drop ((- count) 1)) (tail list)))))))))) (rec (\take (\count (\list (($ ((if ((<= count) 0)) nil)) (else ((: (head list)) ((take ((- count) 1)) (tail list))))))))))) (\list (((foldl (flip :)) nil) list)))) (\l1 (\l2 (((zipWith (\a (\b ((: a) ((: b) nil))))) l1) l2))))) (\zipper (rec (\zipWith (\l1 (\l2 (($ ((if (nil? l1)) nil)) (($ (((else if) (nil? l2)) nil)) (else ((: ((zipper (head l1)) (head l2))) ((zipWith (tail l1)) (tail l2))))))))))))) id)) (\beginning (\end (\step (((rangeLL step) end) beginning)))))) (\f (\list (((foldr ((compose :) f)) nil) list))))) (\folder (rec (\foldl (\v (\list (((if (nil? list)) v) ((foldl ((folder v) (head list))) (tail list)))))))))) (\folder (rec (\foldr (\v (\list (((if (nil? list)) v) ((foldl ((folder v) (head list))) (tail list)))))))))) (\folder (\v (rec (\foldr (\list (((if (nil? list)) v) ((folder (head list)) (foldr (tail list))))))))))) (rec (\length (\list (((if (nil? list)) 0) ((+ 1) (length (tail list))))))))) (rec (\length (\list ((+ (((if (nil? list)) 0) 1)) (length (tail list)))))))) (\beginning (\end (((rangeLL 1) end) beginning))))) (\step (\end (((if ((> step) 0)) (rec (\rangeLL (\beginning (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))) (rec (\rangeLL (\beginning (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))))))) (\step (\end (((if ((> step) 0)) (rec (\rangeLL (\beginning (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))) (rec (\rangeLL (\end (\beginning (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step))))))))))))) (\a (\ber (\world ((\r ((ber (monadValue r)) (monadWorld r))) (a world))))))) (\m (monadValue (unsafeRunWorld2 m))))) (\m (monadValue ((unsafeRunWorld2 m) 42))))) (monadValue (unsafeRunWorld2 42)))) (\m (head m)))) monadLift)) (\v (\world ((: v) ((: world) nil)))))) (\m ((| ((| m) tail)) head)))) mod)) (\a (\b ((| ((| ((divmod a) b)) tail)) head))))) (\a (\b ((| ((divmod a) b)) head))))) >=)) <=)) (\a (\b ((<= b) a))))) (\a (\b (not ((= a) b)))))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) (flip <))) (\a (\b ((&& ((<= a) b)) (not ((<= b) a))))))) (\a (\b ((|| ((&& a) b)) ((&& (not a)) (not b))))))) (\a (\b ((|| (not a)) b))))) (\v (\t (\f ((v f) t)))))) (\a (\b (\t (\f ((a t) ((b t) f)))))))) (\a (\b (\t (\f ((a ((b t) f)) f))))))) Y)) (\f ((\x (f (x x))) (\x (f (x x))))))) (\v (((if v) (' t)) (' f))))) (\a (\b (b a))))) (\f (\g (\x (f (g x))))))) (\f (\a (\b ((f b) a)))))) id)) id)) id)) (\f f))) nil)
