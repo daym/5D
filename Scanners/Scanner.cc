@@ -360,11 +360,31 @@ void Scanner::parse_special_coding(int input) {
 	++position, input = fgetc(input_file);
 	switch(input) {
 	case '\\':
+		/* FIXME \tab, \newline, \space, \backspace, \escape, \\ ... */
 		++position, input = fgetc(input_file);   
 		if(input != EOF) {
+			parse_symbol(input);
 			// allow these to be overridden input_value = Numbers::internNative((Numbers::NativeInt) input);
 			std::stringstream sst;
-			sst << input;
+			const char* n;
+			if(dynamic_cast<AST::Symbol*>(input_value) && ((n = dynamic_cast<AST::Symbol*>(input_value)->name) != NULL)) {
+				if(n[0] && !n[1])
+					sst << (unsigned int) (unsigned char) n[0];
+				else { /* more complicated character, i.e. control character... */
+					if(input_value == Symbols::Stab)
+						sst << 9;
+					else if(input_value == Symbols::Snewline)
+						sst << (unsigned) '\n';
+					else if(input_value == AST::symbolFromStr("space"))
+						sst << (unsigned) ' ';
+					else if(input_value == Symbols::Sbackspace)
+						sst << (unsigned) '\b';
+					else if(input_value == Symbols::Sescape)
+						sst << 27;
+					else
+						raise_error("<character>", str(input_value));
+				}
+			}
 			input_value = AST::symbolFromStr(sst.str().c_str());
 		} else
 			raise_error("<character>", "<EOF>");
