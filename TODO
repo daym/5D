@@ -6,7 +6,6 @@ list comprehensions in []
 
 numbers: 1. Int (done), 2. Integer (done), 3. Q, 4. Float (done), 5. arbitrary-precision fixed point
 equality (numbers, strings(?) and booleans (?) and symbols (?) and lists (?)) and non-equality.
-Builtin ops: print braces?
 Builtin ops: power
 Complex number literals: #C(3.2 2)
 Array literals: #(a b c)
@@ -87,3 +86,14 @@ maybe delay and force
 --x
 "# " as line comment starter (=> rem)
 unary posfix operators like "!"?
+
+= Correctness =
+
+For predicates like nil?, check whether argument is an application, and if so, let it be and return an application.
+
+= Debugging Macros =
+
+trace
+untrace
+step
+disassemble
