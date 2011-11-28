@@ -228,13 +228,10 @@ AST::Node* reduce(AST::Node* term) {
 		} else {
 			// most of the time, SymbolReference anyway: AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(fn);
 			Evaluators::Operation* fnOperation = dynamic_cast<Evaluators::Operation*>(fn);
-			if(fnOperation) {
+			if(fnOperation && !application_P(argument)) {
 				AST::Node* result;
 				result = fnOperation->execute(argument);
-				/*if(result)*/
-					return(remember(term, result));
-				/*TODO else
-					return(fnOperation);*/
+				return(remember(term, result));
 			} else if(get_application_operator(term) == fn && get_application_operand(term) == argument)
 				return(remember(term, term));
 			else
