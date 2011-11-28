@@ -144,7 +144,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		/* FIXME braces for these? spaces for these? */
 		std::string value = str(node);
 		int pl = OPL->get_operator_precedence(AST::symbolFromStr(value.c_str()));
-		print_text_raw(output, position, value.c_str(), pl < OPL->apply_level && pl != -1);
+		print_text(output, position, value.c_str()); // , pl < OPL->apply_level && pl != -1);
 	}
 }
 void print_math(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, AST::Node* node) {

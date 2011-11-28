@@ -95,6 +95,9 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 	} else if(application_P(root)) {
 		AST::Node* operator_ = get_application_operator(root);
 		AST::Node* operand = get_application_operand(root);
+		if(operator_ == Symbols::Sinline) { // ideally this would be auto-detected, but it isn't right now.
+			return(annotate_impl(reduce(operand), boundNames, boundNamesSet));
+		}
 		AST::Node* newOperatorNode = annotate_impl(operator_, boundNames, boundNamesSet);
 		AST::Node* newOperandNode = quote_P(newOperatorNode) ? operand : annotate_impl(operand, boundNames, boundNamesSet);
 		if(operator_ == newOperatorNode && operand == newOperandNode)

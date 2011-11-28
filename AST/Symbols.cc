@@ -6,7 +6,7 @@ AST::Symbol* Spercenteax = AST::symbolFromStr("%eax");
 AST::Symbol* Sright = AST::symbolFromStr("right");
 AST::Symbol* SlistFromStr = AST::symbolFromStr("listFromStr");
 AST::Symbol* Slessequal = AST::symbolFromStr("<=");
-AST::Symbol* Ssimplify = AST::symbolFromStr("simplify");
+AST::Symbol* Sinline = AST::symbolFromStr("inline");
 AST::Symbol* Shead = AST::symbolFromStr("head");
 AST::Symbol* SREPLV1 = AST::symbolFromStr("REPLV1");
 AST::Symbol* Snot = AST::symbolFromStr("not");

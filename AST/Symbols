@@ -10,7 +10,7 @@ extern AST::Symbol* Spercenteax;
 extern AST::Symbol* Sright;
 extern AST::Symbol* SlistFromStr;
 extern AST::Symbol* Slessequal;
-extern AST::Symbol* Ssimplify;
+extern AST::Symbol* Sinline;
 extern AST::Symbol* Shead;
 extern AST::Symbol* SREPLV1;
 extern AST::Symbol* Snot;

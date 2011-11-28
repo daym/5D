@@ -88,6 +88,10 @@ maybe delay and force
 "# " as line comment starter (=> rem)
 unary posfix operators like "!"?
 
+= Correctness =
+
+Have the predicates check for non-SymbolReference non-quoted symbols or non-executed applications and if so, return "we can't do it"?
+
 = Debugging Macros =
 
 trace
