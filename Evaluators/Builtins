@@ -60,7 +60,6 @@ struct P : AST::BuiltinOperation { \
 	DECLARE_SIMPLE_OPERATION(P, N) \
 	DECLARE_CURRIED_OPERATION(Curried ## P, N)
 
-#define FALLBACK (AST::Node*) reduce(makeOperation(Symbols::Sspace, fallback, argument))
 
 DEFINE_SIMPLE_OPERATION(ProcedureP, "procedure?", (dynamic_cast<Operation*>(argument) != NULL))
 DECLARE_BINARY_OPERATION(Conser, ":")
