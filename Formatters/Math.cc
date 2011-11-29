@@ -19,17 +19,19 @@ using namespace Evaluators;
      * automatic indentation for "longer" expressions
 */
 
-static void print_text(std::ostream& output, int& visible_position, const char* text) {
-	if(isalnum(*text) || ((text[0] == '"' || text[0] == '[') && text[1] != 0))
+static void print_text(std::ostream& output, int& visible_position, const char* text, bool bForceParens) {
+	if(bForceParens)
+		output << '(' << text << ')';
+	else
+		output << text;
+	/*if(isalnum(*text) || ((text[0] == '"' || text[0] == '[') && text[1] != 0))
 		output << text;
 	else if(*text == '@')
 		output << text;
 	else if(*text == '\'' && *(text + 1) == 0) // unary operator
 		output << '\'';
 	else if(text[0] == '[' && text[1] == ']')
-		output << "[]";
-	else
-		output << '(' << text << ')';
+		output << "[]";*/
 	for(; *text; ++text) {
 		unsigned c = (unsigned) *text;
 		if(c == 10)
@@ -88,10 +90,11 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 	}
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);	
 	if(node == NULL)
-		print_text(output, position, "[]");
-	else if(symbolNode)
-		print_text(output, position, symbolNode->name);
-	else if(abstraction_P(node)) { /* abstraction */
+		print_text(output, position, "[]", false);
+	else if(symbolNode) {
+		int pl = OPL->get_operator_precedence(symbolNode);
+		print_text(output, position, symbolNode->name, pl != -1);
+	} else if(abstraction_P(node)) { /* abstraction */
 		int precedence = 0;
 		bool B_braced = maybe_print_opening_brace(output, position, precedence, precedence_limit, B_brace_equal_levels);
 		AST::Node* parameter = get_abstraction_parameter(node);
@@ -141,10 +144,9 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		}
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
-		/* FIXME braces for these? spaces for these? */
 		std::string value = str(node);
-		//int pl = OPL->get_operator_precedence(AST::symbolFromStr(value.c_str()));
-		print_text(output, position, value.c_str()); // , pl < OPL->apply_level && pl != -1);
+		int pl = OPL->get_operator_precedence(AST::symbolFromStr(value.c_str()));
+		print_text(output, position, value.c_str(), pl != -1); // , pl < OPL->apply_level && pl != -1);
 	}
 }
 void print_math(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, AST::Node* node) {
