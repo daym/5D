@@ -54,6 +54,9 @@ static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 		long int value;
 		char* endptr = NULL;
 		value = strtol(name, &endptr, 10);
+		if(endptr && ((*endptr) == 'E' || (*endptr) == 'e')) { /* either a real or an integer specified in a weird way */
+			// TODO maybe check: exponent >= number of fractional digits, then it's Integer after all...
+		}
 		if(endptr && *endptr) { /* maybe a real */
 			NativeFloat value;
 			std::istringstream sst(name);

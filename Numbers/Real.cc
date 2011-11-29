@@ -1,3 +1,4 @@
+#include <string.h>
 #include "Numbers/Real"
 #include "Evaluators/Builtins"
 
@@ -11,6 +12,10 @@ REGISTER_STR(Float, {
 	std::stringstream sst;
 	sst.precision(7); /* 17 for some */
 	sst << node->value;
+	std::string v = sst.str();
+	const char* vc = v.c_str();
+	if(strpbrk(vc, ".eE") == NULL)
+		sst << ".0";
 	return(sst.str());
 })
 
