@@ -20,7 +20,7 @@ using namespace Evaluators;
 */
 
 static void print_text(std::ostream& output, int& visible_position, const char* text) {
-	if(isalnum(*text) || text[0] == '"')
+	if(isalnum(*text) || text[0] == '"' || text[0] == '[')
 		output << text;
 	else if(*text == '@')
 		output << text;
