@@ -20,7 +20,7 @@ using namespace Evaluators;
 */
 
 static void print_text(std::ostream& output, int& visible_position, const char* text) {
-	if(isalnum(*text) || text[0] == '"' || text[0] == '[')
+	if(isalnum(*text) || ((text[0] == '"' || text[0] == '[') && text[1] != 0))
 		output << text;
 	else if(*text == '@')
 		output << text;
@@ -143,7 +143,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		/* this especially matches BuiltinOperators which will return their builtin name */
 		/* FIXME braces for these? spaces for these? */
 		std::string value = str(node);
-		int pl = OPL->get_operator_precedence(AST::symbolFromStr(value.c_str()));
+		//int pl = OPL->get_operator_precedence(AST::symbolFromStr(value.c_str()));
 		print_text(output, position, value.c_str()); // , pl < OPL->apply_level && pl != -1);
 	}
 }
