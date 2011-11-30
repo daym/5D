@@ -186,4 +186,159 @@ mergeWith
 merge
 mergeSort
 mergeSortWith
-") environment) ((\if ((\id ((\else ((\otherwise ((\$ ((\&& ((\|| ((\not ((\< ((\flip ((\> ((\Y ((\rec ((\foldr ((\foldl ((\compose ((\map ((\++ ((\= ((\δ ((\reverse ((\foldl ((\reverse ((\| ((\/= ((\>= ((\≤ ((\≥ ((\div ((\mod ((\% ((\monadWorld ((\monadValue ((\monadLift ((\lift ((\runWorld ((\; ((\implies? ((\equivalent? ((\take ((\drop ((\rangeLL ((\rangeLL ((\range ((\range1 ((\zipWith ((\zip ((\length ((\filter nil) (\f (rec (\filter (\list (($ ((if (nil? list)) nil)) ((((else if) (f (head list))) ((: (head list)) (filter (tail list)))) (filter (tail list)))))))))) (rec (\length (\list (((if (nil? list)) 0) ((+ 1) (length (tail list))))))))) (zipWith (\x (\y ((: x) ((: y) nil))))))) (\zipper (rec (\zipWith (\l1 (\l2 (($ ((if ((|| (nil? l1)) (nil? l2))) nil)) (else ((: ((zipper (head l1)) (head l2))) ((zipWith (tail l1)) (tail l2)))))))))))) (\beginning (\end (((rangeLL 1) end) beginning))))) (\beginning (\end (\step (((rangeLL step) end) beginning)))))) (\step (\end (rec (\rangeLL (\beginning (((if ((<= step) ((- 0) 1))) (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step))))) (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))))))) (\step (\end (rec (\rangeLL (\beginning (((if ((<= step) ((- 0) 1))) (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step))))) (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))))))) (rec (\drop (\count (\list (((if ((|| ((<= count) 0)) (nil? list))) list) ((drop ((- count) 1)) (tail list))))))))) (rec (\take (\count (\list (((if ((|| ((<= count) 0)) (nil? list))) nil) ((: (head list)) ((take ((- count) 1)) (tail list)))))))))) (\a (\b ((|| ((&& a) b)) ((&& (not a)) (not b))))))) (\a (\b ((|| (not a)) b))))) (\m (\ber (\world ((\r ((ber (monadValue r)) (monadWorld r))) (m world))))))) (\m (monadValue (unsafeRunWorld2 m))))) monadLift)) (\v (\world ((: v) ((: world) nil)))))) (\m (head m)))) (\m (head (tail m))))) mod)) (\a (\b (head (tail ((divmod a) b))))))) (\a (\b (head ((divmod a) b)))))) >=)) <=)) (\a (\b ((<= b) a))))) (\a (\b (not ((= a) b)))))) (\a (\b (b a))))) (\list (((foldl (flip :)) nil) list)))) (\f (rec (\foldl (\v (\list (($ ((if (nil? list)) v)) (((else foldl) ((f v) (head list))) (tail list)))))))))) (\list (((foldl (flip :)) nil) list)))) (\x (((if ((= x) 0)) 1) 0)))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) (\a (\b (((foldr :) b) a))))) (\f (\list (((foldr ((compose :) f)) nil) list))))) (\f (\g (\x (f (g x))))))) (\f (rec (\foldl (\v (\list (($ ((if (nil? list)) v)) (((else foldl) ((f (head list)) v)) (tail list)))))))))) (\f (\v (rec (\foldr (\list (($ ((if (nil? list)) v)) (((else f) (head list)) (foldr (tail list))))))))))) Y)) (\f ((\x (f (x x))) (\x (f (x x))))))) (flip <))) (\f (\a (\b ((f b) a)))))) (\a (\b ((&& ((<= a) b)) (not ((<= b) a))))))) (\a (\t (\f ((a f) t)))))) (\a (\b (\t (\f ((a t) ((b t) f)))))))) (\a (\b (\t (\f ((a ((b t) f)) f))))))) (\a (\b (a b))))) id)) id)) (\f f))) (\f f))) nil)
+range 1 10 1
+range 1 10 2
+range 1 10 3
+range 1 10 4
+range 1 10 100
+range 1 10 100
+range 1 10 100
+range 1 10
+δ 0
+#info flip
+zip
+filter
+foldl
+foldr
+range
+take
+drop
+range1
+rangeLL
+zip
+zipWith
+map
+reverse
+length
+repeat
+mergeWith
+merge
+mergeSortWith
+++
+if (2>=3) 't 'f
+define toBool \\v if (v) 't 'f
+2>=3 |toBool 
+let
+let
+5 + 25
+(5 + 25)]2
+(5 + 25)⋅2
+f
+g
+\\f f
+f
+g
+nil? a
+nil? 'a
+\\f \\g f+g
+\\f \\g f'+g
+\\f \\g 'f+g
+\\f \\g '(f+g)
+\\f \\g (f+g)
+(\\f \\g (f+g)) 'f 'g
+(\\f \\g (f + g)) 'f 'g
+1/0
+Y
+#info Y
+#info rec
+5 + 2
+5 + 2
+5 + 2
+5 + 2 + 1111
+5 + 2 + 1111 + 5555
+++
+[] ++ []
+[] ++ [1]
+[] ++ [12]
+#info (++)
+[12] ++ [12]
+foldr
+foldr (+) [12] []
+#info (++)
+[] ++ [12]
+nil ++ [12]
+[]
+nil? []
+[] ++ [12]
+[]
+[] ++ [1]
+[] ++ [1]
+[] ++ [1]
+[] ++ [1]
+nil ++ [1]
+nil ++ []
+nil ++ nil
+[1] ++ nil
+[] ++ []
+nil
+[1] ++ []
+[] ++ [2]
+nil ++ [2]
+[] ++ [2]
+[]
+[]
+nil
+nil ++ nil
+[1] ++ nil
+[1] ++ []
+[] ++ [1]
+nil ++ [1]
+1 + 5
+1 + 1000
+[] ++ nil
+[] ++ [1]
+[] ++ ni
+ni
+[] ++ a
+[] ++ e
+[] ++ e
+[ ] ++ e
+1+2
+[]
+[] + []
+[] ++ []
+[1] ++ [2]
+[ ] ++ [2]
+nil ++ [2]
+[] ++ [1]
+5 + 5
+5 + 5⋅2
+mergeWi
+define mergeWith \\lessEqualComparator rec\\mergeWith \\l1 \\l2 if (nil? l1 && nil? l2) nil $else if (nil? l2 || (lessEqualComparator (head l1) (head l2))) (head l1):(mergeWith (tail l1) l2) $else (head l2):(mergeWith l1 (tail l2))
+mergeWith (<=) [1 2 3] [4 5 6]
+mergeWith (<=) [1 2 5] [3 4]
+mergeWith (<=) [1 2 5] [3 4 6]
+define mergeWith \\lessEqualComparator rec\\mergeWith \\l1 \\l2 if (nil? l1 && nil? l2) nil $else if (nil? l2) (head l1):(mergeWith (tail l1) l2) $else if (lessEqualComparator (head l1) (head l2)) (head l1):(mergeWith (tail l1) l2) $else (head l2):(mergeWith l1 (tail l2))
+mergeWith (<=) [1 2 5] [3 4 6]
+#t && #t | toBool 
+#t && #f | toBool 
+#f && #f | toBool 
+#f && #t | toBool 
+mergeWith (<=) [1 2 5] [3 4 6]
+mergeWith (<=) [1 2 5] [3 4 4]
+mergeWith (<=) [1 2 5] [3 4 6]
+define mergeWith \\lessEqualComparator rec \\mergeWith \\l1 \\l2 if ((nil? l1) && (nil? l2)) nil (if (nil? l2) ((head l1):(mergeWith (tail l1) l2)) (if (lessEqualComparator (head l1) (head l2)) ((head l1):(mergeWith (tail l1) l2)) ((head l2):(mergeWith l1 (tail l2)))))
+mergeWith (<=) [1 2 5] [3 4 4]
+mergeWith (<=) [1 2 5] [3 4 6]
+mergeWith (<=) [1 2 5] [3 4 6]
+define mergeWith \\lessEqualComparator rec\\mergeWith \\l1 \\l2 if (nil? l1 && nil? l2) nil $else if (nil? l2) (head l1):(mergeWith (tail l1) l2) $else if (lessEqualComparator (head l1) (head l2)) (head l1):(mergeWith (tail l1) l2) $else (head l2):(mergeWith l1 (tail l2))
+mergeWith (<=) [1 2 5] [3 4 6]
+mergeWith (<=) [1 2] [3 4 6]
+mergeWith (<=) [1] [3 4 6]
+mergeWith (<=) [1 2 2 2 2 3] [3 4 6]
+mergeWith (<=) [1 2] [3 4 6]
+mergeWith (<=) [] [3 4 6]
+mergeWith (<=) nil [3 4 6]
+mergeWith (<=) [] [3 4 6]
+mergeWith (<=) [1] [3 4 6]
+define mergeWith \\lessEqualComparator rec\\mergeWith \\l1 \\l2 if (nil? l1 && nil? l2) nil $else if (nil? l2) (head l1):(mergeWith (tail l1) l2) $else if (nil? l1 || lessEqualComparator (head l1) (head l2)) (head l1):(mergeWith (tail l1) l2) $else (head l2):(mergeWith l1 (tail l2))
+define mergeWith \\lessEqualComparator rec\\mergeWith \\l1 \\l2 if (nil? l1 && nil? l2) nil $else if (nil? l2) (head l1):(mergeWith (tail l1) l2) $else if (not (nil? l1) && lessEqualComparator (head l1) (head l2)) (head l1):(mergeWith (tail l1) l2) $else (head l2):(mergeWith l1 (tail l2))
+mergeWith (<=) [1] [3 4 6]
+mergeWith (<=) [1 2] [3 4 6]
+div 5 2
+def mergeSortWith \\lessEqualComparator rec\\mergeSortWith \\list if (nil? list || nil? (tail list)) list $else merge (take (div (length list) 2) list) (drop (div (length list) 2) list)
+def mergeSortWith \\lessEqualComparator rec\\mergeSortWith \\list if (nil? list || nil? (tail list)) list $else mergeWith lessEqualComparator (take (div (length list) 2) list) (drop (div (length list) 2) list)
+mergeSortWith (<=) [1 5 4 3 2 7]
+def mergeSortWith \\lessEqualComparator rec\\mergeSortWith \\list if (nil? list || nil? (tail list)) list $else mergeWith lessEqualComparator (mergeSortWith (take (div (length list) 2) list)) (mergeSortWith (drop (div (length list) 2) list))
+mergeSortWith (<=) [1 5 4 3 2 7]
+") environment) ((\if ((\id ((\else ((\otherwise ((\$ ((\&& ((\|| ((\not ((\< ((\flip ((\> ((\Y ((\rec ((\foldr ((\foldl ((\compose ((\map ((\++ ((\= ((\δ ((\reverse ((\foldl ((\reverse ((\| ((\/= ((\>= ((\≤ ((\≥ ((\div ((\mod ((\% ((\monadWorld ((\monadValue ((\monadLift ((\lift ((\runWorld ((\; ((\implies? ((\equivalent? ((\take ((\drop ((\rangeLL ((\rangeLL ((\range ((\range1 ((\zipWith ((\zip ((\length ((\filter ((\toBool ((\mergeWith ((\mergeWith ((\mergeWith ((\mergeWith ((\mergeWith ((\mergeWith ((\mergeSortWith ((\mergeSortWith nil) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) (mergeSortWith ((take ((div (length list)) 2)) list))) (mergeSortWith ((drop ((div (length list)) 2)) list)))))))))) (\lessEqualComparator (rec (\mergeSortWith (\list (($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeWith) lessEqualComparator) ((take ((div (length list)) 2)) list)) ((drop ((div (length list)) 2)) list))))))))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (($ (((else if) ((&& (not (nil? l1))) ((lessEqualComparator (head l1)) (head l2)))) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (else ((: (head l2)) ((mergeWith l1) (tail l2)))))))))))))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (($ (((else if) ((|| (nil? l1)) ((lessEqualComparator (head l1)) (head l2)))) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (else ((: (head l2)) ((mergeWith l1) (tail l2)))))))))))))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (($ (((else if) ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (else ((: (head l2)) ((mergeWith l1) (tail l2)))))))))))))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (((if ((&& (nil? l1)) (nil? l2))) nil) (((if (nil? l2)) ((: (head l1)) ((mergeWith (tail l1)) l2))) (((if ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((mergeWith (tail l1)) l2))) ((: (head l2)) ((mergeWith l1) (tail l2))))))))))))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (($ (((else if) ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (else ((: (head l2)) ((mergeWith l1) (tail l2)))))))))))))) (\lessEqualComparator (rec (\mergeWith (\l1 (\l2 (($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) ((|| (nil? l2)) ((lessEqualComparator (head l1)) (head l2)))) ((: (head l1)) ((mergeWith (tail l1)) l2)))) (else ((: (head l2)) ((mergeWith l1) (tail l2))))))))))))) (\v (((if v) (' t)) (' f))))) (\f (rec (\filter (\list (($ ((if (nil? list)) nil)) ((((else if) (f (head list))) ((: (head list)) (filter (tail list)))) (filter (tail list)))))))))) (rec (\length (\list (((if (nil? list)) 0) ((+ 1) (length (tail list))))))))) (zipWith (\x (\y ((: x) ((: y) nil))))))) (\zipper (rec (\zipWith (\l1 (\l2 (($ ((if ((|| (nil? l1)) (nil? l2))) nil)) (else ((: ((zipper (head l1)) (head l2))) ((zipWith (tail l1)) (tail l2)))))))))))) (\beginning (\end (((rangeLL 1) end) beginning))))) (\beginning (\end (\step (((rangeLL step) end) beginning)))))) (\step (\end (rec (\rangeLL (\beginning (((if ((<= step) ((- 0) 1))) (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step))))) (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))))))) (\step (\end (rec (\rangeLL (\beginning (((if ((<= step) ((- 0) 1))) (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step))))) (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))))))) (rec (\drop (\count (\list (((if ((|| ((<= count) 0)) (nil? list))) list) ((drop ((- count) 1)) (tail list))))))))) (rec (\take (\count (\list (((if ((|| ((<= count) 0)) (nil? list))) nil) ((: (head list)) ((take ((- count) 1)) (tail list)))))))))) (\a (\b ((|| ((&& a) b)) ((&& (not a)) (not b))))))) (\a (\b ((|| (not a)) b))))) (\m (\ber (\world ((\r ((ber (monadValue r)) (monadWorld r))) (m world))))))) (\m (monadValue (unsafeRunWorld2 m))))) monadLift)) (\v (\world ((: v) ((: world) nil)))))) (\m (head m)))) (\m (head (tail m))))) mod)) (\a (\b (head (tail ((divmod a) b))))))) (\a (\b (head ((divmod a) b)))))) >=)) <=)) (\a (\b ((<= b) a))))) (\a (\b (not ((= a) b)))))) (\a (\b (b a))))) (\list (((foldl (flip :)) nil) list)))) (\f (rec (\foldl (\v (\list (($ ((if (nil? list)) v)) (((else foldl) ((f v) (head list))) (tail list)))))))))) (\list (((foldl (flip :)) nil) list)))) (\x (((if ((= x) 0)) 1) 0)))) (\a (\b ((&& ((<= a) b)) ((<= b) a)))))) (\a (\b (((foldr :) b) a))))) (\f (\list (((foldr ((compose :) f)) nil) list))))) (\f (\g (\x (f (g x))))))) (\f (rec (\foldl (\v (\list (($ ((if (nil? list)) v)) (((else foldl) ((f (head list)) v)) (tail list)))))))))) (\f (\v (rec (\foldr (\list (($ ((if (nil? list)) v)) (((else f) (head list)) (foldr (tail list))))))))))) Y)) (\f ((\x (f (x x))) (\x (f (x x))))))) (flip <))) (\f (\a (\b ((f b) a)))))) (\a (\b ((&& ((<= a) b)) (not ((<= b) a))))))) (\a (\t (\f ((a f) t)))))) (\a (\b (\t (\f ((a t) ((b t) f)))))))) (\a (\b (\t (\f ((a ((b t) f)) f))))))) (\a (\b (a b))))) id)) id)) (\f f))) (\f f))) nil)
