@@ -378,4 +378,9 @@ AST::Node* operator/(const Integer& a, const Integer& b) {
 	}
 }
 
+AST::Node* SymbolP::execute(AST::Node* argument) {
+	return(internNative(symbol_P(argument)));
+}
+REGISTER_STR(SymbolP, return("symbol?");)
+
 }; /* end namespace Evaluators */
