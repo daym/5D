@@ -1,3 +1,9 @@
+5d (0.0.6) unstable; urgency=low
+
+  * check for unbound variables before allowing something to be defined.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Wed, 30 Nov 2011 18:32:00 +0100
+
 5d (0.0.5) unstable; urgency=low
 
   * implement character literals (Scheme compatible).
