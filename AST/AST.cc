@@ -55,7 +55,7 @@ Abstraction* makeAbstraction(Node* parameter, Node* body) {
 	return(result);
 }
 Application* makeOperation(Node* operator_, Node* operand_1, Node* operand_2) {
-	if(operator_ == NULL || operand_1 == NULL/* || operand_2 == NULL*/) {
+	if(operator_ == NULL/* || operand_1 == NULL*//* || operand_2 == NULL*/) {
 		return(NULL);
 	} else if(operator_ == Symbols::Sspace) // apply
 		return(makeApplication(operand_1, operand_2));
