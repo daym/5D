@@ -74,13 +74,13 @@ drop
 range1
 rangeLL
 zip
-zipWith
+zipBy
 map
 reverse
 length
 repeat
-mergeWith
+mergeBy
 merge
 mergeSort
-mergeSortWith
+mergeSortBy
 ++

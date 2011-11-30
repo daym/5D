@@ -331,11 +331,11 @@ range 0 10 2 =&gt; [0 2 4 6 8]
 <pre>
 merge [1 3 4 7 8 9] [2 5 6 10 11 12] =&gt; [1 2 3 4 5 6 7 8 9 10 11 12]
 </pre>
-<h3>mergeWith \lessEqualComparer \l1 \l2</h3>
+<h3>mergeBy \lessEqualComparer \l1 \l2</h3>
 <p>Given two sorted lists, the result is a list that contains elements of both of the list in result sorted order (using <span class="pre">lessEqualComparer</span>), preferring the first list.</p>
 <p>Example:</p>
 <pre>
-mergeWith (&lt;=) [1 3 4 7 8 9] [2 5 6 10 11 12] =&gt; [1 2 3 4 5 6 7 8 9 10 11 12]
+mergeBy (&lt;=) [1 3 4 7 8 9] [2 5 6 10 11 12] =&gt; [1 2 3 4 5 6 7 8 9 10 11 12]
 </pre>
 <h3>mergeSort \list</h3>
 <p>Given two sorted lists, the result is a sorted list that contains elements of <span class="pre">list</span> in result sorted order (using <span class="pre">&lt;=</span>).</p>
@@ -343,11 +343,11 @@ mergeWith (&lt;=) [1 3 4 7 8 9] [2 5 6 10 11 12] =&gt; [1 2 3 4 5 6 7 8 9 10 11 
 <pre>
 mergeSort [5 4 3 2 1] =&gt; [1 2 3 4 5]
 </pre>
-<h3>mergeSortWith \lessEqualComparator \list</h3>
+<h3>mergeSortBy \lessEqualComparator \list</h3>
 <p>Given two sorted lists, the result is a sorted list that contains elements of <span class="pre">list</span> in result sorted order (using <span class="pre">lessEqualComparator</span>).</p>
 <p>Example:</p>
 <pre>
-mergeSortWith (&lt;=) [5 4 3 2 1] =&gt; [1 2 3 4 5]
+mergeSortBy (&lt;=) [5 4 3 2 1] =&gt; [1 2 3 4 5]
 </pre>
 <a name="dpho"><h2>Higher-Order Data Processing Functions</h2>
 <h3>map \mapper \list</h3>
@@ -365,11 +365,11 @@ map square [1 2 3] =&gt; [1 4 9]
 filter (2&lt;) [1 2 3 4] =&gt; [3 4]
 </pre>
 <hr/>
-<h3>zipWith \f \list1 \list2</h3>
+<h3>zipBy \f \list1 \list2</h3>
 <p>Result is a list of (<span class="pre">f</span> (one element of <span class="pre">list1</span>) (one element of <span class="pre">list2</span>), until at least one of the lists runs out of elements.</p>
 <p>Example:</p>
 <pre>
-zipWith (+) [1 2 3] [4 5] 0&gt; [5 7]
+zipBy (+) [1 2 3] [4 5] 0&gt; [5 7]
 </pre>
 <h3>foldr \f \v \list</h3>
 <p>Associates list elements to the right, two by two, mediated by f, until running out of elements. For the missing element, substitutes <span class="pre">v</span>.
