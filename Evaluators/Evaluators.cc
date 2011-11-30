@@ -116,7 +116,7 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 			return(ref);
 		} else {
 			std::stringstream sst;
-			sst << str(symbolNode) << " is not bound";
+			sst << "(" << str(symbolNode) << ") is not bound";
 			std::string v = sst.str();
 			throw EvaluationException(v.c_str()); // TODO line info...
 		}
