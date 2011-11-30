@@ -114,6 +114,11 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 			//std::distance(boundNames.begin(), std::find(boundNames.begin(), boundNames.end(), symbolNode));
 			SymbolReference* ref = new SymbolReference(symbolNode, i + 1);
 			return(ref);
+		} else {
+			std::stringstream sst;
+			sst << str(symbolNode) << " is unknown";
+			std::string v = sst.str();
+			throw EvaluationException(v.c_str()); // TODO line info...
 		}
 	} // else other stuff.
 	return(root);
