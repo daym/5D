@@ -141,6 +141,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 	REPL_set_file_modified(self, false);
 	return(true);
 }
+/* caller needs to make sure it would actually work...*/
 void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
 	using namespace AST;
 	if(application_P(definition) && get_application_operator(definition) == Symbols::Sdefine) {
