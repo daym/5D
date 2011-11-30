@@ -22,7 +22,7 @@ struct P : AST::BuiltinOperation { \
 	DECLARE_SIMPLE_OPERATION_BODY(P, N, ;)
 
 #define DEFINE_SIMPLE_OPERATION(P, N, B) \
-	DECLARE_SIMPLE_OPERATION_BODY(P, N, { if(application_P(argument) || abstraction_P(argument)) return(FALLBACK); else return(internNative(B)); }) \
+	DECLARE_SIMPLE_OPERATION_BODY(P, N, { if(application_P(argument) || abstraction_P(argument) || symbol_P(argument)) return(FALLBACK); else return(internNative(B)); }) \
 	REGISTER_STR(P, return(N);)
 
 #define DECLARE_UNEAGER_OPERATION_BODY(P, N, B) \
