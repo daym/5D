@@ -104,6 +104,10 @@ static char* REPL_ensure_default_environment_name(struct REPL* self) {
 		}
 		if(snprintf(config_dir_name, NAME_MAX, "%s/5D", XDG_CONFIG_HOME) == -1)
 			abort();
+		if(mkdir(config_dir_name, 0750) == -1 && errno != EEXIST) {
+			perror(config_dir_name);
+			exit(1);
+		}
 		if(snprintf(config_dir_name, NAME_MAX, "%s/5D/TUI_environment", XDG_CONFIG_HOME) == -1)
 			abort();
 	} else {
@@ -115,6 +119,10 @@ static char* REPL_ensure_default_environment_name(struct REPL* self) {
 		}
 		if(snprintf(config_dir_name, NAME_MAX, "%s/.config/5D", HOME) == -1)
 			abort();
+		if(mkdir(config_dir_name, 0750) == -1 && errno != EEXIST) {
+			perror(config_dir_name);
+			exit(1);
+		}
 		if(snprintf(config_dir_name, NAME_MAX, "%s/.config/5D/TUI_environment", HOME) == -1)
 			abort();
 	}
@@ -256,6 +264,10 @@ bool REPL_save(struct REPL* self, bool B_force_dialog) {
 	if(snprintf(temp_name, PATH_MAX, "%sXXXXXX", file_name) == -1)
 		abort();
 	int FD = mkstemp(temp_name);
+	if(FD == -1) {
+		perror(temp_name);
+		return(false);
+	}
 	FILE* output_file = fdopen(FD, "w");
 	if(!output_file) {
 		perror(temp_name);
