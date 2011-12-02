@@ -257,6 +257,10 @@ bool REPL_save(struct REPL* self, bool B_force_dialog) {
 		abort();
 	int FD = mkstemp(temp_name);
 	FILE* output_file = fdopen(FD, "w");
+	if(!output_file) {
+		perror(temp_name);
+		return(false);
+	}
 	if(REPL_save_contents_to(self, output_file)) {
 		fclose(output_file);
 		close(FD);
