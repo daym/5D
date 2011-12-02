@@ -119,6 +119,7 @@ int main() {
 			if(parser.EOFP())
 				break;
 			AST::Node* source = parser.parse_S_list(false);
+			source = Evaluators::programFromSExpression(source);
 			// TODO parse left-over ")"
 			REPL_execute(REPL, source);
 		} catch(Scanners::ParseException exception) {
