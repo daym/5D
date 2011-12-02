@@ -221,6 +221,8 @@ void run(struct REPL* REPL, const char* text) {
 	AST::Node* result;
 	Scanners::MathParser parser;
 	FILE* input_file;
+	if(exit_P(text)) /* special case for computers which can't signal EOF. */
+		exit(0);
 	if(info_P(text)) {
 		AST::Node* body = REPL_eval_info(REPL, text);
 		REPL_enqueue_LATEX(REPL, body, 0);
