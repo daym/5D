@@ -20,7 +20,6 @@ Node::~Node() {
 
 Cons* makeCons(Node* head, Node* tail) {
 	Cons* result = new Cons;
-	/*assert(head); unfortunately, now that we have NIL, that's allowed. */
 	result->head = head;
 	result->tail = tail;
 	return(result);
