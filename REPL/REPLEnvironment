@@ -105,9 +105,6 @@ AST::Node* REPL_get_definition(struct REPL* self, size_t offset) {
 bool exit_P(const char* text) {
 	return(strncmp(text, "#exit", strlen("#exit")) == 0);
 }
-bool info_P(const char* text) {
-	return(strncmp(text, "#info", strlen("#info")) == 0);
-}
 AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
 	char* arg = strdup(text + strlen("#info"));
 	size_t backOffset;

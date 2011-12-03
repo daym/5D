@@ -570,13 +570,6 @@ static void REPL_open_webpage(struct REPL* self, const std::wstring& path) {
 }
 static void REPL_handle_execute(struct REPL* self, const char* text, int destination, bool B_from_entry) {
 	AST::Node* input;
-	if(info_P(text)) {
-		std::string v = std::string("\n") + text + std::string(" ");
-		REPL_insert_into_output_buffer(self, destination, v.c_str());
-		AST::Node* body = REPL_eval_info(self, text);
-		REPL_enqueue_LATEX(self, body, destination + strlen(text) + 1);
-		return;
-	}
 	try {
 		input = REPL_parse(self, text, destination);
 	} catch(Scanners::ParseException& e) {

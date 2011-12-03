@@ -223,11 +223,6 @@ void run(struct REPL* REPL, const char* text) {
 	FILE* input_file;
 	if(exit_P(text)) /* special case for computers which can't signal EOF. */
 		exit(0);
-	if(info_P(text)) {
-		AST::Node* body = REPL_eval_info(REPL, text);
-		REPL_enqueue_LATEX(REPL, body, 0);
-		return;
-	}
 	try {
 		input_file = fmemopen((void*) text, strlen(text), "r");
 		parser.push(input_file, 0, false);

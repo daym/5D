@@ -218,14 +218,6 @@ static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 		text = REPL_get_output_text(self, &beginning, &end);
 	}
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-	if(info_P(text)) {
-		REPL_insert_into_output_buffer(self, &end, g_strdup_printf("\n%s", text));
-		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-		AST::Node* body = REPL_eval_info(self, text);
-		g_free(text);
-		REPL_enqueue_LATEX(self, body, &end);
-		return;
-	}
 	try {
 		input = REPL_parse(self, text, &end);
 	} catch(Scanners::ParseException& e) {
