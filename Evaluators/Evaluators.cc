@@ -64,7 +64,7 @@ static inline int get_variable_index(AST::Node* root) {
 		return(-1);
 }
 static inline bool quote_P(AST::Node* root) {
-	if(root == Symbols::Squote)
+	if(root == Symbols::Squote || root == &Quoter)
 		return(true);
 	else {
 		AST::SymbolReference* ref = dynamic_cast<AST::SymbolReference*>(root);

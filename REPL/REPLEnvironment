@@ -137,6 +137,30 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	// FIXME
 	return(NULL);
 }
+AST::Node* REPL_prepare(struct REPL* self, AST::Node* input);
+
+static AST::Node* REPL_define(AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
+	assert(self);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	assert(iter != arguments.end());
+	++iter;
+	assert(iter != arguments.end());
+	AST::Node* name = iter->second;
+	++iter;
+	assert(iter != arguments.end());
+	AST::Node* body = iter->second;
+	/* make sure it would actually work... (otherwise would throw exception) */
+	std::string nameStr = Evaluators::str(name);
+	std::string bodyStr = Evaluators::str(body);
+	printf("name %s\n", nameStr.c_str());
+	printf("body %s\n", bodyStr.c_str());
+	REPL_prepare(self, body);
+
+	REPL_add_to_environment(self, name, body);
+	return(body);
+}
 
 static AST::Node* REPL_describe(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
@@ -172,6 +196,9 @@ DEFINE_REPL_OPERATION(RImporter, {
 DEFINE_REPL_OPERATION(RInformant, {
 	return(REPL_describe(fn, argument));
 })
+DEFINE_REPL_OPERATION(RDefiner, {
+	return(REPL_define(fn, argument));
+})
 
 //#define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, uncurried((AST::Node*) v, (AST::Node*) AST::makeApplication(&Evaluators::Quoter, n)))
 #define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, v)
@@ -186,7 +213,7 @@ static void REPL_init_builtins(struct REPL* self) {
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
 	}
 	REPL_add_static_builtin_binding(self, Symbols::Squote, &Evaluators::Quoter); /* keep at the beginning */
-	REPL_add_static_builtin_binding(self, Symbols::Sdefine, &Evaluators::Quoter); // dummy
+	REPL_add_static_builtin_binding(self, Symbols::Sdefine, uncurried(&RDefiner, self));
 	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::Reducer);
@@ -333,22 +360,8 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 	try {
 		AST::Node* result = input;
 		Evaluators::resetWorld();
-		if(!Evaluators::define_P(input)) {
-			result = REPL_prepare(self, result);
-			result = Evaluators::reduce(result);
-		} else {
-			AST::Node* abstraction = get_application_operand(input);
-			if(abstraction_P(abstraction)) {
-				AST::Node* parameter = get_abstraction_parameter(abstraction);
-				AST::Symbol* parameterSymbol;
-				if((parameterSymbol = dynamic_cast<AST::Symbol*>(parameter))) {
-					AST::Node* body = get_abstraction_body(abstraction);
-					/* make sure it would actually work... (otherwise would throw exception) */
-					REPL_prepare(self, body);
-					REPL_add_to_environment(self, input);
-				}
-			}
-		}
+		result = REPL_prepare(self, result);
+		result = Evaluators::reduce(result);
 		/*std::string v = result ? result->str() : "OK";
 		v = " => " + v + "\n";
 		REPL_insert_into_output_buffer(self, destination, v.c_str());*/
@@ -365,6 +378,7 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 
 REGISTER_BUILTIN(RImporter, (-2), AST::symbolFromStr("import"))
 REGISTER_BUILTIN(RInformant, (-2), AST::symbolFromStr("describe"));
+REGISTER_BUILTIN(RDefiner, (-3), AST::symbolFromStr("define"));
 REGISTER_STR(REPL, return("<REPL>");)
 
 }; /* end namespace */

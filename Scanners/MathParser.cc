@@ -48,6 +48,12 @@ AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 		return(NULL);
 }
 */
+static AST::Node* makeDefine(AST::Node* parameter, AST::Node* body) {
+	AST::Node* result = makeApplication(makeApplication(Symbols::Sdefine, parameter), body);
+	std::string resultStr = str(result);
+	printf("%s\n", resultStr.c_str());
+	return(result);
+}
 AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 	bool B_extended = (input_value == Symbols::Sleftparen);
 	if(B_extended)
@@ -55,14 +61,6 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 	if(dynamic_cast<AST::Symbol*>(input_value) == NULL) {
 		raise_error("<symbol>", str(input_value));
 		return(NULL);
-	}
-	if(dynamic_cast<AST::Symbol*>(input_value) == Symbols::Sbackslash) { /* probably an abstraction directly - not recommended, but... */
-		consume();
-		AST::Node* abstraction = parse_abstraction();
-		if(B_extended)
-			consume(Symbols::Srightparen);
-		return(makeApplication(Symbols::Sdefine, abstraction));
-		//raise_error("<symbol>", str(parameter));
 	}
 	AST::Node* parameter = consume();
 	if(B_extended)
@@ -73,7 +71,7 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 		raise_error("<define-body>", "<incomplete>");
 		return(NULL);
 	}
-	return(makeApplication(Symbols::Sdefine, makeAbstraction(parameter, body)));
+	return(makeDefine(quote(parameter), quote(body)));
 }
 AST::Node* MathParser::parse_defrec(AST::Node* operand_1) {
 	bool B_extended = (input_value == Symbols::Sleftparen);
@@ -91,7 +89,7 @@ AST::Node* MathParser::parse_defrec(AST::Node* operand_1) {
 		raise_error("<define-body>", "<incomplete>");
 		return(NULL);
 	}
-	return(makeApplication(Symbols::Sdefine, makeAbstraction(parameter, makeApplication(Symbols::Srec, makeAbstraction(parameter, body)))));
+	return(makeDefine(quote(parameter), quote(makeApplication(Symbols::Srec, makeAbstraction(parameter, body)))));
 }
 AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
 	AST::Node* result;

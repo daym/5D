@@ -55,7 +55,7 @@ char* REPL_get_output_buffer_text(struct REPL* self);
 bool REPL_confirm_close(struct REPL* self);
 void REPL_clear(struct REPL* self);
 void REPL_append_to_output_buffer(struct REPL* self, const char* text);
-void REPL_add_to_environment(struct REPL* self, AST::Node* definition);
+void REPL_add_to_environment(struct REPL* self, AST::Node* name, AST::Node* body);
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 void REPL_set_file_modified(struct REPL* self, bool value);
 static AST::Node* REPL_filter_environment(struct REPL* self, AST::Node* environment) {
@@ -142,19 +142,11 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 	return(true);
 }
 /* caller needs to make sure it would actually work...*/
-void REPL_add_to_environment(struct REPL* self, AST::Node* definition) {
+void REPL_add_to_environment(struct REPL* self, AST::Node* name, AST::Node* body) {
 	using namespace AST;
-	if(application_P(definition) && get_application_operator(definition) == Symbols::Sdefine) {
-		AST::Node* abstraction = get_application_operand(definition);
-		if(abstraction_P(abstraction)) {
-			AST::Node* parameter = get_abstraction_parameter(abstraction);
-			AST::Symbol* parameterSymbol;
-			if((parameterSymbol = dynamic_cast<AST::Symbol*>(parameter))) {
-				AST::Node* body = get_abstraction_body(abstraction);
-				REPL_add_to_environment_simple(self, parameterSymbol, body);
-			}
-		}
-	}
+	AST::Symbol* nameSymbol = dynamic_cast<AST::Symbol*>(name);
+	if(nameSymbol)
+		REPL_add_to_environment_simple(self, nameSymbol, body);
 }
 
 

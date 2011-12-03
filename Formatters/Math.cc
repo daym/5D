@@ -106,7 +106,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 			envelope = NULL;
 		//if(operator_ && application_P(operator_)) // 2 for binary ops.
 		AST::Node* operator_ = envelope ? get_application_operator(envelope) : NULL;
-		AST::Symbol* operatorSymbol = dynamic_cast<AST::Symbol*>(operator_); 
+		AST::Symbol* operatorSymbol = dynamic_cast<AST::Symbol*>(repr(operator_)); 
 		AST::Symbol* operatorAssociativity = NULL;
 		int precedence = operatorSymbol ? OPL->get_operator_precedence_and_associativity(operatorSymbol, operatorAssociativity) : -1;
 		if(precedence != -1 && application_P(envelope)) { // is a (binary) operator and the envelope is not a builtin (i.e. (+))

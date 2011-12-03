@@ -83,7 +83,6 @@ bool REPL_execute(struct REPL* self, AST::Node* input) {
 		fprintf(stdout, "\n");
 		fflush(stdout);
 		/*REPL_enqueue_LATEX(self, result, destination);*/
-		REPL_add_to_environment(self, result);
 		B_ok = true;
 	} catch(Evaluators::EvaluationException e) {
 		std::string v = e.what() ? e.what() : "error";
