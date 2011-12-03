@@ -50,8 +50,6 @@ AST::Node* MathParser::maybe_parse_macro(AST::Node* node) {
 */
 static AST::Node* makeDefine(AST::Node* parameter, AST::Node* body) {
 	AST::Node* result = makeApplication(makeApplication(Symbols::Sdefine, parameter), body);
-	std::string resultStr = str(result);
-	printf("%s\n", resultStr.c_str());
 	return(result);
 }
 AST::Node* MathParser::parse_define(AST::Node* operand_1) {

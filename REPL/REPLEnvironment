@@ -152,10 +152,6 @@ static AST::Node* REPL_define(AST::Node* options, AST::Node* argument) {
 	assert(iter != arguments.end());
 	AST::Node* body = iter->second;
 	/* make sure it would actually work... (otherwise would throw exception) */
-	std::string nameStr = Evaluators::str(name);
-	std::string bodyStr = Evaluators::str(body);
-	printf("name %s\n", nameStr.c_str());
-	printf("body %s\n", bodyStr.c_str());
 	REPL_prepare(self, body);
 
 	REPL_add_to_environment(self, name, body);
