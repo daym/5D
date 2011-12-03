@@ -6,6 +6,8 @@
 #include "Evaluators/Evaluators"
 #include "FFIs/ResultMarshaller"
 #include "FFIs/FFIs"
+#include "AST/AST"
+#include "AST/Keyword"
 
 namespace GUI {
 };
@@ -131,18 +133,19 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	// FIXME
 	return(NULL);
 }
+
 static AST::Node* REPL_describe(AST::Node* options, AST::Node* argument) {
-	assert(options);
-	Evaluators::CurriedOperation* self;
-	for(self = dynamic_cast<Evaluators::CurriedOperation*>(options); self && self->fArgument; self = dynamic_cast<Evaluators::CurriedOperation*>(self->fArgument)) {
-		std::string v;
-		v = str(self);
-		printf("%s\n", v.c_str());
-	}
-	assert(self && dynamic_cast<struct REPL*>(self));
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
+	assert(self);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	assert(iter != arguments.end());
+	++iter;
+	assert(iter != arguments.end());
+	argument = iter->second;
 	// FIXME backOffset
 	int backOffset = 0;
-	AST::Node* body = REPL_get_definition_backwards(dynamic_cast<struct REPL*>(self), dynamic_cast<AST::Symbol*>(argument), backOffset);
+	AST::Node* body = REPL_get_definition_backwards(self, dynamic_cast<AST::Symbol*>(argument), backOffset);
 	return(body);
 }
 

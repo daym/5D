@@ -425,4 +425,37 @@ REGISTER_BUILTIN(ListFromStrGetter, 1, AST::symbolFromStr("listFromStr"))
 REGISTER_BUILTIN(StrFromListGetter, 1, AST::symbolFromStr("strFromList"))
 REGISTER_BUILTIN(WorldRunner, 1, AST::symbolFromStr("internalRunWorld2"))
 
+std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > result;
+	AST::Node* v;
+	AST::Node* p;
+	bool B_pending_value = false;
+	assert(options);
+	v = argument;
+	B_pending_value = true;
+	Evaluators::CurriedOperation* self;
+	for(self = dynamic_cast<Evaluators::CurriedOperation*>(options); self && self->fArgument; self = dynamic_cast<Evaluators::CurriedOperation*>(self->fArgument)) {
+		p = v;
+		v = reduce(self->fArgument); // backwards...
+		if(keyword_P(v) && B_pending_value) {
+			B_pending_value = false;
+			result.push_front(std::make_pair(dynamic_cast<AST::Keyword*>(v), p));
+			v = NULL;
+		} else {
+			result.push_front(std::pair<AST::Keyword*, AST::Node*>(NULL, p));
+			B_pending_value = true;
+		}
+	}
+	if(B_pending_value) {
+		B_pending_value = false;
+		result.push_front(std::pair<AST::Keyword*, AST::Node*>(NULL, v));
+	}
+	for(std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = result.begin(); iter != result.end(); ++iter) {
+		std::string kk = str(iter->first);
+		std::string vv = str(iter->second);
+		printf("%s: %s\n", kk.c_str(), vv.c_str());
+	}
+	return(result);
+}
+
 }; /* end namespace Evaluators */

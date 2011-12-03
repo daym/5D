@@ -1,8 +1,10 @@
 #ifndef __5D_BUILTINS_H
 #define __5D_BUILTINS_H
 #include <sstream>
+#include <list>
 #include "AST/AST"
 #include "AST/Symbols"
+#include "AST/Keyword"
 
 #include "Numbers/Small"
 #include "Numbers/Integer"
@@ -46,6 +48,9 @@ DECLARE_BINARY_OPERATION(KeywordStr)
 DECLARE_BINARY_OPERATION(ListFromStrGetter)
 DECLARE_BINARY_OPERATION(StrFromListGetter)
 DECLARE_SIMPLE_OPERATION(WorldRunner)
+
+/* WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
+std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* options, AST::Node* argument); /* non-keyword arguments will be at the FRONT */
 
 };
 
