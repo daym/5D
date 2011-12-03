@@ -51,6 +51,7 @@ DECLARE_SIMPLE_OPERATION(WorldRunner)
 
 /* WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
 std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* options, AST::Node* argument); /* non-keyword arguments will be at the FRONT */
+AST::Node* CXXgetKeywordArgumentValue(const std::list<std::pair<AST::Keyword*, AST::Node*> >& list, AST::Keyword* key);
 
 };
 

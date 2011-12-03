@@ -457,5 +457,11 @@ std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* opt
 	}
 	return(result);
 }
+AST::Node* CXXgetKeywordArgumentValue(const std::list<std::pair<AST::Keyword*, AST::Node*> >& list, AST::Keyword* key) {
+	for(std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = list.begin(); iter != list.end(); ++iter)
+		if(iter->first == key)
+			return(iter->second);
+	return(NULL);
+}
 
 }; /* end namespace Evaluators */

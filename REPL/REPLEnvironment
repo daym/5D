@@ -129,7 +129,14 @@ AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
 	return(body);
 }
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
-	assert(options);
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
+	assert(self);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	assert(iter != arguments.end());
+	++iter;
+	assert(iter != arguments.end());
+	argument = iter->second;
 	// FIXME
 	return(NULL);
 }
@@ -143,8 +150,7 @@ static AST::Node* REPL_describe(AST::Node* options, AST::Node* argument) {
 	++iter;
 	assert(iter != arguments.end());
 	argument = iter->second;
-	// FIXME backOffset
-	int backOffset = 0;
+	int backOffset = Evaluators::get_native_integer(Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("@backOffset:")));
 	AST::Node* body = REPL_get_definition_backwards(self, dynamic_cast<AST::Symbol*>(argument), backOffset);
 	return(body);
 }
