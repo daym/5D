@@ -431,7 +431,7 @@ std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* opt
 	AST::Node* p;
 	bool B_pending_value = false;
 	assert(options);
-	v = argument;
+	v = reduce(argument);
 	B_pending_value = true;
 	Evaluators::CurriedOperation* self;
 	for(self = dynamic_cast<Evaluators::CurriedOperation*>(options); self && self->fArgument; self = dynamic_cast<Evaluators::CurriedOperation*>(self->fArgument)) {
