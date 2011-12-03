@@ -126,10 +126,17 @@ AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
 	return(body);
 }
 AST::Node* REPL_prepare(struct REPL* self, AST::Node* input);
-static AST::Node* REPL_force_import_module(struct REPL* self, const char* filename) {
-	return(Numbers::internNative((Numbers::NativeInt) 42)); // FIXME
+static AST::Node* REPL_access_module(AST::Node* fn, AST::Node* argument) {
+	Evaluators::CurriedOperation* o = dynamic_cast<Evaluators::CurriedOperation*>(fn);
+	AST::Node* body = o->fArgument;
+	// filename is the second argument, so ignore.
+	return(Evaluators::reduce(AST::makeApplication(body, argument)));
 }
-static AST::Node* REPL_import_module(struct REPL* self, const char* filename) {
+static AST::Node* REPL_force_import_module(struct REPL* self, const char* filename) {
+	return(AST::makeAbstraction(AST::symbolFromStr("name"), Numbers::internNative((Numbers::NativeInt) 42)));
+	// FIXME return(uncurried(&RModule, AST::makeStr(filename)));
+}
+static AST::Node* REPL_require_module(struct REPL* self, const char* filename) {
 	struct stat buf;
 	if(stat(filename, &buf) == -1) {
 		perror(filename);
@@ -146,16 +153,33 @@ static AST::Node* REPL_import_module(struct REPL* self, const char* filename) {
 	}
 	return((*self->fModules)[moduleKey]);
 }
-static AST::Node* REPL_import(AST::Node* options, AST::Node* argument);
+
 #define DECLARE_REPL_OPERATION(P) \
 	DECLARE_FULL_OPERATION(P)
 
 #define DEFINE_REPL_OPERATION(P, B) \
 	DEFINE_FULL_OPERATION(P, B)
 
+DEFINE_REPL_OPERATION(RModule, {
+	return(REPL_access_module(fn, argument));
+})
+static AST::Node* REPL_import_module(AST::Node* options, AST::Node* filename);
+DEFINE_REPL_OPERATION(RModuleLoader, {
+	return(REPL_import_module(fn, argument));
+})
+static AST::Node* REPL_import_module(AST::Node* options, AST::Node* filename) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, filename);
+	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
+	assert(self);
+	AST::Node* body = REPL_require_module(self, Evaluators::get_native_string(filename));
+	//return(Evaluators::reduce(new Evaluators::CurriedOperation(new Evaluators::CurriedOperation(&RModule, body), filename)));
+	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&RModule, body)), filename)));
+}
+static AST::Node* REPL_import(AST::Node* options, AST::Node* argument);
 DEFINE_REPL_OPERATION(RImporter, {
 	return(REPL_import(fn, argument));
 })
+/* will result is a curried RModule */
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
 	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
@@ -166,12 +190,11 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	assert(iter != arguments.end());
 	AST::Node* name = iter->second;
 	assert(symbol_P(name));
-	// FIXME
+	// FIXME more options
 	std::stringstream filenameStream;
 	filenameStream << Evaluators::str(name) << ".5D";
 	std::string filename = filenameStream.str();
-	// repr itself. TODO abstract that away.
-	AST::Node* body = AST::makeApplication(uncurried(&RImporter, self)/*TODO reuse existing*/, Evaluators::quote(name));
+	AST::Node* body = REPL_import_module(options/*FIXME*/, AST::makeStr(filename.c_str()));
 	REPL_prepare(self, body);
 	REPL_add_to_environment(self, name, body);
 	return(body);
@@ -252,6 +275,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::Reducer);
 	REPL_add_static_builtin_binding(self, Symbols::Simport, uncurried(&RImporter, self));
+	REPL_add_static_builtin_binding(self, Symbols::SrequireModule, uncurried(&RModuleLoader, self));
 	REPL_add_builtin_method(self, Symbols::Sdescribe, uncurried(&RInformant, self));
 	// FIXME REPL_add_builtin_method(self, Symbols::SfromLibrary, FFIs::LibraryLoader);
 	REPL_add_static_builtin_binding(self, Symbols::Snil, NULL);
@@ -413,6 +437,8 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 REGISTER_BUILTIN(RImporter, (-2), 1, AST::symbolFromStr("import"))
 REGISTER_BUILTIN(RInformant, (-2), 1, AST::symbolFromStr("describe"));
 REGISTER_BUILTIN(RDefiner, (-3), 1, AST::symbolFromStr("define"));
+REGISTER_BUILTIN(RModule, 2, 1, AST::symbolFromStr("requireModule"));
+REGISTER_BUILTIN(RModuleLoader, 2, 1, AST::symbolFromStr("requireModule"));
 REGISTER_STR(REPL, return("REPL");)
 
 }; /* end namespace */

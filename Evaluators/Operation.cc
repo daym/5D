@@ -78,9 +78,9 @@ AST::Node* repr(AST::Node* node) {
 	} else if(application_P(node)) {
 		AST::Node* fn = get_application_operator(node);
 		AST::Node* argument = get_application_operand(node);
-		if(fn == &Evaluators::Reducer && application_P(argument)) { // special case to get rid of implicit repl FIXME FIXME dangerous
-			return(repr(get_application_operator(argument)));
-		}
+		//if(fn == &Evaluators::Reducer && application_P(argument)) { // special case to get rid of implicit repl FIXME FIXME dangerous
+		//	return(repr(get_application_operator(argument)));
+		//}
 		AST::Node* new_fn = repr(fn);
 		AST::Node* new_argument = repr(argument);
 		if(new_fn == fn && new_argument == argument)

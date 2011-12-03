@@ -91,6 +91,6 @@ AST::Symbol* Sescape = AST::symbolFromStr("escape");
 AST::Symbol* Sinfo = AST::symbolFromStr("info");
 AST::Symbol* Simport = AST::symbolFromStr("import");
 AST::Symbol* Sdescribe = AST::symbolFromStr("describe");
-AST::Symbol* SloadModule = AST::symbolFromStr("loadModule");
+AST::Symbol* SrequireModule = AST::symbolFromStr("requireModule");
 
 };
