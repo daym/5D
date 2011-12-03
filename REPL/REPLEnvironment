@@ -125,6 +125,7 @@ AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
 	AST::Node* body = REPL_get_definition_backwards(self, AST::symbolFromStr(arg), backOffset);
 	return(body);
 }
+AST::Node* REPL_prepare(struct REPL* self, AST::Node* input);
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
 	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
@@ -133,12 +134,13 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	assert(iter != arguments.end());
 	++iter;
 	assert(iter != arguments.end());
-	argument = iter->second;
+	AST::Node* name = iter->second;
 	// FIXME
+	AST::Node* body = NULL;
+	REPL_prepare(self, body);
+	REPL_add_to_environment(self, name, body);
 	return(NULL);
 }
-AST::Node* REPL_prepare(struct REPL* self, AST::Node* input);
-
 static AST::Node* REPL_define(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
 	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
@@ -153,7 +155,6 @@ static AST::Node* REPL_define(AST::Node* options, AST::Node* argument) {
 	AST::Node* body = iter->second;
 	/* make sure it would actually work... (otherwise would throw exception) */
 	REPL_prepare(self, body);
-
 	REPL_add_to_environment(self, name, body);
 	return(body);
 }
