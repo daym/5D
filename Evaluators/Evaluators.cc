@@ -363,4 +363,8 @@ AST::Node* strFromList(AST::Cons* node) {
 REGISTER_BUILTIN(Reducer, 1, Symbols::Sinline)
 REGISTER_BUILTIN(Quoter, 1, Symbols::Squote)
 
+AST::Node* quote(AST::Node* value) {
+	return(makeApplication(&Quoter, value));
+}
+
 }; // end namespace Evaluators.
