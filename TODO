@@ -80,6 +80,7 @@ degrade from Integer to Int when possible.
 $! strict applicator
 make AST::Symbol const everywhere (best to introduce a Symbol_t or something)
 maybe delay and force
+optimize module system?
 
 = Parser =
 
@@ -102,7 +103,7 @@ untrace
 step
 disassemble
 
-
 = TODO =
 
-Reintroduce quote function?
+move all the builtins into an .so file and load them via FFI.
+support reloading of modules (in that case, need to use monads)
