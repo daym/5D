@@ -40,43 +40,5 @@ char* get_native_string(AST::Node* root) {
 		return(strdup(value.c_str()));
 	}
 }
-bool FFI::eager_P() const {
-	return(B_pure);
-}
-AST::Node* FFI::execute(AST::Node* argument) {
-	//lambda state: makeList(executeLowlevel(argument), state);
-	// TODO maybe cache that, makes not a lot of sense to regenerate the intermediate things all the time!
-	if(B_pure)
-		return(executeLowlevel(argument));
-	else
-		return(new FFIClosure(argument, this));
-}
-AST::Node* FFIClosure::execute(AST::Node* state) {
-	/* TODO change state if neccessary. Cache the old result? */
-	if(routine)
-		return(makeCons(routine->executeLowlevel(argument), makeCons(state, NULL)));
-	else
-		return(NULL);
-}
-std::string strFFIClosure(FFIClosure* s) {
-	return(std::string("(FFIClosure ") + str(s->argument) + ")"); // FIXME nicer
-	//return(AST::cons(AST::intern("loadFromLibrary"), AST::cons(new AST::String(p->name), NULL)))->str();
-}
-REGISTER_STR(FFIClosure, return(std::string("(FFIClosure ") + str(node->argument) + ")");)
-SymArgCacheFFI::SymArgCacheFFI(AST::Node* fallback) : BuiltinOperation(fallback) {
-}
-AST::Node* SymArgCacheFFI::execute(AST::Node* argument) {
-	/* TODO for non-pure, this doesn't make a whole lot of sense. */
-/*	AST::Symbol* argumentSymbol = dynamic_cast<AST::Symbol*>(argument);
-	if(argumentSymbol == NULL)
-		return(NULL);
-	std::map<AST::Symbol*, AST::Node*>::const_iterator iter = knownResults.find(argumentSymbol);
-	if(iter != knownResults.end())
-		return(iter->second);
-	knownResults[argumentSymbol] = executeUncached(argumentSymbol);
-	return(knownResults[argumentSymbol]);
-	*/
-	return(NULL); /* TODO */
-}
 
 }; /* end namspace */

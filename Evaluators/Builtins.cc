@@ -12,6 +12,7 @@
 #include "Scanners/OperatorPrecedenceList"
 #include "FFIs/FFIs"
 #include "Numbers/Integer"
+#include "Evaluators/Operation"
 
 namespace Evaluators {
 
@@ -22,11 +23,6 @@ AST::Node* internNative(bool value) {
 	return(value ? churchTrue : churchFalse);
 }
 using namespace Numbers;
-#if 0
-AST::Node* Int0::execute(AST::Node* argument) {
-	return(internNative(0)); /* i.e. integers[0] */
-}
-#endif
 static BigUnsigned unsigneds[] = {
 	BigUnsigned(0),
 	BigUnsigned(1),
@@ -147,78 +143,12 @@ static Real* toHeap(const Real& v) {
 static AST::Node* toHeap(bool v) {
 	return(internNative(v));
 }
-#define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
-AST::Node* N::execute(AST::Node* argument) { \
-	return(new Curried ## N(this, argument)); \
-} \
-AST::Node* Curried##N::execute(AST::Node* argument) { \
-	AST::Node* a = fArgument; \
-	AST::Node* b = argument; \
-	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a); \
-	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b); \
-	if(aInt && bInt) { \
-		return toHeap(*aInt op *bInt); \
-	} else { \
-		Numbers::Integer* aInteger = dynamic_cast<Numbers::Integer*>(a); \
-		Numbers::Integer* bInteger = dynamic_cast<Numbers::Integer*>(b); \
-		if(aInteger && bInteger) { \
-			return toHeap((*aInteger) op (*bInteger)); \
-		} else { \
-			if(aInteger && bInt) \
-				return toHeap((*aInteger) op Integer(bInt->value)); \
-			else if(aInt && bInteger) \
-				return toHeap(Integer(aInt->value) op (*bInteger)); \
-			Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a); \
-			Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b); \
-			if(aFloat && bFloat) \
-				return toHeap(*aFloat op *bFloat); \
-			else if(aFloat && bInt) \
-				return toHeap(*aFloat op promoteToFloat(*bInt)); \
-			else if(aInt && bFloat) \
-				return toHeap(promoteToFloat(*aInt) op *bFloat); \
-			else if(aFloat && bInteger) \
-				return toHeap(*aFloat op promoteToFloat(*bInteger)); \
-			else if(aInteger && bFloat) \
-				return toHeap(promoteToFloat(*aInteger) op *bFloat); \
-		} \
-	} /* TODO optimize this: */ \
-	return(makeOperation(AST::symbolFromStr(#op), a, b)); \
-} \
-REGISTER_STR(N, return(#op);) \
-REGISTER_STR(Curried##N, { \
-	/*return(std::string("(N" ") + (fallback ? str(fallback) : std::string("()")) + ")"); f... off */ \
-	std::stringstream sst; \
-	sst << "(" << #op << ") (" << str(node->fArgument) << ")"; \
-	return(sst.str()); \
-})
-
-#define IMPLEMENT_BINARY_BUILTIN(N, op, fn) \
-AST::Node* N::execute(AST::Node* argument) { \
-	return(new Curried ## N(this, argument)); \
-} \
-AST::Node* Curried##N::execute(AST::Node* argument) { \
-	AST::Node* a = fArgument; \
-	AST::Node* b = argument; \
-	return(fn(a, b)); \
-} \
-REGISTER_STR(N, return(#op);) \
-REGISTER_STR(Curried##N, { \
-	/*return(std::string("(N" ") + (fallback ? str(fallback) : std::string("()")) + ")"); f... off */ \
-	std::stringstream sst; \
-	sst << "(" << #op << ") (" << str(node->fArgument) << ")"; \
-	return(sst.str()); \
-})
-
 static AST::Node* addrEqualsP(AST::Node* a, AST::Node* b) {
 	return(internNative(a == b));
 }
 static AST::Node* addrLEP(AST::Node* a, AST::Node* b) {
 	return(internNative(a <= b));
 }
-
-IMPLEMENT_BINARY_BUILTIN(SymbolEqualityChecker, symbolsEqual?, addrEqualsP)
-IMPLEMENT_BINARY_BUILTIN(AddrLEComparer, addrsLE?, addrLEP)
-
 using namespace AST;
 
 static AST::Node* divmodInt(const Numbers::Int& a, const Numbers::Int& b) {
@@ -276,13 +206,6 @@ static AST::Node* divmod(AST::Node* a, AST::Node* b) {
 	return(makeOperation(Symbols::Sdivmod, a, b));
 }
 
-IMPLEMENT_NUMERIC_BUILTIN(Adder, +)
-IMPLEMENT_NUMERIC_BUILTIN(Subtractor, -)
-IMPLEMENT_NUMERIC_BUILTIN(Multiplicator, *)
-IMPLEMENT_NUMERIC_BUILTIN(Divider, /)
-IMPLEMENT_NUMERIC_BUILTIN(LEComparer, <=)
-IMPLEMENT_BINARY_BUILTIN(QModulator, divmod, divmod)
-
 REGISTER_STR(Cons, {
 	std::stringstream result;
 	result << '[';
@@ -293,9 +216,6 @@ REGISTER_STR(Cons, {
 	result << ']';
 	return(result.str());
 })
-
-IMPLEMENT_BINARY_BUILTIN(Conser, :, makeCons)
-
 
 REGISTER_STR(Str, {
 	std::stringstream sst;
@@ -335,14 +255,12 @@ REGISTER_STR(Abstraction, {
 REGISTER_STR(Keyword, return(std::string("@") + (node->name));)
 REGISTER_STR(Symbol, return(node->name);)
 REGISTER_STR(SymbolReference, return(node->symbol->name);)
-
 static StrRegistration* root;
 StrRegistration* registerStr(StrRegistration* n) {
 	StrRegistration* oldRoot = root;
 	root = n;
 	return(oldRoot);
 }
-
 // TODO move this into the language runtime
 std::string str(Node* node) {
 	if(node == NULL)
@@ -352,19 +270,16 @@ std::string str(Node* node) {
 	else
 		return("<node>");
 }
-
 static bool bDidWorldRun = false;
 void resetWorld(void) {
 	bDidWorldRun = false;
 }
-AST::Node* WorldRunner::execute(AST::Node* argument) {
-	if(bDidWorldRun) {
-		fprintf(stderr, "warning: can only run world once.\n");
-	}
-	bDidWorldRun = true;
-	return(reduce(AST::makeApplication(argument, Numbers::internNative((Numbers::NativeInt) 42))));
+static inline AST::Node* bug(AST::Node* f) {
+	abort();
+	return(f);
 }
-REGISTER_STR(WorldRunner, return("internalRunWorld2");)
+/* TODO reduce once: */
+DEFINE_SIMPLE_OPERATION(WorldRunner, reduce(makeApplication(reduce(argument), Numbers::internNative((Numbers::NativeInt) 42))))
 
 AST::Node* operator/(const Integer& a, const Integer& b) {
 	if (b.isZero()) throw Evaluators::EvaluationException("Integer::operator /: division by zero");
@@ -377,31 +292,135 @@ AST::Node* operator/(const Integer& a, const Integer& b) {
 		return toHeap(promoteToFloat(a) / promoteToFloat(b)); // FIXME faster?
 	}
 }
-
-AST::Node* SymbolP::execute(AST::Node* argument) {
-	return(internNative(symbol_P(argument)));
+static AST::Node* makeACons(AST::Node* h, AST::Node* t, AST::Node* fallback) {
+	return(makeCons(h, t));
 }
-REGISTER_STR(SymbolP, return("symbol?");)
-
-AST::Node* KeywordValueBuiltin::execute(AST::Node* argument) {
-	return(new FullBuiltin(this, argument));
+#define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
+AST::Node* N(AST::Node* a, AST::Node* b, AST::Node* fallback) { \
+	a = reduce(a); \
+	b = reduce(b); \
+	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a); \
+	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b); \
+	if(aInt && bInt) { \
+		return toHeap(*aInt op *bInt); \
+	} else { \
+		Numbers::Integer* aInteger = dynamic_cast<Numbers::Integer*>(a); \
+		Numbers::Integer* bInteger = dynamic_cast<Numbers::Integer*>(b); \
+		if(aInteger && bInteger) { \
+			return toHeap((*aInteger) op (*bInteger)); \
+		} else { \
+			if(aInteger && bInt) \
+				return toHeap((*aInteger) op Integer(bInt->value)); \
+			else if(aInt && bInteger) \
+				return toHeap(Integer(aInt->value) op (*bInteger)); \
+			Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a); \
+			Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b); \
+			if(aFloat && bFloat) \
+				return toHeap(*aFloat op *bFloat); \
+			else if(aFloat && bInt) \
+				return toHeap(*aFloat op promoteToFloat(*bInt)); \
+			else if(aInt && bFloat) \
+				return toHeap(promoteToFloat(*aInt) op *bFloat); \
+			else if(aFloat && bInteger) \
+				return toHeap(*aFloat op promoteToFloat(*bInteger)); \
+			else if(aInteger && bFloat) \
+				return toHeap(promoteToFloat(*aInteger) op *bFloat); \
+		} \
+	} /* TODO optimize this: */ \
+	return(makeOperation(AST::symbolFromStr(#op), a, b)); \
 }
-AST::Node* FullBuiltin::execute(AST::Node* argument) {
-	if(keyword_P(argument)) {
-		return(new KeywordValueBuiltin(this, argument));
+
+static AST::Node* divmodA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+	a = reduce(a);
+	b = reduce(b);
+	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
+	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
+	if(aInt && bInt) {
+		return toHeap(divmodInt(*aInt, *bInt));
 	} else {
-		// fFallback contains all the args, whereas argument is the last arg (not in the list). This is so that the interface 'f @mode:"w" a' is satisfied.
-		return(NULL); /* derive this */
+		Numbers::Integer* aInteger = dynamic_cast<Numbers::Integer*>(a);
+		Numbers::Integer* bInteger = dynamic_cast<Numbers::Integer*>(b);
+		if(aInteger && bInteger) {
+			return toHeap(divmodInteger((*aInteger), (*bInteger)));
+		} else {
+			if(aInteger && bInt)
+				return toHeap(divmodInteger((*aInteger), Integer(bInt->value)));
+			else if(aInt && bInteger)
+				return toHeap(divmodInteger(Integer(aInt->value), (*bInteger)));
+			Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
+			Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
+			if(aFloat && bFloat)
+				return toHeap(divmodFloat(*aFloat, *bFloat));
+			else if(aFloat && bInt) \
+				return toHeap(divmodFloat(*aFloat, promoteToFloat(*bInt)));
+			else if(aInt && bFloat) \
+				return toHeap(divmodFloat(promoteToFloat(*aInt), *bFloat));
+			else if(aFloat && bInteger) \
+				return toHeap(divmodFloat(*aFloat, promoteToFloat(*bInteger)));
+			else if(aInteger && bFloat) \
+				return toHeap(divmodFloat(promoteToFloat(*aInteger), *bFloat));
+		}
 	}
+	return(makeOperation(Symbols::Sdivmod, a, b));
 }
-REGISTER_STR(KeywordValueBuiltin, return("FIXME");)
-/* user needs to do REGISTER_STR(FullBuiltin, return("FIXME");) */
+static AST::Node* compareAddrsLEA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+	a = reduce(a);
+	b = reduce(b);
+	return(internNative((void*) a <= (void*) b));
+}
+static AST::Node* addrsEqualA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+	a = reduce(a);
+	b = reduce(b);
+	return(internNative((void*) a == (void*) b));
+}
+DEFINE_BINARY_OPERATION(Conser, makeACons)
+DEFINE_SIMPLE_OPERATION(ConsP, cons_P(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(NilP, nil_P(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(HeadGetter, ((argument = reduce(argument), cons_P(argument)) ? (((AST::Cons*) argument)->head) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(TailGetter, ((argument = reduce(argument), cons_P(argument)) ? (((AST::Cons*) argument)->tail) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(StrP, str_P(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(KeywordP, keyword_P(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(SymbolP, symbol_P(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(SymbolFromStrGetter, (argument = reduce(argument), str_P(argument) ? AST::symbolFromStr(get_native_string(argument)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(KeywordFromStrGetter, (argument = reduce(argument), str_P(argument) ? AST::keywordFromStr(get_native_string(argument)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(ListFromStrGetter, (argument = reduce(argument), str_P(argument) ? Evaluators::listFromStr(dynamic_cast<Str*>(argument)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(StrFromListGetter, (argument = reduce(argument), (cons_P(argument) || nil_P(argument)) ? Evaluators::strFromList(dynamic_cast<Cons*>(argument)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(KeywordStr, (argument = reduce(argument), keyword_P(argument) ? internNative(dynamic_cast<Keyword*>(argument)->name) : FALLBACK))
+IMPLEMENT_NUMERIC_BUILTIN(addA, +)
+DEFINE_BINARY_OPERATION(Adder, addA)
+IMPLEMENT_NUMERIC_BUILTIN(subtractA, -)
+DEFINE_BINARY_OPERATION(Subtractor, subtractA)
+IMPLEMENT_NUMERIC_BUILTIN(multiplyA, *)
+DEFINE_BINARY_OPERATION(Multiplicator, multiplyA)
+IMPLEMENT_NUMERIC_BUILTIN(divideA, /)
+DEFINE_BINARY_OPERATION(Divider, divideA)
+DEFINE_BINARY_OPERATION(QModulator, divmodA)
+IMPLEMENT_NUMERIC_BUILTIN(leqA, <=)
+DEFINE_BINARY_OPERATION(LEComparer, leqA)
+DEFINE_BINARY_OPERATION(AddrLEComparer, compareAddrsLEA)
+DEFINE_BINARY_OPERATION(SymbolEqualityChecker, addrsEqualA)
 
-CProcedure::CProcedure(void* native, AST::Node* aRepr) : 
-	AST::Box(native),
-	fRepr(aRepr)
-{
-}
-REGISTER_STR(CProcedure, return(str(node->fRepr));)
+REGISTER_BUILTIN(Conser, 2, AST::symbolFromStr(":"))
+REGISTER_BUILTIN(ConsP, 1, AST::symbolFromStr("cons?"))
+REGISTER_BUILTIN(NilP, 1, AST::symbolFromStr("nil?"))
+REGISTER_BUILTIN(HeadGetter, 1, AST::symbolFromStr("head"))
+REGISTER_BUILTIN(TailGetter, 1, AST::symbolFromStr("tail"))
+REGISTER_BUILTIN(Adder, 2, AST::symbolFromStr("+"))
+REGISTER_BUILTIN(Subtractor, 2, AST::symbolFromStr("-"))
+REGISTER_BUILTIN(Multiplicator, 2, AST::symbolFromStr("*"))
+REGISTER_BUILTIN(Divider, 2, AST::symbolFromStr("/"))
+REGISTER_BUILTIN(QModulator, 2, AST::symbolFromStr("divmod"))
+REGISTER_BUILTIN(LEComparer, 2, AST::symbolFromStr("<="))
+REGISTER_BUILTIN(StrP, 1, AST::symbolFromStr("str?"))
+REGISTER_BUILTIN(SymbolP, 1, AST::symbolFromStr("symbol?"))
+REGISTER_BUILTIN(AddrLEComparer, 2, AST::symbolFromStr("addrLEComparer"))
+REGISTER_BUILTIN(SymbolEqualityChecker, 2, AST::symbolFromStr("symbolsEqual?"))
+REGISTER_BUILTIN(KeywordP, 1, AST::symbolFromStr("keyword?"))
+REGISTER_BUILTIN(SymbolFromStrGetter, 1, AST::symbolFromStr("symbolFromStr"))
+REGISTER_BUILTIN(KeywordFromStrGetter, 1, AST::symbolFromStr("keywordFromStr"))
+REGISTER_BUILTIN(KeywordStr, 1, AST::symbolFromStr("keywordStr"))
+REGISTER_BUILTIN(ListFromStrGetter, 1, AST::symbolFromStr("listFromStr"))
+REGISTER_BUILTIN(StrFromListGetter, 1, AST::symbolFromStr("strFromList"))
+REGISTER_BUILTIN(WorldRunner, 1, AST::symbolFromStr("internalRunWorld2"))
 
 }; /* end namespace Evaluators */

@@ -3,6 +3,7 @@
 #include <sstream>
 #include "Numbers/Small"
 #include "AST/AST"
+#include "Evaluators/Operation"
 
 namespace Numbers {
 

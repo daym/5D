@@ -1,10 +1,12 @@
 #include <algorithm>
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
+#include "Evaluators/Operation"
 #include "Integer"
 
 namespace Evaluators {
 AST::Node* internNative(bool value);
+static inline AST::Node* internNative(AST::Node* value);
 };
 
 namespace Numbers {
@@ -733,7 +735,7 @@ bool operator<=(const Int& a, const Int& b) {
         return(Evaluators::internNative(a.compareTo(b) != Integer::greater));
 }*/
 static Integer xinteger1(1);
-AST::Node* IntSucc::execute(AST::Node* argument) {
+static inline AST::Node* intASucc(AST::Node* argument) {
 	Int* int1 = dynamic_cast<Int*>(argument);
 	if(int1) {
 		NativeInt value = int1->value;
@@ -743,8 +745,8 @@ AST::Node* IntSucc::execute(AST::Node* argument) {
 	} else
 		return(FALLBACK);
 }
-REGISTER_STR(IntSucc, return("intSucc");)
-AST::Node* IntegerSucc::execute(AST::Node* argument) {
+DEFINE_SIMPLE_OPERATION(IntSucc, intASucc(argument))
+static inline AST::Node* integerASucc(AST::Node* argument) {
 	Integer* integer1 = dynamic_cast<Integer*>(argument);
 	if(integer1) {
 		return(new Integer((*integer1) + xinteger1));
@@ -758,7 +760,7 @@ AST::Node* IntegerSucc::execute(AST::Node* argument) {
 	} else
 		return(FALLBACK);
 }
-REGISTER_STR(IntegerSucc, return("integerSucc");)
+DEFINE_SIMPLE_OPERATION(IntegerSucc, integerASucc(argument))
 REGISTER_STR(Int, {
         std::stringstream sst;
         sst << node->value;
@@ -807,5 +809,13 @@ NativeInt toNativeInt(AST::Node* node, bool& B_ok) {
 	} else
 		return(0);
 }
+
+DEFINE_SIMPLE_OPERATION(IntP, (dynamic_cast<Int*>(reduce(argument)) != NULL))
+DEFINE_SIMPLE_OPERATION(IntegerP, (dynamic_cast<Int*>(reduce(argument)) !=NULL||dynamic_cast<Integer*>(reduce(argument)) != NULL))
+
+REGISTER_BUILTIN(IntP, 1, AST::symbolFromStr("int?"))
+REGISTER_BUILTIN(IntegerP, 1, AST::symbolFromStr("integer?"))
+REGISTER_BUILTIN(IntSucc, 1, AST::symbolFromStr("intSucc"))
+REGISTER_BUILTIN(IntegerSucc, 1, AST::symbolFromStr("integerSucc"))
 
 }; /* namespace Numbers */

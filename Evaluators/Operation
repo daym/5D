@@ -1,0 +1,92 @@
+#ifndef __EVALUATORS_OPERATION_H
+#define __EVALUATORS_OPERATION_H
+
+namespace Evaluators {
+
+static inline AST::Node* internNative(AST::Node* n) {
+	return(n);
+}
+
+/* FIXME */
+#define FALLBACK NULL
+/* (AST::Node*) reduce(makeOperation(Symbols::Sspace, fallback, argument))*/
+
+/* BEGIN str() */
+
+std::string str(AST::Node* cons);
+struct StrRegistration {
+	virtual std::string call(AST::Node* node) const = 0;
+};
+StrRegistration* registerStr(StrRegistration* n);
+#define REGISTER_STR(typ, body) \
+struct StrRegistration##typ : Evaluators::StrRegistration { \
+	struct StrRegistration* next; \
+	StrRegistration##typ(void) { \
+		next = Evaluators::registerStr(this); \
+	} \
+	virtual std::string call(AST::Node* xxxnode) const { \
+		typ* node; \
+		if((node = dynamic_cast<typ*>(xxxnode)) != NULL) { \
+			body \
+		} else if(next) \
+			return(next->call(xxxnode)); \
+		else \
+			return("<node>"); \
+	} \
+}; \
+static StrRegistration##typ fStrRegistration##typ;
+
+/* END str() */
+
+struct CProcedure : AST::Box {
+        AST::Node* fRepr;
+	int fArgumentCount; // sigh. <0: can also do keyword arguments.
+        CProcedure(void* native, AST::Node* aRepr, int aArgumentCount);
+};
+#define DECLARE_SIMPLE_OPERATION(P) \
+extern Evaluators::CProcedure P;
+
+#define REGISTER_BUILTIN(P, argumentCount, R) Evaluators::CProcedure P((void*) P##_execute, R, argumentCount);
+
+#define DEFINE_SIMPLE_OPERATION(P, B) \
+extern Evaluators::CProcedure P; \
+static AST::Node* P##_execute(AST::Node* fn, AST::Node* argument) { \
+	return(Evaluators::internNative(B)); \
+}
+
+#define DECLARE_FULL_OPERATION(P) DECLARE_SIMPLE_OPERATION(P)
+#define DEFINE_FULL_OPERATION(P, argumentCount, B) \
+extern Evaluators::CProcedure P; \
+static AST::Node* P##_execute(AST::Node* fn, AST::Node* argument) { \
+	B; \
+}
+
+#define DECLARE_BINARY_OPERATION(P) DECLARE_SIMPLE_OPERATION(P)
+#define DEFINE_BINARY_OPERATION(P, B) \
+extern Evaluators::CProcedure P; \
+static AST::Node* P##_execute(AST::Node* fn, AST::Node* argument) { \
+	Evaluators::CurriedOperation* c = dynamic_cast<Evaluators::CurriedOperation*>(fn); \
+	assert(c); \
+	return(B(c->fArgument, argument, c->fOperation)); \
+}
+
+/* BEGIN Curried Operations */
+
+struct CurriedOperation : AST::Node {
+	AST::Node* fOperation; /* either CurriedOperation* or CProcedure* */
+	AST::Node* fArgument;
+	CurriedOperation(AST::Node* operation, AST::Node* argument) : fOperation(operation), fArgument(argument) {}
+};
+
+/* END Curried Operations */
+
+/* BEGIN Binary Operations */
+
+bool builtin_call_P(AST::Node* node);
+AST::Node* call_builtin(AST::Node* fn, AST::Node* argument);
+
+/* END Binary Operations */
+
+struct AST::Node* repr(AST::Node*);
+}; /* end namespace Evaluators */
+#endif /* ndef __EVALUATORS_OPERATION_H */

@@ -2,9 +2,5 @@
 #define __5D_FFIS_RESULTMARSHALLER_H
 #include "Evaluators/FFI"
 namespace FFIs {
-struct ResultMarshaller : Evaluators::SymArgCacheFFI {
-	ResultMarshaller(AST::Node* fallback) : Evaluators::SymArgCacheFFI(fallback) {}
-	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the result type signature. Result is a ArgumentMarshaller */
-};
 };
 #endif /*ndef __5D_FFIS_RESULTMARSHALLER_H*/

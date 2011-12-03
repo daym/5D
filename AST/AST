@@ -39,11 +39,6 @@ struct Str : Node {
 	}
 	//virtual std::string str(void) const;
 };
-struct Operation : Node {
-	virtual bool eager_P() const;
-	virtual AST::Node* execute(AST::Node* argument) = 0;
-	virtual AST::Node* repr(AST::Node* selfName) const;
-};
 struct Box : Node {
 	void* native;
 	Box(void* native) {
@@ -55,17 +50,6 @@ struct Box : Node {
 Cons* makeCons(Node* head, Node* tail);
 Str* makeStr(const char* text);
 bool str_P(AST::Node* node);
-/*typedef Operation BuiltinOperation;*/
-struct BuiltinOperation : AST::Operation { /* FIXME make this string out the fallback, too */
-	AST::Node* fallback;
-	BuiltinOperation(AST::Node* fallback) {
-		this->fallback = fallback;
-	}
-	virtual bool eager_P() const {
-		return(true);
-	}
-};
-
 static inline bool abstraction_P(Node* root) {
 	return(dynamic_cast<Abstraction*>(root) != NULL);
 }
@@ -87,6 +71,13 @@ static inline Node* get_abstraction_parameter(Node* abstraction) {
 Application* makeApplication(Node* fn, Node* argument);
 Abstraction* makeAbstraction(Node* parameter, Node* body);
 Application* makeOperation(Node* operator_, Node* operand_1, Node* operand_2);
+static inline bool cons_P(AST::Node* node) {
+	return(dynamic_cast<Cons*>(node) != NULL);
+}
+static inline bool nil_P(AST::Node* node) {
+	return(node == NULL);
+}
+
 
 }; /* namespace AST */
 #endif /* __AST_H */

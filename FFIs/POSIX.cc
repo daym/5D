@@ -24,11 +24,10 @@ using namespace Evaluators;
 struct LibraryLoaderP {
 	std::map<AST::Symbol*, CLibrary*> knownLibraries;
 };
-LibraryLoader::LibraryLoader(AST::Node* fallback) : AST::BuiltinOperation(fallback) {
+LibraryLoader::LibraryLoader(AST::Node* fallback) {
 	p = new LibraryLoaderP();
 }
-REGISTER_STR(LibraryLoader, return("fromLibrary");)
-AST::Node* LibraryLoader::execute(AST::Node* libraryName) {
+CLibrary* LibraryLoader::execute(AST::Node* libraryName) {
 	if(str_P(libraryName))
 		libraryName = AST::symbolFromStr(((AST::Str*)libraryName)->text.c_str());
 	AST::Symbol* libraryNameSymbol = dynamic_cast<AST::Symbol*>(libraryName);
@@ -65,7 +64,7 @@ CLibrary::CLibrary(const char* name) {
 		//perror(name);
 	}
 }
-AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
+AST::Node* CLibrary::executeLowlevel(AST::Node* argument, int argumentCount) {
 	/* argument is the name (symbol). Result is a CProcedure */
 	if(str_P(argument))
 		argument = AST::symbolFromStr(((AST::Str*)argument)->text.c_str());
@@ -82,7 +81,7 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", nameSymbol->name, p->name.c_str());
 			return(fRepr);
 		}
-		p->knownProcedures[nameSymbol] = new CProcedure(proc, fRepr);
+		p->knownProcedures[nameSymbol] = new CProcedure(proc, fRepr, argumentCount);
 		return(p->knownProcedures[nameSymbol]);
 	}
 }

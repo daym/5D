@@ -16,18 +16,19 @@ namespace AST {
 
 namespace FFIs {
 
-struct LibraryLoader : AST::BuiltinOperation {
+struct CLibrary;
+struct LibraryLoader {
 public:
 	struct LibraryLoaderP* p; // private
 	LibraryLoader(AST::Node* fallback);
-	virtual AST::Node* execute(AST::Node* argument); /* argument is the library to be loaded. Result is a CLibrary or nil */
+	virtual CLibrary* execute(AST::Node* argument); /* argument is the library to be loaded. Result is a CLibrary or nil */
 };
-struct CLibrary : Evaluators::FFI { /* routine loader */
+struct CLibrary { /* routine loader */
 public:
 	struct CLibraryP* p; // private
 	bool goodP() const;
 	CLibrary(const char* name);
-	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the name (symbol). Result is a CProcedure */
+	virtual AST::Node* executeLowlevel(AST::Node* argument, int argumentCount); /* argument is the name (symbol). */
 };
 
 };

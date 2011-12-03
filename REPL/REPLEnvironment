@@ -159,26 +159,22 @@ static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::
 	REPL_add_to_environment_simple(self, name, buildSuperAwareOperation(value));
 }
 #endif
-static Evaluators::Quoter quoter(NULL);
+//static Evaluators::Quoter quoter(NULL);
 #define DECLARE_REPL_OPERATION(P) \
 	DECLARE_FULL_OPERATION(P)
 
-#define DEFINE_REPL_OPERATION(P, N, B, C) \
-	DECLARE_REPL_OPERATION(P) \
-	REGISTER_STR(P, return(N);) \
-	IMPLEMENT_FULL_OPERATION(P, N, B(fArgument, C))
+#define DEFINE_REPL_OPERATION(P, argCount, B) \
+	DEFINE_FULL_OPERATION(P, argCount, B)
 
-DEFINE_REPL_OPERATION(RImporter, "import", REPL_import, argument)
-DEFINE_REPL_OPERATION(RInformant, "describe", REPL_describe, argument)
+DEFINE_REPL_OPERATION(RImporter, (-2), {
+	return(REPL_import(fn, argument));
+})
+DEFINE_REPL_OPERATION(RInformant, (-2), {
+	return(REPL_describe(fn, argument));
+})
 
-static AST::Node* REPL_create_importer(struct REPL* self) {
-	return(new RImporter(AST::makeApplication(&quoter, AST::symbolFromStr("describe")), self));
-}
-static AST::Node* REPL_create_informant(struct REPL* self) {
-	return(new RInformant(AST::makeApplication(&quoter, AST::symbolFromStr("describe")), self));
-}
-
-#define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, buildSuperAwareOperation<v>(AST::makeApplication(&quoter, n)))
+//#define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, buildSuperAwareOperation((AST::Node*) v, (AST::Node*) AST::makeApplication(&Evaluators::Quoter, n)))
+#define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, v)
 static void REPL_init_builtins(struct REPL* self) {
 	if(self->fTailUserEnvironment && envEntryGetTail(self->fTailUserEnvironment)) {
 		fprintf(stderr, "warning: There is a user environment, so not clobbering it by builtins.\n");
@@ -188,47 +184,46 @@ static void REPL_init_builtins(struct REPL* self) {
 		self->fTailEnvironment = makeApplication(makeAbstraction(Symbols::Snil, NULL/*mutable*/), NULL);
 		self->fTailUserEnvironment = self->fTailEnvironment;
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
-		self->fImporter = REPL_create_importer(self);
-		self->fInformant = REPL_create_informant(self);
 	}
-	REPL_add_static_builtin_binding(self, Symbols::Squote, &quoter); /* keep at the beginning */
-	REPL_add_static_builtin_binding(self, Symbols::Sdefine, &quoter); // dummy
-	REPL_add_static_builtin_binding(self, Symbols::Simport, self->fImporter);
-	REPL_add_static_builtin_binding(self, Symbols::Sdescribe, self->fInformant);
-	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &quoter); // dummy
-	REPL_add_static_builtin_binding(self, Symbols::Slet, &quoter); // dummy
-	REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::reducer);
-	REPL_add_builtin_method(self, Symbols::SfromLibrary, FFIs::LibraryLoader);
+	REPL_add_static_builtin_binding(self, Symbols::Squote, &Evaluators::Quoter); /* keep at the beginning */
+	REPL_add_static_builtin_binding(self, Symbols::Sdefine, &Evaluators::Quoter); // dummy
+	//REPL_add_static_builtin_binding(self, Symbols::Simport, );
+	//REPL_add_static_builtin_binding(self, Symbols::Sdescribe, self->fInformant);
+	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &Evaluators::Quoter); // dummy
+	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
+	REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::Reducer);
+	REPL_add_builtin_method(self, Symbols::Sdescribe, &RInformant);
+	// FIXME REPL_add_builtin_method(self, Symbols::SfromLibrary, FFIs::LibraryLoader);
 	REPL_add_static_builtin_binding(self, Symbols::Snil, NULL);
-	REPL_add_builtin_method(self, Symbols::Scolon, Evaluators::Conser);
-	REPL_add_builtin_method(self, Symbols::SconsP, Evaluators::ConsP);
-	REPL_add_builtin_method(self, Symbols::SnilP, Evaluators::NilP);
-	REPL_add_builtin_method(self, Symbols::Shead, Evaluators::HeadGetter);
-	REPL_add_builtin_method(self, Symbols::Stail, Evaluators::TailGetter);
-	REPL_add_builtin_method(self, Symbols::SintP, Numbers::IntP);
+	REPL_add_builtin_method(self, Symbols::Scolon, &Evaluators::Conser);
+	REPL_add_builtin_method(self, Symbols::SconsP, &Evaluators::ConsP);
+	REPL_add_builtin_method(self, Symbols::SnilP, &Evaluators::NilP);
+	REPL_add_builtin_method(self, Symbols::Shead, &Evaluators::HeadGetter);
+	REPL_add_builtin_method(self, Symbols::Stail, &Evaluators::TailGetter);
+	REPL_add_builtin_method(self, Symbols::SintP, &Numbers::IntP);
 	REPL_add_static_builtin_binding(self, Symbols::Sintzero, Numbers::internNative((Numbers::NativeInt) 0));
-	REPL_add_builtin_method(self, Symbols::SintSucc, Numbers::IntSucc);
-	REPL_add_builtin_method(self, Symbols::SintegerP, Numbers::IntegerP);
-	REPL_add_builtin_method(self, Symbols::SintegerSucc, Numbers::IntegerSucc);
-	REPL_add_builtin_method(self, Symbols::Splus, Evaluators::Adder);
-	REPL_add_builtin_method(self, Symbols::Sdash, Evaluators::Subtractor);
-	REPL_add_builtin_method(self, Symbols::Sasterisk, Evaluators::Multiplicator);
-	REPL_add_builtin_method(self, Symbols::Sslash, Evaluators::Divider);
-	REPL_add_builtin_method(self, Symbols::Sdivmod, Evaluators::QModulator);
-	REPL_add_builtin_method(self, Symbols::Slessequal, Evaluators::LEComparer);
-	REPL_add_builtin_method(self, Symbols::SfloatP, Numbers::FloatP);
-	REPL_add_builtin_method(self, Symbols::SstrP, Evaluators::StrP);
-	REPL_add_builtin_method(self, Symbols::SsymbolP, Evaluators::SymbolP);
-	REPL_add_builtin_method(self, Symbols::SaddrsLEP, Evaluators::AddrLEComparer);
-	REPL_add_builtin_method(self, Symbols::SsymbolsEqualP, Evaluators::SymbolEqualityChecker);
-	REPL_add_builtin_method(self, Symbols::SkeywordP, Evaluators::KeywordP);
-	REPL_add_builtin_method(self, Symbols::StranslateFFI, FFIs::ResultMarshaller);
-	REPL_add_builtin_method(self, Symbols::SsymbolFromStr, Evaluators::Interner);
-	REPL_add_builtin_method(self, Symbols::SkeywordFromStr, Evaluators::KeywordFromStringGetter);
-	REPL_add_builtin_method(self, Symbols::SstrFromKeyword, Evaluators::KeywordStr);
-	REPL_add_builtin_method(self, Symbols::SlistFromStr, Evaluators::ListFromStringGetter);
-	REPL_add_builtin_method(self, Symbols::SstrFromList, Evaluators::StrFromListGetter);
-	REPL_add_builtin_method(self, Symbols::SunsafeRunWorld2, Evaluators::WorldRunner);
+	REPL_add_builtin_method(self, Symbols::SintSucc, &Numbers::IntSucc);
+	REPL_add_builtin_method(self, Symbols::SintegerP, &Numbers::IntegerP);
+	REPL_add_builtin_method(self, Symbols::SintegerSucc, &Numbers::IntegerSucc);
+	REPL_add_builtin_method(self, Symbols::Splus, &Evaluators::Adder);
+	REPL_add_builtin_method(self, Symbols::Sdash, &Evaluators::Subtractor);
+	REPL_add_builtin_method(self, Symbols::Sasterisk, &Evaluators::Multiplicator);
+	REPL_add_builtin_method(self, Symbols::Sslash, &Evaluators::Divider);
+	REPL_add_builtin_method(self, Symbols::Sdivmod, &Evaluators::QModulator);
+	REPL_add_builtin_method(self, Symbols::Slessequal, &Evaluators::LEComparer);
+	REPL_add_builtin_method(self, Symbols::SfloatP, &Numbers::FloatP);
+	REPL_add_builtin_method(self, Symbols::SstrP, &Evaluators::StrP);
+	REPL_add_builtin_method(self, Symbols::SsymbolP, &Evaluators::SymbolP);
+	REPL_add_builtin_method(self, Symbols::SaddrsLEP, &Evaluators::AddrLEComparer);
+	REPL_add_builtin_method(self, Symbols::SsymbolsEqualP, &Evaluators::SymbolEqualityChecker);
+	REPL_add_builtin_method(self, Symbols::SkeywordP, &Evaluators::KeywordP);
+	//REPL_add_builtin_method(self, Symbols::StranslateFFI, &FFIs::ResultMarshaller);
+	REPL_add_builtin_method(self, Symbols::SsymbolFromStr, &Evaluators::SymbolFromStrGetter);
+	REPL_add_builtin_method(self, Symbols::SkeywordFromStr, &Evaluators::KeywordFromStrGetter);
+	REPL_add_builtin_method(self, Symbols::SstrFromKeyword, &Evaluators::KeywordStr);
+	REPL_add_builtin_method(self, Symbols::SlistFromStr, &Evaluators::ListFromStrGetter);
+	REPL_add_builtin_method(self, Symbols::SstrFromList, &Evaluators::StrFromListGetter);
+	REPL_add_builtin_method(self, Symbols::SunsafeRunWorld2, &Evaluators::WorldRunner);
 	REPL_add_static_builtin_binding(self, Symbols::Shasht, Evaluators::churchTrue);
 	REPL_add_static_builtin_binding(self, Symbols::Shashf, Evaluators::churchFalse);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
@@ -368,6 +363,9 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 	REPL_set_file_modified(self, true);
 	return(B_ok);
 }
+
+REGISTER_BUILTIN(RImporter, (-1), AST::symbolFromStr("import"))
+REGISTER_BUILTIN(RInformant, (-1), AST::symbolFromStr("describe"));
 
 }; /* end namespace */
 #endif /* __REPL_REPLENVIRONMENT_H */

@@ -33,13 +33,6 @@ bool str_P(AST::Node* node) {
 	return(dynamic_cast<AST::Str*>(node) != NULL);
 }
 
-// Operation
-AST::Node* Operation::repr(AST::Node* selfName) const {
-	return(NULL);
-}
-bool Operation::eager_P(void) const {
-	return(false);
-}
 Application* makeApplication(Node* fn, Node* argument) {
 	Application* result = new Application;
 	result->operator_ = fn;

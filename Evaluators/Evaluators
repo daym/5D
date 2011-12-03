@@ -3,6 +3,7 @@
 #include <set>
 #include "AST/AST"
 #include "AST/Symbol"
+#include "Evaluators/Operation"
 
 namespace Evaluators {
 class EvaluationException : public std::exception {
@@ -12,18 +13,24 @@ public:
 	virtual const char* what() const throw();
 };
 
-struct Reducer : AST::Operation {
-	Reducer(void) {}
-	virtual bool eager_P(void) const {
-		return(true);
-	}
-	virtual AST::Node* execute(AST::Node* argument);
-};
-extern Reducer reducer; /* never EVER make your own instance */
-
 void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames);
 AST::Node* annotate(AST::Node* root);
-AST::Node* reduce(AST::Node* term);
+extern int fGeneration;
+static inline bool application_result_P(AST::Node* app) {
+	return(((AST::Application*) app)->resultGeneration == fGeneration);
+}
+AST::Node* reduce1(AST::Node* term);
+static inline AST::Node* reduce(AST::Node* term) {
+	AST::Application* a;
+	if((a = dynamic_cast<AST::Application*>(term)) == NULL)
+		return(term);
+	else {
+		if(application_result_P(term))
+			return(((AST::Application*) term)->result);
+		else
+			return(reduce1(term));
+	}
+}
 AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body);
 AST::Node* makeError(const char* reason);
 bool define_P(AST::Node* input);
@@ -33,6 +40,9 @@ AST::Cons* evaluateToCons(AST::Node* input);
 AST::Node* listFromStr(AST::Str* node);
 AST::Node* strFromList(AST::Cons* node);
 int increaseGeneration(void);
+
+DECLARE_SIMPLE_OPERATION(Reducer)
+DECLARE_SIMPLE_OPERATION(Quoter)
 
 };
 

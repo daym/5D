@@ -3,13 +3,5 @@
 #include "Evaluators/FFI"
 namespace FFIs {
 
-struct ArgumentMarshaller : Evaluators::FFI {
-private:
-	AST::Symbol* resultSignature;
-public:
-	ArgumentMarshaller(AST::Symbol* resultSignature);
-	virtual AST::Node* executeLowlevel(AST::Node* argument);
-};
-
 };
 #endif /*ndef __5D_FFIS_ARGUMENTMARSHALLER_H*/

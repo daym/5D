@@ -19,36 +19,6 @@ void* get_native_pointer(AST::Node* root);
 bool get_native_boolean(AST::Node* root);
 char* get_native_string(AST::Node* root);
 
-struct FFI : AST::Operation {
-	bool B_pure;
-	FFI(void) {
-		B_pure = true; /* FIXME false;*/
-	}
-	virtual bool eager_P() const;
-	virtual AST::Node* execute(AST::Node* argument);
-	virtual AST::Node* executeLowlevel(AST::Node* argument) = 0;
-};
-struct FFIClosure : AST::Operation {
-	AST::Node* argument;
-	FFI* routine;
-	AST::Node* result;
-	bool B_has_result;
-	FFIClosure(AST::Node* argument, FFI* routine) {
-		this->argument = argument;
-		this->routine = routine;
-		this->result = NULL;
-		this->B_has_result = 0;
-	}
-	virtual AST::Node* execute(AST::Node* state);
-};
-struct SymArgCacheFFI : AST::BuiltinOperation {
-private:
-	std::map<AST::Symbol*, AST::Node*> knownResults;
-public:
-	SymArgCacheFFI(AST::Node* fallback);
-	virtual AST::Node* execute(AST::Node* argument);
-};
-
-};
+}; // end namespace
 
 #endif /* ndef __5D_Evaluators_FFI_H */

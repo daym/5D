@@ -3,30 +3,6 @@
 #include <sstream>
 #include "AST/AST"
 #include "AST/Symbols"
-namespace Evaluators {
-std::string str(AST::Node* cons);
-struct StrRegistration {
-	virtual std::string call(AST::Node* node) const = 0;
-};
-StrRegistration* registerStr(StrRegistration* n);
-#define REGISTER_STR(typ, body) \
-struct StrRegistration##typ : Evaluators::StrRegistration { \
-	struct StrRegistration* next; \
-	StrRegistration##typ(void) { \
-		next = Evaluators::registerStr(this); \
-	} \
-	virtual std::string call(AST::Node* xxxnode) const { \
-		typ* node; \
-		if((node = dynamic_cast<typ*>(xxxnode)) != NULL) { \
-			body \
-		} else if(next) \
-			return(next->call(xxxnode)); \
-		else \
-			return("<node>"); \
-	} \
-}; \
-static StrRegistration##typ fStrRegistration##typ;
-};
 
 #include "Numbers/Small"
 #include "Numbers/Integer"
@@ -34,111 +10,45 @@ static StrRegistration##typ fStrRegistration##typ;
 #include "AST/Keyword"
 #include "AST/Symbol"
 #include "Evaluators/Evaluators"
+#include "Evaluators/Operation"
 
 namespace Evaluators {
 
-struct CProcedure : AST::Box {
-        AST::Node* fRepr;
-        CProcedure(void* native, AST::Node* aRepr);
-};
-
 AST::Node* operator/(const Numbers::Integer& a, const Numbers::Integer& b);
 AST::Node* internNative(bool value);
-static inline AST::Node* internNative(AST::Node* n) {
-	return(n);
+static inline AST::Node* buildSuperAwareOperation(AST::Node* actualOperation, AST::Node* fallback) {
+	return(AST::makeApplication(Symbols::Sinline, AST::makeApplication(actualOperation, fallback)));
 }
 
-/* there's a special case in the annotator, so this cannot happen:
-AST::SymbolReference* ref = dynamic_cast<AST::SymbolReference*>(argument);
-return(ref ? ref->symbol : argument);
-*/
-DEFINE_UNEAGER_OPERATION(Quoter, "'", argument)
-struct CurriedOperation : AST::BuiltinOperation {
-	AST::Node* fArgument; \
-	CurriedOperation(AST::Node* fallback, AST::Node* argument) : AST::BuiltinOperation(fallback), fArgument(argument) {} \
-};
-#define DECLARE_CURRIED_OPERATION(P) \
-struct P : CurriedOperation { \
-	P(AST::Node* fallback, AST::Node* argument) : CurriedOperation(fallback, argument) {} \
-	virtual AST::Node* execute(AST::Node* argument); \
-};
-
-#define DECLARE_BINARY_OPERATION(P) \
-	DECLARE_SIMPLE_OPERATION(P) \
-	DECLARE_CURRIED_OPERATION(Curried ## P)
-
-#define DECLARE_FULL_OPERATION(P) \
-struct P : Evaluators::FullBuiltin { \
-	P(AST::Node* fallback, AST::Node* argument) : Evaluators::FullBuiltin(fallback, argument) {} \
-	virtual AST::Node* execute(AST::Node* argument); \
-};
-
-#define IMPLEMENT_FULL_OPERATION(P, N, B) \
-AST::Node* P::execute(AST::Node* argument) { \
-	AST::Node* result = Evaluators::FullBuiltin::execute(argument); \
-	if(result == NULL) { \
-		return(B); \
-	} else \
-		return(result); \
-}
-DECLARE_CURRIED_OPERATION(KeywordValueBuiltin)
-DECLARE_CURRIED_OPERATION(FullBuiltin)
-
-DEFINE_SIMPLE_OPERATION(ProcedureP, "procedure?", (dynamic_cast<Operation*>(argument) != NULL))
-DECLARE_BINARY_OPERATION(Conser)
-DEFINE_SIMPLE_OPERATION(HeadGetter, "head", (dynamic_cast<AST::Cons*>(argument) ? ((AST::Cons*) argument)->head : FALLBACK))
-DEFINE_SIMPLE_OPERATION(TailGetter, "tail", (dynamic_cast<AST::Cons*>(argument) ? ((AST::Cons*) argument)->tail : FALLBACK))
-DEFINE_SIMPLE_OPERATION(NilP, "nil?", (argument == NULL))
-DEFINE_SIMPLE_OPERATION(ConsP, "cons?", (dynamic_cast<AST::Cons*>(argument) != NULL))
-DEFINE_SIMPLE_OPERATION(StrP, "str?", str_P(argument))
-DECLARE_SIMPLE_OPERATION(SymbolP)
-DEFINE_SIMPLE_OPERATION(KeywordP, "keyword?", keyword_P(argument))
-DEFINE_SIMPLE_OPERATION(ListFromStringGetter, "listFromStr", (dynamic_cast<AST::Str*>(argument) ? listFromStr((AST::Str*) argument) : FALLBACK))
-DEFINE_SIMPLE_OPERATION(StrFromListGetter, "strFromList", ((argument != NULL || dynamic_cast<AST::Cons*>(argument)) ? strFromList((AST::Cons*) argument) : FALLBACK))
-/*DECLARE_SIMPLE_OPERATION(Int0, "int0")*/
-DECLARE_BINARY_OPERATION(Adder)
-DECLARE_BINARY_OPERATION(Subtractor)
-DECLARE_BINARY_OPERATION(Multiplicator)
-DECLARE_BINARY_OPERATION(Divider)
-DECLARE_BINARY_OPERATION(SymbolEqualityChecker)
-DECLARE_BINARY_OPERATION(AddrLEComparer)
-DECLARE_BINARY_OPERATION(LEComparer)
-DECLARE_BINARY_OPERATION(QModulator)
-DEFINE_SIMPLE_OPERATION(Interner, "symbolFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::symbolFromStr(((AST::Str*)argument)->text.c_str()) : FALLBACK));
-DEFINE_SIMPLE_OPERATION(KeywordFromStringGetter, "keywordFromStr", (dynamic_cast<AST::Str*>(argument) ? AST::keywordFromStr(((AST::Str*)argument)->text.c_str()) : FALLBACK))
-DEFINE_SIMPLE_OPERATION(KeywordStr, "keywordStr", dynamic_cast<AST::Keyword*>(argument) ? (AST::Node*) AST::makeStr(((AST::Keyword*)argument)->name) : FALLBACK)
-DECLARE_SIMPLE_OPERATION(WorldRunner)
+void resetWorld(void);
 
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
 AST::Node* provide_dynamic_builtins(AST::Node* body);
 extern AST::Node* churchFalse;
 extern AST::Node* churchTrue;
 
-struct BaseSuperAwareOperation : AST::Operation {
-	virtual AST::Node* dummyOperation(void) = 0;
-};
-template<class T>
-struct SuperAwareOperation : BaseSuperAwareOperation { /* will be immediately executed, returns actualOperation but has mutable data which is the super. */
-	virtual bool eager_P(void) const {
-		return(false);
-	}
-	SuperAwareOperation(void) {
-	}
-	virtual AST::Node* dummyOperation(void) {
-		return(new T(NULL));
-	}
-	virtual AST::Node* execute(AST::Node* argument) {
-		AST::Operation* actualOperation = new T(argument);
-		return(actualOperation);
-	}
-};
-
-template<class T>
-static AST::Node* buildSuperAwareOperation(AST::Node* name) {
-	return(AST::makeApplication(Symbols::Sinline, AST::makeApplication(new SuperAwareOperation<T>(), name)));
-}
-
-void resetWorld(void);
+DECLARE_BINARY_OPERATION(Conser)
+DECLARE_SIMPLE_OPERATION(ConsP)
+DECLARE_SIMPLE_OPERATION(NilP)
+DECLARE_SIMPLE_OPERATION(HeadGetter)
+DECLARE_SIMPLE_OPERATION(TailGetter)
+DECLARE_BINARY_OPERATION(Adder)
+DECLARE_BINARY_OPERATION(Subtractor)
+DECLARE_BINARY_OPERATION(Multiplicator)
+DECLARE_BINARY_OPERATION(Divider)
+DECLARE_BINARY_OPERATION(QModulator)
+DECLARE_BINARY_OPERATION(LEComparer)
+DECLARE_BINARY_OPERATION(StrP)
+DECLARE_BINARY_OPERATION(SymbolP)
+DECLARE_BINARY_OPERATION(AddrLEComparer)
+DECLARE_BINARY_OPERATION(SymbolEqualityChecker)
+DECLARE_BINARY_OPERATION(KeywordP)
+DECLARE_BINARY_OPERATION(SymbolFromStrGetter)
+DECLARE_BINARY_OPERATION(KeywordFromStrGetter)
+DECLARE_BINARY_OPERATION(KeywordStr)
+DECLARE_BINARY_OPERATION(ListFromStrGetter)
+DECLARE_BINARY_OPERATION(StrFromListGetter)
+DECLARE_SIMPLE_OPERATION(WorldRunner)
 
 };
 

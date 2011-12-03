@@ -25,10 +25,7 @@ AST::Node* internNative(NativeFloat value) {
 	return(new Float(value));
 }
 
-AST::Node* FloatP::execute(AST::Node* argument) {
-	bool result = dynamic_cast<Float*>(argument) != NULL;
-	return(Evaluators::internNative(result));
-}
+DEFINE_SIMPLE_OPERATION(FloatP, dynamic_cast<Float*>(reduce(argument)) != NULL)
 
 AST::Node* operator+(const Float& a, const Float& b) {
 	return(internNative(a.value + b.value)); /* FIXME */
@@ -60,5 +57,7 @@ AST::Node* operator<=(const Float& a, const Float& b) {
 AST::Node* operator<=(const Real& a, const Real& b) {
 	return(Evaluators::internNative(false)); /* FIXME */
 }
+
+REGISTER_BUILTIN(FloatP, 1, AST::symbolFromStr("float?"))
 
 }; /* end namespace Numbers */

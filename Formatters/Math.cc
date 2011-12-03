@@ -82,12 +82,7 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 	/* the easiest way to think about this is that any and each node has a precedence level. 
 	   The precedence level of the atoms is just very high. 
 	   The reason it is not explicitly programmed that way is that there are a lot of temporary variables that are used in both precedence level detection and recursion and that would be much code duplication to do two. */
-	AST::Operation* operation = dynamic_cast<AST::Operation*>(node);
-	if(operation) {
-		AST::Node* n = operation->repr(NULL/*FIXME*/);
-		if(n)
-			node = n;
-	}
+	node = repr(node);
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);	
 	if(node == NULL)
 		print_text(output, position, "[]", false);

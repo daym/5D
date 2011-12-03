@@ -8,6 +8,7 @@
 #include "AST/AST"
 #include "Scanners/MathParser"
 #include "AST/Symbols"
+#include "Evaluators/Operation"
 
 namespace GUI {
 bool interrupted_P(void);
@@ -99,7 +100,7 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 		AST::Node* operator_ = get_application_operator(root);
 		AST::Node* operand = get_application_operand(root);
 		if(operator_ == Symbols::Sinline) { // ideally this would be auto-detected, but it isn't right now.
-			return(annotate_impl(reduce(operand), boundNames, boundNamesSet));
+			return(annotate_impl(reduce1(operand), boundNames, boundNamesSet));
 		}
 		AST::Node* newOperatorNode = annotate_impl(operator_, boundNames, boundNamesSet);
 		AST::Node* newOperandNode = quoted_P(newOperatorNode) ? operand : annotate_impl(operand, boundNames, boundNamesSet);
@@ -171,22 +172,15 @@ static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
 	} else 
 		return(term);
 }
-AST::Node* Reducer::execute(AST::Node* argument) {
-	return(argument);
-}
-REGISTER_STR(Reducer, return("simplify");)
-Reducer reducer;
-static bool wants_its_argument_reduced_P(AST::Node* fn) {
-	Operation* fnOperation = dynamic_cast<Operation*>(fn);
-	return(fnOperation ? fnOperation->eager_P() : fn == &reducer);
+DEFINE_SIMPLE_OPERATION(Reducer, argument)
+DEFINE_SIMPLE_OPERATION(Quoter, argument)
+static inline bool wants_its_argument_reduced_P(AST::Node* fn) {
+	return(false); /* FIXME check for reducer, quoter etc */
 }
 static int recursionLevel = 0; /* anti-endless-loop */
 
 // caching results.
-static int fGeneration = 1;
-static bool application_result_P(AST::Node* app) {
-	return(((AST::Application*) app)->resultGeneration == fGeneration);
-}
+int fGeneration = 1;
 static AST::Node* remember(AST::Node* app, AST::Node* result) {
 	((AST::Application*) app)->result = result;
 	((AST::Application*) app)->resultGeneration = fGeneration;
@@ -196,7 +190,7 @@ AST::Node* get_application_result(AST::Node* n) {
 	AST::Application* app = (AST::Application*) n;
 	if(app->resultGeneration != fGeneration) {
 		app->result = NULL;
-		reduce(app);
+		reduce1(app);
 	}
 	return(app->result);
 }
@@ -212,7 +206,7 @@ static AST::Node* ensureApplication(AST::Node* term, AST::Node* fn, AST::Node* a
 	else
 		return(makeApplication(fn, argument));
 }
-AST::Node* reduce(AST::Node* term) {
+AST::Node* reduce1(AST::Node* term) {
 	if(GUI::interrupted_P())
 		throw EvaluationException("evaluation was interrupted");
 	if(recursionLevel > 10000) {
@@ -222,15 +216,16 @@ AST::Node* reduce(AST::Node* term) {
 	if(application_P(term)) {
 		if(application_result_P(term))
 			return(((AST::Application*) term)->result);
+
 		AST::Node* fn;
 		AST::Node* argument;
 		++recursionLevel;
-		fn = reduce(get_application_operator(term));
+		fn = reduce1(get_application_operator(term));
 		--recursionLevel;
 		argument = get_application_operand(term);
 		if(wants_its_argument_reduced_P(fn)) {
 			++recursionLevel;
-			argument = reduce(argument);
+			argument = reduce1(argument);
 			--recursionLevel;
 		}
 		if(abstraction_P(fn)) {
@@ -238,23 +233,17 @@ AST::Node* reduce(AST::Node* term) {
 			body = get_abstraction_body(fn);
 			body = shift(argument, 1, body);
 			++recursionLevel;
-			body = reduce(body);
+			body = reduce1(body);
 			--recursionLevel;
 			return(remember(term, body));
 		} else {
 			// most of the time, SymbolReference anyway: AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(fn);
-			Evaluators::Operation* fnOperation = dynamic_cast<Evaluators::Operation*>(fn);
-			if(fnOperation /*&& !application_P(argument)*/) {
+			if(builtin_call_P(fn)) {
 				AST::Node* result;
-				result = fnOperation->execute(argument);
+				result = call_builtin(fn, argument);
 				return(remember(term, result));
 			} else {
 				// TODO: remove this:
-				// BuiltinOperation are almost unreadable and they can't resolve it anyway, so why bother with it?
-				// note that this could be moved *into* BuiltinOperation, although I don't see any of them reacting any other way than this:
-				//AST::BuiltinOperation* bnOperation = NULL;
-				//for(; (bnOperation = dynamic_cast<AST::BuiltinOperation*>(fn)) != NULL; fn = bnOperation->fallback) {
-				//}
 				return(remember(term, ensureApplication(term, fn, argument)));
 			}
 		}
@@ -267,7 +256,7 @@ AST::Node* reduce(AST::Node* term) {
 		parameter = get_abstraction_parameter(term);
 #if 0
 		try {
-			new_body = reduce(body);
+			new_body = reduce1(body);
 		} catch (Evaluators::EvaluationException e) {
 			/* recursion too deep etc */
 			/* FIXME this is WAY slow, so remove it again? */
@@ -343,5 +332,7 @@ AST::Node* strFromList(AST::Cons* node) {
 	return(makeStr(sst.str().c_str()));
 }
 
+REGISTER_BUILTIN(Reducer, 1, Symbols::Ssimplify)
+REGISTER_BUILTIN(Quoter, 1, Symbols::Squote)
 
 }; // end namespace Evaluators.
