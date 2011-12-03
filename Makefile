@@ -23,7 +23,12 @@ NUMBER_OBJECTS = Numbers/Integer.o Numbers/Real.o Numbers/BigUnsigned.o
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 
-all: REPL/5DREPL GUI/5D TUI/TUI
+TARGETS = REPL/5DREPL TUI/TUI
+
+
+TARGETS += $(shell pkg-config --cflags --libs gtk+-2.0 |grep -q -- -  && echo GUI/5D )
+
+all: $(TARGETS)
 
 Linear_Algebra/test-Vector: Linear_Algebra/test-Vector.o
 	g++ -o Linear_Algebra/test-Vector Linear_Algebra/test-Vector.o
