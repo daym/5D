@@ -293,6 +293,8 @@ AST::Node* operator/(const Integer& a, const Integer& b) {
 	}
 }
 static AST::Node* makeACons(AST::Node* h, AST::Node* t, AST::Node* fallback) {
+	h = reduce(h);
+	//t = reduce(t);
 	return(makeCons(h, t));
 }
 #define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
