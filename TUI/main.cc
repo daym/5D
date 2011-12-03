@@ -36,6 +36,7 @@ struct REPL : AST::Node {
 	std::list<AST::Symbol*> fEnvironmentNames;
 	std::set<AST::Symbol*> fEnvironmentNamesSet;
 	std::map<std::string, AST::Node*>* fModules;
+	int fCursorPosition;
 };
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
 	if(self->fEnvironmentNamesSet.find(name) == self->fEnvironmentNamesSet.end()) {
@@ -225,17 +226,10 @@ using namespace REPLX;
 static Scanners::OperatorPrecedenceList* operator_precedence_list;
 void run(struct REPL* REPL, const char* text) {
 	AST::Node* result;
-	Scanners::MathParser parser;
-	FILE* input_file;
 	if(exit_P(text)) /* special case for computers which can't signal EOF. */
 		exit(0);
 	try {
-		input_file = fmemopen((void*) text, strlen(text), "r");
-		parser.push(input_file, 0, false);
-		parser.consume();
-		result = parser.parse(operator_precedence_list);
-		parser.ensure_end();
-		fclose(input_file);
+		result = REPL_parse(REPL, text, 0);
 		REPL_execute(REPL, result, 0);
 	} catch(Scanners::ParseException exception) {
 		AST::Node* err = Evaluators::makeError(exception.what());
