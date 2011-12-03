@@ -29,10 +29,6 @@ public:
 	CLibrary(const char* name);
 	virtual AST::Node* executeLowlevel(AST::Node* argument); /* argument is the name (symbol). Result is a CProcedure */
 };
-struct CProcedure : AST::Box {
-	AST::Node* fRepr;
-	CProcedure(void* native, AST::Node* aRepr);
-};
 
 };
 #endif /* ndef __5D_FFIs_FFIs_H */

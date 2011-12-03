@@ -395,6 +395,13 @@ AST::Node* FullBuiltin::execute(AST::Node* argument) {
 	}
 }
 REGISTER_STR(KeywordValueBuiltin, return("FIXME");)
-REGISTER_STR(FullBuiltin, return("FIXME");)
+/* user needs to do REGISTER_STR(FullBuiltin, return("FIXME");) */
+
+CProcedure::CProcedure(void* native, AST::Node* aRepr) : 
+	AST::Box(native),
+	fRepr(aRepr)
+{
+}
+REGISTER_STR(CProcedure, return(str(node->fRepr));)
 
 }; /* end namespace Evaluators */

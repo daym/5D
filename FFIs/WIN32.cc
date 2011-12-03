@@ -48,7 +48,7 @@ AST::Node* LibraryLoader::execute(AST::Node* libraryName) {
 struct CLibraryP {
 	HMODULE library;
 	std::string name;
-	std::map<AST::Symbol*, CProcedure*> knownProcedures;
+	std::map<AST::Symbol*, Evaluators::CProcedure*> knownProcedures;
 };
 bool CLibrary::goodP() const {
 	return(p->library != NULL);
@@ -69,7 +69,7 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 	AST::Symbol* nameSymbol = dynamic_cast<AST::Symbol*>(argument);
 	if(nameSymbol == NULL)
 		return(NULL);
-	std::map<AST::Symbol*, CProcedure*>::const_iterator iter = p->knownProcedures.find(nameSymbol);
+	std::map<AST::Symbol*, Evaluators::CProcedure*>::const_iterator iter = p->knownProcedures.find(nameSymbol);
 	if(iter != p->knownProcedures.end())
 		return(iter->second);
 	else {
@@ -79,16 +79,10 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", nameSymbol->name, p->name.c_str());
 			return(NULL);
 		}
-		p->knownProcedures[nameSymbol] = new CProcedure((void*) proc, fRepr);
+		p->knownProcedures[nameSymbol] = new Evaluators::CProcedure((void*) proc, fRepr);
 		return(p->knownProcedures[nameSymbol]);
 	}
 }
 REGISTER_STR(CLibrary, return(str(AST::makeApplication(Symbols::SfromLibrary, internNative(node->p->name.c_str()))));)
-CProcedure::CProcedure(void* native, AST::Node* aRepr) : 
-	AST::Box(native),
-	fRepr(aRepr)
-{
-}
-REGISTER_STR(CProcedure, return(str(node->fRepr));)
 
 };

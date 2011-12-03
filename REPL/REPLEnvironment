@@ -126,14 +126,23 @@ AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
 	AST::Node* body = REPL_get_definition_backwards(self, AST::symbolFromStr(arg), backOffset);
 	return(body);
 }
-static AST::Node* REPL_import(struct REPL* self, AST::Node* argument) {
+static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
+	assert(options);
 	// FIXME
 	return(NULL);
 }
-static AST::Node* REPL_describe(struct REPL* self, AST::Node* argument) {
+static AST::Node* REPL_describe(AST::Node* options, AST::Node* argument) {
+	assert(options);
+	Evaluators::CurriedOperation* self;
+	for(self = dynamic_cast<Evaluators::CurriedOperation*>(options); self && self->fArgument; self = dynamic_cast<Evaluators::CurriedOperation*>(self->fArgument)) {
+		std::string v;
+		v = str(self);
+		printf("%s\n", v.c_str());
+	}
+	assert(self && dynamic_cast<struct REPL*>(self));
 	// FIXME backOffset
 	int backOffset = 0;
-	AST::Node* body = REPL_get_definition_backwards(self, dynamic_cast<AST::Symbol*>(argument), backOffset);
+	AST::Node* body = REPL_get_definition_backwards(dynamic_cast<struct REPL*>(self), dynamic_cast<AST::Symbol*>(argument), backOffset);
 	return(body);
 }
 
@@ -152,12 +161,12 @@ static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::
 #endif
 static Evaluators::Quoter quoter(NULL);
 #define DECLARE_REPL_OPERATION(P) \
-	DECLARE_CURRIED_OPERATION(P)
+	DECLARE_FULL_OPERATION(P)
 
 #define DEFINE_REPL_OPERATION(P, N, B, C) \
 	DECLARE_REPL_OPERATION(P) \
 	REGISTER_STR(P, return(N);) \
-	AST::Node* P::execute(AST::Node* argument) { return(B(dynamic_cast<REPL*>(fArgument), C)); }
+	IMPLEMENT_FULL_OPERATION(P, N, B(fArgument, C))
 
 DEFINE_REPL_OPERATION(RImporter, "import", REPL_import, argument)
 DEFINE_REPL_OPERATION(RInformant, "describe", REPL_describe, argument)

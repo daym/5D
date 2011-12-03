@@ -87,13 +87,5 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument) {
 	}
 }
 REGISTER_STR(CLibrary, return(str(makeApplication(Symbols::SfromLibrary, AST::makeStr(node->p->name.c_str()))));)
-CProcedure::CProcedure(void* native, AST::Node* aRepr) : 
-	AST::Box(native),
-	fRepr(aRepr)
-{
-}
-REGISTER_STR(CProcedure, {
-	return(str(node->fRepr));
-})
 
 };

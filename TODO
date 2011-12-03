@@ -93,6 +93,7 @@ unary posfix operators like "!"?
 Have the predicates check for non-SymbolReference non-quoted symbols or non-executed applications and if so, return "we can't do it"?
 Floats only work to 3E38, it seems. What about higher numbers? (there's no such limit for 3E-999999)
 It would be possible to make numbers like 3E3 mean 3000 and not 3000.0 - do we want that?
+All builtin operations can be represented as curried operations with the actual C proc pointer at the beginning. This would simplify things a lot.
 
 = Debugging Macros =
 
@@ -100,3 +101,4 @@ trace
 untrace
 step
 disassemble
+
