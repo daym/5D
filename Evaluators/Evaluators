@@ -40,6 +40,7 @@ AST::Node* evaluate(AST::Node* input);
 AST::Cons* evaluateToCons(AST::Node* input);
 AST::Node* listFromStr(AST::Str* node);
 AST::Node* strFromList(AST::Cons* node);
+AST::Node* quote(AST::Node* node);
 int increaseGeneration(void);
 
 DECLARE_SIMPLE_OPERATION(Reducer)
