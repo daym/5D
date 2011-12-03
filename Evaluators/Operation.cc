@@ -32,7 +32,7 @@ AST::Node* call_builtin(AST::Node* fn, AST::Node* argument) {
 	AST::Node* proc1 = fn;
 	CProcedure* proc2;
 	CurriedOperation* c;
-	int argumentCount = !keyword_P(argument) ? 1 : 0;
+	int argumentCount = !keyword_P(argument) ? 1 : (-1); // number of non-keyword arguments.
 	bool B_had_keyword_arguments = false;
 	while((c = dynamic_cast<CurriedOperation*>(proc1)) != NULL) {
 		//printf("%s\n", str(c->fArgument).c_str());
@@ -43,6 +43,8 @@ AST::Node* call_builtin(AST::Node* fn, AST::Node* argument) {
 			++argumentCount;
 		proc1 = c->fOperation;
 	}
+	if(argumentCount < 0)
+		argumentCount = 0;
 	proc2 = dynamic_cast<CProcedure*>(proc1);
 	assert(proc2);
 	if(B_had_keyword_arguments && proc2->fArgumentCount >= 0) { /* not allowed */
