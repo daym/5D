@@ -12,17 +12,17 @@ struct P : AST::Node { \
 	} \
 };
 
-#define DECLARE_SIMPLE_OPERATION_BODY(P, N, B) \
+#define DECLARE_SIMPLE_OPERATION_BODY(P, B) \
 struct P : AST::BuiltinOperation { \
 	P(AST::Node* fallback) : AST::BuiltinOperation(fallback) {} \
 	virtual AST::Node* execute(AST::Node* argument) B \
 };
 
-#define DECLARE_SIMPLE_OPERATION(P, N) \
-	DECLARE_SIMPLE_OPERATION_BODY(P, N, ;)
+#define DECLARE_SIMPLE_OPERATION(P) \
+	DECLARE_SIMPLE_OPERATION_BODY(P, ;)
 
 #define DEFINE_SIMPLE_OPERATION(P, N, B) \
-	DECLARE_SIMPLE_OPERATION_BODY(P, N, { if(application_P(argument) || abstraction_P(argument) || symbol_P(argument)) return(FALLBACK); else return(internNative(B)); }) \
+	DECLARE_SIMPLE_OPERATION_BODY(P, { if(application_P(argument) || abstraction_P(argument) || symbol_P(argument)) return(FALLBACK); else return(internNative(B)); }) \
 	REGISTER_STR(P, return(N);)
 
 #define DECLARE_UNEAGER_OPERATION_BODY(P, N, B) \

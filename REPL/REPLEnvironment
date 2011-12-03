@@ -100,6 +100,9 @@ AST::Node* REPL_get_definition(struct REPL* self, size_t offset) {
 	}
 	return(NULL);
 }
+bool exit_P(const char* text) {
+	return(strncmp(text, "#exit", strlen("#exit")) == 0);
+}
 bool info_P(const char* text) {
 	return(strncmp(text, "#info", strlen("#info")) == 0);
 }
@@ -123,6 +126,16 @@ AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
 	AST::Node* body = REPL_get_definition_backwards(self, AST::symbolFromStr(arg), backOffset);
 	return(body);
 }
+static AST::Node* REPL_import(struct REPL* self, AST::Node* argument) {
+	// FIXME
+	return(NULL);
+}
+static AST::Node* REPL_describe(struct REPL* self, AST::Node* argument) {
+	// FIXME backOffset
+	int backOffset = 0;
+	AST::Node* body = REPL_get_definition_backwards(self, dynamic_cast<AST::Symbol*>(argument), backOffset);
+	return(body);
+}
 
 //fTailEnvironment
 //fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */
@@ -138,6 +151,23 @@ static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::
 }
 #endif
 static Evaluators::Quoter quoter(NULL);
+#define DECLARE_REPL_OPERATION(P) \
+	DECLARE_CURRIED_OPERATION(P)
+
+#define DEFINE_REPL_OPERATION(P, N, B, C) \
+	DECLARE_REPL_OPERATION(P) \
+	REGISTER_STR(P, return(N);) \
+	AST::Node* P::execute(AST::Node* argument) { return(B(dynamic_cast<REPL*>(fArgument), C)); }
+
+DEFINE_REPL_OPERATION(RImporter, "import", REPL_import, argument)
+DEFINE_REPL_OPERATION(RInformant, "describe", REPL_describe, argument)
+
+static AST::Node* REPL_create_importer(struct REPL* self) {
+	return(new RImporter(AST::makeApplication(&quoter, AST::symbolFromStr("describe")), self));
+}
+static AST::Node* REPL_create_informant(struct REPL* self) {
+	return(new RInformant(AST::makeApplication(&quoter, AST::symbolFromStr("describe")), self));
+}
 
 #define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, buildSuperAwareOperation<v>(AST::makeApplication(&quoter, n)))
 static void REPL_init_builtins(struct REPL* self) {
@@ -149,9 +179,13 @@ static void REPL_init_builtins(struct REPL* self) {
 		self->fTailEnvironment = makeApplication(makeAbstraction(Symbols::Snil, NULL/*mutable*/), NULL);
 		self->fTailUserEnvironment = self->fTailEnvironment;
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
+		self->fImporter = REPL_create_importer(self);
+		self->fInformant = REPL_create_informant(self);
 	}
 	REPL_add_static_builtin_binding(self, Symbols::Squote, &quoter); /* keep at the beginning */
 	REPL_add_static_builtin_binding(self, Symbols::Sdefine, &quoter); // dummy
+	REPL_add_static_builtin_binding(self, Symbols::Simport, self->fImporter);
+	REPL_add_static_builtin_binding(self, Symbols::Sdescribe, self->fInformant);
 	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Slet, &quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::reducer);

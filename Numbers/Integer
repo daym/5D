@@ -232,8 +232,8 @@ DECLARE_SMALL_VALUE(Int, Numbers::NativeInt)
 DEFINE_SIMPLE_OPERATION(IntP, "int?", (dynamic_cast<Int*>(argument) != NULL))
 DEFINE_SIMPLE_OPERATION(IntegerP, "integer?", (dynamic_cast<Int*>(argument) != NULL||dynamic_cast<Integer*>(argument) != NULL))
 AST::Node* internNative(NativeInt value);
-DECLARE_SIMPLE_OPERATION(IntSucc, "intSucc")
-DECLARE_SIMPLE_OPERATION(IntegerSucc, "integerSucc")
+DECLARE_SIMPLE_OPERATION(IntSucc)
+DECLARE_SIMPLE_OPERATION(IntegerSucc)
 
 AST::Node* operator+(const Int& a, const Int& b);
 AST::Node* operator-(const Int& a, const Int& b);

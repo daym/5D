@@ -49,7 +49,9 @@ bool interrupted_P(void) {
 namespace REPLX {
 
 struct Completer;
-struct REPL {
+struct REPL : AST::Node {
+	AST::Node* fInformant;
+        AST::Node* fImporter;
 	GtkWindow* fWidget;
 	GtkBox* fMainBox;
 	GtkTextView* fOutputArea;

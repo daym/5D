@@ -149,7 +149,7 @@ static AST::Node* toHeap(bool v) {
 }
 #define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
 AST::Node* N::execute(AST::Node* argument) { \
-	return(new Curried ## N(this, NULL/*FIXME*/, argument)); \
+	return(new Curried ## N(this, argument)); \
 } \
 AST::Node* Curried##N::execute(AST::Node* argument) { \
 	AST::Node* a = fArgument; \
@@ -194,7 +194,7 @@ REGISTER_STR(Curried##N, { \
 
 #define IMPLEMENT_BINARY_BUILTIN(N, op, fn) \
 AST::Node* N::execute(AST::Node* argument) { \
-	return(new Curried ## N(this, NULL/*FIXME*/, argument)); \
+	return(new Curried ## N(this, argument)); \
 } \
 AST::Node* Curried##N::execute(AST::Node* argument) { \
 	AST::Node* a = fArgument; \
@@ -382,5 +382,19 @@ AST::Node* SymbolP::execute(AST::Node* argument) {
 	return(internNative(symbol_P(argument)));
 }
 REGISTER_STR(SymbolP, return("symbol?");)
+
+AST::Node* KeywordValueBuiltin::execute(AST::Node* argument) {
+	return(new FullBuiltin(this, argument));
+}
+AST::Node* FullBuiltin::execute(AST::Node* argument) {
+	if(keyword_P(argument)) {
+		return(new KeywordValueBuiltin(this, argument));
+	} else {
+		// fFallback contains all the args, whereas argument is the last arg (not in the list). This is so that the interface 'f @mode:"w" a' is satisfied.
+		return(NULL); /* derive this */
+	}
+}
+REGISTER_STR(KeywordValueBuiltin, return("FIXME");)
+REGISTER_STR(FullBuiltin, return("FIXME");)
 
 }; /* end namespace Evaluators */

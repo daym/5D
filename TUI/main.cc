@@ -23,7 +23,9 @@
 
 namespace REPLX {
 
-struct REPL {
+struct REPL : AST::Node {
+	AST::Node* fInformant;
+	AST::Node* fImporter;
 	AST::Node* fTailEnvironment;
 	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
 	AST::Node* fTailUserEnvironmentFrontier;

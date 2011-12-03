@@ -10,7 +10,7 @@ typedef float NativeFloat; /* TODO use double for 64 bits? */
 AST::Node* internNative(NativeFloat value);
 
 DECLARE_SMALL_VALUE(Float, NativeFloat)   
-DECLARE_SIMPLE_OPERATION(FloatP, "float?")
+DECLARE_SIMPLE_OPERATION(FloatP)
 
 struct Real : AST::Node {
 	NativeFloat* parts;

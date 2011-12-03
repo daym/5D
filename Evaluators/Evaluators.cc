@@ -62,13 +62,16 @@ static inline int get_variable_index(AST::Node* root) {
 	else
 		return(-1);
 }
-static bool quote_P(AST::Node* root) {
+static inline bool quote_P(AST::Node* root) {
 	if(root == Symbols::Squote)
 		return(true);
 	else {
 		AST::SymbolReference* ref = dynamic_cast<AST::SymbolReference*>(root);
 		return(ref && ref->symbol == Symbols::Squote);
 	}
+}
+static inline bool quoted_P(AST::Node* root) {
+	return(quote_P(root));
 }
 AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& boundNamesSet) {
 	// TODO maybe traverse cons etc? maybe not.
@@ -99,7 +102,7 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 			return(annotate_impl(reduce(operand), boundNames, boundNamesSet));
 		}
 		AST::Node* newOperatorNode = annotate_impl(operator_, boundNames, boundNamesSet);
-		AST::Node* newOperandNode = quote_P(newOperatorNode) ? operand : annotate_impl(operand, boundNames, boundNamesSet);
+		AST::Node* newOperandNode = quoted_P(newOperatorNode) ? operand : annotate_impl(operand, boundNames, boundNamesSet);
 		if(operator_ == newOperatorNode && operand == newOperandNode)
 			return(root);
 		else
@@ -212,7 +215,7 @@ static AST::Node* ensureApplication(AST::Node* term, AST::Node* fn, AST::Node* a
 AST::Node* reduce(AST::Node* term) {
 	if(GUI::interrupted_P())
 		throw EvaluationException("evaluation was interrupted");
-	if(recursionLevel > 1000) {
+	if(recursionLevel > 10000) {
 		recursionLevel = 0;
 		throw EvaluationException("recursion was too deep");
 	}

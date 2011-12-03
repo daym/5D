@@ -92,6 +92,9 @@ extern AST::Symbol* Stab;
 extern AST::Symbol* Snewline;
 extern AST::Symbol* Sbackspace;
 extern AST::Symbol* Sescape;
+extern AST::Symbol* Sinfo;
+extern AST::Symbol* Simport;
+extern AST::Symbol* Sdescribe;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

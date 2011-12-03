@@ -88,5 +88,8 @@ AST::Symbol* Stab = AST::symbolFromStr("tab");
 AST::Symbol* Snewline = AST::symbolFromStr("newline");
 AST::Symbol* Sbackspace = AST::symbolFromStr("backspace");
 AST::Symbol* Sescape = AST::symbolFromStr("escape");
+AST::Symbol* Sinfo = AST::symbolFromStr("info");
+AST::Symbol* Simport = AST::symbolFromStr("import");
+AST::Symbol* Sdescribe = AST::symbolFromStr("describe");
 
 };
