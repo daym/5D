@@ -99,7 +99,7 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 	} else if(application_P(root)) {
 		AST::Node* operator_ = get_application_operator(root);
 		AST::Node* operand = get_application_operand(root);
-		if(operator_ == Symbols::Sinline) { // ideally this would be auto-detected, but it isn't right now.
+		if(operator_ == &Reducer || operator_ == Symbols::Sinline) { // ideally this would be auto-detected, but it isn't right now.
 			return(annotate_impl(reduce1(operand), boundNames, boundNamesSet));
 		}
 		AST::Node* newOperatorNode = annotate_impl(operator_, boundNames, boundNamesSet);
@@ -172,7 +172,7 @@ static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
 	} else 
 		return(term);
 }
-DEFINE_SIMPLE_OPERATION(Reducer, argument)
+DEFINE_SIMPLE_OPERATION(Reducer, reduce(argument))
 DEFINE_SIMPLE_OPERATION(Quoter, argument)
 static inline bool wants_its_argument_reduced_P(AST::Node* fn) {
 	return(false); /* FIXME check for reducer, quoter etc */
@@ -360,7 +360,7 @@ AST::Node* strFromList(AST::Cons* node) {
 	return(makeStr(sst.str().c_str()));
 }
 
-REGISTER_BUILTIN(Reducer, 1, Symbols::Ssimplify)
+REGISTER_BUILTIN(Reducer, 1, Symbols::Sinline)
 REGISTER_BUILTIN(Quoter, 1, Symbols::Squote)
 
 }; // end namespace Evaluators.

@@ -45,6 +45,10 @@ int increaseGeneration(void);
 DECLARE_SIMPLE_OPERATION(Reducer)
 DECLARE_SIMPLE_OPERATION(Quoter)
 
+static inline AST::Node* uncurried(AST::Node* actualOperation, AST::Node* fallback) {
+	return(AST::makeApplication(&Evaluators::Reducer, AST::makeApplication(actualOperation, fallback)));
+}
+
 };
 
 #endif /*ndef __EVALUATORS_H*/

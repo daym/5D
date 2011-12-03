@@ -154,26 +154,20 @@ static void REPL_add_static_builtin_binding(struct REPL* self, AST::Symbol* name
 	REPL_add_to_environment_simple(self, name, value);
 }
 using namespace Evaluators;
-#if 0
-static void REPL_add_builtin_binding(struct REPL* self, AST::Symbol* name, AST::Node* value) { /* allows chaining */
-	REPL_add_to_environment_simple(self, name, buildSuperAwareOperation(value));
-}
-#endif
-//static Evaluators::Quoter quoter(NULL);
 #define DECLARE_REPL_OPERATION(P) \
 	DECLARE_FULL_OPERATION(P)
 
-#define DEFINE_REPL_OPERATION(P, argCount, B) \
-	DEFINE_FULL_OPERATION(P, argCount, B)
+#define DEFINE_REPL_OPERATION(P, B) \
+	DEFINE_FULL_OPERATION(P, B)
 
-DEFINE_REPL_OPERATION(RImporter, (-2), {
+DEFINE_REPL_OPERATION(RImporter, {
 	return(REPL_import(fn, argument));
 })
-DEFINE_REPL_OPERATION(RInformant, (-2), {
+DEFINE_REPL_OPERATION(RInformant, {
 	return(REPL_describe(fn, argument));
 })
 
-//#define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, buildSuperAwareOperation((AST::Node*) v, (AST::Node*) AST::makeApplication(&Evaluators::Quoter, n)))
+//#define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, uncurried((AST::Node*) v, (AST::Node*) AST::makeApplication(&Evaluators::Quoter, n)))
 #define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, v)
 static void REPL_init_builtins(struct REPL* self) {
 	if(self->fTailUserEnvironment && envEntryGetTail(self->fTailUserEnvironment)) {
@@ -187,12 +181,11 @@ static void REPL_init_builtins(struct REPL* self) {
 	}
 	REPL_add_static_builtin_binding(self, Symbols::Squote, &Evaluators::Quoter); /* keep at the beginning */
 	REPL_add_static_builtin_binding(self, Symbols::Sdefine, &Evaluators::Quoter); // dummy
-	//REPL_add_static_builtin_binding(self, Symbols::Simport, );
-	//REPL_add_static_builtin_binding(self, Symbols::Sdescribe, self->fInformant);
 	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::Reducer);
-	REPL_add_builtin_method(self, Symbols::Sdescribe, &RInformant);
+	REPL_add_static_builtin_binding(self, Symbols::Simport, uncurried(&RImporter, self));
+	REPL_add_builtin_method(self, Symbols::Sdescribe, uncurried(&RInformant, self));
 	// FIXME REPL_add_builtin_method(self, Symbols::SfromLibrary, FFIs::LibraryLoader);
 	REPL_add_static_builtin_binding(self, Symbols::Snil, NULL);
 	REPL_add_builtin_method(self, Symbols::Scolon, &Evaluators::Conser);
@@ -364,8 +357,9 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 	return(B_ok);
 }
 
-REGISTER_BUILTIN(RImporter, (-1), AST::symbolFromStr("import"))
-REGISTER_BUILTIN(RInformant, (-1), AST::symbolFromStr("describe"));
+REGISTER_BUILTIN(RImporter, (-2), AST::symbolFromStr("import"))
+REGISTER_BUILTIN(RInformant, (-2), AST::symbolFromStr("describe"));
+REGISTER_STR(REPL, return("<REPL>");)
 
 }; /* end namespace */
 #endif /* __REPL_REPLENVIRONMENT_H */

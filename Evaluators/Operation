@@ -55,7 +55,7 @@ static AST::Node* P##_execute(AST::Node* fn, AST::Node* argument) { \
 }
 
 #define DECLARE_FULL_OPERATION(P) DECLARE_SIMPLE_OPERATION(P)
-#define DEFINE_FULL_OPERATION(P, argumentCount, B) \
+#define DEFINE_FULL_OPERATION(P, B) \
 extern Evaluators::CProcedure P; \
 static AST::Node* P##_execute(AST::Node* fn, AST::Node* argument) { \
 	B; \

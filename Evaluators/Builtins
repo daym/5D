@@ -16,9 +16,6 @@ namespace Evaluators {
 
 AST::Node* operator/(const Numbers::Integer& a, const Numbers::Integer& b);
 AST::Node* internNative(bool value);
-static inline AST::Node* buildSuperAwareOperation(AST::Node* actualOperation, AST::Node* fallback) {
-	return(AST::makeApplication(Symbols::Sinline, AST::makeApplication(actualOperation, fallback)));
-}
 
 void resetWorld(void);
 
