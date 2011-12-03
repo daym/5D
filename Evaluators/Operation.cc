@@ -32,15 +32,18 @@ AST::Node* call_builtin(AST::Node* fn, AST::Node* argument) {
 	AST::Node* proc1 = fn;
 	CProcedure* proc2;
 	CurriedOperation* c;
+	bool inKV = false;
 	int argumentCount = !keyword_P(argument) ? 1 : (-1); // number of non-keyword arguments.
 	bool B_had_keyword_arguments = false;
 	while((c = dynamic_cast<CurriedOperation*>(proc1)) != NULL) {
-		//printf("%s\n", str(c->fArgument).c_str());
-		if(keyword_P(c->fArgument)) {
+		if(!inKV && keyword_P(c->fArgument)) {
+			inKV = true;
 			--argumentCount;
 			B_had_keyword_arguments = true;
-		} else
+		} else {
+			inKV = false;
 			++argumentCount;
+		}
 		proc1 = c->fOperation;
 	}
 	if(argumentCount < 0)

@@ -431,18 +431,19 @@ std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* opt
 	AST::Node* p;
 	bool B_pending_value = false;
 	assert(options);
-	v = reduce(argument);
+	p = reduce(argument);
 	B_pending_value = true;
 	Evaluators::CurriedOperation* self;
-	for(self = dynamic_cast<Evaluators::CurriedOperation*>(options); self && self->fArgument; self = dynamic_cast<Evaluators::CurriedOperation*>(self->fArgument)) {
-		p = v;
+	for(self = dynamic_cast<Evaluators::CurriedOperation*>(options); self; self = dynamic_cast<Evaluators::CurriedOperation*>(self->fOperation)) {
 		v = reduce(self->fArgument); // backwards...
-		if(keyword_P(v) && B_pending_value) {
+		if(B_pending_value && keyword_P(v)) {
+			result.push_back(std::make_pair(dynamic_cast<AST::Keyword*>(v), p));
+			p = NULL;
 			B_pending_value = false;
-			result.push_front(std::make_pair(dynamic_cast<AST::Keyword*>(v), p));
-			v = NULL;
 		} else {
-			result.push_front(std::pair<AST::Keyword*, AST::Node*>(NULL, p));
+			if(B_pending_value)
+				result.push_front(std::pair<AST::Keyword*, AST::Node*>(NULL, p));
+			p = v;
 			B_pending_value = true;
 		}
 	}
@@ -453,7 +454,7 @@ std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* opt
 	for(std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = result.begin(); iter != result.end(); ++iter) {
 		std::string kk = str(iter->first);
 		std::string vv = str(iter->second);
-		printf("%s: %s\n", kk.c_str(), vv.c_str());
+		//printf("%s %s\n", kk.c_str(), vv.c_str());
 	}
 	return(result);
 }
