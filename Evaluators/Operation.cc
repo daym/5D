@@ -5,6 +5,7 @@
 #include "AST/AST"
 #include "AST/Keyword"
 #include "Evaluators/Operation"
+#include "Evaluators/Evaluators"
 
 namespace Evaluators {
 
@@ -31,17 +32,22 @@ AST::Node* call_builtin(AST::Node* fn, AST::Node* argument) {
 	AST::Node* proc1 = fn;
 	CProcedure* proc2;
 	CurriedOperation* c;
-	int argumentCount = 1;
+	int argumentCount = !keyword_P(argument) ? 1 : 0;
+	bool B_had_keyword_arguments = false;
 	while((c = dynamic_cast<CurriedOperation*>(proc1)) != NULL) {
 		//printf("%s\n", str(c->fArgument).c_str());
 		if(keyword_P(c->fArgument)) {
 			--argumentCount;
+			B_had_keyword_arguments = true;
 		} else
 			++argumentCount;
 		proc1 = c->fOperation;
 	}
 	proc2 = dynamic_cast<CProcedure*>(proc1);
 	assert(proc2);
+	if(B_had_keyword_arguments && proc2->fArgumentCount >= 0) { /* not allowed */
+		return(AST::makeApplication(replace(proc2, proc2->fRepr, fn), argument));
+	}
 	if(argumentCount != proc2->fArgumentCount && argumentCount != -proc2->fArgumentCount) {
 		return new CurriedOperation(fn, argument);
 	}

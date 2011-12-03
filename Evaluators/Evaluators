@@ -32,6 +32,7 @@ static inline AST::Node* reduce(AST::Node* term) {
 	}
 }
 AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body);
+AST::Node* replace(AST::Node* needle /* not Symbol */, AST::Node* replacement, AST::Node* haystack);/* intended for builtins only */
 AST::Node* makeError(const char* reason);
 bool define_P(AST::Node* input);
 AST::Node* programFromSExpression(AST::Node* root);

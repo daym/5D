@@ -17,6 +17,8 @@
 <p>Contains keywords (@mode:), i.e. the name of keyword arguments.</p>
 <h2>AST/Symbol.cc</h2>
 <p>Contains symbols ('foo), i.e. the smallest parts of math equations</p>
+<h2>Evaluators/Operation.cc</h2>
+<p>Contains the actual building blocks for a builtin operation. Note that these check a variable "argumentCount" on the CProcedure in order to find out when to call the actual builtin. If the argumentCount is negative, then keyword arguments are allowed as well.</p>
 <h2>Evaluators/Builtins.cc</h2>
 <p>Contains builtin operations except for numbers.</p>
 <h2>Evaluators/Evaluators.cc</h2>

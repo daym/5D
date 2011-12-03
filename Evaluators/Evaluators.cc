@@ -206,6 +206,34 @@ static AST::Node* ensureApplication(AST::Node* term, AST::Node* fn, AST::Node* a
 	else
 		return(makeApplication(fn, argument));
 }
+AST::Node* replace(AST::Node* needle, AST::Node* replacement, AST::Node* term) {/* intended for builtins only */
+	// TODO CurriedOperation ? 
+	if(term == NULL) 
+		return(NULL);
+	else if(application_P(term)) {
+		AST::Node* fn = get_application_operand(term);
+		AST::Node* argument = get_application_operator(term);
+		AST::Node* new_fn;
+		AST::Node* new_argument;
+		new_fn = replace(needle, replacement, fn);
+		new_argument = replace(needle, replacement, argument);
+		if(new_fn == fn && new_argument == argument)
+			return(term);
+		else
+			return(makeApplication(fn, argument));
+	} else if(abstraction_P(term)) {
+		AST::Node* body;
+		AST::Node* parameter;
+		AST::Node* new_body;
+		new_body = body = get_abstraction_body(term);
+		parameter = get_abstraction_parameter(term);
+		if(new_body == body)
+			return(term);
+		else
+			return(makeAbstraction(parameter, new_body));
+	} else
+		return(term);
+}
 AST::Node* reduce1(AST::Node* term) {
 	if(GUI::interrupted_P())
 		throw EvaluationException("evaluation was interrupted");
