@@ -69,7 +69,11 @@ AST::Node* MathParser::parse_define(AST::Node* operand_1) {
 		raise_error("<define-body>", "<incomplete>");
 		return(NULL);
 	}
-	return(makeDefine(quote(parameter), quote(body)));
+	if(symbol_P(parameter))
+		parameter = quote(parameter);
+	if(dynamic_cast<AST::Abstraction*>(body))
+		body = quote(body);
+	return(makeDefine(parameter, body));
 }
 AST::Node* MathParser::parse_defrec(AST::Node* operand_1) {
 	bool B_extended = (input_value == Symbols::Sleftparen);
@@ -87,6 +91,10 @@ AST::Node* MathParser::parse_defrec(AST::Node* operand_1) {
 		raise_error("<define-body>", "<incomplete>");
 		return(NULL);
 	}
+	if(dynamic_cast<AST::Symbol*>(parameter))
+		parameter = quote(parameter);
+	//if(dynamic_cast<AST::Abstraction*>(body))
+	//	body = quote(body);
 	return(makeDefine(quote(parameter), quote(makeApplication(Symbols::Srec, makeAbstraction(parameter, body)))));
 }
 AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
