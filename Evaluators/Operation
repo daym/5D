@@ -41,12 +41,13 @@ static StrRegistration##typ fStrRegistration##typ;
 struct CProcedure : AST::Box {
         AST::Node* fRepr;
 	int fArgumentCount; // sigh. <0: can also do keyword arguments.
-        CProcedure(void* native, AST::Node* aRepr, int aArgumentCount);
+	int fReservedArgumentCount; // how many not to repr.
+        CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int aReservedArgumentCount);
 };
 #define DECLARE_SIMPLE_OPERATION(P) \
 extern Evaluators::CProcedure P;
 
-#define REGISTER_BUILTIN(P, argumentCount, R) Evaluators::CProcedure P((void*) P##_execute, R, argumentCount);
+#define REGISTER_BUILTIN(P, argumentCount, reservedCount, R) Evaluators::CProcedure P((void*) P##_execute, R, argumentCount, reservedCount);
 
 #define DEFINE_SIMPLE_OPERATION(P, B) \
 extern Evaluators::CProcedure P; \

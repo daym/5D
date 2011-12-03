@@ -360,8 +360,8 @@ AST::Node* strFromList(AST::Cons* node) {
 	return(makeStr(sst.str().c_str()));
 }
 
-REGISTER_BUILTIN(Reducer, 1, Symbols::Sinline)
-REGISTER_BUILTIN(Quoter, 1, Symbols::Squote)
+REGISTER_BUILTIN(Reducer, 1, 0, Symbols::Sinline)
+REGISTER_BUILTIN(Quoter, 1, 0, Symbols::Squote)
 
 AST::Node* quote(AST::Node* value) {
 	return(makeApplication(&Quoter, value));

@@ -48,6 +48,7 @@ struct REPL {
 	struct Completer* fCompleter;
 	std::set<AST::Symbol*>* fEnvironmentKeys;
 	HMENU fEnvironmentMenu;
+	std::map<std::string, AST::Node*>* fModules;
 };
 }; /* end namespace REPLX */
 namespace GUI {

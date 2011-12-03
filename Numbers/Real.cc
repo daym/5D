@@ -58,6 +58,6 @@ AST::Node* operator<=(const Real& a, const Real& b) {
 	return(Evaluators::internNative(false)); /* FIXME */
 }
 
-REGISTER_BUILTIN(FloatP, 1, AST::symbolFromStr("float?"))
+REGISTER_BUILTIN(FloatP, 1, 0, AST::symbolFromStr("float?"))
 
 }; /* end namespace Numbers */

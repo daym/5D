@@ -81,7 +81,7 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument, int argumentCount) {
 			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", nameSymbol->name, p->name.c_str());
 			return(fRepr);
 		}
-		p->knownProcedures[nameSymbol] = new CProcedure(proc, fRepr, argumentCount);
+		p->knownProcedures[nameSymbol] = new CProcedure(proc, fRepr, argumentCount, 0);
 		return(p->knownProcedures[nameSymbol]);
 	}
 }

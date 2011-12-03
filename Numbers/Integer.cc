@@ -813,9 +813,9 @@ NativeInt toNativeInt(AST::Node* node, bool& B_ok) {
 DEFINE_SIMPLE_OPERATION(IntP, (dynamic_cast<Int*>(reduce(argument)) != NULL))
 DEFINE_SIMPLE_OPERATION(IntegerP, (dynamic_cast<Int*>(reduce(argument)) !=NULL||dynamic_cast<Integer*>(reduce(argument)) != NULL))
 
-REGISTER_BUILTIN(IntP, 1, AST::symbolFromStr("int?"))
-REGISTER_BUILTIN(IntegerP, 1, AST::symbolFromStr("integer?"))
-REGISTER_BUILTIN(IntSucc, 1, AST::symbolFromStr("intSucc"))
-REGISTER_BUILTIN(IntegerSucc, 1, AST::symbolFromStr("integerSucc"))
+REGISTER_BUILTIN(IntP, 1, 0, AST::symbolFromStr("int?"))
+REGISTER_BUILTIN(IntegerP, 1, 0, AST::symbolFromStr("integer?"))
+REGISTER_BUILTIN(IntSucc, 1, 0, AST::symbolFromStr("intSucc"))
+REGISTER_BUILTIN(IntegerSucc, 1, 0, AST::symbolFromStr("integerSucc"))
 
 }; /* namespace Numbers */

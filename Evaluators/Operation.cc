@@ -4,16 +4,19 @@
 #include <sstream>
 #include "AST/AST"
 #include "AST/Keyword"
+#include "AST/Symbols"
 #include "Evaluators/Operation"
 #include "Evaluators/Evaluators"
 
 namespace Evaluators {
 
-CProcedure::CProcedure(void* native, AST::Node* aRepr, int aArgumentCount) : 
+CProcedure::CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int aReservedArgumentCount) : 
 	AST::Box(native),
 	fRepr(aRepr),
-	fArgumentCount(aArgumentCount)
+	fArgumentCount(aArgumentCount),
+	fReservedArgumentCount(aReservedArgumentCount)
 {
+	assert(fReservedArgumentCount == 0 || fReservedArgumentCount == 1);
 }
 REGISTER_STR(CProcedure, return(str(node->fRepr));)
 REGISTER_STR(CurriedOperation, {
@@ -66,7 +69,24 @@ AST::Node* repr(AST::Node* node) {
 	if((operation = dynamic_cast<Evaluators::CProcedure*>(node)) != NULL) {
 		return(operation->fRepr);
 	} else if((c = dynamic_cast<Evaluators::CurriedOperation*>(node)) != NULL) {
-		return(AST::makeApplication(repr(c->fOperation), repr(c->fArgument)));
+		// this is a special case and really should be generalized. FIXME.
+		CProcedure* p = dynamic_cast<CProcedure*>(c->fOperation);
+		if(p && p->fReservedArgumentCount > 0)
+			return(repr(c->fOperation));
+		else
+			return(AST::makeApplication(repr(c->fOperation), repr(c->fArgument)));
+	} else if(application_P(node)) {
+		AST::Node* fn = get_application_operator(node);
+		AST::Node* argument = get_application_operand(node);
+		if(fn == &Evaluators::Reducer && application_P(argument)) { // special case to get rid of implicit repl FIXME FIXME dangerous
+			return(repr(get_application_operator(argument)));
+		}
+		AST::Node* new_fn = repr(fn);
+		AST::Node* new_argument = repr(argument);
+		if(new_fn == fn && new_argument == argument)
+			return(node);
+		else
+			return(AST::makeApplication(fn, argument));
 	} else
 		return(node);
 }

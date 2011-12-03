@@ -5,6 +5,8 @@
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/errno.h>
+#include <map>
+#include <string>
 #include "Scanners/MathParser"
 #include "FFIs/FFIs"
 #include "Formatters/SExpression"
@@ -26,6 +28,7 @@ struct REPL : AST::Node {
 	AST::Node* fTailUserEnvironmentFrontier;
 	int fEnvironmentCount;
 	bool fBModified;
+	std::map<std::string, AST::Node*>* fModules;
 };
 
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {

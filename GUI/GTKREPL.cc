@@ -79,6 +79,7 @@ struct REPL : AST::Node {
 	AST::Node* fTailEnvironment;
 	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
 	AST::Node* fTailUserEnvironmentFrontier;
+	std::map<std::string, AST::Node*>* fModules;
 };
 };
 namespace GUI {

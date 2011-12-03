@@ -126,6 +126,36 @@ AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
 	return(body);
 }
 AST::Node* REPL_prepare(struct REPL* self, AST::Node* input);
+static AST::Node* REPL_force_import_module(struct REPL* self, const char* filename) {
+	return(Numbers::internNative((Numbers::NativeInt) 42)); // FIXME
+}
+static AST::Node* REPL_import_module(struct REPL* self, const char* filename) {
+	struct stat buf;
+	if(stat(filename, &buf) == -1) {
+		perror(filename);
+		return(FALLBACK);
+	}
+	std::stringstream moduleKeyStream;
+	moduleKeyStream << buf.st_dev << ":" << buf.st_ino;
+	std::string moduleKey = moduleKeyStream.str();
+	if(self->fModules == NULL)
+		self->fModules = new std::map<std::string, AST::Node*>;
+	if((*self->fModules).find(moduleKey) == self->fModules->end()) {
+		(*self->fModules)[moduleKey] = AST::symbolFromStr("loading"); // protect against endless recusion.
+		(*self->fModules)[moduleKey] = REPL_force_import_module(self, filename);
+	}
+	return((*self->fModules)[moduleKey]);
+}
+static AST::Node* REPL_import(AST::Node* options, AST::Node* argument);
+#define DECLARE_REPL_OPERATION(P) \
+	DECLARE_FULL_OPERATION(P)
+
+#define DEFINE_REPL_OPERATION(P, B) \
+	DEFINE_FULL_OPERATION(P, B)
+
+DEFINE_REPL_OPERATION(RImporter, {
+	return(REPL_import(fn, argument));
+})
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
 	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
@@ -135,11 +165,16 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	++iter;
 	assert(iter != arguments.end());
 	AST::Node* name = iter->second;
+	assert(symbol_P(name));
 	// FIXME
-	AST::Node* body = NULL;
+	std::stringstream filenameStream;
+	filenameStream << Evaluators::str(name) << ".5D";
+	std::string filename = filenameStream.str();
+	// repr itself. TODO abstract that away.
+	AST::Node* body = AST::makeApplication(uncurried(&RImporter, self)/*TODO reuse existing*/, Evaluators::quote(name));
 	REPL_prepare(self, body);
 	REPL_add_to_environment(self, name, body);
-	return(NULL);
+	return(body);
 }
 static AST::Node* REPL_define(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
@@ -190,9 +225,7 @@ using namespace Evaluators;
 #define DEFINE_REPL_OPERATION(P, B) \
 	DEFINE_FULL_OPERATION(P, B)
 
-DEFINE_REPL_OPERATION(RImporter, {
-	return(REPL_import(fn, argument));
-})
+
 DEFINE_REPL_OPERATION(RInformant, {
 	return(REPL_describe(fn, argument));
 })
@@ -213,6 +246,7 @@ static void REPL_init_builtins(struct REPL* self) {
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
 	}
 	REPL_add_static_builtin_binding(self, Symbols::Squote, &Evaluators::Quoter); /* keep at the beginning */
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("REPL"), self);
 	REPL_add_static_builtin_binding(self, Symbols::Sdefine, uncurried(&RDefiner, self));
 	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
@@ -376,10 +410,10 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 	return(B_ok);
 }
 
-REGISTER_BUILTIN(RImporter, (-2), AST::symbolFromStr("import"))
-REGISTER_BUILTIN(RInformant, (-2), AST::symbolFromStr("describe"));
-REGISTER_BUILTIN(RDefiner, (-3), AST::symbolFromStr("define"));
-REGISTER_STR(REPL, return("<REPL>");)
+REGISTER_BUILTIN(RImporter, (-2), 1, AST::symbolFromStr("import"))
+REGISTER_BUILTIN(RInformant, (-2), 1, AST::symbolFromStr("describe"));
+REGISTER_BUILTIN(RDefiner, (-3), 1, AST::symbolFromStr("define"));
+REGISTER_STR(REPL, return("REPL");)
 
 }; /* end namespace */
 #endif /* __REPL_REPLENVIRONMENT_H */

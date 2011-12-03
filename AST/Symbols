@@ -95,6 +95,7 @@ extern AST::Symbol* Sescape;
 extern AST::Symbol* Sinfo;
 extern AST::Symbol* Simport;
 extern AST::Symbol* Sdescribe;
+extern AST::Symbol* SloadModule;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

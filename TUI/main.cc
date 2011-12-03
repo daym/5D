@@ -10,6 +10,8 @@
 #include <sys/errno.h>
 #include <list>
 #include <set>
+#include <map>
+#include <string>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <limits.h>
@@ -33,6 +35,7 @@ struct REPL : AST::Node {
 	//struct Config* fConfig;
 	std::list<AST::Symbol*> fEnvironmentNames;
 	std::set<AST::Symbol*> fEnvironmentNamesSet;
+	std::map<std::string, AST::Node*>* fModules;
 };
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
 	if(self->fEnvironmentNamesSet.find(name) == self->fEnvironmentNamesSet.end()) {
