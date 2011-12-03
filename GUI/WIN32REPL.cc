@@ -585,6 +585,7 @@ static void REPL_handle_execute(struct REPL* self, const char* text, int destina
 			REPL_enqueue_LATEX(self, input, destination);
 		}
 		destination = REPL_insert_into_output_buffer(self, destination, " => ");
+		self->fCursorPosition = destination;
 		bool B_ok = REPL_execute(self, input, destination);
 		if(B_from_entry && B_ok)
 			SetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY, _T(""));
@@ -936,6 +937,7 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* text) {
 int REPL_insert_into_output_buffer(struct REPL* self, int destination, const char* text) {
 	// TODO position
 	InsertRichText(GetDlgItem(self->dialog, IDC_OUTPUT), FromUTF8(text));
+	REPL_set_file_modified(self, true);
 	return(destination); // TODO advance?
 }
 char* REPL_get_output_buffer_text(struct REPL* self) {

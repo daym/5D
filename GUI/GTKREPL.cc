@@ -80,6 +80,7 @@ struct REPL : AST::Node {
 	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
 	AST::Node* fTailUserEnvironmentFrontier;
 	std::map<std::string, AST::Node*>* fModules;
+	GtkTextIter fCursorPosition;
 };
 };
 namespace GUI {
@@ -236,6 +237,7 @@ static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 			REPL_enqueue_LATEX(self, input, &end);
 		}
 		gtk_text_buffer_insert(self->fOutputBuffer, &end, "=>", -1);
+		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &self->fCursorPosition);
 		bool B_ok = REPL_execute(self, input, &end);
 		if(B_from_entry && B_ok)
 			gtk_entry_set_text(self->fCommandEntry, "");
@@ -582,6 +584,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
 	GError* error = NULL;
 	GtkMenuBar* menu_bar;
+	self->fModules = NULL;
 	self->fBSearchUpwards = TRUE;
 	self->fBSearchCaseSensitive = TRUE;
 	self->UI_builder = gtk_builder_new();

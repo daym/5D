@@ -137,8 +137,88 @@ static AST::Node* REPL_access_module(AST::Node* fn, AST::Node* argument) {
 	a = Evaluators::str(argument);
 	return(Evaluators::reduce(AST::makeApplication(body, argument)));
 }
+Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self) {
+	Scanners::OperatorPrecedenceList* result;
+	result = new Scanners::OperatorPrecedenceList;
+	// FIXME add the operators, reading the environment
+	return(result);
+}
+template<typename T>
+AST::Node* REPL_parse(struct REPL* self, const char* command, T destination/*for errors*/) {
+	/* is not allowed to both print stuff AND return non-null, except when it updates the destination iter */
+	Scanners::MathParser parser;
+	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
+	if(input_file) {
+		try {
+			parser.push(input_file, 0, false);
+			parser.consume();
+			AST::Node* result = NULL;
+			result = parser.parse(REPL_ensure_operator_precedence_list(self));
+			parser.ensure_end();
+			fclose(input_file);
+			return(result);
+		} catch(...) {
+			fclose(input_file);
+			throw;
+		}
+	}
+	// REMOVE REPL_queue_scroll_down(self);
+	return(NULL);
+}
+template<typename T>
+bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
+	bool B_ok = false;
+	try {
+		AST::Node* result = input;
+		Evaluators::resetWorld();
+		result = REPL_prepare(self, result);
+		result = Evaluators::reduce(result);
+		/*std::string v = result ? result->str() : "OK";
+		v = " => " + v + "\n";
+		REPL_insert_into_output_buffer(self, destination, v.c_str());*/
+		REPL_enqueue_LATEX(self, result, destination);
+		B_ok = true;
+	} catch(Evaluators::EvaluationException e) {
+		std::string v = e.what() ? e.what() : "error";
+		v = " => " + v + "\n";
+		REPL_insert_into_output_buffer(self, destination, v.c_str());
+	}
+	REPL_set_file_modified(self, true);
+	return(B_ok);
+}
 static AST::Node* REPL_force_import_module(struct REPL* self, const char* filename) {
-	return(AST::makeAbstraction(AST::symbolFromStr("name"), Numbers::internNative((Numbers::NativeInt) 42)));
+	// FIXME push symbol table
+	AST::Node* result = NULL;
+	// TODO in principle, this could just be loaded into a new REPL.
+	try {
+		Scanners::MathParser parser;
+		FILE* input_file = fopen(filename, "r");
+		if(!input_file)
+			return(FALLBACK);
+		try {
+			parser.push(input_file, 0, false);
+			parser.consume();
+			AST::Node* result = NULL;
+			result = parser.parse(REPL_ensure_operator_precedence_list(self));
+			result = REPL_prepare(self, result);
+	                result = Evaluators::reduce(result);
+			parser.ensure_end();
+			fclose(input_file);
+			return(result);
+		} catch(...) {
+			fclose(input_file);
+			throw;
+		}
+	} catch(Evaluators::EvaluationException e) {
+		std::string v = e.what() ? e.what() : "error";
+		v = " => " + v + "\n";
+		// FIXME REPL_insert_into_output_buffer(self, destination, v.c_str());
+	} catch(Scanners::ParseException& e) {
+		std::string v = e.what() ? e.what() : "error";
+		// FIXME REPL_insert_error_message(self, &self->fCursorPosition, (std::string("\n") + text), v);
+	}
+	// FIXME pop symbol table
+	return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 	// FIXME return(uncurried(&RModule, AST::makeStr(filename)));
 }
 static AST::Node* REPL_require_module(struct REPL* self, const char* filename) {
@@ -383,60 +463,11 @@ AST::Node* REPL_get_user_environment(struct REPL* self) {
 		envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL); /* clear the last command from the environment, nobody cares. */
 	return(self->fTailUserEnvironment ? envEntryGetTail(self->fTailUserEnvironment) : NULL);
 }
-Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self) {
-	Scanners::OperatorPrecedenceList* result;
-	result = new Scanners::OperatorPrecedenceList;
-	// FIXME add the operators, reading the environment
-	return(result);
-}
-template<typename T>
-AST::Node* REPL_parse(struct REPL* self, const char* command, T destination/*for errors*/) {
-	/* is not allowed to both print stuff AND return non-null, except when it updates the destination iter */
-	Scanners::MathParser parser;
-	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
-	if(input_file) {
-		try {
-			parser.push(input_file, 0, false);
-			parser.consume();
-			AST::Node* result = parser.parse(REPL_ensure_operator_precedence_list(self));
-			parser.ensure_end();
-			fclose(input_file);
-			return(result);
-		} catch(...) {
-			fclose(input_file);
-			throw;
-		}
-		REPL_set_file_modified(self, true);
-	}
-	REPL_queue_scroll_down(self);
-	return(NULL);
-}
 AST::Node* REPL_prepare(struct REPL* self, AST::Node* input) {
 	AST::Node* result = REPL_close_environment(self, input);
 	result = Evaluators::provide_dynamic_builtins(result);
 	result = Evaluators::annotate(result);
 	return(result);
-}
-template<typename T>
-bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
-	bool B_ok = false;
-	try {
-		AST::Node* result = input;
-		Evaluators::resetWorld();
-		result = REPL_prepare(self, result);
-		result = Evaluators::reduce(result);
-		/*std::string v = result ? result->str() : "OK";
-		v = " => " + v + "\n";
-		REPL_insert_into_output_buffer(self, destination, v.c_str());*/
-		REPL_enqueue_LATEX(self, result, destination);
-		B_ok = true;
-	} catch(Evaluators::EvaluationException e) {
-		std::string v = e.what() ? e.what() : "error";
-		v = " => " + v + "\n";
-		REPL_insert_into_output_buffer(self, destination, v.c_str());
-	}
-	REPL_set_file_modified(self, true);
-	return(B_ok);
 }
 
 REGISTER_BUILTIN(RImporter, (-2), 1, AST::symbolFromStr("import"))

@@ -27,6 +27,7 @@ struct REPL : AST::Node {
 	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
 	AST::Node* fTailUserEnvironmentFrontier;
 	int fEnvironmentCount;
+	int fCursorPosition;
 	bool fBModified;
 	std::map<std::string, AST::Node*>* fModules;
 };
@@ -67,6 +68,7 @@ void REPL_clear(struct REPL* self) {
 }
 void REPL_init(struct REPL* self) {
 	self->fBModified = false;
+	self->fModules = NULL;
 	REPL_clear(self);
 }
 bool REPL_execute(struct REPL* self, AST::Node* input) {
