@@ -94,7 +94,10 @@ static char* REPL_ensure_default_environment_name(struct REPL* self) {
 	char* result;
 	char config_dir_name[PATH_MAX + 1];
 	char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
-	char* HOME = getenv("HOME");
+	const char* HOME = getenv("HOME");
+	if(!HOME || !HOME[0]) { 
+		HOME = "/root";
+	}
 	if(XDG_CONFIG_HOME) {
 		if(snprintf(config_dir_name, NAME_MAX, "%s", XDG_CONFIG_HOME) == -1)
 			abort();
