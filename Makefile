@@ -26,7 +26,7 @@ NUMBER_OBJECTS = Numbers/Integer.o Numbers/Real.o Numbers/BigUnsigned.o
 TARGETS = REPL/5DREPL TUI/TUI
 
 
-TARGETS += $(shell pkg-config --cflags --libs gtk+-2.0 |grep -q -- -  && echo GUI/5D )
+TARGETS += $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  && echo GUI/5D )
 
 all: $(TARGETS)
 
@@ -165,8 +165,13 @@ dist: all
 	tar zcf "$(DISTDIR).tar.gz" "$(DISTDIR)/"* 
 	rm -rf "$(DISTDIR)"
 
-install:
+installgui:
+	install -m 755 GUI/5D $(DESTDIR)/usr/bin/5D
+
+install: $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  && echo installgui )
 	install -m 755 -d $(DESTDIR)/usr
 	install -m 755 -d $(DESTDIR)/usr/bin
 	install -m 755 TUI/TUI $(DESTDIR)/usr/bin/T5D
-	install -m 755 GUI/5D $(DESTDIR)/usr/bin/5D
+	strip $(DESTDIR)/usr/bin/T5D
+	install -m 755 REPL/5DREPL $(DESTDIR)/usr/bin/5DREPL
+	strip $(DESTDIR)/usr/bin/5DREPL
