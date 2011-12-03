@@ -128,8 +128,13 @@ AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
 AST::Node* REPL_prepare(struct REPL* self, AST::Node* input);
 static AST::Node* REPL_access_module(AST::Node* fn, AST::Node* argument) {
 	Evaluators::CurriedOperation* o = dynamic_cast<Evaluators::CurriedOperation*>(fn);
-	AST::Node* body = o->fArgument;
+	Evaluators::CurriedOperation* o2 = dynamic_cast<Evaluators::CurriedOperation*>(o->fOperation);
+	AST::Node* body = o2->fArgument;
 	// filename is the second argument, so ignore.
+	std::string v;
+	std::string a;
+	v = Evaluators::str(body);
+	a = Evaluators::str(argument);
 	return(Evaluators::reduce(AST::makeApplication(body, argument)));
 }
 static AST::Node* REPL_force_import_module(struct REPL* self, const char* filename) {
@@ -437,7 +442,7 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 REGISTER_BUILTIN(RImporter, (-2), 1, AST::symbolFromStr("import"))
 REGISTER_BUILTIN(RInformant, (-2), 1, AST::symbolFromStr("describe"));
 REGISTER_BUILTIN(RDefiner, (-3), 1, AST::symbolFromStr("define"));
-REGISTER_BUILTIN(RModule, 2, 1, AST::symbolFromStr("requireModule"));
+REGISTER_BUILTIN(RModule, 3, 1, AST::symbolFromStr("requireModule"));
 REGISTER_BUILTIN(RModuleLoader, 2, 1, AST::symbolFromStr("requireModule"));
 REGISTER_STR(REPL, return("REPL");)
 
