@@ -32,15 +32,31 @@ protected:
 	int previous_position;
 	int line_number;
 	int column_number;
+	int backtracking_column_numbers[4];
 	AST::Node* input_value; // read-only
 	inline int increment_position(int input) {
 		++position;
-		++column_number;
+		if(input == '\n') {
+			backtracking_column_numbers[0] = backtracking_column_numbers[1];
+			backtracking_column_numbers[1] = backtracking_column_numbers[2];
+			backtracking_column_numbers[2] = backtracking_column_numbers[3];
+			backtracking_column_numbers[3] = column_number;
+			++line_number;
+			column_number = 0;
+		} else
+			++column_number;
 		return(input);
 	}
 	inline int decrement_position(int input) {
 		--position;
-		--column_number;
+		if(input == '\n') {
+			column_number = backtracking_column_numbers[3];
+			backtracking_column_numbers[3] = backtracking_column_numbers[2];
+			backtracking_column_numbers[2] = backtracking_column_numbers[1];
+			backtracking_column_numbers[1] = backtracking_column_numbers[0];
+			
+		} else
+			--column_number;
 		return(input);
 	}
 public:

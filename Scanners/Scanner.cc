@@ -32,6 +32,10 @@ Scanner::Scanner(void) {
 	position = 0;
 	previous_position = 0;
 	line_number = 0;
+	backtracking_column_numbers[0] = 0;
+	backtracking_column_numbers[1] = 0;
+	backtracking_column_numbers[2] = 0;
+	backtracking_column_numbers[3] = 0;
 }
 void Scanner::push(FILE* input_file, int line_number) {
 	this->input_file = input_file;
