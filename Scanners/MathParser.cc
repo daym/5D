@@ -181,7 +181,7 @@ AST::Node* MathParser::parse_abstraction(void) {
 		return(NULL);
 	} else {
 		consume();
-		if(EOFP() || input_value == Symbols::Srightparen || input_value == Symbols::Srightbracket)
+		if(EOFP() || input_value == Symbols::Srightparen || input_value == Symbols::Srightbracket || input_value == Symbols::Sautorightparen)
 			raise_error("<body>", str(input_value));
 		enter_abstraction(parameter);
 		try {
@@ -198,7 +198,7 @@ AST::Node* MathParser::parse_abstraction(void) {
 	}
 }
 AST::Node* MathParser::parse_value(void) {
-	if(input_value == Symbols::Srightparen) {
+	if(input_value == Symbols::Srightparen || input_value == Symbols::Sautorightparen) {
 		raise_error("<value>", ')');
 		return(NULL);
 	} else if(input_value == Symbols::SlessEOFgreater) {
@@ -214,9 +214,9 @@ AST::Node* MathParser::parse_value(void) {
 			if(input_value == Symbols::Sleftparen)
 				B_honor_indentation = false;
 			try {
-				AST::Node* opening_brace = input_value;
-				consume();
-				if(input_value == Symbols::Srightparen)
+				AST::Node* opening_brace = consume();
+				if((opening_brace == Symbols::Sleftparen && input_value == Symbols::Srightparen) ||
+				   (opening_brace == Symbols::Sautoleftparen && input_value == Symbols::Sautorightparen))
 					result = NULL;
 				else
 					result = parse_expression();
@@ -234,7 +234,7 @@ AST::Node* MathParser::parse_value(void) {
 			}
 		} else {
 #if 0
-			if(input_value == Symbols::Srightparen) { /* oops! */
+			if(input_value == Symbols::Srightparen || input_value == Symbols::Sautorightparen) { /* oops! */
 				raise_error("<value>", ")");
 			} else if(input_value == NULL) {
 				raise_error("<value>", "<EOF>");
@@ -259,8 +259,11 @@ AST::Node* MathParser::parse_binary_operation(bool B_allow_args, int precedence_
 	if(AST::Node* actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator)) {
 		while(actual_token && actual_token != Symbols::SlessEOFgreater) {
 			AST::Node* operator_ = B_visible_operator ? consume() : Symbols::Sspace;
-			if(input_value == Symbols::Srightparen) // premature end.
+			if(input_value == Symbols::Srightparen || input_value == Symbols::Sautorightparen) { // premature end.
+				if(!B_visible_operator)
+					raise_error("<operand>", ")");
 				return(B_unary_operator ? operator_ : makeApplication(operator_, result)); /* default to the binary operator */
+			}
 			AST::Node* b = parse_binary_operation(B_allow_args, associativity != Symbols::Sright ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level);
 			if(B_unary_operator && !b) // -nil
 				return(operator_);
@@ -360,6 +363,7 @@ AST::Node* MathParser::parse_simple(const char* text, OperatorPrecedenceList* op
 	}
 }
 void MathParser::parse_closing_brace(void) {
+	// TODO auto)
 	consume(Symbols::Srightparen);
 }
 void MathParser::enter_abstraction(AST::Symbol* name) {

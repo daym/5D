@@ -87,6 +87,8 @@ AST::Node* Scanner::consume(AST::Node* expected_value) {
 		raise_error(str(expected_value), str(input_value));
 	previous_position = position;
 	parse_token();
+	//std::string v = str(input_value);
+	//printf("ready: %s\n", v.c_str());
 	return(previous_value);
 }
 void Scanner::parse_token(void) {
@@ -523,7 +525,7 @@ void Scanner::update_indentation() {
 void Scanner::inject(AST::Node* value) {
 	/* it is assumed that this is called while scanning whitespace - or right afterwards */
 	//input_value = &pending;
-	std::string v = str(value);
+	//std::string v = str(value);
 	//printf("injecting: %s\n", v.c_str());
 	injected_input_values.push_front(value);
 }

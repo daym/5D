@@ -50,7 +50,8 @@ struct OperatorPrecedenceList : AST::Node {
 			     !any_operator_P(operator_) && 
 			     operator_ && 
 			     operator_ != Symbols::Srightparen &&
-			     operator_ != Symbols::Srightbracket)) {
+			     operator_ != Symbols::Srightbracket && 
+			     operator_ != Symbols::Sautorightparen)) {
 				if(precedence->operator_ != operator_)
 					B_visible_operator = false;
 				associativity_out = precedence->associativity;
