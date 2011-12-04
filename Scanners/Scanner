@@ -71,6 +71,7 @@ protected:
 		if(input == '\n') {
 			column_number = SCROLL_RIGHT(backtracking_column_numbers);
 			B_beginning_of_line = SCROLL_RIGHT(backtracking_beginning_of_line);
+			--line_number;
 		} else
 			--column_number;
 		return(input);
