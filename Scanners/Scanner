@@ -10,6 +10,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <stdio.h>
 /* C++ has a template isxdigit which conflicts with the macro isxdigit */
 #undef isxdigit
+#include <assert.h>
 #include <sstream>
 #include <string>
 #include <list>
@@ -65,7 +66,7 @@ protected:
 	}
 	inline int decrement_position(int input) {
 		--position;
-		assert(input != ' ' && input != '\t' && input != '\n');
+		assert(input != ' ' && input != '\t');
 		if(input == '\n') {
 			column_number = SCROLL_RIGHT(backtracking_column_numbers);
 			B_beginning_of_line = SCROLL_RIGHT(backtracking_beginning_of_line);
