@@ -476,4 +476,5 @@ void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) 
 	input_value = AST::symbolFromStr(matchtext.str().c_str());
 }
 
+REGISTER_STR(Scanner, return("Scanner");)
 };

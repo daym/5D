@@ -69,7 +69,7 @@ AST/test-Symbol.o: AST/test-Symbol.cc AST/Symbol AST/AST
 AST/Symbol.o: AST/Symbol.cc AST/Symbol AST/AST
 AST/Symbols.o: AST/Symbols.cc AST/Symbols AST/Symbol AST/AST
 AST/Keyword.o: AST/Keyword.cc AST/Keyword AST/AST
-Scanners/Scanner.o: Scanners/Scanner.cc Scanners/Scanner AST/Symbol AST/AST AST/Keyword Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Evaluators
+Scanners/Scanner.o: Scanners/Scanner.cc Scanners/Scanner AST/Symbol AST/AST AST/Keyword Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Evaluators AST/AST
 Scanners/test-Scanner.o: Scanners/test-Scanner.cc Scanners/Scanner AST/Symbol AST/AST
 Scanners/MathParser.o: Scanners/MathParser.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol Scanners/OperatorPrecedenceList Evaluators/Builtins Evaluators/Evaluators
 Scanners/OperatorPrecedenceList.o: Scanners/OperatorPrecedenceList.cc AST/AST AST/Symbol

@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <sstream>
 #include <string>
 #include "AST/Symbol"
+#include "AST/AST"
 
 namespace Scanners {
 
@@ -23,7 +24,7 @@ public:
 	virtual const char* what() const throw();
 };
 
-class Scanner {
+class Scanner : AST::Node {
 protected:
 	FILE* input_file;
 	//std::stringstream matchtext;
