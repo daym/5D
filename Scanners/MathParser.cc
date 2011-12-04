@@ -341,5 +341,15 @@ void MathParser::leave_abstraction(AST::Symbol* name) {
 	bound_symbols->tail = NULL;
 	bound_symbols = (AST::Cons*) n;
 }
+std::set<AST::Symbol*> MathParser::get_bound_symbols(const char* prefix) {
+	std::set<AST::Symbol*> syms;
+	for(AST::Cons* b = bound_symbols; b; b = (AST::Cons*) b->tail) {
+		AST::Symbol* sym = (AST::Symbol*) b->head;
+		if(strncmp(sym->name, prefix, strlen(prefix)) == 0) {
+			syms.insert(sym);
+		}
+	}
+	return(syms);
+}
 
 };

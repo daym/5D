@@ -8,6 +8,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <set>
 #include "Scanners/Scanner"
 #include "AST/AST"
 #include "AST/Symbol"
@@ -19,8 +20,8 @@ class MathParser : public Scanner {
 protected:
 	bool B_process_macros;
 	OperatorPrecedenceList* operator_precedence_list;
-	AST::Cons* bound_symbols;
 private:
+	AST::Cons* bound_symbols;
 	AST::Node* parse_value(void);
 	AST::Node* parse_application(void);
 	AST::Node* parse_argument(void);
@@ -43,8 +44,11 @@ public:
 	AST::Node* parse_S_Expression(void);
 	static AST::Node* parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list);
 	MathParser(void);
+protected:
 	void enter_abstraction(AST::Symbol* name);
 	void leave_abstraction(AST::Symbol* name);
+public:
+	std::set<AST::Symbol*> get_bound_symbols(const char* prefix);
 };
 
 extern const int apply_precedence_level;
