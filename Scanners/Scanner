@@ -82,6 +82,12 @@ public:
 	int get_position(void) const {
 		return(previous_position);
 	}
+	int get_column_number(void) const {
+		return(column_number);
+	}
+	int get_line_number(void) const {
+		return(line_number);
+	}
 	void raise_error(const std::string& expected_text, int got_text);
 	void raise_error(const std::string& expected_text, std::string got_text);
 	Scanner(void);
@@ -89,6 +95,7 @@ public:
 	void ensure_end(void);
 	AST::Node* consume(AST::Node* expected_value = NULL);
 private:
+	std::list<AST::Node*> injected_input_values;
 	void parse_token(void);
 	void parse_optional_whitespace(void);
 	void parse_number(int input);

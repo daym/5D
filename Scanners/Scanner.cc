@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/Symbols"
 #include "Evaluators/Builtins"
 
+/* parse_token() is the main function */
+
 namespace Scanners {
 using namespace AST;
 using namespace Evaluators;
@@ -41,7 +43,7 @@ Scanner::Scanner(void) {
 void Scanner::push(FILE* input_file, int line_number) {
 	this->input_file = input_file;
 	this->line_number = line_number;
-	this->position = 0; // FIXME ftell(input_file);
+	this->position = 0;
 	this->previous_position = 0;
 	this->column_number = 0;
 	this->B_beginning_of_line = true;
@@ -89,10 +91,26 @@ AST::Node* Scanner::consume(AST::Node* expected_value) {
 }
 void Scanner::parse_token(void) {
 	// TODO make this simpler for S expressions.
+	if(!injected_input_values.empty()) {
+		input_value = injected_input_values.front();
+		injected_input_values.pop_front();
+		return;
+	}
 	parse_optional_whitespace();
+	if(!injected_input_values.empty()) {
+		input_value = injected_input_values.front();
+		injected_input_values.pop_front();
+		return;
+	}
+	input_value = NULL;
 	int input;
-	input = increment_position(fgetc(input_file));
-	// note: please don't backtrack the first char (i.e. what is now in "input") - the indentation check assumes that the indentation doesn't change back.
+	input = increment_position(fgetc(input_file)); // this will possibly inject stuff
+	if(!injected_input_values.empty()) {
+		ungetc(decrement_position(input), input_file); // keep char for later.
+		input_value = injected_input_values.front();
+		injected_input_values.pop_front();
+		return;
+	}
 	switch(input) {
 	case '0':
 	case '1':
@@ -363,7 +381,7 @@ void Scanner::parse_special_coding(int input) {
 	input = increment_position(fgetc(input_file));
 	switch(input) {
 	case '\\':
-		/* FIXME \tab, \newline, \space, \backspace, \escape, \\ ... */
+		/* FIXME other names. ... */
 		input = increment_position(fgetc(input_file));
 		if(input != EOF) {
 			if(input == '\\')
@@ -483,7 +501,7 @@ void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) 
 void Scanner::update_indentation() {
 	std::pair<int, int> new_entry = std::make_pair(line_number, column_number);
 	assert(!open_indentations.empty());
-	if(B_honor_indentation && open_indentations.front() != new_entry) {
+	if(B_honor_indentation && open_indentations.front() != new_entry) { // this NEEDS to be neutral on same indentation. Reason: parse_token() backtracks when it notices that someone injected something.
 		int previous_indentation = open_indentations.front().second;
 		while(!open_indentations.empty() && column_number < previous_indentation) {
 			//printf("should close %d\n", previous_indentation);
@@ -497,7 +515,10 @@ void Scanner::update_indentation() {
 		open_indentations.push_front(new_entry);
 	}
 }
-void Scanner::inject(AST::Node* input_value) {
+void Scanner::inject(AST::Node* value) {
+	/* it is assumed that this is called while scanning whitespace - or right afterwards */
+	//input_value = &pending;
+	injected_input_values.push_front(value);
 }
 
 REGISTER_STR(Scanner, return("Scanner");)
