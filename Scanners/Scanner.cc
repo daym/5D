@@ -181,7 +181,8 @@ void Scanner::parse_number(int input) {
 			input = increment_position(fgetc(input_file));
 		}
 	}
-	ungetc(decrement_position(input), input_file);
+	if(input != ' ' && input != '\t')
+		ungetc(decrement_position(input), input_file);
 	input_value = AST::symbolFromStr(matchtext.str().c_str());
 	/* actual value will be provided by provide_dynamic_builtins */
 }
@@ -444,7 +445,8 @@ void Scanner::parse_operator(int input) {
 		if(input == '\'' || structural_P(input))
 			break;
 	}
-	ungetc(decrement_position(input), input_file);
+	if(input != ' ' && input != '\t')
+		ungetc(decrement_position(input), input_file);
 	input_value = AST::symbolFromStr(sst.str().c_str());
 }
 void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) {
@@ -473,7 +475,7 @@ void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) 
 			ungetc(decrement_position(0xE2), input_file); // FIXME it is actually unsupported to unget more than 1 character :-(
 			//raise_error("<unicode_operator>", "<unknown>");
 		}
-	} else
+	} else if(input != ' ' && input != '\t') /* ignore whitespace */
 		ungetc(decrement_position(input), input_file);
 	input_value = AST::symbolFromStr(matchtext.str().c_str());
 }
