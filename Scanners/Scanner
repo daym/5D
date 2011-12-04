@@ -24,6 +24,14 @@ public:
 	virtual const char* what() const throw();
 };
 
+#define SCROLL_LEFT(x, n) \
+	x[0] = x[1]; \
+	x[1] = x[2]; \
+	x[2] = x[3]; \
+	x[3] = n;
+#define SCROLL_RIGHT(x) \
+	(x[4] = x[3], x[3] = x[2], x[2] = x[1], x[1] = x[0], x[4])
+
 class Scanner : AST::Node {
 protected:
 	FILE* input_file;
@@ -32,29 +40,34 @@ protected:
 	int previous_position;
 	int line_number;
 	int column_number;
-	int backtracking_column_numbers[4];
+	int backtracking_column_numbers[5]; /* last is dummy */
+	int backtracking_beginning_of_line[5]; /* last is dummy */
+	int indentation;
+	bool B_beginning_of_line;
 	AST::Node* input_value; // read-only
 	inline int increment_position(int input) {
 		++position;
 		if(input == '\n') {
-			backtracking_column_numbers[0] = backtracking_column_numbers[1];
-			backtracking_column_numbers[1] = backtracking_column_numbers[2];
-			backtracking_column_numbers[2] = backtracking_column_numbers[3];
-			backtracking_column_numbers[3] = column_number;
+			SCROLL_LEFT(backtracking_column_numbers, column_number)
+			SCROLL_LEFT(backtracking_beginning_of_line, B_beginning_of_line)
 			++line_number;
+			indentation = 0;
 			column_number = 0;
+			B_beginning_of_line = true;
+		} else if(B_beginning_of_line && (input != ' ' && input != '\t')) {
+			B_beginning_of_line = false;
+			indentation = column_number;
+			++column_number;
 		} else
 			++column_number;
 		return(input);
 	}
 	inline int decrement_position(int input) {
 		--position;
+		assert(input != ' ' && input != '\t' && input != '\n');
 		if(input == '\n') {
-			column_number = backtracking_column_numbers[3];
-			backtracking_column_numbers[3] = backtracking_column_numbers[2];
-			backtracking_column_numbers[2] = backtracking_column_numbers[1];
-			backtracking_column_numbers[1] = backtracking_column_numbers[0];
-			
+			column_number = SCROLL_RIGHT(backtracking_column_numbers);
+			B_beginning_of_line = SCROLL_RIGHT(backtracking_beginning_of_line);
 		} else
 			--column_number;
 		return(input);

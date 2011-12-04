@@ -32,10 +32,12 @@ Scanner::Scanner(void) {
 	position = 0;
 	previous_position = 0;
 	line_number = 0;
+	indentation = 0;
 	backtracking_column_numbers[0] = 0;
 	backtracking_column_numbers[1] = 0;
 	backtracking_column_numbers[2] = 0;
 	backtracking_column_numbers[3] = 0;
+	B_beginning_of_line = true;
 }
 void Scanner::push(FILE* input_file, int line_number) {
 	this->input_file = input_file;
@@ -43,6 +45,8 @@ void Scanner::push(FILE* input_file, int line_number) {
 	this->position = 0; // FIXME ftell(input_file);
 	this->previous_position = 0;
 	this->column_number = 0;
+	this->B_beginning_of_line = true;
+	this->indentation = 0;
 }
 
 void Scanner::pop(void) {
@@ -88,6 +92,7 @@ void Scanner::parse_token(void) {
 	parse_optional_whitespace();
 	int input;
 	input = increment_position(fgetc(input_file));
+	// note: please don't backtrack the first char (i.e. what is now in "input").
 	switch(input) {
 	case '0':
 	case '1':
@@ -139,7 +144,7 @@ void Scanner::parse_token(void) {
 void Scanner::parse_optional_whitespace(void) {
 	int input;
 	// skip whitespace...
-	while(input = increment_position(fgetc(input_file)), input == ' ' || input == '\t' || input == '\n' || input == '\r') {
+	while(input = increment_position(fgetc(input_file)), input == ' ' || input == '\t' || /*input == '\n' || */input == '\r') {
 	}
 	ungetc(decrement_position(input), input_file);
 }
