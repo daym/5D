@@ -140,8 +140,6 @@ void Scanner::parse_optional_whitespace(void) {
 	int input;
 	// skip whitespace...
 	while(input = increment_position(fgetc(input_file)), input == ' ' || input == '\t' || input == '\n' || input == '\r') {
-		if(input == '\n')
-			++line_number;
 	}
 	ungetc(decrement_position(input), input_file);
 }
@@ -284,8 +282,6 @@ void Scanner::parse_string(int input) {
 	// assert input == '"'
 	bool B_escaped = false;
 	for(input = increment_position(fgetc(input_file)); input != EOF && (input != '"' || B_escaped); input = increment_position(fgetc(input_file))) {
-		if(input == '\n')
-			++line_number;
 		if(!B_escaped) {
 			if(input == '\\') {
 				B_escaped = true;
