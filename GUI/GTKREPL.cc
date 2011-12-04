@@ -453,7 +453,7 @@ void REPL_load_tips(struct REPL* self) {
 	if(input_file) {
 		Scanners::MathParser parser;
 		AST::Node* contents;
-		parser.push(input_file, 0, false);
+		parser.push(input_file, 0);
 		parser.consume();
 		contents = parser.parse_S_Expression();
 		fclose(input_file);
@@ -822,7 +822,7 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* o_text) {
 			gtk_text_buffer_insert(self->fOutputBuffer, &text_end, text, -1);
 			try {
 				input_file = fmemopen((void*) next_text, strlen(next_text), "r");
-				parser.push(input_file, 0, false);
+				parser.push(input_file, 0);
 				parser.consume();
 				content = Evaluators::programFromSExpression(parser.parse_S_Expression());
 				fclose(input_file);

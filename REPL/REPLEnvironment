@@ -150,7 +150,7 @@ AST::Node* REPL_parse(struct REPL* self, const char* command, T destination/*for
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
 	if(input_file) {
 		try {
-			parser.push(input_file, 0, false);
+			parser.push(input_file, 0);
 			parser.consume();
 			AST::Node* result = NULL;
 			result = parser.parse(REPL_ensure_operator_precedence_list(self));
@@ -196,7 +196,7 @@ static AST::Node* REPL_force_import_module(struct REPL* self, const char* filena
 		if(!input_file)
 			return(FALLBACK);
 		try {
-			parser.push(input_file, 0, false);
+			parser.push(input_file, 0);
 			parser.consume();
 			AST::Node* result = NULL;
 			result = parser.parse(REPL_ensure_operator_precedence_list(self));

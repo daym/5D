@@ -112,7 +112,7 @@ int main() {
 	using namespace REPLX;
 	struct REPL* REPL = REPL_new();
 	input_file = stdin;
-	parser.push(input_file, 0, false);
+	parser.push(input_file, 0);
 	parser.consume();
 	while(!parser.EOFP()) {
 		try {

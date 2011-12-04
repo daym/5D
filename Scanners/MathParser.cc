@@ -318,7 +318,7 @@ AST::Node* MathParser::parse_simple(const char* text, OperatorPrecedenceList* op
 	FILE* input_file;
 	try {
 		input_file = fmemopen((void*) text, strlen(text), "r");
-		parser.push(input_file, 0, false);
+		parser.push(input_file, 0);
 		parser.consume();
 		result = parser.parse(operator_precedence_list);
 		fclose(input_file);

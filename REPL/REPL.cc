@@ -92,7 +92,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 			return(false);
 		}
 		try {
-			parser.push(input_file, 0, false);
+			parser.push(input_file, 0);
 			parser.consume();
 			content = Evaluators::programFromSExpression(parser.parse_S_Expression());
 		} catch(Scanners::ParseException exception) {
