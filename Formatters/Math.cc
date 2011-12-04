@@ -95,7 +95,8 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		AST::Node* parameter = get_abstraction_parameter(node);
 		AST::Node* body = get_abstraction_body(node);
 		++position, output << '\\';
-		print_math_CXX(OPL, output, position, parameter, precedence, false);
+		print_text_raw(output, position, str(parameter), false);
+		//print_math_CXX(OPL, output, position, parameter, precedence, false);
 		++position, output << ' ';
 		print_math_CXX(OPL, output, position, body, precedence, false);
 		if(B_braced)
