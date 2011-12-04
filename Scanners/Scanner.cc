@@ -528,6 +528,8 @@ void Scanner::inject(AST::Node* value) {
 	injected_input_values.push_front(value);
 }
 bool Scanner::deinject() { /* on EOF, makes sure that injected parens are closed, if need be. */
+	if(!B_honor_indentation)
+		return(false);
 	increment_position('\n');
 	update_indentation();
 	if(!injected_input_values.empty()) {
