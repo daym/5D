@@ -12,6 +12,7 @@ You should have received a copy of the GNU General Public License along with thi
 #undef isxdigit
 #include <sstream>
 #include <string>
+#include <list>
 #include "AST/Symbol"
 #include "AST/AST"
 
@@ -42,21 +43,21 @@ protected:
 	int column_number;
 	int backtracking_column_numbers[5]; /* last is dummy */
 	int backtracking_beginning_of_line[5]; /* last is dummy */
-	int indentation;
 	bool B_beginning_of_line;
 	AST::Node* input_value; // read-only
+	std::list<std::pair<int, int> > open_indentations;
+	void update_indentation();
 	inline int increment_position(int input) {
 		++position;
 		if(input == '\n') {
 			SCROLL_LEFT(backtracking_column_numbers, column_number)
 			SCROLL_LEFT(backtracking_beginning_of_line, B_beginning_of_line)
 			++line_number;
-			indentation = 0;
 			column_number = 0;
 			B_beginning_of_line = true;
 		} else if(B_beginning_of_line && (input != ' ' && input != '\t')) {
 			B_beginning_of_line = false;
-			indentation = column_number;
+			update_indentation();
 			++column_number;
 		} else
 			++column_number;

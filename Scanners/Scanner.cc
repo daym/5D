@@ -32,7 +32,6 @@ Scanner::Scanner(void) {
 	position = 0;
 	previous_position = 0;
 	line_number = 0;
-	indentation = 0;
 	backtracking_column_numbers[0] = 0;
 	backtracking_column_numbers[1] = 0;
 	backtracking_column_numbers[2] = 0;
@@ -46,7 +45,7 @@ void Scanner::push(FILE* input_file, int line_number) {
 	this->previous_position = 0;
 	this->column_number = 0;
 	this->B_beginning_of_line = true;
-	this->indentation = 0;
+	this->open_indentations.clear();
 }
 
 void Scanner::pop(void) {
@@ -478,6 +477,11 @@ void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) 
 	} else if(input != ' ' && input != '\t') /* ignore whitespace */
 		ungetc(decrement_position(input), input_file);
 	input_value = AST::symbolFromStr(matchtext.str().c_str());
+}
+
+void Scanner::update_indentation() {
+	printf("open indentation at %d: %d\n", line_number, column_number);
+	open_indentations.push_front(std::make_pair(line_number, column_number));
 }
 
 REGISTER_STR(Scanner, return("Scanner");)
