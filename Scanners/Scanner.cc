@@ -92,7 +92,7 @@ void Scanner::parse_token(void) {
 	parse_optional_whitespace();
 	int input;
 	input = increment_position(fgetc(input_file));
-	// note: please don't backtrack the first char (i.e. what is now in "input").
+	// note: please don't backtrack the first char (i.e. what is now in "input") - the indentation check assumes that the indentation doesn't change back.
 	switch(input) {
 	case '0':
 	case '1':
@@ -486,13 +486,18 @@ void Scanner::update_indentation() {
 	if(B_honor_indentation && open_indentations.front() != new_entry) {
 		int previous_indentation = open_indentations.front().second;
 		while(!open_indentations.empty() && column_number < previous_indentation) {
-			printf("should close %d\n", previous_indentation);
+			//printf("should close %d\n", previous_indentation);
+			inject(Symbols::Srightparen);
 			open_indentations.pop_front();
 			previous_indentation = open_indentations.front().second;
 		}
-		printf("open indentation at %d: %d\n", line_number, column_number);
+		// here, column_number > previous_indentation
+		inject(Symbols::Sleftparen);
+		//printf("open indentation at %d: %d\n", line_number, column_number);
 		open_indentations.push_front(new_entry);
 	}
+}
+void Scanner::inject(AST::Node* input_value) {
 }
 
 REGISTER_STR(Scanner, return("Scanner");)

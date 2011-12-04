@@ -75,6 +75,7 @@ protected:
 			--column_number;
 		return(input);
 	}
+	void inject(AST::Node* input_value);
 public:
 	void push(FILE* input_file, int line_number);
 	void pop(void);
