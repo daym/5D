@@ -504,7 +504,7 @@ void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) 
 void Scanner::update_indentation() {
 	std::pair<int, int> new_entry = std::make_pair(line_number, column_number);
 	assert(!open_indentations.empty());
-	if(B_honor_indentation && open_indentations.front() != new_entry) { // this NEEDS to be neutral on same indentation. Reason: parse_token() backtracks when it notices that someone injected something.
+	if(B_honor_indentation && open_indentations.front().second != column_number) { // this NEEDS to be neutral on same indentation. Reason: parse_token() backtracks when it notices that someone injected something.
 		int previous_indentation = open_indentations.front().second;
 		while(!open_indentations.empty() && column_number < previous_indentation) {
 			//printf("should close %d\n", previous_indentation);
@@ -514,13 +514,15 @@ void Scanner::update_indentation() {
 		}
 		// here, column_number > previous_indentation
 		inject(Symbols::Sleftparen);
-		//printf("open indentation at %d: %d\n", line_number, column_number);
+		printf("open indentation at %d: %d\n", line_number, column_number);
 		open_indentations.push_front(new_entry);
 	}
 }
 void Scanner::inject(AST::Node* value) {
 	/* it is assumed that this is called while scanning whitespace - or right afterwards */
 	//input_value = &pending;
+	std::string v = str(value);
+	printf("injecting: %s\n", v.c_str());
 	injected_input_values.push_front(value);
 }
 

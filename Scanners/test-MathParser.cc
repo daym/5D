@@ -26,12 +26,17 @@ void test_expression(const char* source, const char* expected_tree) {
 	using namespace Scanners;
 	MathParser parser;
 	//std::cout << source << std::endl;
-	parser.push(fmemopen((void*) buf, strlen(buf), "r"), 0, false);
+	parser.push(fmemopen((void*) buf, strlen(buf), "r"), 0);
 	parser.consume();
-	AST::Node* result = parser.parse(new OperatorPrecedenceList());
-	if(str(result) != expected_tree) {
-		std::cerr << "error: input was " << source << "; expected " << expected_tree << " but got " << str(result) << std::endl;
-		abort();
+	try {
+		AST::Node* result = parser.parse(new OperatorPrecedenceList());
+		if(str(result) != expected_tree) {
+			std::cerr << "error: input was " << source << "; expected " << expected_tree << " but got " << str(result) << std::endl;
+			abort();
+		}
+	} catch(Scanners::ParseException e) {
+		std::cerr << "error: input was " << source << "; expected " << expected_tree << " but got exception " << e.what() << std::endl;
+		throw;
 	}
 }
 
@@ -47,6 +52,8 @@ int main() {
 	test_expression("a⨯b", "((⨯ a) b)");
 	test_expression("a⃗⨯b⃗", "((⨯ a⃗) b⃗)");
 	test_expression("cos cos x", "((cos cos) x)"); // well, it doesn't know that cos is a function.
-	//test_expression("2⋅f(x)", "((* 2) (f x))");
+	test_expression("f g\nh", "((f g) h)");
+	test_expression("runWorld\n  lift 2 ;\\v\n  lift 42", "(runWorld (((;) (lift 2)) (lift 42))");
+	//test_expression("2⋅f(x)", "((* 2) (f x))"); // doesn't work.
 	return(0);
 }
