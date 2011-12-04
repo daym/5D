@@ -28,6 +28,7 @@ using namespace Evaluators;
 MathParser::MathParser(void) : Scanner() {
 	B_process_macros = true;
 	input_value = NULL;
+	bound_symbols = NULL;
 	//operator_precedence_list = new OperatorPrecedenceList(false);
 }
 using namespace AST;
@@ -80,22 +81,30 @@ AST::Node* MathParser::parse_defrec(AST::Node* operand_1) {
 	if(B_extended)
 		consume();
 	AST::Node* parameter = consume();
+	AST::Symbol* rparameter = dynamic_cast<AST::Symbol*>(parameter);
 	if(dynamic_cast<AST::Symbol*>(parameter) == NULL) {
 		raise_error("<symbol>", str(parameter));
 	}
 	if(B_extended)
 		consume(Symbols::Srightparen);
 	//AST::Node* parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
-	AST::Node* body = parse_expression();
-	if(!parameter||!body||!operand_1) {
-		raise_error("<define-body>", "<incomplete>");
-		return(NULL);
-	}
 	if(dynamic_cast<AST::Symbol*>(parameter))
 		parameter = quote(parameter);
 	//if(dynamic_cast<AST::Abstraction*>(body))
 	//	body = quote(body);
-	return(makeDefine(quote(parameter), quote(makeApplication(Symbols::Srec, makeAbstraction(parameter, body)))));
+	enter_abstraction(rparameter);
+	try {
+		AST::Node* body = parse_expression();
+		if(!parameter||!body||!operand_1) {
+			raise_error("<define-body>", "<incomplete>");
+			return(NULL); // not reached
+		}
+		leave_abstraction(rparameter);
+		return(makeDefine(quote(parameter), quote(makeApplication(Symbols::Srec, makeAbstraction(rparameter, body)))));
+	} catch(...) {
+		leave_abstraction(rparameter);
+		throw;
+	}
 }
 AST::Node* MathParser::parse_quote(AST::Node* operand_1) {
 	AST::Node* result;
@@ -117,8 +126,15 @@ AST::Node* MathParser::parse_let_form(void) {
 	consume(Symbols::Sequal);
 	AST::Node* value = parse_value();
 	consume(Symbols::Sin);
-	AST::Node* rest = parse_expression();
-	return(AST::makeApplication(AST::makeAbstraction(name, rest), value));
+	enter_abstraction(name);
+	try {
+		AST::Node* rest = parse_expression();
+		leave_abstraction(name);
+		return(AST::makeApplication(AST::makeAbstraction(name, rest), value));
+	} catch(...) {
+		leave_abstraction(name);
+		throw;
+	}
 }
 AST::Node* MathParser::parse_list(void) {
 	if(EOFP() || input_value == Symbols::Srightbracket) {
@@ -158,18 +174,26 @@ AST::Node* MathParser::parse_application(void) {
 	return(hd);
 }
 AST::Node* MathParser::parse_abstraction(void) {
-	if(dynamic_cast<AST::Symbol*>(input_value) == NULL) {
+	AST::Symbol* parameter;
+	if((parameter = dynamic_cast<AST::Symbol*>(input_value)) == NULL) {
 		raise_error("<symbol>", str(input_value));
 		return(NULL);
 	} else {
-		AST::Node* parameter = consume();
+		consume();
 		if(EOFP() || input_value == Symbols::Srightparen || input_value == Symbols::Srightbracket)
 			raise_error("<body>", str(input_value));
-		AST::Node* expression = parse_expression();
-		if(expression)
-			return(makeAbstraction(parameter, expression));
-		else // ???
-			return(makeAbstraction(parameter, NULL));
+		enter_abstraction(parameter);
+		try {
+			AST::Node* expression = parse_expression();
+			leave_abstraction(parameter);
+			if(expression)
+				return(makeAbstraction(parameter, expression));
+			else // ???
+				return(makeAbstraction(parameter, NULL));
+		} catch (...) {
+			leave_abstraction(parameter);
+			throw;
+		}
 	}
 }
 AST::Node* MathParser::parse_value(void) {
@@ -307,6 +331,15 @@ AST::Node* MathParser::parse_simple(const char* text, OperatorPrecedenceList* op
 }
 void MathParser::parse_closing_brace(void) {
 	consume(Symbols::Srightparen);
+}
+void MathParser::enter_abstraction(AST::Symbol* name) {
+	bound_symbols = AST::makeCons(name, bound_symbols);
+}
+void MathParser::leave_abstraction(AST::Symbol* name) {
+	assert(bound_symbols && dynamic_cast<AST::Symbol*>(bound_symbols->head) == name);
+	AST::Node* n = bound_symbols->tail;
+	bound_symbols->tail = NULL;
+	bound_symbols = (AST::Cons*) n;
 }
 
 };

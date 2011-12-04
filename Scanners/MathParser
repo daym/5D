@@ -19,6 +19,7 @@ class MathParser : public Scanner {
 protected:
 	bool B_process_macros;
 	OperatorPrecedenceList* operator_precedence_list;
+	AST::Cons* bound_symbols;
 private:
 	AST::Node* parse_value(void);
 	AST::Node* parse_application(void);
@@ -42,6 +43,8 @@ public:
 	AST::Node* parse_S_Expression(void);
 	static AST::Node* parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list);
 	MathParser(void);
+	void enter_abstraction(AST::Symbol* name);
+	void leave_abstraction(AST::Symbol* name);
 };
 
 extern const int apply_precedence_level;
