@@ -7,5 +7,6 @@ let factorial =
 	$else
 		(n * (fac (n - 1)))
 in
-dispatchModule $ zip ['cos 'sin 'factorial]
-                     [ cos  sin  factorial]
+dispatchModule $ zip 
+['cos 'sin 'factorial]
+[ cos  sin  factorial]
