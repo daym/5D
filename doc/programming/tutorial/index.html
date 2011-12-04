@@ -223,6 +223,21 @@ runWorld
 <p><span class="pre">_</span> is the traditional variable name for "don't care about the result".</p>
 <p>Note that the parens have been left out and replaced by indentation.</p>
 
+<h3>Indentation</h3>
+<p>If you want to spread your programs over multiple lines, you can. However, then, indentation rules come into effect.</p>
+<pre>
+if (x = 0)
+            1
+$else$ if (x = 1)
+            2
+$else$ if (x = 2)
+            3
+$else 4
+</pre>
+<p>These work as follows:</p>
+<p>If the indentation (number of whitespace characters at the beginning of the line) increased compared to the previous line, then a "(" is inserted.</p>
+<p>If the indentation decreased compared to the previous lines, then one or more ")" are inserted until previous blocks up and excluding the current block are closed.</p>
+
 <h2>Further Reading</h2>
 <p>See the <a href="../../library/index.html">5D Library Documentation</a> for functions available to you.</p>
 </body>
