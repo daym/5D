@@ -1,0 +1,25 @@
+<!DOCTYPE html >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+pre { font-family: monospace; color: blue; }
+span.pre { font-family: monospace; color: blue; }
+</style>
+
+</head>
+<body>
+<h1>Programming in 5D</h1>
+<h2>Gentle Introduction</h2>
+<p>For a gentle introduction, see <a href="../tutorial/index.html">5D Tutorial</a>.</p>
+<h2>Module System</h2>
+<p>In order to import modules, use the <span class="pre">import</span> function.</p>
+<h2>import 'name</h2>
+<p>The <span class="pre">import</span> function will load the given module, <em>should it not already be loaded</em> and then create a variable referring to it (like <span class="pre">define</span> or <span class="pre">let</span> would).</p>
+<p>In fact, <span class="pre">import</span> is shorthand for a combination of define (or let) and <span class="pre">requireModule</span>.</p>
+<p>
+<p>Example:</p>
+<pre>
+import 'foo
+foo'cos 2
+</pre>
