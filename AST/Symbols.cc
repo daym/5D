@@ -92,5 +92,6 @@ AST::Symbol* Sinfo = AST::symbolFromStr("info");
 AST::Symbol* Simport = AST::symbolFromStr("import");
 AST::Symbol* Sdescribe = AST::symbolFromStr("describe");
 AST::Symbol* SrequireModule = AST::symbolFromStr("requireModule");
+AST::Symbol* Sunderline = AST::symbolFromStr("_");
 
 };

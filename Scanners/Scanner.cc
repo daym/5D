@@ -154,6 +154,9 @@ void Scanner::parse_token(void) {
 	case '#':
 		parse_special_coding(input);
 		break;
+	case '_':
+		input_value = Symbols::Sunderline;
+		break;
 	default:
 		parse_operator(input);
 		break;

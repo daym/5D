@@ -96,6 +96,7 @@ extern AST::Symbol* Sinfo;
 extern AST::Symbol* Simport;
 extern AST::Symbol* Sdescribe;
 extern AST::Symbol* SrequireModule;
+extern AST::Symbol* Sunderline;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */
