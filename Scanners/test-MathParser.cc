@@ -57,6 +57,7 @@ int main() {
 	test_expression("f g\nh", "((f g) h)");
 	test_expression("f\n  g h", "(f (g h))");
 	test_expression("runWorld\n  lift 2 ;\\v\n  lift 42", "(runWorld ((; (lift 2)) (\\v (lift 42))))");
+	test_expression("if (x = 0)\n  1\n$else\n  if (x = 2) 4\n  $else\n    2", "(($ ((if ((= x) 0)) 1)) (else (($ ((if ((= x) 2)) 4)) (else 2))))");
 	//test_expression("2⋅f(x)", "((* 2) (f x))"); // doesn't work.
 	return(0);
 }
