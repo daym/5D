@@ -172,6 +172,8 @@ dist: all
 	rm -rf "$(DISTDIR)"
 
 installgui:
+	install -m 755 -d $(DESTDIR)/usr
+	install -m 755 -d $(DESTDIR)/usr/bin
 	install -m 755 GUI/5D $(DESTDIR)/usr/bin/5D
 
 install: $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  && echo installgui )
