@@ -57,7 +57,7 @@ protected:
 			++line_number;
 			column_number = 0;
 			B_beginning_of_line = true;
-		} else if(B_beginning_of_line && (input != ' ' && input != '\t')) {
+		} else if(B_beginning_of_line && (input != ' ' && input != '\t' && input != EOF)) {
 			B_beginning_of_line = false;
 			update_indentation();
 			++column_number;
@@ -96,6 +96,7 @@ public:
 	AST::Node* consume(AST::Node* expected_value = NULL);
 private:
 	std::list<AST::Node*> injected_input_values;
+	bool deinject();
 	void parse_token(void);
 	void parse_optional_whitespace(void);
 	void parse_number(int input);

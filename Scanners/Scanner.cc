@@ -146,7 +146,8 @@ void Scanner::parse_token(void) {
 		parse_string(input);
 		break;
 	case EOF:
-		input_value = Symbols::SlessEOFgreater;
+		if(!deinject())
+			input_value = Symbols::SlessEOFgreater;
 		break;
 	case '@': // FIXME remove this for S expressions?
 		parse_keyword(input);
@@ -512,18 +513,29 @@ void Scanner::update_indentation() {
 			open_indentations.pop_front();
 			previous_indentation = open_indentations.front().second;
 		}
-		// here, column_number > previous_indentation
-		inject(Symbols::Sleftparen);
-		printf("open indentation at %d: %d\n", line_number, column_number);
-		open_indentations.push_front(new_entry);
+		if(column_number > previous_indentation) {
+			inject(Symbols::Sleftparen);
+			//printf("opening indentation at %d: %d after %d\n", line_number, column_number, open_indentations.front().second);
+			open_indentations.push_front(new_entry);
+		}
 	}
 }
 void Scanner::inject(AST::Node* value) {
 	/* it is assumed that this is called while scanning whitespace - or right afterwards */
 	//input_value = &pending;
 	std::string v = str(value);
-	printf("injecting: %s\n", v.c_str());
+	//printf("injecting: %s\n", v.c_str());
 	injected_input_values.push_front(value);
+}
+bool Scanner::deinject() { /* on EOF, makes sure that injected parens are closed, if need be. */
+	increment_position('\n');
+	update_indentation();
+	if(!injected_input_values.empty()) {
+		input_value = injected_input_values.front();
+		injected_input_values.pop_front();
+		return(true);
+	} else
+		return(false);
 }
 
 REGISTER_STR(Scanner, return("Scanner");)

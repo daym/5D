@@ -25,6 +25,8 @@ void test_expression(const char* source, const char* expected_tree) {
 	const char* buf = source;
 	using namespace Scanners;
 	MathParser parser;
+	printf("==== %s\n", source);
+	printf("E====\n");
 	//std::cout << source << std::endl;
 	parser.push(fmemopen((void*) buf, strlen(buf), "r"), 0);
 	parser.consume();
@@ -53,7 +55,8 @@ int main() {
 	test_expression("a⃗⨯b⃗", "((⨯ a⃗) b⃗)");
 	test_expression("cos cos x", "((cos cos) x)"); // well, it doesn't know that cos is a function.
 	test_expression("f g\nh", "((f g) h)");
-	test_expression("runWorld\n  lift 2 ;\\v\n  lift 42", "(runWorld (((;) (lift 2)) (lift 42))");
+	test_expression("f\n  g h", "(f (g h))");
+	test_expression("runWorld\n  lift 2 ;\\v\n  lift 42", "(runWorld ((; (lift 2)) (\\v (lift 42))))");
 	//test_expression("2⋅f(x)", "((* 2) (f x))"); // doesn't work.
 	return(0);
 }
