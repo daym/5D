@@ -84,3 +84,5 @@ merge
 mergeSort
 mergeSortBy
 ++
+allTrue?
+anyTrue?

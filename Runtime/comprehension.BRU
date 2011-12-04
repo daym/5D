@@ -11,3 +11,6 @@ define repeatedly rec \repeatedly \f \a a:(repeatedly f (f a))
 
 define flip \f \a \b (f b a)
 define reverse foldl (flip (:)) nil
+
+define anyTrue? \f \list foldr (||) #f (map f list)
+define allTrue? ...
