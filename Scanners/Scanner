@@ -44,6 +44,7 @@ protected:
 	int column_number;
 	int backtracking_column_numbers[5]; /* last is dummy */
 	int backtracking_beginning_of_line[5]; /* last is dummy */
+	bool B_honor_indentation;
 	bool B_beginning_of_line;
 	AST::Node* input_value; // read-only
 	std::list<std::pair<int, int> > open_indentations;

@@ -480,8 +480,10 @@ void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) 
 }
 
 void Scanner::update_indentation() {
-	printf("open indentation at %d: %d\n", line_number, column_number);
-	open_indentations.push_front(std::make_pair(line_number, column_number));
+	if(B_honor_indentation) {
+		printf("open indentation at %d: %d\n", line_number, column_number);
+		open_indentations.push_front(std::make_pair(line_number, column_number));
+	}
 }
 
 REGISTER_STR(Scanner, return("Scanner");)

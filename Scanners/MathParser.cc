@@ -29,6 +29,7 @@ MathParser::MathParser(void) : Scanner() {
 	B_process_macros = true;
 	input_value = NULL;
 	bound_symbols = NULL;
+	B_honor_indentation = true;
 	//operator_precedence_list = new OperatorPrecedenceList(false);
 }
 using namespace AST;
@@ -287,29 +288,47 @@ AST::Cons* MathParser::parse_S_list_body(void) {
 	}
 }
 AST::Cons* MathParser::parse_S_list(bool B_consume_closing_brace) {
-	AST::Cons* result = NULL;
-	consume(Symbols::Sleftparen);
-	/* TODO macros (if we want) */
-	result = parse_S_list_body();
-	if(B_consume_closing_brace)
-		consume(Symbols::Srightparen);
-	return(result);
+	bool prev_B_honor_indentation = B_honor_indentation;
+	B_honor_indentation = false;
+	try {
+		AST::Cons* result = NULL;
+		consume(Symbols::Sleftparen);
+		/* TODO macros (if we want) */
+		result = parse_S_list_body();
+		if(B_consume_closing_brace)
+			consume(Symbols::Srightparen);
+		B_honor_indentation = prev_B_honor_indentation;
+		return(result);
+	} catch(...) {
+		B_honor_indentation = prev_B_honor_indentation;
+		throw;
+	}
 }
 AST::Node* MathParser::parse_S_Expression(void) {
-	/* TODO do this without tokenizing? How? */
-	if(input_value == Symbols::Sleftparen) {
-		return(parse_S_list(true));
-	} else if(dynamic_cast<AST::Symbol*>(input_value) != NULL) {
-		return(consume()); // & whitespace.
-	} else {
-		/* numbers, strings */
-		if(input_value)
-			return(consume());
-		else {
-			raise_error("<S_Expression>", "<junk>");
-			return(NULL);
+	bool prev_B_honor_indentation = B_honor_indentation;
+	B_honor_indentation = false;
+	try {
+		AST::Node* result;
+		/* TODO do this without tokenizing? How? */
+		if(input_value == Symbols::Sleftparen) {
+			result = parse_S_list(true);
+		} else if(dynamic_cast<AST::Symbol*>(input_value) != NULL) {
+			result = consume(); // & whitespace.
+		} else {
+			/* numbers, strings */
+			if(input_value)
+				result = consume();
+			else {
+				raise_error("<S_Expression>", "<junk>");
+				result = NULL;
+			}
+			//parse_S_optional_whitespace();
 		}
-		//parse_S_optional_whitespace();
+		B_honor_indentation = prev_B_honor_indentation;
+		return(result);
+	} catch(...) {
+		B_honor_indentation = prev_B_honor_indentation;
+		throw;
 	}
 }
 AST::Node* MathParser::parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list) {

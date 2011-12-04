@@ -39,8 +39,8 @@ protected:
 	AST::Cons* parse_S_list_body(void);
 public:
 	void parse_closing_brace(void);
-	AST::Cons* parse_S_list(bool B_consume_closing_brace);
 	AST::Node* parse(OperatorPrecedenceList* operator_precedence_list);
+	AST::Cons* parse_S_list(bool B_consume_closing_brace);
 	AST::Node* parse_S_Expression(void);
 	static AST::Node* parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list);
 	MathParser(void);
