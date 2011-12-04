@@ -209,18 +209,29 @@ AST::Node* MathParser::parse_value(void) {
 		return(parse_abstraction());
 	} else {
 		AST::Node* result;
-		if(input_value == Symbols::Sleftparen) {
-			AST::Node* opening_brace = input_value;
-			consume();
-			if(input_value == Symbols::Srightparen)
-				result = NULL;
-			else
-				result = parse_expression();
-			if(opening_brace != Symbols::Sleftparen || input_value != Symbols::Srightparen) {
-				raise_error(")", str(input_value));
-				return(NULL);
+		if(input_value == Symbols::Sleftparen || input_value == Symbols::Sautoleftparen) {
+			bool prev_B_honor_indentation = B_honor_indentation;
+			if(input_value == Symbols::Sleftparen)
+				B_honor_indentation = false;
+			try {
+				AST::Node* opening_brace = input_value;
+				consume();
+				if(input_value == Symbols::Srightparen)
+					result = NULL;
+				else
+					result = parse_expression();
+				if((opening_brace == Symbols::Sleftparen && input_value == Symbols::Srightparen) ||
+				   (opening_brace == Symbols::Sautoleftparen && input_value == Symbols::Sautorightparen)) {
+					consume();
+					B_honor_indentation = prev_B_honor_indentation; // TODO maybe do this one step before?
+				} else {
+					raise_error(")", str(input_value));
+					return(NULL);
+				}
+			} catch(...) {
+				B_honor_indentation = prev_B_honor_indentation;
+				throw;
 			}
-			consume(Symbols::Srightparen);
 		} else {
 #if 0
 			if(input_value == Symbols::Srightparen) { /* oops! */

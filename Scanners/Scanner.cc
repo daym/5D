@@ -509,12 +509,12 @@ void Scanner::update_indentation() {
 		int previous_indentation = open_indentations.front().second;
 		while(!open_indentations.empty() && column_number < previous_indentation) {
 			//printf("should close %d\n", previous_indentation);
-			inject(Symbols::Srightparen);
+			inject(Symbols::Sautorightparen);
 			open_indentations.pop_front();
 			previous_indentation = open_indentations.front().second;
 		}
 		if(column_number > previous_indentation) {
-			inject(Symbols::Sleftparen);
+			inject(Symbols::Sautoleftparen);
 			//printf("opening indentation at %d: %d after %d\n", line_number, column_number, open_indentations.front().second);
 			open_indentations.push_front(new_entry);
 		}
