@@ -211,8 +211,8 @@ AST::Node* MathParser::parse_value(void) {
 		AST::Node* result;
 		if(input_value == Symbols::Sleftparen || input_value == Symbols::Sautoleftparen) {
 			bool prev_B_honor_indentation = B_honor_indentation;
-			if(input_value == Symbols::Sleftparen)
-				B_honor_indentation = false;
+			//if(input_value == Symbols::Sleftparen)
+			//	B_honor_indentation = false;
 			try {
 				AST::Node* opening_brace = consume();
 				if((opening_brace == Symbols::Sleftparen && input_value == Symbols::Srightparen) ||
@@ -225,7 +225,7 @@ AST::Node* MathParser::parse_value(void) {
 					consume();
 					B_honor_indentation = prev_B_honor_indentation; // TODO maybe do this one step before?
 				} else {
-					raise_error(")", str(input_value));
+					raise_error(opening_brace == Symbols::Sleftparen ? ")" : "auto)", str(input_value));
 					return(NULL);
 				}
 			} catch(...) {
