@@ -209,10 +209,11 @@ toBool (#t&amp;&amp;#t) =&gt; t
 <h3>I/O</h3>
 <pre>
 runWorld
-         display "What's your name? " ;\_
-         readLine ;\name
-         display "Hello " ;\_
-         display name ;\_
+         display stdOut "What's your name? " ;\_
+         flush stdOut ;\_
+         readLine stdIn ;\name
+         display stdOut "Hello " ;\_
+         display stdOut name ;\_
          return name
 </pre>
 <p>What this does is:</p>
