@@ -31,7 +31,18 @@ protected:
 	int position;
 	int previous_position;
 	int line_number;
+	int column_number;
 	AST::Node* input_value; // read-only
+	inline int increment_position(int input) {
+		++position;
+		++column_number;
+		return(input);
+	}
+	inline int decrement_position(int input) {
+		--position;
+		--column_number;
+		return(input);
+	}
 public:
 	void push(FILE* input_file, int line_number);
 	void pop(void);
