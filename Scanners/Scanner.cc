@@ -46,6 +46,7 @@ void Scanner::push(FILE* input_file, int line_number) {
 	this->column_number = 0;
 	this->B_beginning_of_line = true;
 	this->open_indentations.clear();
+	this->open_indentations.push_front(std::make_pair(0, 0));
 }
 
 void Scanner::pop(void) {
@@ -480,9 +481,17 @@ void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) 
 }
 
 void Scanner::update_indentation() {
-	if(B_honor_indentation) {
+	std::pair<int, int> new_entry = std::make_pair(line_number, column_number);
+	assert(!open_indentations.empty());
+	if(B_honor_indentation && open_indentations.front() != new_entry) {
+		int previous_indentation = open_indentations.front().second;
+		while(!open_indentations.empty() && column_number < previous_indentation) {
+			printf("should close %d\n", previous_indentation);
+			open_indentations.pop_front();
+			previous_indentation = open_indentations.front().second;
+		}
 		printf("open indentation at %d: %d\n", line_number, column_number);
-		open_indentations.push_front(std::make_pair(line_number, column_number));
+		open_indentations.push_front(new_entry);
 	}
 }
 
