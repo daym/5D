@@ -132,10 +132,6 @@ static AST::Node* REPL_access_module(AST::Node* fn, AST::Node* argument) {
 	Evaluators::CurriedOperation* o2 = dynamic_cast<Evaluators::CurriedOperation*>(o->fOperation);
 	AST::Node* body = o2->fArgument;
 	// filename is the second argument, so ignore.
-	std::string v;
-	std::string a;
-	v = Evaluators::str(body);
-	a = Evaluators::str(argument);
 	return(Evaluators::reduce(AST::makeApplication(body, argument)));
 }
 Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self) {
@@ -414,6 +410,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("write"), &Evaluators::Writer);
 	REPL_add_builtin_method(self, AST::symbolFromStr("readLine"), &Evaluators::LineReader);
 	REPL_add_builtin_method(self, AST::symbolFromStr("messageBox"), &FFIs::MessageBoxDisplayer);
+	REPL_add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }

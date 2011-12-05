@@ -9,6 +9,7 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #include "AST/AST"
 #include "Evaluators/FFI"
+#include "Evaluators/Operation"
 
 namespace AST {
 	struct Symbol;
@@ -16,20 +17,8 @@ namespace AST {
 
 namespace FFIs {
 
-struct CLibrary;
-struct LibraryLoader {
-public:
-	struct LibraryLoaderP* p; // private
-	LibraryLoader(AST::Node* fallback);
-	virtual CLibrary* execute(AST::Node* argument); /* argument is the library to be loaded. Result is a CLibrary or nil */
-};
-struct CLibrary { /* routine loader */
-public:
-	struct CLibraryP* p; // private
-	bool goodP() const;
-	CLibrary(const char* name);
-	virtual AST::Node* executeLowlevel(AST::Node* argument, int argumentCount, AST::Symbol* signature); /* argument is the name (symbol). */
-};
+DECLARE_FULL_OPERATION(SharedLibraryLoader)
+DECLARE_FULL_OPERATION(SharedLibrary)
 
 };
 #endif /* ndef __5D_FFIs_FFIs_H */

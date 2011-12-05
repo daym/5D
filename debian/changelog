@@ -1,3 +1,9 @@
+5d (0.0.10) unstable; urgency=low
+
+  * add some FFI functionality.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Mon, 5 Dec 2011 22:43:53 +0100
+
 5d (0.0.9) unstable; urgency=low
 
   * add simple I/O and GUI functionality.

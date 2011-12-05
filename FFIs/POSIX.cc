@@ -14,77 +14,62 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/Symbol"
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
+#include "Evaluators/Operation"
 #include "FFIs/FFIs"
 #include "AST/Symbols"
-/*include "FFIs/Trampoline"*/
 
 namespace FFIs {
 using namespace Evaluators;
 
-struct LibraryLoaderP {
-	std::map<AST::Symbol*, CLibrary*> knownLibraries;
-};
-LibraryLoader::LibraryLoader(AST::Node* fallback) {
-	p = new LibraryLoaderP();
+AST::Node* wrapAccessLibrary(AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator endIter = arguments.end();
+	assert(iter != endIter);
+	assert(iter->first == NULL);
+	void* body = Evaluators::get_native_pointer(iter->second);
+	++iter;
+	assert(iter != endIter);
+	assert(iter->first == NULL);
+	AST::Str* libName = dynamic_cast<AST::Str*>(iter->second);
+	++iter;
+	assert(iter != endIter);
+	assert(iter->first == NULL);
+	AST::Symbol* signature = dynamic_cast<AST::Symbol*>(iter->second);
+	++iter;
+	assert(iter != endIter);
+	assert(iter->first == NULL);
+	AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(iter->second); // TODO support strings?
+	++iter;
+
+	void* nativeProc = body && fnName ? dlsym(body, Evaluators::get_native_string(fnName)) : NULL; // FIXME
+	// filename is the second argument, so ignore.
+	//return(Evaluators::reduce(AST::makeApplication(body, argument)));
+	return(new CProcedure(nativeProc, AST::makeApplication(AST::makeApplication(AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), libName), signature), fnName), strlen(signature->name) - 2, 0, signature));
 }
-CLibrary* LibraryLoader::execute(AST::Node* libraryName) {
-	if(str_P(libraryName))
-		libraryName = AST::symbolFromStr(((AST::Str*)libraryName)->text.c_str());
-	AST::Symbol* libraryNameSymbol = dynamic_cast<AST::Symbol*>(libraryName);
-	if(libraryNameSymbol == NULL)
-		return(NULL);
-	std::map<AST::Symbol*, CLibrary*>::const_iterator iter = p->knownLibraries.find(libraryNameSymbol);
-	if(iter != p->knownLibraries.end())
-		return(iter->second);
-	else {
-		CLibrary* library;
-		library = new CLibrary(libraryNameSymbol->name);
-		if(library->goodP()) {
-			p->knownLibraries[libraryNameSymbol] = library;
-			return(p->knownLibraries[libraryNameSymbol]);
-		} else {
-			return(library); // junk
-		}
-	}
-}
-struct CLibraryP {
-	void* library;
-	std::string name;
-	std::map<AST::Symbol*, CProcedure*> knownProcedures;
-};
-bool CLibrary::goodP() const {
-	return(p->library != NULL);
-}
-CLibrary::CLibrary(const char* name) {
-	p = new CLibraryP();
-	p->name = name;
-	p->library = dlopen(name, RTLD_LAZY);
-	if(!p->library) {
+AST::Node* wrapLoadLibraryC(const char* name) {
+	void* clib = dlopen(name, RTLD_LAZY);
+	if(!clib) {
 		fprintf(stderr, "(dlopen \"%s\") failed because: %s\n", name, dlerror());
-		//perror(name);
 	}
+	return(AST::makeBox(clib));
+	//return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 }
-AST::Node* CLibrary::executeLowlevel(AST::Node* argument, int argumentCount, AST::Symbol* signature) {
-	/* argument is the name (symbol). Result is a CProcedure */
-	if(str_P(argument))
-		argument = AST::symbolFromStr(((AST::Str*)argument)->text.c_str());
-	AST::Symbol* nameSymbol = dynamic_cast<AST::Symbol*>(argument);
-	if(nameSymbol == NULL)
-		return(NULL);
-	std::map<AST::Symbol*, CProcedure*>::const_iterator iter = p->knownProcedures.find(nameSymbol);
-	if(iter != p->knownProcedures.end())
-		return(iter->second);
-	else {
-		void* proc = dlsym(p->library, nameSymbol->name);
-		AST::Node* fRepr = AST::makeApplication(AST::makeApplication(Symbols::SfromLibrary, AST::makeStr(p->name.c_str())), AST::makeApplication(Symbols::Squote, nameSymbol));
-		if(!proc) {
-			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", nameSymbol->name, p->name.c_str());
-			return(fRepr);
-		}
-		p->knownProcedures[nameSymbol] = new CProcedure(proc, fRepr, argumentCount, 0, signature);
-		return(p->knownProcedures[nameSymbol]);
-	}
+static AST::Node* wrapLoadLibrary(AST::Node* options, AST::Node* filename) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, filename);
+	// struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
+	//assert(self);
+	AST::Node* body = wrapLoadLibraryC(Evaluators::get_native_string(filename));
+	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&SharedLibrary, body)), filename)));
 }
-REGISTER_STR(CLibrary, return(str(makeApplication(Symbols::SfromLibrary, AST::makeStr(node->p->name.c_str()))));)
+
+DEFINE_FULL_OPERATION(SharedLibraryLoader, {
+	return(wrapLoadLibrary(fn, argument));
+})
+DEFINE_FULL_OPERATION(SharedLibrary, {
+	return(wrapAccessLibrary(fn, argument));
+})
+REGISTER_BUILTIN(SharedLibraryLoader, 1, 0, AST::symbolFromStr("requireSharedLibrary"));
+REGISTER_BUILTIN(SharedLibrary, 4, 1, AST::symbolFromStr("requireSharedLibrary"));
 
 };
