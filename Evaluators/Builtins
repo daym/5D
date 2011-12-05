@@ -18,6 +18,7 @@ namespace Evaluators {
 
 AST::Node* operator/(const Numbers::Integer& a, const Numbers::Integer& b);
 AST::Node* internNative(bool value);
+AST::Node* internNative(const char* value);
 
 void resetWorld(void);
 

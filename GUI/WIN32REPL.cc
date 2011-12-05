@@ -32,7 +32,7 @@ namespace REPLX {
 	static void REPL_init_builtins(struct REPL* self);
 	static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node);
 	Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self);
-struct REPL {
+struct REPL : AST::Node {
 	HWND dialog;
 	bool B_file_modified;
 	struct Config* fConfig;
@@ -49,6 +49,7 @@ struct REPL {
 	std::set<AST::Symbol*>* fEnvironmentKeys;
 	HMENU fEnvironmentMenu;
 	std::map<std::string, AST::Node*>* fModules;
+	int fCursorPosition;
 };
 }; /* end namespace REPLX */
 namespace GUI {
@@ -489,7 +490,7 @@ void REPL_queue_scroll_down(struct REPL* self) {
 	// TODO
 }
 void REPL_insert_error_message(struct REPL* self, int destination, const std::string& prefix, const std::string& errorText) {
-	std::string v = prefix + " => " + errorText; // + "\n";
+	std::string v = prefix + /*"\n=> " + */ errorText; // + "\n";
 	REPL_insert_into_output_buffer(self, destination, v.c_str());
 	REPL_set_file_modified(self, true);
 	REPL_queue_scroll_down(self);
@@ -508,7 +509,6 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destina
 }
 static void REPL_handle_environment_row_activation(struct REPL* self, HWND list, int index) {
 	using namespace AST;
-	char* command;
 	bool B_ok = false;
 	if(index > -1) {
 		//command = NULL;
@@ -575,7 +575,7 @@ static void REPL_handle_execute(struct REPL* self, const char* text, int destina
 		input = REPL_parse(self, text, destination);
 	} catch(Scanners::ParseException& e) {
 		std::string v = e.what() ? e.what() : "error";
-		REPL_insert_error_message(self, -1, B_from_entry ? (std::string("\n") + text) : std::string(), v);
+		REPL_insert_error_message(self, -1, B_from_entry ? (std::string("\n") + std::string(text) + std::string("\n=> ")) : std::string("=> "), v);
 		input = NULL;
 	}
 	if(input) {
@@ -584,7 +584,7 @@ static void REPL_handle_execute(struct REPL* self, const char* text, int destina
 			destination = REPL_insert_into_output_buffer(self, destination, "\n");
 			REPL_enqueue_LATEX(self, input, destination);
 		}
-		destination = REPL_insert_into_output_buffer(self, destination, " => ");
+		destination = REPL_insert_into_output_buffer(self, destination, "\n=> ");
 		self->fCursorPosition = destination;
 		bool B_ok = REPL_execute(self, input, destination);
 		if(B_from_entry && B_ok)

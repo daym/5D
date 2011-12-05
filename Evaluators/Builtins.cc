@@ -22,6 +22,10 @@ AST::Node* churchFalse = Evaluators::annotate(Scanners::MathParser::parse_simple
 AST::Node* internNative(bool value) {
 	return(value ? churchTrue : churchFalse);
 }
+AST::Node* internNative(const char* value) {
+	return(AST::makeStr(value));
+}
+
 using namespace Numbers;
 static BigUnsigned unsigneds[] = {
 	BigUnsigned(0),
@@ -387,7 +391,7 @@ DEFINE_SIMPLE_OPERATION(SymbolFromStrGetter, (argument = reduce(argument), str_P
 DEFINE_SIMPLE_OPERATION(KeywordFromStrGetter, (argument = reduce(argument), str_P(argument) ? AST::keywordFromStr(get_native_string(argument)) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(ListFromStrGetter, (argument = reduce(argument), str_P(argument) ? Evaluators::listFromStr(dynamic_cast<Str*>(argument)) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(StrFromListGetter, (argument = reduce(argument), (cons_P(argument) || nil_P(argument)) ? Evaluators::strFromList(dynamic_cast<Cons*>(argument)) : FALLBACK))
-DEFINE_SIMPLE_OPERATION(KeywordStr, (argument = reduce(argument), keyword_P(argument) ? internNative(dynamic_cast<Keyword*>(argument)->name) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(KeywordStr, (argument = reduce(argument), keyword_P(argument) ? Evaluators::internNative(dynamic_cast<Keyword*>(argument)->name) : FALLBACK))
 IMPLEMENT_NUMERIC_BUILTIN(addA, +)
 DEFINE_BINARY_OPERATION(Adder, addA)
 IMPLEMENT_NUMERIC_BUILTIN(subtractA, -)

@@ -1,7 +1,7 @@
 [Project]
 FileName=5D.dev
 Name=5D
-UnitCount=67
+UnitCount=69
 Type=0
 Ver=1
 ObjFiles=
@@ -687,6 +687,25 @@ BuildCmd=
 
 [Unit67]
 FileName=..\AST\Symbols
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit68]
+FileName=..\Evaluators\Operation.cc
+CompileCpp=1
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit69]
+FileName=..\Evaluators\Operation
 Folder=5D
 Compile=0
 Link=0
