@@ -62,6 +62,7 @@ BEGIN
     POPUP "&Help"
     BEGIN
         MENUITEM "&Library Documentation\tF1",  ID_HELP_LIBRARYDOCUMENTATION
+        MENUITEM "&Programming Manual",         ID_HELP_PROGRAMMINGMANUAL
         MENUITEM "&Tutorial",                   ID_HELP_TUTORIAL
         MENUITEM "&About",                      IDM_ABOUT
     END

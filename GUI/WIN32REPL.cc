@@ -20,7 +20,7 @@
 #include "Evaluators/Builtins"
 #include "GUI/WIN32Completer"
 #include "Formatters/Math"
-#include <shlwapi.h>
+#include <shellapi.h>
 
 namespace GUI {
 bool interrupted_P(void) {
@@ -810,6 +810,11 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		case ID_HELP_TUTORIAL:
 			{
 				REPL_open_webpage(self, get_doc_name(_T("programming\\tutorial\\index.html")));
+				break;
+			}
+		case ID_HELP_PROGRAMMINGMANUAL:
+			{
+				REPL_open_webpage(self, get_doc_name(_T("programming\\manual\\index.html")));
 				break;
 			}
 		}
