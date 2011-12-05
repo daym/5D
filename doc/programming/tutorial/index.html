@@ -72,7 +72,7 @@ mayTheForceBeWithYou42
 <h2>Programming by example</h2>
 <h3>Hello world</h3>
 <pre>
-runWorld (display "Hello world")
+runWorld (display stdout "Hello world")
 </pre>
 <p>What this does is:</p>
 <p><span class="pre">runWorld</span> wraps IO.</p>
@@ -209,11 +209,11 @@ toBool (#t&amp;&amp;#t) =&gt; t
 <h3>I/O</h3>
 <pre>
 runWorld
-         display stdOut "What's your name? " ;\_
-         flush stdOut ;\_
+         display stdout "What's your name? " ;\_
+         flush stdout ;\_
          readLine stdIn ;\name
-         display stdOut "Hello " ;\_
-         display stdOut name ;\_
+         display stdout "Hello " ;\_
+         display stdout name ;\_
          return name
 </pre>
 <p>What this does is:</p>
