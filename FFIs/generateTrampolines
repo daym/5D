@@ -1,0 +1,110 @@
+#!/usr/bin/env python
+
+import sys
+
+longNames = {
+    "p": "void*",
+    "i": "int",
+    "l": "long",
+    "h": "short",
+    "L": "long long",
+    "s": "char*", # for the copying version
+    "v": "void",
+}
+
+def getLongName(c):
+    return longNames[c]
+print("""
+#include <assert.h>
+#include <string.h>
+#include "TrampolineSymbols"
+#include "Evaluators/Operation"
+#include "Evaluators/FFI"
+#include "Evaluators/Builtins"
+#include "Numbers/Integer"
+#include "Numbers/Real"
+
+namespace Trampolines {
+
+static inline AST::Node* extr(const std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter) {
+  return(iter->second);
+}
+
+static inline void* getSomethingUseful(AST::Node* n) {
+  AST::Str* s;
+  if((s = dynamic_cast<AST::Str*>(n)) != NULL)
+     return((void*) s->text.c_str()); // TODO copying version...
+  else
+     return(Evaluators::get_native_pointer(n));
+}
+#define unproc iter == end ? NULL : dynamic_cast<Evaluators::CProcedure*>(extr(iter++))
+#define unp iter == end ? NULL : getSomethingUseful(extr(iter++))
+#define uni iter == end ? 0 : Evaluators::get_native_int(extr(iter++))
+#define unl iter == end ? 0 : Evaluators::get_native_long(extr(iter++))
+#define unh iter == end ? 0 : Evaluators::get_native_short(extr(iter++))
+#define unL iter == end ? 0 : Evaluators::get_native_long_long(extr(iter++))
+#define uns iter == end ? NULL : strdup(Evaluators::get_native_string(extr(iter++)))
+#define inv
+#define inp AST::makeBox(
+#define ini Numbers::internNative((Numbers::NativeInt) 
+#define inl Numbers::internNative((Numbers::NativeInt) 
+#define inh Numbers::internNative((Numbers::NativeInt) 
+#define inL Numbers::internNative((Numbers::NativeInt) 
+#define ins AST::makeStr(
+/* FIXME do inL properly */
+""")
+combinations = set()
+for combination in sys.stdin.readlines():
+    combination = combination.rstrip("\n")
+    combinations.add(combination)
+    content = combination[1 : ]
+    print("typedef %s (*proc_%s_t)(%s);" % (getLongName(content[0]), combination, ", ".join(map(getLongName, content[1:]))))
+    print("""static inline AST::Node* jump%(combination)s(void* p, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end) {
+        proc_%(combination)s_t proc = (proc_%(combination)s_t) p;
+        %(returner)s((*proc)(%(marshallers)s))%(fallback)s; }""" % {"combination": combination,
+       "marshallers": ", ".join(map(lambda s: "un%s" % s, combination[2:])),
+       "returner": ("return in%s" % combination[1]) if combination[1] != "v" else "inv",
+       "fallback": "; return NULL;" if combination[1] == "v" else ")",
+       })
+print("""
+
+#undef unp
+#undef uni
+#undef unl
+#undef unh
+#undef unL
+#undef inp
+#undef ini
+#undef inl
+#undef inh
+#undef inL
+
+static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator endIter = arguments.end();
+	assert(iter != endIter);
+        assert(iter->first == NULL);
+	AST::Symbol* signature = proc->fSignature;
+	return """)
+
+def checks(combination):
+    result = [combination]
+    c = combination
+    while c != "" and c[-1] == "i":
+      c = c[:-1]
+      result.append(c)
+    return(result)
+       
+
+for combination in combinations:
+    print("  (%(checks)s) ? jump%(combination)s(proc->native, iter, endIter) : " % {"checks": " || ".join(map(lambda s: "signature == S_%s" % s, checks(combination))), "combination": combination})
+    
+print("""
+    NULL /* FIXME */;
+} /* jumpTrampoline */
+
+};
+
+#undef unproc
+""")
