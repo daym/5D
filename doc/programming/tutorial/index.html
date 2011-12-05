@@ -12,8 +12,8 @@ span.pre { font-family: monospace; color: blue; }
 <h1>5D Tutorial</h1>
 <h2>Syntax Elements</h2>
 <p>Names can contain every printable character except space and <span class="pre">#</span> and <span class="pre">@</span>, although operator names consist of different characters than other names.</p>
-<p>Operator names consist of funny characters or math operator characters, not alphanumeric letters. Custom operators have to be registered, giving them a precedence level, before they can be used.
-Some are preregistered: <span class="pre"
+<p>Operator names consist of funny characters or math operator characters, not alphanumeric letters. Custom operators have to be registered, giving them a precedence level, before they can be used.</p>
+<p>Some are preregistered: <span class="pre"
 ><span title="index">_</span> 
  <span title="index">.</span> 
  <span title="index">^</span> 
@@ -76,7 +76,7 @@ runWorld (write stdout "Hello world")
 </pre>
 <p>What this does is:</p>
 <p><span class="pre">runWorld</span> wraps IO.</p>
-<p><span class="pre">write \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">runWorld</span> or <span class="pre" title="World time sequencer">;</span>).</p>
+<p><span class="pre">write \file \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">runWorld</span> or <span class="pre" title="World time sequencer">;</span>).</p>
 
 <h3>Mathematics</h3>
 <p>The usual calculator mathematics work:</p>
@@ -218,7 +218,7 @@ runWorld
 </pre>
 <p>What this does is:</p>
 <p><span class="pre">runWorld</span> wraps IO.</p>
-<p><span class="pre">write \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">runWorld</span> or <span class="pre" title="World time sequencer">;</span>).</p>
+<p><span class="pre">write \file \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">runWorld</span> or <span class="pre" title="World time sequencer">;</span>).</p>
 <p><span class="pre">;</span> will sequence two operations so the left-hand-side operation will be done first and the right-hand-side operation will be done afterwards.</p>
 <p><span class="pre">_</span> is the traditional variable name for "don't care about the result".</p>
 <p>Note that the parens have been left out and replaced by indentation.</p>
