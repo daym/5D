@@ -478,22 +478,15 @@ keywordStr @mode: =&gt; "mode:"
 </a>
 
 <a name="FFI"><h2>Foreign Function Interface</h2>
-<h3>fromLibrary \s</h3>
-<p>Given the Str <span class="pre">s</span>, loads the library with the given name and results in an <span class="pre" title="Foreign Function Interface">FFI</span> function for it.</p>
-<p>You can then give a function name and it will look it up in the library and get the function.</p>
+<h3>requireSharedLibrary \libraryName \procSignature \procName</h3>
+<p>Loads the library with the given name and looks up the procedure <span class="pre">procName</span> with signature <span class="pre">procSignature</span> in it and results in an <span class="pre" title="Foreign Function Interface">FFI</span> for it.</p>
 <p>Example:</p>
 <pre>
-define openLL fromLibrary "libc.so.6" "open"
-define open translateFFI openLL 'messy 'C demarshalIntResult (marshalStr:marshalStr:nil)
+define puts requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cis 'puts
+runWorld (puts "Hello world")
 </pre>
+<p>See the <a href="../programming/manual/index.html">5D Programming Manual</a> for more details.</p>
 <hr/>
-<h3>translateFFI \f \purity \callingConvention \resultDemarshaller \parameterMarshallers</h3>
-<p>Given a LL function and a signature and a result demarshaller, results in a function, that, when called, will marshal arguments until there are enough, then call the LL function, then demarshal the result. </p>
-<p>Example:</p>
-<pre>
-define openLL fromLibrary "libc.so.6" "open"
-define open translateFFI openLL 'messy 'C demarshalIntResult (marshalStr:marshalStr:nil)
-</pre>
 </a>
 
 <a name="math"><h2>Higher Mathematics</h2>

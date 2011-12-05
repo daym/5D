@@ -26,3 +26,24 @@ span.pre { font-family: monospace; color: blue; }
 import 'foo
 foo'cos 2
 </pre>
+<hr/>
+<h2>Foreign Function Interface</h2>
+<p>You can load functions of shared libraries:</p>
+<p>Example:</p>
+<pre>
+define puts requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cis 'puts
+runWorld (puts "Hello world")
+</pre>
+<p>What this does is:</p>
+<p>- load the library with the given file name.</p>
+<p>- give a function signature.</p>
+<p>- give the name of the function to load (usually as a symbol).</p>
+
+<p>The function signature is a symbol whose str consists of the following characters:</p>
+<nl>
+<li>The calling convention, C.</li>
+<li>The type of the return value.</li>
+<li>The type of each of the parameters of the C function, in order.</li>
+</nl>
+
+<p>Result is a function which can be run in a world.</p>
