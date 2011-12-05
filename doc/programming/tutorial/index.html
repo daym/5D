@@ -214,6 +214,7 @@ runWorld
          readLine stdIn ;\name
          write stdout "Hello " ;\_
          write stdout name ;\_
+         flush stdout ;\_
          return name
 </pre>
 <p>What this does is:</p>
@@ -227,11 +228,11 @@ runWorld
 <p>If you want to spread your programs over multiple lines, you can. However, then, indentation rules come into effect.</p>
 <pre>
 if (x = 0)
-            1
+  1
 $elif (x = 1)
-            2
+  2
 $elif (x = 2)
-            3
+  3
 $else 4
 </pre>
 <p>These work as follows:</p>
