@@ -773,6 +773,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 						SetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY, _T(""));
 					}
 				} catch(...) {
+					throw; // FIXME
 				}
 				SetDialogFocus(self->dialog, IDC_COMMAND_ENTRY);
 				break;
@@ -831,7 +832,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 }
 struct REPLX::REPL* REPL_new(HWND parent) {
 	struct REPL* result;
-	result = (struct REPL*) calloc(1, sizeof(struct REPL));
+	result = new REPL; // (struct REPL*) calloc(1, sizeof(struct REPL));
 	REPL_init(result, parent);
 	return(result);
 }
@@ -879,6 +880,23 @@ static HWND createToolTip(HWND hDlg, int itemID, PTSTR pszText)
 #endif
 void REPL_init(struct REPL* self, HWND parent) {
 	HINSTANCE hinstance;
+	self->dialog = NULL;
+	self->B_file_modified = false;
+	self->fConfig = NULL;
+	self->fSearchDialog = NULL;
+	self->fSearchTerm = _T("");
+	self->fBSearchUpwards = true;
+	self->fBSearchCaseSensitive = true;
+	self->fTailEnvironment = NULL;
+	self->fTailUserEnvironment = NULL; 
+	self->fTailUserEnvironmentFrontier = NULL;
+	self->oldEditBoxProc = NULL;
+	self->fCompleter = NULL;
+	self->fEnvironmentKeys = NULL;
+	self->fEnvironmentMenu = NULL;
+	self->fModules = NULL;
+	self->fCursorPosition = 0;
+
 	self->fEnvironmentMenu = GetSubMenu(LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDM_ENVIRONMENT)), 0); /* FIXME global? */ /* TODO DestroyMenu */
 	self->fEnvironmentKeys = new std::set<AST::Symbol*>;
 	self->fBSearchUpwards = true;

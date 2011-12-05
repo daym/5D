@@ -584,6 +584,37 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
 	GError* error = NULL;
 	GtkMenuBar* menu_bar;
+
+	self->fWidget = NULL;
+	self->fMainBox = NULL;
+	self->fOutputArea = NULL;
+	self->fOutputScroller = NULL;
+	self->fOutputBuffer = NULL;
+	self->fCommandEntry = NULL;
+	self->fCommandBox = NULL;
+	self->fEnvironmentView = NULL;
+	self->fEnvironmentStore2 = NULL;
+	self->fEnvironmentKeys = NULL;
+	self->fExecuteButton = NULL;
+	self->fEditorBox = NULL;
+	self->fEnvironmentScroller = NULL;
+	self->fSaveDialog = NULL;
+	self->fOpenDialog = NULL;
+	self->fConfig = NULL;
+	self->fCommandCompleter = NULL;
+	self->fFileModified = false;
+	self->UI_builder = NULL;
+	self->accelerator_group = NULL;
+	self->fLATEXGenerator = NULL;
+	self->fSearchTerm = NULL;
+	self->fBSearchUpwards = true;
+	self->fBSearchCaseSensitive = true;
+	self->fTailEnvironment = NULL;
+	self->fTailUserEnvironment = NULL;
+	self->fTailUserEnvironmentFrontier = NULL;
+	self->fModules = NULL;
+	//GtkTextIter fCursorPosition;
+
 	self->fModules = NULL;
 	self->fBSearchUpwards = TRUE;
 	self->fBSearchCaseSensitive = TRUE;
@@ -971,7 +1002,7 @@ bool REPL_confirm_close(struct REPL* self) {
 }
 struct REPL* REPL_new(GtkWindow* parent) {
 	struct REPL* result;
-	result = (struct REPL*) calloc(1, sizeof(struct REPL));
+	result = new REPL; // (struct REPL*) calloc(1, sizeof(struct REPL));
 	REPL_init(result, parent);
 	return(result);
 }

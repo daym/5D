@@ -138,6 +138,11 @@ static char* REPL_ensure_default_environment_name(struct REPL* self) {
 	return(result);
 }
 void REPL_init(struct REPL* self) {
+	self->fTailEnvironment = NULL;
+	self->fTailUserEnvironment = NULL;
+	self->fTailUserEnvironmentFrontier = NULL;
+	self->fCursorPosition = 0;
+
 	self->fFileModified = false;
 	self->fModules = NULL;
 	self->fEnvironmentName = NULL;
