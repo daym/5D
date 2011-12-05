@@ -73,7 +73,6 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		print_S_Expression_CXX(output, position, indentation, AST::get_application_operator(node));
 		output << ' ';
 		++position;
-		indentation = position;
 		print_S_Expression_CXX(output, position, indentation, AST::get_application_operand(node));
 		output << ')';
 		++position;
@@ -87,15 +86,21 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 			++position;
 		}*/
 	} else if(abstraction_P(node)) {
+		int prevIndentation = indentation;
 		output << "(\\";
 		++position;
 		++position;
 		print_S_Expression_CXX(output, position, indentation, AST::get_abstraction_parameter(node));
 		output << ' ';
+		indentation = position;
+		output << std::endl;
+		print_indentation(output, indentation);
+		position = indentation;
 		++position;
 		print_S_Expression_CXX(output, position, indentation, AST::get_abstraction_body(node));
 		output << ')';
 		++position;
+		indentation = prevIndentation;
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
 		std::string value = str(node);
