@@ -5,6 +5,7 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <stdio.h>
 #include <string.h>
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
@@ -51,8 +52,8 @@ static AST::Node* wrapWrite(AST::Node* options, AST::Node* argument) {
 	char* text = get_native_string(iter->second);
 	++iter;
 	AST::Node* world = iter->second;
-	int result = fwrite(text, 1, strlen(text), (FILE*) f->native);
-	return(Evaluators::makeIOMonad(Numbers::internNative(result), world));
+	size_t result = fwrite(text, 1, strlen(text), (FILE*) f->native);
+	return(Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) result), world));
 }
 // FIXME unlimited length
 static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
@@ -67,6 +68,7 @@ static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
 		result = Evaluators::internNative(text);
 	} else
 		result = NULL;
+	// TODO ferror
 	return(Evaluators::makeIOMonad(result, world));
 }
 

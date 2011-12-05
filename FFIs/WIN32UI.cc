@@ -17,7 +17,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	if(parent && dynamic_cast<AST::Box*>(parent) != NULL) {
 		cParentWindow = (HWND) dynamic_cast<AST::Box*>(parent)->native;
 	}
-	AST::Node* type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("icon:"));
+	AST::Node* type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("type:"));
 	cType |= (type_ == AST::symbolFromStr("ok")) ? MB_OK :
 	         (type_ == AST::symbolFromStr("okcancel")) ? MB_OKCANCEL :
 			 (type_ == AST::symbolFromStr("abortretryignore")) ? MB_ABORTRETRYIGNORE :
