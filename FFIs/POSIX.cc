@@ -64,7 +64,7 @@ CLibrary::CLibrary(const char* name) {
 		//perror(name);
 	}
 }
-AST::Node* CLibrary::executeLowlevel(AST::Node* argument, int argumentCount) {
+AST::Node* CLibrary::executeLowlevel(AST::Node* argument, int argumentCount, AST::Symbol* signature) {
 	/* argument is the name (symbol). Result is a CProcedure */
 	if(str_P(argument))
 		argument = AST::symbolFromStr(((AST::Str*)argument)->text.c_str());
@@ -81,7 +81,7 @@ AST::Node* CLibrary::executeLowlevel(AST::Node* argument, int argumentCount) {
 			fprintf(stderr, "error: could not find symbol \"%s\" in library \"%s\"\n", nameSymbol->name, p->name.c_str());
 			return(fRepr);
 		}
-		p->knownProcedures[nameSymbol] = new CProcedure(proc, fRepr, argumentCount, 0);
+		p->knownProcedures[nameSymbol] = new CProcedure(proc, fRepr, argumentCount, 0, signature);
 		return(p->knownProcedures[nameSymbol]);
 	}
 }

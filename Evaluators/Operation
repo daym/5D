@@ -3,6 +3,7 @@
 #include <list>
 #include "AST/AST"
 #include "AST/Keyword"
+#include "AST/Symbol"
 
 namespace Evaluators {
 
@@ -45,12 +46,14 @@ struct CProcedure : AST::Box {
         AST::Node* fRepr;
 	int fArgumentCount; // sigh. <0: can also do keyword arguments.
 	int fReservedArgumentCount; // how many not to repr.
-        CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int aReservedArgumentCount);
+	AST::Symbol* fSignature;
+        CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int aReservedArgumentCount, AST::Symbol* aSignature);
 };
 #define DECLARE_SIMPLE_OPERATION(P) \
 extern Evaluators::CProcedure P;
 
-#define REGISTER_BUILTIN(P, argumentCount, reservedCount, R) Evaluators::CProcedure P((void*) P##_execute, R, argumentCount, reservedCount);
+/* for now, builtins don't provide their own signature and so WILL be called with unevaluated arguments */
+#define REGISTER_BUILTIN(P, argumentCount, reservedCount, R) Evaluators::CProcedure P((void*) P##_execute, R, argumentCount, reservedCount, NULL);
 
 #define DEFINE_SIMPLE_OPERATION(P, B) \
 extern Evaluators::CProcedure P; \

@@ -10,11 +10,12 @@
 
 namespace Evaluators {
 
-CProcedure::CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int aReservedArgumentCount) : 
+CProcedure::CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int aReservedArgumentCount, AST::Symbol* aSignature) : 
 	AST::Box(native),
 	fRepr(aRepr),
 	fArgumentCount(aArgumentCount),
-	fReservedArgumentCount(aReservedArgumentCount)
+	fReservedArgumentCount(aReservedArgumentCount),
+	fSignature(aSignature)
 {
 	assert(fReservedArgumentCount == 0 || fReservedArgumentCount == 1);
 }

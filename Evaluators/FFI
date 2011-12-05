@@ -14,7 +14,10 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace Evaluators {
 
-int get_native_integer(AST::Node* root);
+int get_native_int(AST::Node* root);
+long get_native_long(AST::Node* root);
+long long get_native_long_long(AST::Node* root);
+short get_native_short(AST::Node* root);
 void* get_native_pointer(AST::Node* root);
 bool get_native_boolean(AST::Node* root);
 char* get_native_string(AST::Node* root);

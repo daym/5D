@@ -17,17 +17,31 @@ namespace Evaluators {
 using namespace AST;
 using namespace Numbers;
 
-int get_native_integer(AST::Node* root) {
-	Int* rootInt = dynamic_cast<Int*>(root);
-	if(rootInt) {
-		return(rootInt->value);
-	}
-	/* FIXME */
-	return(0);
+typedef long long long_long;
+
+#define IMPLEMENT_NATIVE_GETTER(typ) \
+typ get_native_##typ(AST::Node* root) { \
+	/* FIXME support Integer */ \
+	Int* rootInt = dynamic_cast<Int*>(root); \
+	if(rootInt) { \
+		/* FIXME size check */ \
+		return(rootInt->value); \
+	} \
+	/* FIXME */ \
+	return(0); \
 }
+
+IMPLEMENT_NATIVE_GETTER(int)
+IMPLEMENT_NATIVE_GETTER(long)
+IMPLEMENT_NATIVE_GETTER(long_long)
+IMPLEMENT_NATIVE_GETTER(short)
+
 void* get_native_pointer(AST::Node* root) {
-	/* FIXME */
-	return(NULL);
+	Box* rootBox = dynamic_cast<Box*>(root);
+	if(rootBox)
+		return(rootBox->native);
+	else
+		return(NULL);
 }
 bool get_native_boolean(AST::Node* root) {
 	/* FIXME */

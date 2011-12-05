@@ -14,6 +14,7 @@ DISTDIR = $(PACKAGE)-$(VERSION)
 LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a -ldl
 GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
 GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
+FFIS = FFIs/TrampolineSymbols.o
 
 NUMBER_OBJECTS = Numbers/Integer.o Numbers/Real.o Numbers/BigUnsigned.o
 
@@ -78,7 +79,7 @@ Evaluators/Evaluators.o: Evaluators/Evaluators.cc Evaluators/Evaluators Evaluato
 Evaluators/Operation.o: Evaluators/Operation.cc Evaluators/Operation Evaluators/Evaluators AST/AST AST/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList
 Evaluators/Builtins.o: Evaluators/Builtins.cc Scanners/MathParser Evaluators/Builtins Numbers/Integer Numbers/Real AST/AST AST/Symbol AST/Keyword FFIs/ResultMarshaller FFIs/FFIs  Scanners/OperatorPrecedenceList Numbers/Small Evaluators/Operation
 Evaluators/Backtracker.o: Evaluators/Backtracker.cc Evaluators/Backtracker
-Evaluators/FFI.o: Evaluators/FFI.cc Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real
+Evaluators/FFI.o: Evaluators/FFI.cc Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation
 FFIs/POSIX.o: FFIs/POSIX.cc Evaluators/Builtins FFIs/FFIs Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Numbers/Integer Numbers/Real Evaluators/Operation
 FFIs/ArgumentMarshaller.o: FFIs/ArgumentMarshaller.cc FFIs/ArgumentMarshaller Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators FFIs/CallMarshaller Evaluators/Builtins
 FFIs/ResultMarshaller.o: FFIs/ResultMarshaller.cc FFIs/ResultMarshaller Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators FFIs/ArgumentMarshaller Evaluators/Builtins
@@ -95,13 +96,13 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 	./Scanners/test-Scanner
 	./Scanners/test-MathParser
 
-REPL/5DREPL: REPL/main.o REPL/REPL.o Scanners/MathParser.o AST/AST.o AST/Symbol.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o FFIs/ResultMarshaller.o FFIs/ArgumentMarshaller.o FFIs/CallMarshaller.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/TUI.o
+REPL/5DREPL: REPL/main.o REPL/REPL.o Scanners/MathParser.o AST/AST.o AST/Symbol.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o FFIs/ResultMarshaller.o FFIs/ArgumentMarshaller.o FFIs/CallMarshaller.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/TUI.o $(FFIS)
 	g++ -o $@ $^ $(LDFLAGS)
 
-TUI/TUI: TUI/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o FFIs/ResultMarshaller.o FFIs/ArgumentMarshaller.o FFIs/CallMarshaller.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/TUI.o
+TUI/TUI: TUI/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o FFIs/ResultMarshaller.o FFIs/ArgumentMarshaller.o FFIs/CallMarshaller.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/TUI.o $(FFIS)
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
-TUI2/5DTUI: TUI2/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o FFIs/ResultMarshaller.o FFIs/ArgumentMarshaller.o FFIs/CallMarshaller.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o $(NUMBER_OBJECTS) Evaluators/Operation.o
+TUI2/5DTUI: TUI2/main.o Scanners/MathParser.o AST/AST.o AST/Symbol.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o FFIs/ResultMarshaller.o FFIs/ArgumentMarshaller.o FFIs/CallMarshaller.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o $(NUMBER_OBJECTS) Evaluators/Operation.o $(FFIS)
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 REPL/main.o: REPL/main.cc REPL/REPL REPL/REPLEnvironment FFIs/FFIs AST/AST AST/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators FFIs/ResultMarshaller Scanners/MathParser Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Scanners/MathParser Scanners/Scanner Evaluators/Evaluators Numbers/Small Evaluators/Operation Numbers/Integer Numbers/Real
@@ -119,6 +120,21 @@ FFIs/TUI.o: FFIs/TUI.cc FFIs/UI FFIs/FFIs AST/AST AST/Symbol Evaluators/Evaluato
 FFIs/GTKUI.o: FFIs/GTKUI.cc FFIs/UI FFIs/FFIs AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real 
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
+FFIs/TrampolineSymbols.o: FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols AST/Symbol
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
+
+FFIs/Combinations: FFIs/generateCombinations
+	FFIs/generateCombinations > FFIs/Combinations.new && mv FFIs/Combinations.new FFIs/Combinations
+
+FFIs/Trampolines: FFIs/generateTrampolines FFIs/Combinations
+	FFIs/generateTrampolines < FFIs/Combinations > FFIs/Trampolines.new && mv FFIs/Trampolines.new FFIs/Trampolines
+
+FFIs/TrampolineSymbols.cc: FFIs/generateTrampolineSymbols FFIs/Combinations
+	FFIs/generateTrampolineSymbols < FFIs/Combinations > FFIs/TrampolineSymbols.cc.new && mv FFIs/TrampolineSymbols.cc.new FFIs/TrampolineSymbols.cc
+
+FFIs/TrampolineSymbols: FFIs/TrampolineSymbols.cc Makefile
+	(echo "#ifndef __TRAMPOLINE_SYMBOLS_H" ; echo "#define __TRAMPOLINE_SYMBOLS_H" ; cat FFIs/TrampolineSymbols.cc | sed 's@ = .*$$@;@' ; echo "#endif")  > FFIs/TrampolineSymbols.new && mv FFIs/TrampolineSymbols.new FFIs/TrampolineSymbols
+	
 TUI/Interrupt.o: TUI/Interrupt.cc TUI/Interrupt
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
@@ -140,7 +156,7 @@ GUI/GTKLATEXGenerator.o: GUI/GTKLATEXGenerator.cc GUI/GTKLATEXGenerator
 GUI/GTKView.o: GUI/GTKView.cc
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/5D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o AST/Symbols.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Formatters/SExpression.o REPL/REPL.o FFIs/ArgumentMarshaller.o FFIs/ResultMarshaller.o FFIs/CallMarshaller.o FFIs/ArgumentMarshaller.o GUI/GTKCompleter.o Evaluators/Backtracker.o AST/Keyword.o GUI/GTKTerminalEmulator.o Scanners/OperatorPrecedenceList.o Formatters/Math.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/GTKUI.o
+GUI/5D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o AST/Symbols.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Formatters/SExpression.o REPL/REPL.o FFIs/ArgumentMarshaller.o FFIs/ResultMarshaller.o FFIs/CallMarshaller.o FFIs/ArgumentMarshaller.o GUI/GTKCompleter.o Evaluators/Backtracker.o AST/Keyword.o GUI/GTKTerminalEmulator.o Scanners/OperatorPrecedenceList.o Formatters/Math.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/GTKUI.o $(FFIS)
 	g++ -o $@ $^ $(GUI_LDFLAGS) -lutil
 
 GUI/GTKTerminalEmulator.o: GUI/GTKTerminalEmulator.cc GUI/TerminalEmulator

@@ -28,7 +28,7 @@ public:
 	struct CLibraryP* p; // private
 	bool goodP() const;
 	CLibrary(const char* name);
-	virtual AST::Node* executeLowlevel(AST::Node* argument, int argumentCount); /* argument is the name (symbol). */
+	virtual AST::Node* executeLowlevel(AST::Node* argument, int argumentCount, AST::Symbol* signature); /* argument is the name (symbol). */
 };
 
 };
