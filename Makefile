@@ -1,6 +1,6 @@
 
 SUBDIRS = Config REPL Linear_Algebra Bugs WIN32 Tests FFIs Bootstrappers Compilers AST Evaluators TUI Numbers Formatters doc Runtime debian GUI Scanners
-SUBDIRS2 = $(SUBDIRS) doc/FFI doc/building doc/installation doc/interna doc/library doc/programming doc/programming/tutorial Tests/0*
+SUBDIRS2 = $(SUBDIRS) doc/building doc/installation doc/interna doc/library doc/programming doc/programming/manual doc/programming/tutorial Tests/0*
 EXECUTABLES = REPL/5DREPL GUI/5D TUI/TUI Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol Scanners/test-MathParser Scanners/test-Scanner GUI/5D REPL/5DREPL
 
 CXXFLAGS += -Wall -I. -g3 -fno-strict-overflow
