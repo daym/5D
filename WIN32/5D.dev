@@ -1,7 +1,7 @@
 [Project]
 FileName=5D.dev
 Name=5D
-UnitCount=69
+UnitCount=71
 Type=0
 Ver=1
 ObjFiles=
@@ -706,6 +706,25 @@ BuildCmd=
 
 [Unit69]
 FileName=..\Evaluators\Operation
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit70]
+FileName=..\FFIs\WIN32UI.cc
+CompileCpp=1
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit71]
+FileName=..\FFIs\UI
 Folder=5D
 Compile=0
 Link=0

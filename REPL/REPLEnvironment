@@ -8,6 +8,7 @@
 #include "FFIs/FFIs"
 #include "AST/AST"
 #include "AST/Keyword"
+#include "FFIs/UI"
 
 namespace GUI {
 };
@@ -412,6 +413,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stderr"), AST::makeBox(stderr));
 	REPL_add_builtin_method(self, AST::symbolFromStr("write"), &Evaluators::Writer);
 	REPL_add_builtin_method(self, AST::symbolFromStr("readLine"), &Evaluators::LineReader);
+	REPL_add_builtin_method(self, AST::symbolFromStr("messageBox"), &FFIs::MessageBoxDisplayer);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }

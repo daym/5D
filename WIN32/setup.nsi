@@ -68,7 +68,8 @@ Section -Main SEC0000
     
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" "$INSTDIR\bin\5D.exe" "" "$INSTDIR\share\5D.ico" "" SW_SHOWNORMAL "" "5D"
-    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name) Programming Tutorial.lnk" "$INSTDIR\doc\programming\tutorial\index.html" "" "$INSTDIR\share\5D.ico" "" SW_SHOWNORMAL "" "5D"
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name) Tutorial.lnk" "$INSTDIR\doc\programming\tutorial\index.html" "" "$INSTDIR\share\5D.ico" "" SW_SHOWNORMAL "" "5D"
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name) Programming Manual.lnk" "$INSTDIR\doc\programming\manual\index.html" "" "$INSTDIR\share\5D.ico" "" SW_SHOWNORMAL "" "5D"
     CreateShortCut "$SMPROGRAMS\$StartMenuGroup\$(^Name) Library Reference.lnk" "$INSTDIR\doc\library\index.html" "" "$INSTDIR\share\5D.ico" "" SW_SHOWNORMAL "" "5D"
 
     ; Processing [HKEY_CLASSES_ROOT\5DEnvironmentFile]
@@ -163,7 +164,8 @@ Section -un.post UNSEC0001
     DeleteRegKey HKCR .5D
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name) Programming Tutorial.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name) Tutorial.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name) Programming Manual.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name) Library Reference.lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     Delete /REBOOTOK $INSTDIR\bin\5D.exe

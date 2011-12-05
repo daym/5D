@@ -1,5 +1,8 @@
 #ifndef __EVALUATORS_OPERATION_H
 #define __EVALUATORS_OPERATION_H
+#include <list>
+#include "AST/AST"
+#include "AST/Keyword"
 
 namespace Evaluators {
 

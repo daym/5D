@@ -51,8 +51,8 @@ static AST::Node* wrapWrite(AST::Node* options, AST::Node* argument) {
 	char* text = get_native_string(iter->second);
 	++iter;
 	AST::Node* world = iter->second;
-	int result = fwrite(text, strlen(text), 1, (FILE*) f->native);
-	return(Evaluators::makeMonad(Numbers::internNative(result), world));
+	int result = fwrite(text, 1, strlen(text), (FILE*) f->native);
+	return(Evaluators::makeIOMonad(Numbers::internNative(result), world));
 }
 // FIXME unlimited length
 static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
@@ -67,7 +67,7 @@ static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
 		result = Evaluators::internNative(text);
 	} else
 		result = NULL;
-	return(Evaluators::makeMonad(result, world));
+	return(Evaluators::makeIOMonad(result, world));
 }
 
 DEFINE_FULL_OPERATION(Writer, {
@@ -76,6 +76,7 @@ DEFINE_FULL_OPERATION(Writer, {
 DEFINE_FULL_OPERATION(LineReader, {
 	return(wrapReadLine(fn, argument));
 })
+
 REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readLine"))
 

@@ -455,11 +455,11 @@ std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* opt
 	}
 	if(B_pending_value) {
 		B_pending_value = false;
-		result.push_front(std::pair<AST::Keyword*, AST::Node*>(NULL, v));
+		result.push_front(std::pair<AST::Keyword*, AST::Node*>(NULL, p));
 	}
 	for(std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = result.begin(); iter != result.end(); ++iter) {
-		std::string kk = str(iter->first);
-		std::string vv = str(iter->second);
+		//std::string kk = str(iter->first);
+		//std::string vv = str(iter->second);
 		//printf("%s %s\n", kk.c_str(), vv.c_str());
 	}
 	return(result);
