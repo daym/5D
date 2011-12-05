@@ -79,14 +79,14 @@ print("""
 #undef inh
 #undef inL
 
-static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::Node* argument) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::Node* world) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, NULL/*world*/);
 	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
 	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator endIter = arguments.end();
 	assert(iter != endIter);
         assert(iter->first == NULL);
 	AST::Symbol* signature = proc->fSignature;
-	return """)
+	return Evaluators::makeIOMonad(""")
 
 def checks(combination):
     result = [combination]
@@ -101,7 +101,7 @@ for combination in combinations:
     print("  (%(checks)s) ? jump%(combination)s(proc->native, iter, endIter) : " % {"checks": " || ".join(map(lambda s: "signature == S_%s" % s, checks(combination))), "combination": combination})
     
 print("""
-    NULL /* FIXME */;
+    NULL /* FIXME */, world);
 } /* jumpTrampoline */
 
 };
