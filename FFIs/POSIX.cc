@@ -45,7 +45,7 @@ AST::Node* wrapAccessLibrary(AST::Node* options, AST::Node* argument) {
 	void* nativeProc = body && fnName ? dlsym(body, Evaluators::get_native_string(fnName)) : NULL; // FIXME
 	// filename is the second argument, so ignore.
 	//return(Evaluators::reduce(AST::makeApplication(body, argument)));
-	return(new CProcedure(nativeProc, AST::makeApplication(AST::makeApplication(AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), libName), signature), fnName), strlen(signature->name) - 2 + 1/*monad*/, 0, signature));
+	return(new CProcedure(nativeProc, AST::makeApplication(AST::makeApplication(AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), libName), quote(signature)), quote(fnName)), strlen(signature->name) - 2 + 1/*monad*/, 0, signature));
 }
 AST::Node* wrapLoadLibraryC(const char* name) {
 	void* clib = dlopen(name, RTLD_LAZY);

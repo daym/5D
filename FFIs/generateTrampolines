@@ -101,7 +101,7 @@ for combination in combinations:
     print("  (%(checks)s) ? jump%(combination)s(proc->native, iter, endIter) : " % {"checks": " || ".join(map(lambda s: "signature == S_%s" % s, checks(combination))), "combination": combination})
     
 print("""
-    NULL /* FIXME */, world);
+    NULL /* FIXME */, Evaluators::reduce(world));
 } /* jumpTrampoline */
 
 };
