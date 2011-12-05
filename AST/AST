@@ -49,6 +49,9 @@ struct Box : Node {
 
 Cons* makeCons(Node* head, Node* tail);
 Str* makeStr(const char* text);
+static inline Box* makeBox(void* native) {
+	return new Box(native);
+}
 bool str_P(AST::Node* node);
 static inline bool abstraction_P(Node* root) {
 	return(dynamic_cast<Abstraction*>(root) != NULL);

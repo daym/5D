@@ -10,6 +10,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/Builtins"
 #include "AST/AST"
 #include "Numbers/Integer"
+#include "Evaluators/Operation"
 
 namespace Evaluators {
 using namespace AST;
@@ -41,4 +42,41 @@ char* get_native_string(AST::Node* root) {
 	}
 }
 
-}; /* end namspace */
+// FIXME move these to their own module:
+static AST::Node* wrapWrite(AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
+	++iter;
+	char* text = get_native_string(iter->second);
+	++iter;
+	AST::Node* world = iter->second;
+	int result = fwrite(text, strlen(text), 1, (FILE*) f->native);
+	return(Evaluators::makeMonad(Numbers::internNative(result), world));
+}
+// FIXME unlimited length
+static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
+	++iter;
+	AST::Node* world = iter->second;
+	char text[2049];
+	AST::Node* result = NULL;
+	if(fgets(text, 2048, (FILE*) f->native)) {
+		result = Evaluators::internNative(text);
+	} else
+		result = NULL;
+	return(Evaluators::makeMonad(result, world));
+}
+
+DEFINE_FULL_OPERATION(Writer, {
+	return(wrapWrite(fn, argument));
+})
+DEFINE_FULL_OPERATION(LineReader, {
+	return(wrapReadLine(fn, argument));
+})
+REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write"))
+REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readLine"))
+
+}; /* end namespace */

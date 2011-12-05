@@ -406,6 +406,12 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, Symbols::SunsafeRunWorld2, &Evaluators::WorldRunner);
 	REPL_add_static_builtin_binding(self, Symbols::Shasht, Evaluators::churchTrue);
 	REPL_add_static_builtin_binding(self, Symbols::Shashf, Evaluators::churchFalse);
+	// TODO move I/O into its own module?
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stdin"), AST::makeBox(stdin));
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stdout"), AST::makeBox(stdout));
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stderr"), AST::makeBox(stderr));
+	REPL_add_builtin_method(self, AST::symbolFromStr("write"), &Evaluators::Writer);
+	REPL_add_builtin_method(self, AST::symbolFromStr("readLine"), &Evaluators::LineReader);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }

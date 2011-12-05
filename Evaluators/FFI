@@ -19,6 +19,9 @@ void* get_native_pointer(AST::Node* root);
 bool get_native_boolean(AST::Node* root);
 char* get_native_string(AST::Node* root);
 
+DECLARE_FULL_OPERATION(Writer)
+DECLARE_FULL_OPERATION(LineReader)
+
 }; // end namespace
 
 #endif /* ndef __5D_Evaluators_FFI_H */

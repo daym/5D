@@ -49,6 +49,9 @@ DECLARE_SIMPLE_OPERATION(Quoter)
 static inline AST::Node* uncurried(AST::Node* actualOperation, AST::Node* fallback) {
 	return(AST::makeApplication(&Evaluators::Reducer, AST::makeApplication(actualOperation, fallback)));
 }
+static inline AST::Node* makeMonad(AST::Node* result, AST::Node* world) {
+	return(AST::makeCons(result, AST::makeCons(world, NULL)));
+}
 
 };
 
