@@ -46,7 +46,18 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	AST::Node* world = iter->second;
 	AST::Node* caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
 	cCaption = FromUTF8(Evaluators::get_native_string(caption));
-	AST::Node* result = Numbers::internNative(MessageBoxW(cParentWindow, cText.c_str(), cCaption.c_str(), cType));
+	int cResult = MessageBoxW(cParentWindow, cText.c_str(), cCaption.c_str(), cType);
+	AST::Symbol* result;
+	result = (cResult == MB_OK) ? AST::symbolFromStr("ok") : 
+	         (cResult == MB_CANCEL) ? AST::symbolFromStr("cancel") : 
+	         (cResult == MB_YES) ? AST::symbolFromStr("yes") : 
+	         (cResult == MB_NO) ? AST::symbolFromStr("no") : 
+	         (cResult == MB_ABORT) ? AST::symbolFromStr("abort") : 
+	         (cResult == MB_RETRY) ? AST::symbolFromStr("retry") : 
+	         (cResult == MB_IGNORE) ? AST::symbolFromStr("ignore") : 
+	         (cResult == MB_TRY) ? AST::symbolFromStr("try") : 
+	         (cResult == MB_CONTINUE) ? AST::symbolFromStr("continue") : 
+	         AST::symbolFromStr("unknown");
 
 	/* TODO 
 	#define MB_NOFOCUS                  0x00008000L
