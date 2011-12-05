@@ -7,6 +7,7 @@
 #include "AST/Symbols"
 #include "Evaluators/Operation"
 #include "Evaluators/Evaluators"
+#include "FFIs/Trampolines"
 
 namespace Evaluators {
 
@@ -60,8 +61,11 @@ AST::Node* call_builtin(AST::Node* fn, AST::Node* argument) {
 	if(argumentCount != proc2->fArgumentCount && argumentCount != -proc2->fArgumentCount) {
 		return new CurriedOperation(fn, argument);
 	}
-	AST::Node* (*proc3)(AST::Node*, AST::Node*) = (AST::Node* (*)(AST::Node*, AST::Node*)) proc2->native;
-	return((*proc3)(fn, argument));
+	if(proc2->fSignature == NULL) {
+		AST::Node* (*proc3)(AST::Node*, AST::Node*) = (AST::Node* (*)(AST::Node*, AST::Node*)) proc2->native;
+		return((*proc3)(fn, argument));
+	} else
+		return(Trampolines::jumpT(proc2, fn, argument));
 }
 
 AST::Node* repr(AST::Node* node) {
