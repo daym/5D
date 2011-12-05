@@ -4,7 +4,6 @@
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
 #include "Evaluators/Evaluators"
-#include "FFIs/ResultMarshaller"
 #include "FFIs/FFIs"
 #include "AST/AST"
 #include "AST/Keyword"

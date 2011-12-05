@@ -1,6 +1,0 @@
-#ifndef __5D_FFIS_RESULTMARSHALLER_H
-#define __5D_FFIS_RESULTMARSHALLER_H
-#include "Evaluators/FFI"
-namespace FFIs {
-};
-#endif /*ndef __5D_FFIS_RESULTMARSHALLER_H*/

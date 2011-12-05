@@ -31,7 +31,6 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/Builtins"
 #include "FFIs/FFIs"
 #include "GUI/GTKCompleter"
-#include "FFIs/ResultMarshaller"
 #include "GUI/WindowIcon"
 #include "Scanners/OperatorPrecedenceList"
 
