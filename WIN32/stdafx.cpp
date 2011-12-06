@@ -51,3 +51,15 @@ std::wstring FromUTF8(const char* source) {
 		abort();
 	return(result);
 }
+std::wstring GetWIN32Diagnostics(void) {
+	LPVOID lpMsgBuf;
+	//LPVOID lpDisplayBuf;
+	std::wstring result;
+	DWORD dw = GetLastError(); 
+	if(FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL) > 0) {
+		result = (LPWSTR) lpMsgBuf;
+		LocalFree(lpMsgBuf);
+	} else
+		result = _T("???");
+	return(result);
+}

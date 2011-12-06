@@ -28,3 +28,4 @@ typedef DWORD uint32_t; /* FIXME */
 FILE* fmemopen(void* contents, size_t contents_length, const char* mode);
 char* ToUTF8(const std::wstring& source);
 std::wstring FromUTF8(const char* source);
+std::wstring GetWIN32Diagnostics(void);

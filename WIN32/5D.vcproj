@@ -188,10 +188,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\FFIs\ArgumentMarshaller.cc"
-				>
-			</File>
-			<File
 				RelativePath="..\AST\AST.cc"
 				>
 			</File>
@@ -213,10 +209,6 @@
 			</File>
 			<File
 				RelativePath="..\Compilers\CallGen.cc"
-				>
-			</File>
-			<File
-				RelativePath="..\FFIs\CallMarshaller.cc"
 				>
 			</File>
 			<File
@@ -280,10 +272,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\FFIs\ResultMarshaller.cc"
-				>
-			</File>
-			<File
 				RelativePath="..\Scanners\Scanner.cc"
 				>
 			</File>
@@ -324,6 +312,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\FFIs\TrampolineSymbols.cc"
+				>
+			</File>
+			<File
 				RelativePath="..\Formatters\UTFStateMachine.cc"
 				>
 			</File>
@@ -358,10 +350,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\FFIs\ArgumentMarshaller"
-				>
-			</File>
-			<File
 				RelativePath="..\AST\AST"
 				>
 			</File>
@@ -386,19 +374,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\FFIs\CallMarshaller"
-				>
-			</File>
-			<File
 				RelativePath="..\Compilers\X86\CDECLCallGen"
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\CodeGen"
+				RelativePath="..\Compilers\X86\CodeGen"
 				>
 			</File>
 			<File
-				RelativePath="..\Compilers\X86\CodeGen"
+				RelativePath="..\Compilers\CodeGen"
 				>
 			</File>
 			<File
@@ -474,10 +458,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\FFIs\ResultMarshaller"
-				>
-			</File>
-			<File
 				RelativePath="..\Scanners\Scanner"
 				>
 			</File>
@@ -507,6 +487,14 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath="..\FFIs\Trampolines"
+				>
+			</File>
+			<File
+				RelativePath="..\FFIs\TrampolineSymbols"
 				>
 			</File>
 			<File
