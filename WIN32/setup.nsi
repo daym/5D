@@ -5,7 +5,7 @@ Name 5D
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.0.8
+!define VERSION 0.0.10
 !define COMPANY "X"
 !define URL ""
 
