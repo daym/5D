@@ -288,7 +288,7 @@ static AST::Node* fetchValueAndWorld(AST::Node* n) {
 	AST::Cons* cons = dynamic_cast<AST::Cons*>(n);
 	if(!cons)
 		return(FALLBACK); /* WTF */
-	// DO NOT REMOVE:
+	// DO NOT REMOVE because it is possible that the monad only changes the world even though we don't care about the result.
 	Evaluators::evaluateToCons(cons->tail);
 	return(cons->head);
 }
