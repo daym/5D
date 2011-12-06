@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from sets import Set as set
 import sys
 
 longNames = {
@@ -57,14 +58,24 @@ combinations = set()
 for combination in sys.stdin.readlines():
     combination = combination.rstrip("\n")
     combinations.add(combination)
+    def getReturner():
+       if combination[1] != "v":
+          return ("return in%s" % combination[1]) 
+       else:
+          return "inv"
+    def getFallback():
+       if combination[1] == "v":
+          return "; return NULL;"
+       else:
+          return ")"
     content = combination[1 : ]
     print("typedef %s (*proc_%s_t)(%s);" % (getLongName(content[0]), combination, ", ".join(map(getLongName, content[1:]))))
     print("""static inline AST::Node* jump%(combination)s(void* p, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end) {
         proc_%(combination)s_t proc = (proc_%(combination)s_t) p;
         %(returner)s((*proc)(%(marshallers)s))%(fallback)s; }""" % {"combination": combination,
        "marshallers": ", ".join(map(lambda s: "un%s" % s, combination[2:])),
-       "returner": ("return in%s" % combination[1]) if combination[1] != "v" else "inv",
-       "fallback": "; return NULL;" if combination[1] == "v" else ")",
+       "returner": getReturner(),
+       "fallback": getFallback(),
        })
 print("""
 
