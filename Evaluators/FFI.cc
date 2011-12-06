@@ -105,7 +105,7 @@ DEFINE_FULL_OPERATION(Flusher, {
 })
 
 REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write"))
-REGISTER_BUILTIN(Flusher, 3, 0, AST::symbolFromStr("flush"))
+REGISTER_BUILTIN(Flusher, 2, 0, AST::symbolFromStr("flush"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readLine"))
 
 }; /* end namespace */

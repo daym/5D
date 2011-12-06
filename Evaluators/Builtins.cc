@@ -232,9 +232,9 @@ REGISTER_STR(Str, {
 	sst << "\"";
 	for(item = node->text.c_str(); (c = *item); ++item) {
 		if(c == '"')
-			sst << '\\';
+			sst << "\\\"";
 		else if(c == '\\')
-			sst << '\\';
+			sst << "\\\\";
 		else if(c < 32) {
 			switch(c) {
 			case 7:
