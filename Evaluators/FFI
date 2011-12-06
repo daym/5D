@@ -23,6 +23,7 @@ bool get_native_boolean(AST::Node* root);
 char* get_native_string(AST::Node* root);
 
 DECLARE_FULL_OPERATION(Writer)
+DECLARE_FULL_OPERATION(Flusher)
 DECLARE_FULL_OPERATION(LineReader)
 
 }; // end namespace

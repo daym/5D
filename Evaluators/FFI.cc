@@ -69,6 +69,16 @@ static AST::Node* wrapWrite(AST::Node* options, AST::Node* argument) {
 	size_t result = fwrite(text, 1, strlen(text), (FILE*) f->native);
 	return(Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) result), world));
 }
+// FIXME move these to their own module:
+static AST::Node* wrapFlush(AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
+	++iter;
+	AST::Node* world = iter->second;
+	size_t result = fflush((FILE*) Evaluators::get_native_pointer(f));
+	return(Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) result), world));
+}
 // FIXME unlimited length
 static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
@@ -92,8 +102,12 @@ DEFINE_FULL_OPERATION(Writer, {
 DEFINE_FULL_OPERATION(LineReader, {
 	return(wrapReadLine(fn, argument));
 })
+DEFINE_FULL_OPERATION(Flusher, {
+	return(wrapFlush(fn, argument));
+})
 
 REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write"))
+REGISTER_BUILTIN(Flusher, 3, 0, AST::symbolFromStr("flush"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readLine"))
 
 }; /* end namespace */
