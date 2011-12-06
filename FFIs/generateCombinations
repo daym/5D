@@ -12,43 +12,46 @@ alphabet = ["p", "i", "h", "l"]
 
 result = []
 
-digits = 5 * [0]
+digits = None
+def increaseDigit(v):
+  if v is None:
+    v = 0
+  else:
+    v = v + 1
+  return(v)
 def increase():
     global digits
     i = len(digits) - 1
-    digits[i] += 1
+    digits[i] = increaseDigit(digits[i])
     while i >= 0 and digits[i] >= len(alphabet):
         digits[i] -= len(alphabet)
         i = i - 1
         if i < 0:
             return(False)
-        digits[i] += 1
+        digits[i] = increaseDigit(digits[i])
     return(True)
-def reset():
+def reset(cc):
     global digits
-    digits = 5 * [0]
-
+    if cc == "P":
+        digits = 5 * [None]
+    else:
+        digits = 5 * [0]
+def galphabet(a):
+    if a is None:
+        return ""
+    else:
+        return alphabet[a]
 for cc in ccs:
   print("%svs" % cc)
   print("%svps" % cc)
   print("%ssp" % cc)
   print("%svpp" % cc)
   print("%sis" % cc)
-
-  reset()
+  reset(cc)
   while True:
-      print ("%s%s%s%s%s%s" % (cc, alphabet[digits[0]], alphabet[digits[1]], alphabet[digits[2]], alphabet[digits[3]], alphabet[digits[4]]))
-      if cc == "P" and digits[4] == 1:
-        if digits[3] == 1:
-          if digits[2] == 1:
-            if digits[1] == 1:
-              print ("%s%s%s%s%s%s" % (cc, alphabet[digits[0]], "", "", "", ""))
-            else:
-              print ("%s%s%s%s%s%s" % (cc, alphabet[digits[0]], alphabet[digits[1]], "", "", ""))
-          else:
-            print ("%s%s%s%s%s%s" % (cc, alphabet[digits[0]], alphabet[digits[1]], alphabet[digits[2]], "", ""))
-        else:
-          print ("%s%s%s%s%s%s" % (cc, alphabet[digits[0]], alphabet[digits[1]], alphabet[digits[2]], alphabet[digits[3]], ""))
+      v = ("%s%s%s%s%s%s" % (cc, galphabet(digits[0]), galphabet(digits[1]), galphabet(digits[2]), galphabet(digits[3]), galphabet(digits[4])))
+      if len(v) > 1:
+        print(v)
       if not increase():
          break
 
