@@ -310,6 +310,7 @@ void Scanner::parse_structural(int input) {
 void Scanner::parse_string(int input) {
 	std::stringstream matchtext;
 	// assert input == '"'
+	// TODO S-Expressions probably shouldn't use this.
 	bool B_escaped = false;
 	for(input = increment_position(fgetc(input_file)); input != EOF && (input != '"' || B_escaped); input = increment_position(fgetc(input_file))) {
 		if(!B_escaped) {
@@ -321,6 +322,30 @@ void Scanner::parse_string(int input) {
 		} else { /* escaped */
 			B_escaped = false;
 			switch(input) {
+			case 'a':
+				matchtext << '\a';
+				break;
+			case 'b':
+				matchtext << '\b';
+				break;
+			case 't':
+				matchtext << '\t';
+				break;
+			case 'n':
+				matchtext << '\n';
+				break;
+			case 'v':
+				matchtext << '\v';
+				break;
+			case 'f':
+				matchtext << '\f';
+				break;
+			case 'r':
+				matchtext << '\r';
+				break;
+			case 'e':
+				matchtext << (char) 27;
+				break;
 			case '\\':
 			default:
 				matchtext << (char) input;

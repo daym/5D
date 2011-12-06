@@ -178,6 +178,8 @@ void REPL_append_to_output_buffer(struct REPL* self, char const* text) {
 	char* newline;
 	for(pos = buffer = strdup(text); *pos; ) {
 		newline = strchr(pos, '\n');
+		if(newline == NULL)
+			newline = pos + strlen(pos);
 		*newline = 0;
 		add_history(pos);
 		pos += strlen(pos);

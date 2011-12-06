@@ -223,6 +223,8 @@ REGISTER_STR(Cons, {
 	return(result.str());
 })
 
+static char hexdigits[17] = "0123456789abcdef";
+
 REGISTER_STR(Str, {
 	std::stringstream sst;
 	const char* item;
@@ -233,8 +235,37 @@ REGISTER_STR(Str, {
 			sst << '\\';
 		else if(c == '\\')
 			sst << '\\';
-		/* TODO escape other things? not that useful... */
-		sst << c;
+		else if(c < 32) {
+			switch(c) {
+			case 7:
+				sst << "\\a";
+				break;
+			case 8:
+				sst << "\\b";
+				break;
+			case 9:
+				sst << "\\t";
+				break;
+			case 10:
+				sst << "\\n";
+				break;
+			case 11:
+				sst << "\\v";
+				break;
+			case 12:
+				sst << "\\f";
+				break;
+			case 13:
+				sst << "\\r";
+				break;
+			case 27:
+				sst << "\\e";
+				break;
+			default:
+				sst << "\\x" << hexdigits[c >> 4] << hexdigits[c & 0xF];
+			}
+		} else
+			sst << c;
 	}
 	sst << "\"";
 	return(sst.str());
