@@ -57,7 +57,7 @@ protected:
 			++line_number;
 			column_number = 0;
 			B_beginning_of_line = true;
-		} else if(B_beginning_of_line && (input != ' ' && input != '\t' && input != EOF)) {
+		} else if(B_beginning_of_line && (input != ' ' && input != '\t' && input != EOF && input != '\r')) {
 			B_beginning_of_line = false;
 			update_indentation();
 			++column_number;
