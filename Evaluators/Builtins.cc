@@ -429,7 +429,7 @@ REGISTER_BUILTIN(KeywordFromStrGetter, 1, 0, AST::symbolFromStr("keywordFromStr"
 REGISTER_BUILTIN(KeywordStr, 1, 0, AST::symbolFromStr("keywordStr"))
 REGISTER_BUILTIN(ListFromStrGetter, 1, 0, AST::symbolFromStr("listFromStr"))
 REGISTER_BUILTIN(StrFromListGetter, 1, 0, AST::symbolFromStr("strFromList"))
-REGISTER_BUILTIN(WorldRunner, 1, 0, AST::symbolFromStr("internalRunWorld2"))
+REGISTER_BUILTIN(WorldRunner, 1, 0, AST::symbolFromStr("unsafeRunWorld2"))
 
 std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > result;
