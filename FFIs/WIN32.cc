@@ -42,7 +42,7 @@ AST::Node* wrapAccessLibrary(AST::Node* options, AST::Node* argument) {
 	AST::Node* fnName = iter->second;
 	++iter;
 
-	void* nativeProc = body && fnName ? GetProcAddress((HMODULE) body, Evaluators::get_native_string(fnName)) : NULL; // FIXME
+	void* nativeProc = body && fnName ? (void*) GetProcAddress((HMODULE) body, Evaluators::get_native_string(fnName)) : NULL; // FIXME
 	// filename is the second argument, so ignore.
 	//return(Evaluators::reduce(AST::makeApplication(body, argument)));
 	return(new CProcedure(nativeProc, AST::makeApplication(AST::makeApplication(AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), libName), quote(signature)), fnName), strlen(signature->name) - 2 + 1/*monad*/, 0, signature));
