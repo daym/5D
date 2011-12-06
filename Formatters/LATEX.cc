@@ -137,10 +137,10 @@ void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list
 		// TODO cons etc
 	} else if(cons_P(node)) {
 		output << "\\mathrm{[}";
-		for(; node != NULL; node = ((AST::Cons*)node)->tail) {
-			limited_to_LATEX(operator_precedence_list, dynamic_cast<AST::Cons*>(node)->head, output, 0, true);
-			if(((AST::Cons*)node)->tail)
-				output << "\\:";
+		limited_to_LATEX(operator_precedence_list, dynamic_cast<AST::Cons*>(node)->head, output, 0, true);
+		for(AST::Cons* vnode = Evaluators::evaluateToCons(((AST::Cons*)node)->tail); vnode; vnode = Evaluators::evaluateToCons(vnode->tail)) {
+			output << "\\:";
+			limited_to_LATEX(operator_precedence_list, dynamic_cast<AST::Cons*>(vnode)->head, output, 0, true);
 		}
 		output << "\\mathrm{]}";
 	} else if(node)

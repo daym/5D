@@ -140,10 +140,10 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		}
 	} else if(cons_P(node)) {
 		output << "[";
-		for(; node != NULL; node = ((AST::Cons*)node)->tail) {
-			print_math_CXX(OPL, output, position, dynamic_cast<AST::Cons*>(node)->head, 0, false);
-			if(((AST::Cons*)node)->tail)
-				output << " ";
+		print_math_CXX(OPL, output, position, ((AST::Cons*)node)->head, 0, false);
+		for(AST::Cons* vnode = Evaluators::evaluateToCons(((AST::Cons*)node)->tail); vnode; vnode = Evaluators::evaluateToCons(vnode->tail)) {
+			output << " ";
+			print_math_CXX(OPL, output, position, dynamic_cast<AST::Cons*>(vnode)->head, 0, false);
 		}
 		output << "]";
 	} else { /* literal etc */
