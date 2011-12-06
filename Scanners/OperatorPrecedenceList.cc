@@ -74,8 +74,8 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 #define L Symbols::Sleft
 #define N Symbols::Snone
 #ifdef SIMPLE_APPLICATION
-	apply_level = 12;
-	cons(12, I(" "), L); // apply
+	apply_level = 13;
+	cons(apply_level, I(" "), L); // apply
 #endif
 	if(bInitDefaults) {
 		cons(19, I("_"), R);
@@ -87,7 +87,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(15, I("/"), L);
 		// TODO div rem quot 17 L
 		cons(14, I(":"), R);
-		cons(13, I("++"), L);
+		cons(12, I("++"), L);
 		cons(11, I("+"), L);
 		cons(11, I("-"), L);
 		cons(10, I("%"), L);
