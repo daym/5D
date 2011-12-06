@@ -13,16 +13,6 @@ Array literals: #(a b c)
 subseq "Hello, World" 2 9
 string-upcase
 
-= FFI =
-
-arrays ?
-translateFFI resulttype argtypes procedure => translator used when calling:
-define libc fromLibrary "/lib/x86_64-linux-gnu/libc.so.6"
-define writeProc libc 'write
-define translateWrite translateFFI (\result ...) (\args ...)
-define write translateWrite writeProc
-fopen @mode:"w" "foo.INI.temp"
-
 = Packages =
 
 packages (namespaces)
@@ -62,7 +52,7 @@ move str() to the actual language
 GUI: allow deletion environment nodes (includes usage check in the rest of the environment).
 GUI: allow moving of environment nodes.
 GUI: allow compacting of environment nodes.
-GUI: fix LATEX formatter again.
+GUI: fix LATEX formatter again: Cons spaces are not printed for some reason.
 TUI: if trying to pass a path to a file that does not exist, it doesn't create it on exit. Should it?
 
 = Beauty =
