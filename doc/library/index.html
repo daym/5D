@@ -27,6 +27,7 @@ hr { color: #808080;
 <li><a href="#FFI">Foreign Function Interface</a></li>
 <li><a href="#math">Higher Mathematics</a></li>
 <li><a href="#adorning">Adorning Functions</a></li>
+<li><a href="#ui">User Interface Functions</a></li>
 </nl>
 <a name="macros"><h2>Macros</h2>
 <h3>' a</h3>
@@ -557,6 +558,56 @@ runWorld (puts "Hello world")
 
 <h3>otherwise</h3>
 <p>id</p>
+</a>
+<hr/>
+
+<a name="ui"><h2>User Interface Functions</h2>
+<h3>messageBox @type:t @modality:m @icon:i @caption:c =&gt; r</h3>
+<p>Displays a modal message dialog box to the user.</p>
+<p>t is one of 
+<span class="pre">'ok</span> 
+<span class="pre">'okcancel</span> 
+<span class="pre">'abortretryignore</span> 
+<span class="pre">'yesnocancel</span> 
+<span class="pre">'yesno</span> 
+<span class="pre">'retrycancel</span> 
+<span class="pre">'canceltrycontinue</span> 
+</p>
+<p>m is one of 
+<span class="pre"></span> 
+<span class="pre"></span> 
+<span class="pre"></span> 
+<span class="pre"></span> 
+<span class="pre"></span> 
+<span class="pre"></span> 
+<span class="pre"></span> 
+</p>
+<p>i is one of 
+<span class="pre">'information</span> 
+<span class="pre">'exclamation</span> 
+<span class="pre">'hand</span> 
+<span class="pre">'stop</span> 
+<span class="pre">'question</span> 
+<span class="pre">'asterisk</span> 
+<span class="pre">'warning</span> 
+<span class="pre">'error</span> 
+</p>
+<p>c is the caption str, if any.</p>
+<p>r is one of 
+<span class="pre">'none</span> 
+<span class="pre">'reject</span> 
+<span class="pre">'accept</span> 
+<span class="pre">'deleted</span> 
+<span class="pre">'ok</span> 
+<span class="pre">'cancel</span> 
+<span class="pre">'close</span> 
+<span class="pre">'yes</span> 
+<span class="pre">'no</span> 
+<span class="pre">'apply</span> 
+<span class="pre">'help</span> 
+<span class="pre">'unknown</span> 
+</p>
+
 </a>
 </body>
 </html>
