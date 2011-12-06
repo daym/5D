@@ -284,8 +284,16 @@ static inline AST::Node* bug(AST::Node* f) {
 	abort();
 	return(f);
 }
+static AST::Node* fetchValueAndWorld(AST::Node* n) {
+	AST::Cons* cons = dynamic_cast<AST::Cons*>(n);
+	if(!cons)
+		return(FALLBACK); /* WTF */
+	// DO NOT REMOVE:
+	Evaluators::evaluateToCons(cons->tail);
+	return(cons->head);
+}
 /* TODO reduce once: */
-DEFINE_SIMPLE_OPERATION(WorldRunner, reduce(makeApplication(reduce(argument), Numbers::internNative((Numbers::NativeInt) 42))))
+DEFINE_SIMPLE_OPERATION(WorldRunner, fetchValueAndWorld(reduce(makeApplication(reduce(argument), Numbers::internNative((Numbers::NativeInt) 42)))))
 
 AST::Node* operator/(const Integer& a, const Integer& b) {
 	if (b.isZero()) throw Evaluators::EvaluationException("Integer::operator /: division by zero");
@@ -429,7 +437,7 @@ REGISTER_BUILTIN(KeywordFromStrGetter, 1, 0, AST::symbolFromStr("keywordFromStr"
 REGISTER_BUILTIN(KeywordStr, 1, 0, AST::symbolFromStr("keywordStr"))
 REGISTER_BUILTIN(ListFromStrGetter, 1, 0, AST::symbolFromStr("listFromStr"))
 REGISTER_BUILTIN(StrFromListGetter, 1, 0, AST::symbolFromStr("strFromList"))
-REGISTER_BUILTIN(WorldRunner, 1, 0, AST::symbolFromStr("unsafeRunWorld2"))
+REGISTER_BUILTIN(WorldRunner, 1, 0, AST::symbolFromStr("runWorld"))
 
 std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > result;
