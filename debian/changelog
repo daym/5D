@@ -1,6 +1,7 @@
 5d (0.0.10) unstable; urgency=low
 
   * add some FFI functionality.
+  * move operator (++) to "less important than apply".
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Mon, 5 Dec 2011 22:43:53 +0100
 
