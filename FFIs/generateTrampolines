@@ -76,24 +76,26 @@ for combination in sys.stdin.readlines():
     combinations.append(combination)
     def getReturner():
        if combination[1] != "v":
-          return ("return in%s" % combination[1]) 
+          return ("result = in%s" % combination[1]) 
        else:
           return "inv"
     def getFallback():
        if combination[1] == "v":
-          return "; return NULL;"
+          return ";"
        else:
           return ")"
     def getInliner(combination):
        return("")
     content = combination[1 : ]
     print("typedef %s (*proc_%s_t)(%s);" % (getLongName(content[0]), combination, ", ".join(map(getLongName, content[1:]))))
-    print("""static %(inliner)s AST::Node* jump%(combination)s(void* p, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end) {
+    print("""static %(inliner)s AST::Node* jump%(combination)s(void* p, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end, AST::Node* world) {
         proc_%(combination)s_t proc = (proc_%(combination)s_t) p;
         %(tempvariables)s
-        %(returner)s((*proc)(%(marshallers)s))%(fallback)s; }""" % {
+        AST::Node* result = NULL;
+        %(returner)s((*proc)(%(marshallers)s))%(fallback)s;
+        return Evaluators::makeIOMonad(result, /*Evaluators::reduce(*/world/*)*/); }""" % {
         "combination": combination,
-        "tempvariables": "\n".join(map(lambda s: "%s a%d = un%s;" % (longNames[s[1]], s[0], s[1]), enumerate(combination[2:]))),
+        "tempvariables": "\n        ".join(map(lambda s: "%s a%d = un%s;" % (longNames[s[1]], s[0], s[1]), enumerate(combination[2:]))),
         "inliner": getInliner(combination),
        "marshallers": ", ".join(map(lambda s: "a%d" % s[0], enumerate(combination[2:]))),
        "returner": getReturner(),
@@ -125,7 +127,7 @@ static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::N
 	assert(iter != endIter);
         assert(iter->first == NULL);
 	AST::Symbol* signature = proc->fSignature;
-	return Evaluators::makeIOMonad(""")
+	return """)
 
 def checks(combination):
     result = [combination]
@@ -138,10 +140,10 @@ def checks(combination):
        
 
 for combination in combinations:
-    print("  (%(checks)s) ? jump%(combination)s(proc->native, iter, endIter) : " % {"checks": " || ".join(map(lambda s: "signature == S_%s" % s, checks(combination))), "combination": combination})
+    print("  (%(checks)s) ? jump%(combination)s(proc->native, iter, endIter, world) : " % {"checks": " || ".join(map(lambda s: "signature == S_%s" % s, checks(combination))), "combination": combination})
     
 print("""
-    NULL /* FIXME */, Evaluators::reduce(world));
+    NULL /* FIXME */;
 } /* jumpTrampoline */
 
 };
