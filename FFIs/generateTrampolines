@@ -86,7 +86,7 @@ for combination in sys.stdin.readlines():
          return ""
     def getFallback():
        if combination[1] == "v":
-          return ";"
+          return ""
        else:
           return ")"
     def getInliner(combination):
