@@ -21,14 +21,12 @@ typedef long long long_long;
 
 #define IMPLEMENT_NATIVE_GETTER(typ) \
 typ get_native_##typ(AST::Node* root) { \
-	/* FIXME support Integer */ \
-	Int* rootInt = dynamic_cast<Int*>(root); \
-	if(rootInt) { \
-		/* FIXME size check */ \
-		return(rootInt->value); \
-	} \
-	/* FIXME */ \
-	return(0); \
+	bool B_ok; \
+	typ result = Numbers::toNativeInt(root, B_ok); \
+	if(!B_ok) \
+		result = 0; /* FIXME FALLBACK */ \
+	return(result); \
+	/* FIXME support bigger than NativeInt */ \
 }
 
 IMPLEMENT_NATIVE_GETTER(int)
