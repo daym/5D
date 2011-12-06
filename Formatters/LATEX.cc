@@ -135,6 +135,14 @@ void limited_to_LATEX(Scanners::OperatorPrecedenceList* operator_precedence_list
 				output << "\\right)";
 		}
 		// TODO cons etc
+	} else if(cons_P(node)) {
+		output << "\\mathrm{[}";
+		for(; node != NULL; node = ((AST::Cons*)node)->tail) {
+			limited_to_LATEX(operator_precedence_list, dynamic_cast<AST::Cons*>(node)->head, output, 0, true);
+			if(((AST::Cons*)node)->tail)
+				output << "\\:";
+		}
+		output << "\\mathrm{]}";
 	} else if(node)
 		output << "\\mathrm{" << str(node) << "}";
 	else
