@@ -247,7 +247,7 @@ REGISTER_STR(Str, {
 				sst << "\\t";
 				break;
 			case 10:
-				sst << "\\n";
+				sst << "\n";
 				break;
 			case 11:
 				sst << "\\v";
