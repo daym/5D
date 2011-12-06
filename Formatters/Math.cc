@@ -138,6 +138,14 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 			if(B_braced) // f.e. we now are at +, but came from *, i.e. 2*(3+5)
 				++position, output << ')';
 		}
+	} else if(cons_P(node)) {
+		output << "[";
+		for(; node != NULL; node = ((AST::Cons*)node)->tail) {
+			print_math_CXX(OPL, output, position, dynamic_cast<AST::Cons*>(node)->head, 0, false);
+			if(((AST::Cons*)node)->tail)
+				output << " ";
+		}
+		output << "]";
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
 		std::string value = str(node);
