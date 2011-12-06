@@ -480,9 +480,10 @@ keywordStr @mode: =&gt; "mode:"
 <a name="FFI"><h2>Foreign Function Interface</h2>
 <h3>requireSharedLibrary \libraryName \procSignature \procName</h3>
 <p>Loads the library with the given name and looks up the procedure <span class="pre">procName</span> with signature <span class="pre">procSignature</span> in it and results in an <span class="pre" title="Foreign Function Interface">FFI</span> for it.</p>
+<p>Note that <span class="pre">procName</span> should be a Str and <span class="pre">procSignature</span> should be a Symbol.</p>
 <p>Example:</p>
 <pre>
-define puts requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cis 'puts
+define puts requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cis "puts"
 runWorld (puts "Hello world")
 </pre>
 <p>See the <a href="../programming/manual/index.html">5D Programming Manual</a> for more details.</p>

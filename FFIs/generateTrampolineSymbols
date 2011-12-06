@@ -4,10 +4,11 @@ import sys
 
 def checks(combination):
     result = [combination]
-    c = combination
-    while c != "" and c[-1] == "i":
-      c = c[:-1]
-      result.append(c)
+    if combination.startswith("C"):
+      c = combination
+      while c != "" and c[-1] == "i":
+        c = c[:-1]
+        result.append(c)
     return(result)
 
 print("""

@@ -31,13 +31,13 @@ foo'cos 2
 <p>You can load functions of shared libraries:</p>
 <p>Example:</p>
 <pre>
-define puts requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cis 'puts
+define puts requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cip "puts"
 runWorld (puts "Hello world")
 </pre>
 <p>What this does is:</p>
 <p>- load the library with the given file name.</p>
-<p>- give a function signature.</p>
-<p>- give the name of the function to load (usually as a symbol).</p>
+<p>- give a function signature (usually as a Symbol).</p>
+<p>- give the name of the function to load (usually as a Str).</p>
 
 <p>The function signature is a symbol whose str consists of the following characters:</p>
 <nl>
