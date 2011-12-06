@@ -36,17 +36,32 @@ static inline AST::Node* extr(const std::list<std::pair<AST::Keyword*, AST::Node
 static inline void* getSomethingUseful(AST::Node* n) {
   AST::Str* s;
   if((s = dynamic_cast<AST::Str*>(n)) != NULL)
-     return((void*) s->text.c_str()); // TODO copying version...
+     return((void*) s->text.c_str());
   else
      return(Evaluators::get_native_pointer(n));
 }
+static inline void* getSomethingUsefulOrNull(AST::Node* n) {
+  AST::Str* s;
+  if((s = dynamic_cast<AST::Str*>(n)) != NULL)
+     return((void*) s->text.c_str());
+  else
+     return(Evaluators::get_native_pointer(n));
+}
+static inline char* strdupOrNull(const char* s) {
+  return(s ? strdup(s) : NULL);
+}
+static inline AST::Node* makeStrOrNil(const char* s) {
+  return(s ? AST::makeStr(s) : NULL);
+}
 #define unproc iter == end ? NULL : dynamic_cast<Evaluators::CProcedure*>(extr(iter++))
 #define unp iter == end ? NULL : getSomethingUseful(extr(iter++))
+#define unP iter == end ? NULL : getSomethingUsefulOrNull(extr(iter++))
 #define uni iter == end ? 0 : Evaluators::get_native_int(extr(iter++))
 #define unl iter == end ? 0 : Evaluators::get_native_long(extr(iter++))
 #define unh iter == end ? 0 : Evaluators::get_native_short(extr(iter++))
 #define unL iter == end ? 0 : Evaluators::get_native_long_long(extr(iter++))
 #define uns iter == end ? NULL : strdup(Evaluators::get_native_string(extr(iter++)))
+#define unS iter == end ? NULL : strdupOrNull(Evaluators::get_native_string(extr(iter++)))
 #define inv
 #define inp AST::makeBox(
 #define ini Numbers::internNative((Numbers::NativeInt) 
@@ -54,6 +69,7 @@ static inline void* getSomethingUseful(AST::Node* n) {
 #define inh Numbers::internNative((Numbers::NativeInt) 
 #define inL Numbers::internNative((Numbers::NativeInt) 
 #define ins AST::makeStr(
+#define inS makeStrOrNil(
 /* FIXME do inL properly */
 """)
 combinations = set()
@@ -81,16 +97,22 @@ for combination in sys.stdin.readlines():
        })
 print("""
 
+#undef unP
 #undef unp
 #undef uni
 #undef unl
 #undef unh
 #undef unL
+#undef uns
+#undef unS
+#undef inP
 #undef inp
 #undef ini
 #undef inl
 #undef inh
 #undef inL
+#undef ins
+#undef inS
 
 static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::Node* world) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, NULL/*world*/);
