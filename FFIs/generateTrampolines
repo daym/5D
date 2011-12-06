@@ -84,12 +84,18 @@ for combination in sys.stdin.readlines():
           return "; return NULL;"
        else:
           return ")"
+    def getInliner(combination):
+       return("")
     content = combination[1 : ]
     print("typedef %s (*proc_%s_t)(%s);" % (getLongName(content[0]), combination, ", ".join(map(getLongName, content[1:]))))
-    print("""static inline AST::Node* jump%(combination)s(void* p, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end) {
+    print("""static %(inliner)s AST::Node* jump%(combination)s(void* p, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end) {
         proc_%(combination)s_t proc = (proc_%(combination)s_t) p;
-        %(returner)s((*proc)(%(marshallers)s))%(fallback)s; }""" % {"combination": combination,
-       "marshallers": ", ".join(map(lambda s: "un%s" % s, combination[2:])),
+        %(tempvariables)s
+        %(returner)s((*proc)(%(marshallers)s))%(fallback)s; }""" % {
+        "combination": combination,
+        "tempvariables": "\n".join(map(lambda s: "%s a%d = un%s;" % (longNames[s[1]], s[0], s[1]), enumerate(combination[2:]))),
+        "inliner": getInliner(combination),
+       "marshallers": ", ".join(map(lambda s: "a%d" % s[0], enumerate(combination[2:]))),
        "returner": getReturner(),
        "fallback": getFallback(),
        })
