@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from sets import Set as set
 import sys
 
 longNames = {
@@ -42,10 +41,10 @@ static inline void* getSomethingUseful(AST::Node* n) {
 }
 static inline void* getSomethingUsefulOrNull(AST::Node* n) {
   AST::Str* s;
-  if((s = dynamic_cast<AST::Str*>(n)) != NULL)
-     return((void*) s->text.c_str());
+  if(n == NULL)
+     return(NULL);
   else
-     return(Evaluators::get_native_pointer(n));
+     return(getSomethingUseful(n));
 }
 static inline char* strdupOrNull(const char* s) {
   return(s ? strdup(s) : NULL);
@@ -72,10 +71,10 @@ static inline AST::Node* makeStrOrNil(const char* s) {
 #define inS makeStrOrNil(
 /* FIXME do inL properly */
 """)
-combinations = set()
+combinations = []
 for combination in sys.stdin.readlines():
     combination = combination.rstrip("\n")
-    combinations.add(combination)
+    combinations.append(combination)
     def getReturner():
        if combination[1] != "v":
           return ("return in%s" % combination[1]) 
