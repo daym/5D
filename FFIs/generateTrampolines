@@ -40,7 +40,6 @@ static inline void* getSomethingUseful(AST::Node* n) {
      return(Evaluators::get_native_pointer(n));
 }
 static inline void* getSomethingUsefulOrNull(AST::Node* n) {
-  AST::Str* s;
   if(n == NULL)
      return(NULL);
   else
