@@ -1,3 +1,6 @@
+#ifdef WIN32
+#include "stdafx.h"
+#endif
 #include <stdio.h>
 #include <assert.h>
 #include <string>
