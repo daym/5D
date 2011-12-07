@@ -23,5 +23,6 @@ def parseExports(name): # dumpbin a.dll /exports
 					if name != "[NONAME]" and name.strip() != "":
 						yield name
 
+# of MSVC dumpbin <DLL> /exports
 for name in parseExports(sys.argv[1]):
 	print(name)
