@@ -5,6 +5,7 @@ def getNames(n):
 	result = []
 	with open(n, "r") as f:
 		for line in f.readlines():
+			sys.stdout.write(line)
 			if line.find("=") == -1:
 				continue
 			assert(line.startswith("let "))
