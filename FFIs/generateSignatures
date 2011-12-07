@@ -1,0 +1,174 @@
+#!/usr/bin/env python
+
+import sys
+
+def parseAux(name): # gcc -aux-info
+	result = {}
+	with open(name, "r") as f:
+		for line in f.readlines():
+			if line.startswith("/*"):
+				i = line.find("*/")
+				assert(i != -1)
+				line = line[i + 2 : ].lstrip()
+				beforebrace = line.split("(")[0].strip()
+				name = beforebrace.split(" ")[-1]
+				line = line.replace("extern ", "")
+				result[name] = line
+	return(result)
+def getType(t):
+	m = {
+		"void": "v",
+		"BYTE": "i", # FIXME
+		"CHAR": "i", # FIXME
+		"char": "i", # FIXME
+		"WCHAR": "i", # FIXME
+		"UINT_PTR": "i", # FIXME
+		"WPARAM": "i", # FIXME
+		"SIZE_T": "l", # FIXME
+		"LCID": "i", # FIXME
+		"CALID": "i", # FIXME
+		"COLORREF": "i",
+		"WORD": "h",
+		"INT": "i",
+		"int": "i",
+		"SHORT": "h",
+		"DWORD": "i",
+		"UINT": "i",
+		"BOOL": "i",
+		"HWND": "p",
+		"HDC": "p",
+		"HINSTANCE": "p",
+		"HANDLE": "p",
+		"HMENU": "p",
+		"HDESK": "p",
+		"HBITMAP": "p",
+		"HICON": "p",
+		"HRGN": "p",
+		"HCURSOR": "p",
+		"HBRUSH": "p",
+		"HMONITOR": "p",
+		"HCONV": "p",
+		"HCONVLIST": "p",
+		"HACCEL": "p",
+		"HKL": "p", # keyboard layout
+		"HFILE": "p", # FIXME
+		"LONG": "l",
+		"PICONINFO": "p",
+		"PCURSORINFO": "p",
+		"LRESULT": "l", # FIXME
+		"LPCSTR": "s",
+		"LPWSTR": "p",
+		"LPCWSTR": "p",
+		"LPSTR": "p",
+		"ULONG_PTR": "P",
+		"PVOID": "p",
+		"PBYTE": "p",
+		"PBOOL": "p",
+		"PDWORD": "p",
+		"PWINDOWINFO": "p",
+		"long int": "l",
+		"WNDPROC": "p",
+		"DLGPROC": "p",
+		"GRAYSTRINGPROC": "p",
+		"TIMERPROC": "p",
+		"HOOKPROC": "p",
+		"PUINT_PTR": "p",
+		"ATOM": "h",
+		"HMODULE": "p",
+		"ABORTPROC": "p",
+		"ENHMFENUMPROC": "p",
+		"FLOAT": "f",
+		"FONTENUMPROCA": "p",
+		"FONTENUMPROCW": "p",
+		"GOBJENUMPROC": "p",
+		"HCOLORSPACE": "p",
+		"HENHMETAFILE": "p",
+		"HFONT": "p",
+		"HGDIOBJ": "p",
+		"HGLOBAL": "p",
+		"HMETAFILE": "p",
+		"HPALETTE": "p",
+		"HPEN": "p",
+		"ICMENUMPROCA": "p",
+		"ICMENUMPROCW": "p",
+		"LINEDDAPROC": "p",
+		"MFENUMPROC": "p",
+		"PCVOID": "p",
+		"PFLOAT": "p",
+		"PLOGFONTA": "p",
+		"PLOGFONTW": "p",
+		"PHANDLE": "p",
+		"CALID": "i",
+		"CALTYPE": "i",
+		"HLOCAL": "p",
+		"ENUMRESLANGPROC": "p",
+		"ENUMRESNAMEPROC": "p",
+		"ENUMRESTYPEPROC": "p",
+		"LONG_PTR": "l",
+		"ULONG_PTR": "l",
+		"LPCRITICAL_SECTION": "p",
+		"DATEFMT_ENUMPROC": "p",
+		"PULARGE_INTEGER": "p",
+		"ULARGE_INTEGER": "L",
+		"GEOID": "i", # FIXME
+		"GEOTYPE": "i", # FIXME
+		"LANGID": "h",
+		"CODEPAGE_ENUMPROC": "p",
+		"GEO_ENUMPROC": "p",
+		"GEOCLASS": "i", # FIXME
+		"CALINFO_ENUMPROC": "p",
+		"LCTYPE": "i", # FIXME
+		"GET_FILEEX_INFO_LEVELS": "i", # enum
+		"FINDEX_INFO_LEVELS": "i", # enum
+		"FINDEX_SEARCH_OPS": "i", # enum
+		"LPOVERLAPPED": "p",
+		"HRSRC": "p",
+		"PULONG": "p",
+		"PULONG_PTR": "p",
+		"HSZ": "p",
+		"PTITLEBARINFO": "p",
+		"PSCROLLBARINFO": "p",
+		"PLASTINPUTINFO": "p",
+		"PCOMBOBOXINFO": "p",
+		"PCONVINFO": "p",
+		"PALTTABINFO": "p",
+		"LPTSTR": "p", # FIXME
+		"DEVMODE *": "p", # must be NULL
+		"PLONG": "l",
+		"PSMALL_RECT": "p",
+		"HHOOK": "p",
+	}.get(t)
+	if m:
+		return(m)
+	else:
+		if t.startswith("LP") or t.count("*") == 1:
+			return("p")
+		print >>sys.stderr, "warning: unknown: %s" % (t,)
+		return "?"
+auxes = parseAux("prototypes")
+
+symbols = map(lambda s: s.strip(), open(sys.argv[1], "r").readlines())
+for name in symbols:
+	aux = auxes.get(name)
+	if aux is None:
+		print >>sys.stderr, ("%s unknown" % name)
+		sys.exit(1)
+	else:
+		parts = aux.split("(")
+		retname = parts[0].strip()
+		i = retname.rfind(" ")
+		assert(i != -1)
+		name = retname[i + 1 : ].strip()
+		ret = retname[ : i].strip()
+		params = parts[1].rstrip()
+		if params.endswith(");"):
+			params = params[:-2].strip()
+		shlib = sys.argv[1].replace(".list", ".DLL")
+		result = ("let %s = (requireSharedLibrary \"%s\" 'P%s%s \"%s\") in " % (name, shlib, getType(ret), "".join(map(getType, params.split(", "))), name))
+		if result.find("?") != -1:
+			print >>std.stderr, ("%s error in %s" % (name, result))
+			sys.exit(1)
+		print(result)
+
+	
+
