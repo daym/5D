@@ -46,6 +46,8 @@ def getType(t):
 		"UINT_PTR": "i", # FIXME
 		"WPARAM": "i", # FIXME
 		"SIZE_T": "l", # FIXME
+		"LCID": "i", # FIXME
+		"CALID": "i", # FIXME
 		"COLORREF": "i",
 		"WORD": "h",
 		"INT": "i",
@@ -69,6 +71,7 @@ def getType(t):
 		"HCONV": "p",
 		"HCONVLIST": "p",
 		"HACCEL": "p",
+		"HKL": "p", # keyboard layout
 		"HFILE": "p", # FIXME
 		"LONG": "l",
 		"PICONINFO": "p",
@@ -92,6 +95,7 @@ def getType(t):
 		"HOOKPROC": "p",
 		"PUINT_PTR": "p",
 		"ATOM": "h",
+		"HMODULE": "p",
 		"ABORTPROC": "p",
 		"ENHMFENUMPROC": "p",
 		"FLOAT": "f",
@@ -114,6 +118,21 @@ def getType(t):
 		"PFLOAT": "p",
 		"PLOGFONTA": "p",
 		"PLOGFONTW": "p",
+		"PHANDLE": "p",
+		"CALID": "i",
+		"CALTYPE": "i",
+		"HLOCAL": "p",
+		"ENUMRESLANGPROC": "p",
+		"ENUMRESNAMEPROC": "p",
+		"ENUMRESTYPEPROC": "p",
+		"LONG_PTR": "l",
+		"ULONG_PTR": "l",
+		"LPCRITICAL_SECTION": "p",
+		"DATEFMT_ENUMPROC": "p",
+		"PULARGE_INTEGER": "p",
+		"ULARGE_INTEGER": "L",
+		"GEOID": "i", # FIXME
+		"GEOTYPE": "i", # FIXME
 	}.get(t)
 	if m:
 		return(m)
