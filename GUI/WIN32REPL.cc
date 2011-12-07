@@ -765,6 +765,11 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 					text = GetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY);
 					B_used_entry = true;
 					//REPL_append_to_output_buffer(self, ToUTF8(text));
+				} else { // for some reason, Windows Rich Text Control uses ONLY #13 as newline?!
+					int sz = text.length();
+					for(int i = 0; i < sz; ++i)
+						if(text[i] == 13)
+							text[i] = 10;
 				}
 				std::string UTF8_text = ToUTF8(text);
 				try {
