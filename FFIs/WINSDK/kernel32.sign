@@ -669,11 +669,11 @@ let ReadConsoleInputA = (requireSharedLibrary "kernel32.DLL" 'Pip?ip "ReadConsol
 ReadConsoleInputExA unknown
 ReadConsoleInputExW unknown
 let ReadConsoleInputW = (requireSharedLibrary "kernel32.DLL" 'Pip?ip "ReadConsoleInputW") in 
-let ReadConsoleOutputA = (requireSharedLibrary "kernel32.DLL" 'Pip???? "ReadConsoleOutputA") in 
+let ReadConsoleOutputA = (requireSharedLibrary "kernel32.DLL" 'Pip???p "ReadConsoleOutputA") in 
 let ReadConsoleOutputAttribute = (requireSharedLibrary "kernel32.DLL" 'Pippi?p "ReadConsoleOutputAttribute") in 
 let ReadConsoleOutputCharacterA = (requireSharedLibrary "kernel32.DLL" 'Pippi?p "ReadConsoleOutputCharacterA") in 
 let ReadConsoleOutputCharacterW = (requireSharedLibrary "kernel32.DLL" 'Pippi?p "ReadConsoleOutputCharacterW") in 
-let ReadConsoleOutputW = (requireSharedLibrary "kernel32.DLL" 'Pip???? "ReadConsoleOutputW") in 
+let ReadConsoleOutputW = (requireSharedLibrary "kernel32.DLL" 'Pip???p "ReadConsoleOutputW") in 
 let ReadConsoleW = (requireSharedLibrary "kernel32.DLL" 'Pippipp "ReadConsoleW") in 
 let ReadDirectoryChangesW = (requireSharedLibrary "kernel32.DLL" 'Pippiiippp "ReadDirectoryChangesW") in 
 let ReadFile = (requireSharedLibrary "kernel32.DLL" 'Pippipp "ReadFile") in 
@@ -775,7 +775,7 @@ let SetFileApisToANSI = (requireSharedLibrary "kernel32.DLL" 'Pvv "SetFileApisTo
 let SetFileApisToOEM = (requireSharedLibrary "kernel32.DLL" 'Pvv "SetFileApisToOEM") in 
 let SetFileAttributesA = (requireSharedLibrary "kernel32.DLL" 'Pisi "SetFileAttributesA") in 
 let SetFileAttributesW = (requireSharedLibrary "kernel32.DLL" 'Pipi "SetFileAttributesW") in 
-let SetFilePointer = (requireSharedLibrary "kernel32.DLL" 'Pipl?i "SetFilePointer") in 
+let SetFilePointer = (requireSharedLibrary "kernel32.DLL" 'Piplli "SetFilePointer") in 
 let SetFilePointerEx = (requireSharedLibrary "kernel32.DLL" 'Pip??i "SetFilePointerEx") in 
 SetFileShortNameA unknown
 SetFileShortNameW unknown
@@ -904,11 +904,11 @@ let WriteConsoleInputA = (requireSharedLibrary "kernel32.DLL" 'Pippip "WriteCons
 WriteConsoleInputVDMA unknown
 WriteConsoleInputVDMW unknown
 let WriteConsoleInputW = (requireSharedLibrary "kernel32.DLL" 'Pippip "WriteConsoleInputW") in 
-let WriteConsoleOutputA = (requireSharedLibrary "kernel32.DLL" 'Pipp??? "WriteConsoleOutputA") in 
+let WriteConsoleOutputA = (requireSharedLibrary "kernel32.DLL" 'Pipp??p "WriteConsoleOutputA") in 
 let WriteConsoleOutputAttribute = (requireSharedLibrary "kernel32.DLL" 'Pippi?p "WriteConsoleOutputAttribute") in 
 let WriteConsoleOutputCharacterA = (requireSharedLibrary "kernel32.DLL" 'Pipsi?p "WriteConsoleOutputCharacterA") in 
 let WriteConsoleOutputCharacterW = (requireSharedLibrary "kernel32.DLL" 'Pippi?p "WriteConsoleOutputCharacterW") in 
-let WriteConsoleOutputW = (requireSharedLibrary "kernel32.DLL" 'Pipp??? "WriteConsoleOutputW") in 
+let WriteConsoleOutputW = (requireSharedLibrary "kernel32.DLL" 'Pipp??p "WriteConsoleOutputW") in 
 let WriteConsoleW = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteConsoleW") in 
 let WriteFile = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteFile") in 
 let WriteFileEx = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteFileEx") in 

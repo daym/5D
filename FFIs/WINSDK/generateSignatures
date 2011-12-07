@@ -146,6 +146,18 @@ def getType(t):
 		"HRSRC": "p",
 		"PULONG": "p",
 		"PULONG_PTR": "p",
+		"HSZ": "p",
+		"PTITLEBARINFO": "p",
+		"PSCROLLBARINFO": "p",
+		"PLASTINPUTINFO": "p",
+		"PCOMBOBOXINFO": "p",
+		"PCONVINFO": "p",
+		"PALTTABINFO": "p",
+		"LPTSTR": "p", # FIXME
+		"DEVMODE *": "p", # must be NULL
+		"PLONG": "l",
+		"PSMALL_RECT": "p",
+		"HHOOK": "p",
 	}.get(t)
 	if m:
 		return(m)
