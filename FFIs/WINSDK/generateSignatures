@@ -2,27 +2,6 @@
 
 import sys
 
-def parseExports(name): # dumpbin a.dll /exports
-	B_started = False
-	B_stopped = False
-	with open(name, "r") as f:
-		for line in f.readlines():
-			if not B_started:
-				if line.strip().startswith("ordinal hint"):
-					B_started = True
-			elif line.strip() == "Summary":
-				B_stopped = True
-			else:
-				if not B_stopped:
-					if line.find("[NONAME]") > -1:
-						continue
-					if (line.find("(forwarded to ") != -1):
-						line = line.split("(forwarded to ", 2)[0]
-					parts = line.strip().replace("  ", " ").replace("  ", " ").replace("  ", " ").replace("  ", " ").replace("  ", " ").split(" ")
-					name = parts[-1]
-					if name != "[NONAME]" and name.strip() != "":
-						yield name
-
 def parseAux(name): # gcc -aux-info
 	result = {}
 	with open(name, "r") as f:
@@ -168,10 +147,12 @@ def getType(t):
 		return "?"
 auxes = parseAux("prototypes")
 
-for name in parseExports(sys.argv[1]):
+symbols = map(lambda s: s.strip(), open(sys.argv[1], "r").readlines())
+for name in symbols:
 	aux = auxes.get(name)
 	if aux is None:
-		print("%s unknown" % name)
+		print >>sys.stderr, ("%s unknown" % name)
+		sys.exit(1)
 	else:
 		parts = aux.split("(")
 		retname = parts[0].strip()
@@ -183,7 +164,11 @@ for name in parseExports(sys.argv[1]):
 		if params.endswith(");"):
 			params = params[:-2].strip()
 		shlib = sys.argv[1].replace(".list", ".DLL")
-		print("let %s = (requireSharedLibrary \"%s\" 'P%s%s \"%s\") in " % (name, shlib, getType(ret), "".join(map(getType, params.split(", "))), name))
-		
+		result = ("let %s = (requireSharedLibrary \"%s\" 'P%s%s \"%s\") in " % (name, shlib, getType(ret), "".join(map(getType, params.split(", "))), name))
+		if result.find("?") != -1:
+			print >>std.stderr, ("%s error in %s" % (name, result))
+			sys.exit(1)
+		print(result)
+
 	
 
