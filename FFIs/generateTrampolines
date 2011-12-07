@@ -12,6 +12,7 @@ longNames = {
     "v": "void",
     "P": "void*", # or null
     "S": "char*", # or null
+    "f": "float",
 }
 
 def getLongName(c):
