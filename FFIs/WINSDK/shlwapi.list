@@ -1,0 +1,884 @@
+Microsoft (R) COFF/PE Dumper Version 9.00.21022.08
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+Dump of file shlwapi.dll
+
+File Type: DLL
+
+  Section contains the following exports for SHLWAPI.dll
+
+    00000000 characteristics
+    4B1D0580 time date stamp Mon Dec 07 14:39:12 2009
+        0.00 version
+           1 ordinal base
+         858 number of functions
+         314 number of names
+
+    ordinal hint RVA      name
+
+        356    0 00009E79 AssocCreate
+        500    1 000110E3 AssocGetPerceivedType
+        501    2 00013CD3 AssocIsDangerous
+        502    3 0005009D AssocQueryKeyA
+        503    4 0000A5BE AssocQueryKeyW
+        504    5 0004FE4D AssocQueryStringA
+        566    6 0004FF88 AssocQueryStringByKeyA
+        567    7 0000B130 AssocQueryStringByKeyW
+        568    8 0001A7CE AssocQueryStringW
+        569    9 0002C465 ChrCmpIA
+        570    A 00007E1A ChrCmpIW
+        571    B 000412B4 ColorAdjustLuma
+        572    C 00018BC2 ColorHLSToRGB
+        573    D 00018B17 ColorRGBToHLS
+        547    E 00066BED DelayLoadFailureHook
+        574    F 00065B45 DllGetVersion
+         14   10 0005DE35 GetAcceptLanguagesA
+         15   11 0002CB22 GetAcceptLanguagesW
+        575   12 000172F9 GetMenuPosFromID
+        576   13 00023872 HashData
+        577   14 000448BD IntlStrEqWorkerA
+        578   15 0000761D IntlStrEqWorkerW
+        579   16 000460AD IsCharSpaceA
+         29   17 000158E5 IsCharSpaceW
+        580   18 0001058D PathAddBackslashA
+        581   19 00006E9D PathAddBackslashW
+        582   1A 00048F33 PathAddExtensionA
+        583   1B 0001532B PathAddExtensionW
+        584   1C 0001913C PathAppendA
+        585   1D 00007ADD PathAppendW
+        586   1E 00007444 PathBuildRootA
+        587   1F 0000404E PathBuildRootW
+        588   20 0001902B PathCanonicalizeA
+        589   21 00007891 PathCanonicalizeW
+        590   22 00019180 PathCombineA
+        591   23 000079D9 PathCombineW
+        592   24 000471D7 PathCommonPrefixA
+        593   25 0000753A PathCommonPrefixW
+        594   26 0004843D PathCompactPathA
+        595   27 00049129 PathCompactPathExA
+        596   28 00051B22 PathCompactPathExW
+        597   29 00051565 PathCompactPathW
+        598   2A 00022FA5 PathCreateFromUrlA
+        599   2B 0001D9D7 PathCreateFromUrlW
+        600   2C 0004707F PathFileExistsA
+        601   2D 00007D99 PathFileExistsW
+        602   2E 0001F5EE PathFindExtensionA
+        603   2F 00006869 PathFindExtensionW
+        604   30 0000C1AC PathFindFileNameA
+        605   31 00007087 PathFindFileNameW
+        606   32 00047750 PathFindNextComponentA
+        607   33 0001BFCD PathFindNextComponentW
+        608   34 00048F18 PathFindOnPathA
+        609   35 0001871F PathFindOnPathW
+        610   36 000470EB PathFindSuffixArrayA
+        611   37 0005100D PathFindSuffixArrayW
+        612   38 00047002 PathGetArgsA
+        613   39 00014211 PathGetArgsW
+        614   3A 00047A7C PathGetCharTypeA
+        615   3B 0001C2DA PathGetCharTypeW
+        616   3C 00047434 PathGetDriveNumberA
+        617   3D 00006BEA PathGetDriveNumberW
+        618   3E 000479FC PathIsContentTypeA
+        619   3F 000230D1 PathIsContentTypeW
+        620   40 000475A8 PathIsDirectoryA
+        621   41 00048374 PathIsDirectoryEmptyA
+        622   42 0005149A PathIsDirectoryEmptyW
+        623   43 0001AE99 PathIsDirectoryW
+        624   44 000473BA PathIsFileSpecA
+        625   45 0001299E PathIsFileSpecW
+        626   46 00047CC9 PathIsLFNFileSpecA
+        627   47 000512CA PathIsLFNFileSpecW
+        628   48 0004830F PathIsNetworkPathA
+        629   49 00007DD3 PathIsNetworkPathW
+        630   4A 000472DC PathIsPrefixA
+        631   4B 0001434C PathIsPrefixW
+        632   4C 000192A1 PathIsRelativeA
+        633   4D 000067E2 PathIsRelativeW
+        634   4E 00047529 PathIsRootA
+        635   4F 00007476 PathIsRootW
+        636   50 0004797D PathIsSameRootA
+        637   51 0005114F PathIsSameRootW
+        638   52 0001C76E PathIsSystemFolderA
+        639   53 00051290 PathIsSystemFolderW
+        640   54 00018F75 PathIsUNCA
+        641   55 00023629 PathIsUNCServerA
+        642   56 000473ED PathIsUNCServerShareA
+        643   57 00007F99 PathIsUNCServerShareW
+        644   58 00007F73 PathIsUNCServerW
+        645   59 00006E7F PathIsUNCW
+        646   5A 000479C5 PathIsURLA
+        647   5B 0000BBA1 PathIsURLW
+        648   5C 0004808D PathMakePrettyA
+        649   5D 000211BC PathMakePrettyW
+        650   5E 00048842 PathMakeSystemFolderA
+        651   5F 00004ABF PathMakeSystemFolderW
+        652   60 000478C8 PathMatchSpecA
+        653   61 00012866 PathMatchSpecW
+        654   62 000487CC PathParseIconLocationA
+        655   63 0000B0AD PathParseIconLocationW
+        656   64 000476FC PathQuoteSpacesA
+        657   65 00051097 PathQuoteSpacesW
+        658   66 00048FBA PathRelativePathToA
+        659   67 0001C015 PathRelativePathToW
+        660   68 00047046 PathRemoveArgsA
+        661   69 0001424B PathRemoveArgsW
+        662   6A 00048285 PathRemoveBackslashA
+        663   6B 000074CF PathRemoveBackslashW
+        664   6C 00048228 PathRemoveBlanksA
+        665   6D 0000B02C PathRemoveBlanksW
+        666   6E 0004718E PathRemoveExtensionA
+        667   6F 00006903 PathRemoveExtensionW
+        668   70 0004733C PathRemoveFileSpecA
+        669   71 00007C66 PathRemoveFileSpecW
+        670   72 000481D2 PathRenameExtensionA
+        671   73 00051442 PathRenameExtensionW
+        672   74 000474AC PathSearchAndQualifyA
+        673   75 0001F633 PathSearchAndQualifyW
+        674   76 000486F5 PathSetDlgItemPathA
+        675   77 00051819 PathSetDlgItemPathW
+        676   78 00047918 PathSkipRootA
+        677   79 000510F2 PathSkipRootW
+        678   7A 00048347 PathStripPathA
+        679   7B 0001AB2D PathStripPathW
+        680   7C 000482DD PathStripToRootA
+        681   7D 00008405 PathStripToRootW
+        682   7E 000494A7 PathUnExpandEnvStringsA
+        683   7F 00051E99 PathUnExpandEnvStringsW
+        684   80 00047D28 PathUndecorateA
+        685   81 0002CF45 PathUndecorateW
+        686   82 00047C6B PathUnmakeSystemFolderA
+        687   83 00051256 PathUnmakeSystemFolderW
+        688   84 000476BE PathUnquoteSpacesA
+        689   85 0000AFCF PathUnquoteSpacesW
+          7   86 0000B601 SHAllocShared
+        690   87 000213A7 SHAutoComplete
+        691   88 00041624 SHCopyKeyA
+        692   89 0004188A SHCopyKeyW
+        693   8A 00011980 SHCreateShellPalette
+        694   8B 00060256 SHCreateStreamOnFileA
+        695   8C 0001A1E6 SHCreateStreamOnFileEx
+        696   8D 0000B8A9 SHCreateStreamOnFileW
+        697   8E 0006326C SHCreateStreamWrapper
+         16   8F 000173E6 SHCreateThread
+        698   90 00017D00 SHCreateThreadRef
+        699   91 00041905 SHDeleteEmptyKeyA
+        700   92 00041915 SHDeleteEmptyKeyW
+        701   93 00018551 SHDeleteKeyA
+        702   94 00016FD4 SHDeleteKeyW
+        703   95 00041905 SHDeleteOrphanKeyA
+        704   96 00041915 SHDeleteOrphanKeyW
+        705   97 000415E1 SHDeleteValueA
+        706   98 0001C435 SHDeleteValueW
+        707   99 00041979 SHEnumKeyExA
+        708   9A 00015138 SHEnumKeyExW
+        709   9B 0004199F SHEnumValueA
+        710   9C 000212B9 SHEnumValueW
+         10   9D 0000B569 SHFreeShared
+        711   9E 000242A4 SHGetInverseCMAP
+        712   9F 000126D4 SHGetThreadRef
+        713   A0 00010103 SHGetValueA
+        714   A1 00004597 SHGetValueW
+        515   A2 0001B6AE SHGetViewStatePropertyBag
+        715   A3 00056F09 SHIsLowMemoryMachine
+        487   A4 0000BEBE SHLoadIndirectString
+          8   A5 0001C37B SHLockShared
+        716   A6 0001B0C4 SHOpenRegStream2A
+        717   A7 000124FA SHOpenRegStream2W
+        718   A8 0001BC5C SHOpenRegStreamA
+        719   A9 000623E9 SHOpenRegStreamW
+        720   AA 000419CA SHQueryInfoKeyA
+        721   AB 0001073C SHQueryInfoKeyW
+        722   AC 0001022B SHQueryValueExA
+        723   AD 00006F3E SHQueryValueExW
+        724   AE 00008AE8 SHRegCloseUSKey
+        725   AF 0001772F SHRegCreateUSKeyA
+        726   B0 000176C7 SHRegCreateUSKeyW
+        727   B1 00041BD3 SHRegDeleteEmptyUSKeyA
+        728   B2 00041C7A SHRegDeleteEmptyUSKeyW
+        729   B3 00041AC7 SHRegDeleteUSValueA
+        730   B4 00041B70 SHRegDeleteUSValueW
+        731   B5 0000A54F SHRegDuplicateHKey
+        732   B6 00041CDD SHRegEnumUSKeyA
+        733   B7 000150A1 SHRegEnumUSKeyW
+        734   B8 00041D67 SHRegEnumUSValueA
+        735   B9 00041E07 SHRegEnumUSValueW
+        736   BA 000211F8 SHRegGetBoolUSValueA
+        737   BB 00008FA4 SHRegGetBoolUSValueW
+        738   BC 00042304 SHRegGetPathA
+        739   BD 00042331 SHRegGetPathW
+        740   BE 0001A892 SHRegGetUSValueA
+        741   BF 00008D02 SHRegGetUSValueW
+        742   C0 0001006A SHRegGetValueA
+        743   C1 0000432F SHRegGetValueW
+        744   C2 00008B59 SHRegOpenUSKeyA
+        745   C3 00008C9A SHRegOpenUSKeyW
+        746   C4 00041EA7 SHRegQueryInfoUSKeyA
+        747   C5 0001068D SHRegQueryInfoUSKeyW
+        748   C6 000151CE SHRegQueryUSValueA
+        749   C7 00008E85 SHRegQueryUSValueW
+        750   C8 00041FBE SHRegSetPathA
+        751   C9 00041F30 SHRegSetPathW
+        752   CA 0004274F SHRegSetUSValueA
+        753   CB 00018ACB SHRegSetUSValueW
+        754   CC 0004209D SHRegWriteUSValueA
+        755   CD 00014FBD SHRegWriteUSValueW
+        756   CE 0005615D SHRegisterValidateTemplate
+        757   CF 00056EA8 SHReleaseThreadRef
+        758   D0 00017CC6 SHSetThreadRef
+        759   D1 000168DB SHSetValueA
+        760   D2 0000976F SHSetValueW
+        761   D3 0001EBF0 SHSkipJunction
+        762   D4 00044BA0 SHStrDupA
+        763   D5 00006C73 SHStrDupW
+          9   D6 0000B54E SHUnlockShared
+        764   D7 00044724 StrCSpnA
+        765   D8 0004476E StrCSpnIA
+        766   D9 00044CD7 StrCSpnIW
+        767   DA 000173A3 StrCSpnW
+        768   DB 000232BC StrCatBuffA
+        769   DC 00006B60 StrCatBuffW
+        770   DD 00044BFC StrCatChainW
+        771   DE 000104C6 StrCatW
+        772   DF 0001AA12 StrChrA
+        773   E0 0002C4AD StrChrIA
+        774   E1 00007E50 StrChrIW
+        775   E2 00044C4B StrChrNIW
+        776   E3 000444CC StrChrNW
+        777   E4 000066CD StrChrW
+        155   E5 00022E8E StrCmpCA
+        156   E6 00006929 StrCmpCW
+        157   E7 00007000 StrCmpICA
+        158   E8 00006FB8 StrCmpICW
+        778   E9 00006A9E StrCmpIW
+        779   EA 000084A5 StrCmpLogicalW
+        780   EB 00020F99 StrCmpNA
+        781   EC 000107E6 StrCmpNIA
+        782   ED 00006F94 StrCmpNIW
+        783   EE 00006DF8 StrCmpNW
+        784   EF 00007136 StrCmpW
+        785   F0 00006763 StrCpyNW
+        786   F1 0000683A StrCpyW
+        787   F2 0002CEF4 StrDupA
+        788   F3 00006782 StrDupW
+        789   F4 00044F9F StrFormatByteSize64A
+        790   F5 00044FE5 StrFormatByteSizeA
+        791   F6 0001C9F2 StrFormatByteSizeW
+        792   F7 00044961 StrFormatKBSizeA
+        793   F8 0001E6D1 StrFormatKBSizeW
+        794   F9 00045280 StrFromTimeIntervalA
+        795   FA 000452EB StrFromTimeIntervalW
+        796   FB 000448BD StrIsIntlEqualA
+        797   FC 0000761D StrIsIntlEqualW
+        798   FD 0001C913 StrNCatA
+        799   FE 0002CD85 StrNCatW
+        800   FF 00044564 StrPBrkA
+        801  100 0001F699 StrPBrkW
+        802  101 00010340 StrRChrA
+        803  102 000444FF StrRChrIA
+        804  103 00044C8F StrRChrIW
+        805  104 0000B06E StrRChrW
+        806  105 000447B8 StrRStrIA
+        807  106 0001389D StrRStrIW
+        808  107 00044A69 StrRetToBSTR
+        809  108 00044B21 StrRetToBufA
+        810  109 00006D3F StrRetToBufW
+        811  10A 00045041 StrRetToStrA
+        812  10B 00012653 StrRetToStrW
+        813  10C 00044660 StrSpnA
+        814  10D 000446CA StrSpnW
+        815  10E 00014F26 StrStrA
+        816  10F 0002C4FE StrStrIA
+        817  110 00007E8C StrStrIW
+        818  111 00044D1D StrStrNIW
+        819  112 0004484C StrStrNW
+        820  113 00006E1C StrStrW
+        821  114 000445B4 StrToInt64ExA
+        822  115 0001BB70 StrToInt64ExW
+        823  116 00016A75 StrToIntA
+        824  117 00044633 StrToIntExA
+        825  118 0001BB43 StrToIntExW
+        826  119 0000AF84 StrToIntW
+        827  11A 000449B0 StrTrimA
+        828  11B 00012F27 StrTrimW
+        829  11C 0005FAEF UrlApplySchemeA
+        830  11D 0005FBCA UrlApplySchemeW
+        831  11E 00016865 UrlCanonicalizeA
+        832  11F 0001E091 UrlCanonicalizeW
+        833  120 000166B0 UrlCombineA
+        834  121 0001E199 UrlCombineW
+        835  122 0005EDAD UrlCompareA
+        836  123 000239FD UrlCompareW
+        837  124 0005FA02 UrlCreateFromPathA
+        838  125 0001D8FA UrlCreateFromPathW
+        839  126 0005F77D UrlEscapeA
+        840  127 00021A6A UrlEscapeW
+        841  128 00021EF2 UrlGetLocationA
+        842  129 000225D7 UrlGetLocationW
+        843  12A 0005F86A UrlGetPartA
+        844  12B 0000CCBB UrlGetPartW
+        845  12C 0005EEC2 UrlHashA
+        846  12D 0005EEFD UrlHashW
+        847  12E 0005FF49 UrlIsA
+        848  12F 00060026 UrlIsNoHistoryA
+        849  130 0001D9B2 UrlIsNoHistoryW
+        850  131 0006000E UrlIsOpaqueA
+        851  132 00023242 UrlIsOpaqueW
+        852  133 0000BCBC UrlIsW
+        853  134 0005F970 UrlUnescapeA
+        854  135 0001DF4C UrlUnescapeW
+        855  136 0000828C wnsprintfA
+        856  137 000093F6 wnsprintfW
+        857  138 00008012 wvnsprintfA
+        858  139 00009201 wvnsprintfW
+          1      00021E03 [NONAME]
+          2      0000BB12 [NONAME]
+          3      00048BBE [NONAME]
+          4      0001881F [NONAME]
+          5      00048C71 [NONAME]
+          6      0001535A [NONAME]
+         11      0000B4C0 [NONAME]
+         12      0001850A [NONAME]
+         13      00022C64 [NONAME]
+         17      0001BE2F [NONAME]
+         18      0001A35B [NONAME]
+         19      0000B88E [NONAME]
+         20      0000B810 [NONAME]
+         21      0000B7EF [NONAME]
+         22      0001A321 [NONAME]
+         23      00008572 [NONAME]
+         24      00004D11 [NONAME]
+         25      000227D5 [NONAME]
+         26      000454F4 [NONAME]
+         27      00045635 [NONAME]
+         28      00022985 [NONAME]
+         30      000454BD [NONAME]
+         31      00045355 [NONAME]
+         32      00045495 [NONAME]
+         33      00022696 [NONAME]
+         34      00022915 [NONAME]
+         35      00045775 [NONAME]
+         36      0004F82F [NONAME]
+         37      00020C6E [NONAME]
+         38      0000CC1E [NONAME]
+         39      00049823 [NONAME]
+         40      0001D98A [NONAME]
+         41      000067C5 [NONAME]
+         42      0004BBFB [NONAME]
+         43      0001A874 [NONAME]
+         44      00049A80 [NONAME]
+         45      00006A1B [NONAME]
+         46      00049E27 [NONAME]
+         47      00049E41 [NONAME]
+         48      0004BDA3 [NONAME]
+         49      0001712E [NONAME]
+         50      0004BE0D [NONAME]
+         51      0001A972 [NONAME]
+         52      00007FBF [NONAME]
+         53      00023329 [NONAME]
+         54      0004BDD8 [NONAME]
+         55      0001A71E [NONAME]
+         56      0000777D [NONAME]
+         57      0004BE74 [NONAME]
+         58      00049EA3 [NONAME]
+         59      00049EEB [NONAME]
+         60      00022A65 [NONAME]
+         61      0004BED6 [NONAME]
+         62      0004BF72 [NONAME]
+         63      000233D4 [NONAME]
+         64      00049FD9 [NONAME]
+         65      00022EB8 [NONAME]
+         66      0001AAE6 [NONAME]
+         67      0001AB5A [NONAME]
+         68      0004C470 [NONAME]
+         69      0001A521 [NONAME]
+         70      0004A13B [NONAME]
+         71      00020BD5 [NONAME]
+         72      0004C5FE [NONAME]
+         73      0001DD2F [NONAME]
+         74      0004F856 [NONAME]
+         75      00007D5E [NONAME]
+         76      0001AA6E [NONAME]
+         77      0001CB99 [NONAME]
+         78      0004D2A1 [NONAME]
+         79      00020CC7 [NONAME]
+         80      0001A5E1 [NONAME]
+         81      0001869B [NONAME]
+         82      0004C67D [NONAME]
+         83      0001A5A6 [NONAME]
+         84      000104FF [NONAME]
+         85      0004CB77 [NONAME]
+         86      0004CC19 [NONAME]
+         87      00020C86 [NONAME]
+         88      0004CAFB [NONAME]
+         89      0004CCF9 [NONAME]
+         90      0004CDAA [NONAME]
+         91      0004CE28 [NONAME]
+         92      00023390 [NONAME]
+         93      000232FC [NONAME]
+         94      00007795 [NONAME]
+         95      00020D15 [NONAME]
+         96      00020CF7 [NONAME]
+         97      000186D9 [NONAME]
+         98      0004D404 [NONAME]
+         99      0004A211 [NONAME]
+        100      0002CC9B [NONAME]
+        101      0004A22B [NONAME]
+        102      0001A93F [NONAME]
+        103      0004A24C [NONAME]
+        104      00010540 [NONAME]
+        105      000089BC [NONAME]
+        106      0004D23B [NONAME]
+        107      00007744 [NONAME]
+        108      0004D62A [NONAME]
+        109      0004D74D [NONAME]
+        110      00023361 [NONAME]
+        111      0004D6CD [NONAME]
+        112      0004D7C5 [NONAME]
+        113      0004D84E [NONAME]
+        114      0004D8D1 [NONAME]
+        115      0004D9B0 [NONAME]
+        116      00007155 [NONAME]
+        117      000225BF [NONAME]
+        118      00020CDF [NONAME]
+        119      0004DA0B [NONAME]
+        120      000094D9 [NONAME]
+        121      0001F509 [NONAME]
+        122      000109D6 [NONAME]
+        123      00010773 [NONAME]
+        124      0002C55C [NONAME]
+        125      00004102 [NONAME]
+        126      000108A8 [NONAME]
+        127      0004DA79 [NONAME]
+        128      0000426E [NONAME]
+        129      0004DB5E [NONAME]
+        130      0000769E [NONAME]
+        131      0001A791 [NONAME]
+        132      00024269 [NONAME]
+        133      00011A56 [NONAME]
+        134      00020DAF [NONAME]
+        135      0004F891 [NONAME]
+        136      00007765 [NONAME]
+        137      0004E2F9 [NONAME]
+        138      0004F8CA [NONAME]
+        139      0004E687 [NONAME]
+        140      00020C19 [NONAME]
+        141      0001A8F7 [NONAME]
+        142      0001BDBC [NONAME]
+        143      0004E35B [NONAME]
+        144      0004E991 [NONAME]
+        145      0002C5A3 [NONAME]
+        146      0004B561 [NONAME]
+        147      00020DF0 [NONAME]
+        148      0004E3D5 [NONAME]
+        149      0004E440 [NONAME]
+        150      0004B57B [NONAME]
+        151      00014CD7 [NONAME]
+        152      0000C699 [NONAME]
+        153      0000BBD8 [NONAME]
+        154      0001A990 [NONAME]
+        159      0004D5DF [NONAME]
+        160      00060C9E [NONAME]
+        161      000607A1 [NONAME]
+        162      0001B487 [NONAME]
+        163      00016015 [NONAME]
+        164      000090F9 [NONAME]
+        165      000194F1 [NONAME]
+        166      00017BA9 [NONAME]
+        167      0002CD11 [NONAME]
+        168      00023526 [NONAME]
+        169      0000833A [NONAME]
+        170      00047CA6 [NONAME]
+        171      00015CB5 [NONAME]
+        172      00015D23 [NONAME]
+        173      0001BC83 [NONAME]
+        174      00007C31 [NONAME]
+        175      000099FA [NONAME]
+        176      000083A0 [NONAME]
+        177      0005721F [NONAME]
+        178      00012700 [NONAME]
+        179      0005726A [NONAME]
+        180      000572BD [NONAME]
+        181      000572FA [NONAME]
+        182      0005731D [NONAME]
+        183      0005737D [NONAME]
+        184      0000C276 [NONAME]
+        185      000579B5 [NONAME]
+        186      00057C64 [NONAME]
+        187      00016AF9 [NONAME]
+        188      00057CDE [NONAME]
+        189      000235CD [NONAME]
+        190      00057D2A [NONAME]
+        191      0005792B [NONAME]
+        192      0001C9AB [NONAME]
+        193      0000C23E [NONAME]
+        194      0001AEF0 [NONAME]
+        195      00057DA1 [NONAME]
+        196      0006782E [NONAME]
+        197      0001CFE1 [NONAME]
+        198      00057E2F [NONAME]
+        199      00007042 [NONAME]
+        200      000571CD [NONAME]
+        201      00018EFE [NONAME]
+        202      00018F27 [NONAME]
+        203      00057E66 [NONAME]
+        204      000076EE [NONAME]
+        205      00042049 [NONAME]
+        206      00042073 [NONAME]
+        207      00057ED0 [NONAME]
+        208      00017603 [NONAME]
+        209      00041402 [NONAME]
+        210      00018A4E [NONAME]
+        211      00018A1A [NONAME]
+        212      0000C321 [NONAME]
+        213      00017D69 [NONAME]
+        214      00017EC7 [NONAME]
+        215      00006958 [NONAME]
+        216      00006976 [NONAME]
+        217      0000414F [NONAME]
+        218      0000416D [NONAME]
+        219      00004086 [NONAME]
+        220      00057FC4 [NONAME]
+        221      00058076 [NONAME]
+        222      00005060 [NONAME]
+        223      00006AD9 [NONAME]
+        224      00063285 [NONAME]
+        225      00017245 [NONAME]
+        226      000559EB [NONAME]
+        227      000559C8 [NONAME]
+        228      00055973 [NONAME]
+        229      0005594E [NONAME]
+        230      000558E7 [NONAME]
+        231      0001410B [NONAME]
+        232      00055871 [NONAME]
+        233      00014138 [NONAME]
+        234      00055AA9 [NONAME]
+        235      00055A40 [NONAME]
+        236      00008A00 [NONAME]
+        237      0001A6E8 [NONAME]
+        238      000573B6 [NONAME]
+        239      0001A568 [NONAME]
+        240      000077AD [NONAME]
+        241      0000503E [NONAME]
+        242      0004302D [NONAME]
+        243      00043A0B [NONAME]
+        244      00043A2F [NONAME]
+        245      00043B0B [NONAME]
+        246      00043CE7 [NONAME]
+        247      000441E7 [NONAME]
+        248      000442BD [NONAME]
+        249      00044376 [NONAME]
+        250      00042DDE [NONAME]
+        251      00044032 [NONAME]
+        252      00044013 [NONAME]
+        253      00043A95 [NONAME]
+        254      00043AA5 [NONAME]
+        255      00042E33 [NONAME]
+        256      00018C74 [NONAME]
+        257      000580AA [NONAME]
+        258      00065484 [NONAME]
+        259      0006524A [NONAME]
+        260      000095AF [NONAME]
+        261      00061170 [NONAME]
+        262      0006117B [NONAME]
+        263      0006118C [NONAME]
+        264      0006119D [NONAME]
+        265      000611AE [NONAME]
+        266      00006D07 [NONAME]
+        267      00008978 [NONAME]
+        268      00008379 [NONAME]
+        269      00007253 [NONAME]
+        270      00007214 [NONAME]
+        271      0000C0E9 [NONAME]
+        272      00061B1E [NONAME]
+        273      00062122 [NONAME]
+        274      00058285 [NONAME]
+        275      000582A3 [NONAME]
+        276      00023427 [NONAME]
+        277      00058451 [NONAME]
+        278      0001965B [NONAME]
+        279      0005945D [NONAME]
+        280      00042299 [NONAME]
+        281      00015F44 [NONAME]
+        282      0002262E [NONAME]
+        283      00015FD2 [NONAME]
+        284      00015F14 [NONAME]
+        285      00022A30 [NONAME]
+        286      00022D9E [NONAME]
+        287      000229F1 [NONAME]
+        288      0001BA51 [NONAME]
+        289      00022E39 [NONAME]
+        290      00046327 [NONAME]
+        291      00057B4A [NONAME]
+        292      00057ACB [NONAME]
+        293      00061B30 [NONAME]
+        294      0000B41B [NONAME]
+        295      00059C04 [NONAME]
+        296      000598ED [NONAME]
+        297      0005995B [NONAME]
+        298      00019858 [NONAME]
+        299      0001F76C [NONAME]
+        300      00018C12 [NONAME]
+        301      0004E5D0 [NONAME]
+        302      0004B682 [NONAME]
+        303      0004B810 [NONAME]
+        304      0004E793 [NONAME]
+        305      00019B2E [NONAME]
+        306      00006BA2 [NONAME]
+        307      0001BA00 [NONAME]
+        308      000231F0 [NONAME]
+        309      0001A625 [NONAME]
+        310      0001E3A4 [NONAME]
+        311      0001E3F4 [NONAME]
+        312      0000B1D9 [NONAME]
+        313      0004E7F5 [NONAME]
+        314      0002C5E9 [NONAME]
+        315      0004E8E9 [NONAME]
+        316      0001F4A3 [NONAME]
+        317      0001F459 [NONAME]
+        318      0004EA69 [NONAME]
+        319      0004C00C [NONAME]
+        320      0005DE8F [NONAME]
+        321      0005DEC4 [NONAME]
+        322      0005DE45 [NONAME]
+        323      0005DE6A [NONAME]
+        324      0005E00E [NONAME]
+        325      0005E077 [NONAME]
+        326      0005E0E3 [NONAME]
+        327      0005E153 [NONAME]
+        328      0005DEFC [NONAME]
+        329      0005DF91 [NONAME]
+        330      0005E33D [NONAME]
+        331      0005E3AF [NONAME]
+        332      00049809 [NONAME]
+        333      0004C783 [NONAME]
+        334      00023090 [NONAME]
+        335      00017D9D [NONAME]
+        336      0004C843 [NONAME]
+        337      0004C91B [NONAME]
+        338      0004CA03 [NONAME]
+        339      0001CDCF [NONAME]
+        340      0004CA6B [NONAME]
+        341      0004A1AA [NONAME]
+        342      0000895D [NONAME]
+        343      00042120 [NONAME]
+        344      0000AA7C [NONAME]
+        345      0004617E [NONAME]
+        346      00006818 [NONAME]
+        347      0001C4B5 [NONAME]
+        348      00013499 [NONAME]
+        349      00046B0A [NONAME]
+        350      00013336 [NONAME]
+        351      00013381 [NONAME]
+        352      000133D2 [NONAME]
+        353      000520B1 [NONAME]
+        354      0001E45F [NONAME]
+        355      00056FE1 [NONAME]
+        357      0004EB89 [NONAME]
+        358      0004EB07 [NONAME]
+        359      0004D942 [NONAME]
+        360      0004DBF4 [NONAME]
+        361      00024225 [NONAME]
+        362      00010A1D [NONAME]
+        363      0005939D [NONAME]
+        364      00046891 [NONAME]
+        365      000073C4 [NONAME]
+        366      00021330 [NONAME]
+        367      0004EC76 [NONAME]
+        368      0004ED21 [NONAME]
+        369      0004EDCC [NONAME]
+        370      0004EF98 [NONAME]
+        371      0004B927 [NONAME]
+        372      0004F007 [NONAME]
+        373      0004F077 [NONAME]
+        374      00058BE1 [NONAME]
+        375      00058B77 [NONAME]
+        376      00011AB6 [NONAME]
+        377      0005A328 [NONAME]
+        378      0001E8C3 [NONAME]
+        379      0004C995 [NONAME]
+        380      0004A155 [NONAME]
+        381      00050A1C [NONAME]
+        382      00055CC9 [NONAME]
+        383      00055DC8 [NONAME]
+        384      00057C39 [NONAME]
+        385      00056D3E [NONAME]
+        386      00056DB2 [NONAME]
+        387      00056E0D [NONAME]
+        388      0005DD0B [NONAME]
+        389      0004F9E8 [NONAME]
+        390      0004E4B3 [NONAME]
+        391      0004E517 [NONAME]
+        392      0005AC51 [NONAME]
+        393      00049E5B [NONAME]
+        394      0001BDE3 [NONAME]
+        395      0005ADD6 [NONAME]
+        396      0005AD69 [NONAME]
+        397      0005AED2 [NONAME]
+        398      0005AE33 [NONAME]
+        399      00044487 [NONAME]
+        400      0000670F [NONAME]
+        401      0004F4CB [NONAME]
+        402      0004F3A2 [NONAME]
+        403      0004FBC2 [NONAME]
+        404      000128EC [NONAME]
+        405      0005B1EB [NONAME]
+        406      0005B053 [NONAME]
+        407      000506B3 [NONAME]
+        408      00050490 [NONAME]
+        409      00050C47 [NONAME]
+        410      00050E80 [NONAME]
+        411      00050EF6 [NONAME]
+        412      00046663 [NONAME]
+        413      00010435 [NONAME]
+        414      00058D6B [NONAME]
+        415      00058DB9 [NONAME]
+        416      00058E07 [NONAME]
+        417      00058E4A [NONAME]
+        418      000236D7 [NONAME]
+        419      0004F1DA [NONAME]
+        420      00058E8E [NONAME]
+        421      00058E9B [NONAME]
+        422      000050EE [NONAME]
+        423      000050A6 [NONAME]
+        424      000632AB [NONAME]
+        425      0004A54D [NONAME]
+        426      0004A596 [NONAME]
+        427      0004AF0A [NONAME]
+        428      0004AF9D [NONAME]
+        429      0005A376 [NONAME]
+        430      0001E9E5 [NONAME]
+        431      000236F0 [NONAME]
+        432      00058EC9 [NONAME]
+        433      00017C6C [NONAME]
+        434      00017CAE [NONAME]
+        435      0004BA54 [NONAME]
+        436      00021CA7 [NONAME]
+        437      000048E4 [NONAME]
+        438      0005335B [NONAME]
+        439      0000BF98 [NONAME]
+        440      0005B28B [NONAME]
+        441      00059FCA [NONAME]
+        442      0004CEBB [NONAME]
+        443      0005834C [NONAME]
+        444      000582C1 [NONAME]
+        445      000480EB [NONAME]
+        446      00007EE6 [NONAME]
+        447      00047485 [NONAME]
+        448      00012962 [NONAME]
+        449      00048BF4 [NONAME]
+        450      00051A9F [NONAME]
+        451      00048051 [NONAME]
+        452      00051406 [NONAME]
+        453      00048030 [NONAME]
+        454      000513E5 [NONAME]
+        455      00047AE5 [NONAME]
+        456      00007B26 [NONAME]
+        457      000142FD [NONAME]
+        458      0004F5BB [NONAME]
+        459      0004F9CA [NONAME]
+        460      00006DDA [NONAME]
+        461      000068B4 [NONAME]
+        462      0005F129 [NONAME]
+        463      0004F8F5 [NONAME]
+        464      00006D8F [NONAME]
+        465      0004937C [NONAME]
+        466      00051D21 [NONAME]
+        467      000426EB [NONAME]
+        468      00042611 [NONAME]
+        469      000424D5 [NONAME]
+        470      00058F0C [NONAME]
+        471      00019A23 [NONAME]
+        472      00014286 [NONAME]
+        473      0000B1A7 [NONAME]
+        474      0001982E [NONAME]
+        475      00005EA9 [NONAME]
+        476      0000881D [NONAME]
+        477      000631A9 [NONAME]
+        478      00056F52 [NONAME]
+        479      0001944A [NONAME]
+        480      00023C79 [NONAME]
+        481      00056F9B [NONAME]
+        482      00064AD4 [NONAME]
+        483      00064B78 [NONAME]
+        484      0001B9D0 [NONAME]
+        485      0006020B [NONAME]
+        486      0000C2A7 [NONAME]
+        488      00058F66 [NONAME]
+        489      0004F114 [NONAME]
+        490      0004F177 [NONAME]
+        491      0000A771 [NONAME]
+        492      00013778 [NONAME]
+        493      0001B539 [NONAME]
+        494      0001B96F [NONAME]
+        495      0001B831 [NONAME]
+        496      000183AC [NONAME]
+        497      000628A4 [NONAME]
+        498      000628E2 [NONAME]
+        499      00062966 [NONAME]
+        505      00016B99 [NONAME]
+        506      000629A9 [NONAME]
+        507      00017544 [NONAME]
+        508      000170CA [NONAME]
+        509      000194A9 [NONAME]
+        510      0000B5A2 [NONAME]
+        511      00012D75 [NONAME]
+        512      000178CF [NONAME]
+        513      00057342 [NONAME]
+        514      0001BA7C [NONAME]
+        516      0000A1B7 [NONAME]
+        517      0001AF32 [NONAME]
+        518      000590CD [NONAME]
+        519      0000BE23 [NONAME]
+        520      00016B4D [NONAME]
+        521      000182D8 [NONAME]
+        522      00062EAB [NONAME]
+        523      00062A0A [NONAME]
+        524      00062FF2 [NONAME]
+        525      0001828A [NONAME]
+        526      00062FAC [NONAME]
+        527      0006281B [NONAME]
+        528      00062864 [NONAME]
+        529      000183AC [NONAME]
+        530      000628A4 [NONAME]
+        531      00017FD9 [NONAME]
+        532      00062B2C [NONAME]
+        533      00018082 [NONAME]
+        534      00062918 [NONAME]
+        535      00062B6E [NONAME]
+        536      0001B269 [NONAME]
+        537      00059134 [NONAME]
+        538      00023267 [NONAME]
+        539      0005710D [NONAME]
+        540      00059429 [NONAME]
+        541      00058485 [NONAME]
+        542      0001A91E [NONAME]
+        543      0004B8BB [NONAME]
+        544      0000A009 [NONAME]
+        545      00058650 [NONAME]
+        546      0005933F [NONAME]
+        548      0001C4F6 [NONAME]
+        549      00009445 [NONAME]
+        550      00055FD2 [NONAME]
+        551      00007BD4 [NONAME]
+        552      0001307B [NONAME]
+        553      0006483E [NONAME]
+        554      0006460A [NONAME]
+        555      00064860 [NONAME]
+        556      00064816 [NONAME]
+        557      000645E5 [NONAME]
+        558      0002CCB9 [NONAME]
+        559      000532C5 [NONAME]
+        560      00013ED3 [NONAME]
+        561      000056E9 [NONAME]
+        562      000591B8 [NONAME]
+        563      00004E4B [NONAME]
+        564      00022AC9 [NONAME]
+        565      000622BC [NONAME]
+
+  Summary
+
+        1000 .data
+        6000 .reloc
+        2000 .rsrc
+       6C000 .text

@@ -1,0 +1,145 @@
+#!/usr/bin/env python
+
+import sys
+
+def parseExports(name): # dumpbin a.dll /exports
+	B_started = False
+	B_stopped = False
+	with open(name, "r") as f:
+		for line in f.readlines():
+			if not B_started:
+				if line.strip().startswith("ordinal hint"):
+					B_started = True
+			elif line.strip() == "Summary":
+				B_stopped = True
+			else:
+				if not B_stopped:
+					if line.find("[NONAME]") > -1:
+						continue
+					if (line.find("(forwarded to ") != -1):
+						line = line.split("(forwarded to ", 2)[0]
+					parts = line.strip().replace("  ", " ").replace("  ", " ").replace("  ", " ").replace("  ", " ").replace("  ", " ").split(" ")
+					name = parts[-1]
+					if name != "[NONAME]" and name.strip() != "":
+						yield name
+
+def parseAux(name): # gcc -aux-info
+	result = {}
+	with open(name, "r") as f:
+		for line in f.readlines():
+			if line.startswith("/*"):
+				i = line.find("*/")
+				assert(i != -1)
+				line = line[i + 2 : ].lstrip()
+				beforebrace = line.split("(")[0].strip()
+				name = beforebrace.split(" ")[-1]
+				line = line.replace("extern ", "")
+				result[name] = line
+	return(result)
+def getType(t):
+	m = {
+		"void": "v",
+		"BYTE": "i", # FIXME
+		"CHAR": "i", # FIXME
+		"char": "i", # FIXME
+		"WCHAR": "i", # FIXME
+		"UINT_PTR": "i", # FIXME
+		"WPARAM": "i", # FIXME
+		"SIZE_T": "l", # FIXME
+		"COLORREF": "i",
+		"WORD": "h",
+		"INT": "i",
+		"int": "i",
+		"SHORT": "h",
+		"DWORD": "i",
+		"UINT": "i",
+		"BOOL": "i",
+		"HWND": "p",
+		"HDC": "p",
+		"HINSTANCE": "p",
+		"HANDLE": "p",
+		"HMENU": "p",
+		"HDESK": "p",
+		"HBITMAP": "p",
+		"HICON": "p",
+		"HRGN": "p",
+		"HCURSOR": "p",
+		"HBRUSH": "p",
+		"HMONITOR": "p",
+		"HCONV": "p",
+		"HCONVLIST": "p",
+		"HACCEL": "p",
+		"HFILE": "p", # FIXME
+		"LONG": "l",
+		"PICONINFO": "p",
+		"PCURSORINFO": "p",
+		"LRESULT": "l", # FIXME
+		"LPCSTR": "s",
+		"LPWSTR": "p",
+		"LPCWSTR": "p",
+		"LPSTR": "p",
+		"ULONG_PTR": "P",
+		"PVOID": "p",
+		"PBYTE": "p",
+		"PBOOL": "p",
+		"PDWORD": "p",
+		"PWINDOWINFO": "p",
+		"long int": "l",
+		"WNDPROC": "p",
+		"DLGPROC": "p",
+		"GRAYSTRINGPROC": "p",
+		"TIMERPROC": "p",
+		"HOOKPROC": "p",
+		"PUINT_PTR": "p",
+		"ATOM": "h",
+		"ABORTPROC": "p",
+		"ENHMFENUMPROC": "p",
+		"FLOAT": "f",
+		"FONTENUMPROCA": "p",
+		"FONTENUMPROCW": "p",
+		"GOBJENUMPROC": "p",
+		"HCOLORSPACE": "p",
+		"HENHMETAFILE": "p",
+		"HFONT": "p",
+		"HGDIOBJ": "p",
+		"HGLOBAL": "p",
+		"HMETAFILE": "p",
+		"HPALETTE": "p",
+		"HPEN": "p",
+		"ICMENUMPROCA": "p",
+		"ICMENUMPROCW": "p",
+		"LINEDDAPROC": "p",
+		"MFENUMPROC": "p",
+		"PCVOID": "p",
+		"PFLOAT": "p",
+		"PLOGFONTA": "p",
+		"PLOGFONTW": "p",
+	}.get(t)
+	if m:
+		return(m)
+	else:
+		if t.startswith("LP") or t.count("*") == 1:
+			return("p")
+		print >>sys.stderr, "warning: unknown: %s" % (t,)
+		return "?"
+auxes = parseAux("ax")
+
+for name in parseExports(sys.argv[1]):
+	aux = auxes.get(name)
+	if aux is None:
+		print("%s unknown" % name)
+	else:
+		parts = aux.split("(")
+		retname = parts[0].strip()
+		i = retname.rfind(" ")
+		assert(i != -1)
+		name = retname[i + 1 : ].strip()
+		ret = retname[ : i].strip()
+		params = parts[1].rstrip()
+		if params.endswith(");"):
+			params = params[:-2].strip()
+		shlib = sys.argv[1].replace(".list", ".DLL")
+		print("let %s = (requireSharedLibrary \"%s\" 'P%s%s \"%s\") in " % (name, shlib, getType(ret), "".join(map(getType, params.split(", "))), name))
+		
+	
+
