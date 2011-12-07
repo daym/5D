@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec objdump -TC "$1" |grep -v "\*UND\*" |grep "\.text" |awk '{print $7}'
