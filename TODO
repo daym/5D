@@ -61,7 +61,8 @@ Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).
 nested lists: line-break only for the second list if the first list is short enough.
 pattern-match env entry back to the let macro.
-describe
+Allow querying a list of exported symbols of a shared library.
+Auto-load libc (or at least determine the file name?)
 
 = Performance =
 
