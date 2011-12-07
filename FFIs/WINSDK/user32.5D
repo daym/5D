@@ -563,10 +563,6 @@ let WindowFromDC = (requireSharedLibrary "user32.DLL" 'Ppp "WindowFromDC") in
 let WindowFromPoint = (requireSharedLibrary "user32.DLL" 'Pp? "WindowFromPoint") in 
 let keybd_event = (requireSharedLibrary "user32.DLL" 'Pviiii "keybd_event") in 
 let mouse_event = (requireSharedLibrary "user32.DLL" 'Pviiiil "mouse_event") in 
-let wsprintfA = (requireSharedLibrary "user32.DLL" 'Pips? "wsprintfA") in 
-let wsprintfW = (requireSharedLibrary "user32.DLL" 'Pipp? "wsprintfW") in 
-let wvsprintfA = (requireSharedLibrary "user32.DLL" 'Pips? "wvsprintfA") in 
-let wvsprintfW = (requireSharedLibrary "user32.DLL" 'Pipp? "wvsprintfW") in 
 dispatchModule $
 [['ActivateKeyboardLayout ActivateKeyboardLayout]
 ['AdjustWindowRect AdjustWindowRect]
@@ -1132,8 +1128,4 @@ dispatchModule $
 ['WindowFromDC WindowFromDC]
 ['WindowFromPoint WindowFromPoint]
 ['keybd_event keybd_event]
-['mouse_event mouse_event]
-['wsprintfA wsprintfA]
-['wsprintfW wsprintfW]
-['wvsprintfA wvsprintfA]
-['wvsprintfW wvsprintfW]]
+['mouse_event mouse_event]]
