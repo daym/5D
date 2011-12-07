@@ -15,3 +15,8 @@ gdi32.sign: gdi32.list ax
 	./generateSignatures gdi32.list >gdi32.sign.new && mv gdi32.sign.new gdi32.sign
 	
 
+clean:
+	rm -f kernel32.5D user32.5D gdi32.5D kernel32.sign user32.sign gdi32.sign
+
+distclean: clean
+	
