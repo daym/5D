@@ -166,7 +166,7 @@ def getType(t):
 			return("p")
 		print >>sys.stderr, "warning: unknown: %s" % (t,)
 		return "?"
-auxes = parseAux("ax")
+auxes = parseAux("prototypes")
 
 for name in parseExports(sys.argv[1]):
 	aux = auxes.get(name)
