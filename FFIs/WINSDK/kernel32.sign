@@ -353,8 +353,8 @@ GetFirmwareEnvironmentVariableA unknown
 GetFirmwareEnvironmentVariableW unknown
 let GetFullPathNameA = (requireSharedLibrary "kernel32.DLL" 'Pisipp "GetFullPathNameA") in 
 let GetFullPathNameW = (requireSharedLibrary "kernel32.DLL" 'Pipipp "GetFullPathNameW") in 
-let GetGeoInfoA = (requireSharedLibrary "kernel32.DLL" 'Piiipi? "GetGeoInfoA") in 
-let GetGeoInfoW = (requireSharedLibrary "kernel32.DLL" 'Piiipi? "GetGeoInfoW") in 
+let GetGeoInfoA = (requireSharedLibrary "kernel32.DLL" 'Piiipih "GetGeoInfoA") in 
+let GetGeoInfoW = (requireSharedLibrary "kernel32.DLL" 'Piiipih "GetGeoInfoW") in 
 GetHandleContext unknown
 let GetHandleInformation = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetHandleInformation") in 
 let GetLargestConsoleWindowSize = (requireSharedLibrary "kernel32.DLL" 'P?p "GetLargestConsoleWindowSize") in 
@@ -437,7 +437,7 @@ let GetStringTypeExW = (requireSharedLibrary "kernel32.DLL" 'Piiipip "GetStringT
 let GetStringTypeW = (requireSharedLibrary "kernel32.DLL" 'Piipip "GetStringTypeW") in 
 GetSystemDEPPolicy unknown
 let GetSystemDefaultLCID = (requireSharedLibrary "kernel32.DLL" 'Piv "GetSystemDefaultLCID") in 
-let GetSystemDefaultLangID = (requireSharedLibrary "kernel32.DLL" 'P?v "GetSystemDefaultLangID") in 
+let GetSystemDefaultLangID = (requireSharedLibrary "kernel32.DLL" 'Phv "GetSystemDefaultLangID") in 
 GetSystemDefaultUILanguage unknown
 let GetSystemDirectoryA = (requireSharedLibrary "kernel32.DLL" 'Pipi "GetSystemDirectoryA") in 
 let GetSystemDirectoryW = (requireSharedLibrary "kernel32.DLL" 'Pipi "GetSystemDirectoryW") in 
@@ -471,7 +471,7 @@ let GetTimeFormatA = (requireSharedLibrary "kernel32.DLL" 'Piiipspi "GetTimeForm
 let GetTimeFormatW = (requireSharedLibrary "kernel32.DLL" 'Piiipppi "GetTimeFormatW") in 
 let GetTimeZoneInformation = (requireSharedLibrary "kernel32.DLL" 'Pip "GetTimeZoneInformation") in 
 let GetUserDefaultLCID = (requireSharedLibrary "kernel32.DLL" 'Piv "GetUserDefaultLCID") in 
-let GetUserDefaultLangID = (requireSharedLibrary "kernel32.DLL" 'P?v "GetUserDefaultLangID") in 
+let GetUserDefaultLangID = (requireSharedLibrary "kernel32.DLL" 'Phv "GetUserDefaultLangID") in 
 GetUserDefaultUILanguage unknown
 let GetUserGeoID = (requireSharedLibrary "kernel32.DLL" 'Pi? "GetUserGeoID") in 
 GetVDMCurrentDirectories unknown

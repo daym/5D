@@ -133,6 +133,7 @@ def getType(t):
 		"ULARGE_INTEGER": "L",
 		"GEOID": "i", # FIXME
 		"GEOTYPE": "i", # FIXME
+		"LANGID": "h",
 	}.get(t)
 	if m:
 		return(m)
