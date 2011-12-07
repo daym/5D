@@ -53,12 +53,12 @@ CmdBatNotification unknown
 let CommConfigDialogA = (requireSharedLibrary "kernel32.DLL" 'Pispp "CommConfigDialogA") in 
 let CommConfigDialogW = (requireSharedLibrary "kernel32.DLL" 'Pippp "CommConfigDialogW") in 
 let CompareFileTime = (requireSharedLibrary "kernel32.DLL" 'Plpp "CompareFileTime") in 
-let CompareStringA = (requireSharedLibrary "kernel32.DLL" 'Pi?isisi "CompareStringA") in 
-let CompareStringW = (requireSharedLibrary "kernel32.DLL" 'Pi?ipipi "CompareStringW") in 
+let CompareStringA = (requireSharedLibrary "kernel32.DLL" 'Piiisisi "CompareStringA") in 
+let CompareStringW = (requireSharedLibrary "kernel32.DLL" 'Piiipipi "CompareStringW") in 
 let ConnectNamedPipe = (requireSharedLibrary "kernel32.DLL" 'Pipp "ConnectNamedPipe") in 
 ConsoleMenuControl unknown
 let ContinueDebugEvent = (requireSharedLibrary "kernel32.DLL" 'Piiii "ContinueDebugEvent") in 
-let ConvertDefaultLocale = (requireSharedLibrary "kernel32.DLL" 'P?? "ConvertDefaultLocale") in 
+let ConvertDefaultLocale = (requireSharedLibrary "kernel32.DLL" 'Pii "ConvertDefaultLocale") in 
 let ConvertFiberToThread = (requireSharedLibrary "kernel32.DLL" 'Piv "ConvertFiberToThread") in 
 let ConvertThreadToFiber = (requireSharedLibrary "kernel32.DLL" 'Ppp "ConvertThreadToFiber") in 
 let CopyFileA = (requireSharedLibrary "kernel32.DLL" 'Pissi "CopyFileA") in 
@@ -95,7 +95,7 @@ let CreateMutexW = (requireSharedLibrary "kernel32.DLL" 'Pppip "CreateMutexW") i
 let CreateNamedPipeA = (requireSharedLibrary "kernel32.DLL" 'Ppsiiiiiip "CreateNamedPipeA") in 
 let CreateNamedPipeW = (requireSharedLibrary "kernel32.DLL" 'Pppiiiiiip "CreateNamedPipeW") in 
 CreateNlsSecurityDescriptor unknown
-let CreatePipe = (requireSharedLibrary "kernel32.DLL" 'Pi??pi "CreatePipe") in 
+let CreatePipe = (requireSharedLibrary "kernel32.DLL" 'Pipppi "CreatePipe") in 
 let CreateProcessA = (requireSharedLibrary "kernel32.DLL" 'Pispppiipspp "CreateProcessA") in 
 CreateProcessInternalA unknown
 CreateProcessInternalW unknown
@@ -135,7 +135,7 @@ DeleteTimerQueueTimer unknown
 DeleteVolumeMountPointA unknown
 DeleteVolumeMountPointW unknown
 let DeviceIoControl = (requireSharedLibrary "kernel32.DLL" 'Pipipipip? "DeviceIoControl") in 
-let DisableThreadLibraryCalls = (requireSharedLibrary "kernel32.DLL" 'Pi? "DisableThreadLibraryCalls") in 
+let DisableThreadLibraryCalls = (requireSharedLibrary "kernel32.DLL" 'Pip "DisableThreadLibraryCalls") in 
 let DisconnectNamedPipe = (requireSharedLibrary "kernel32.DLL" 'Pip "DisconnectNamedPipe") in 
 DnsHostnameToComputerNameA unknown
 DnsHostnameToComputerNameW unknown
@@ -143,37 +143,37 @@ let DosDateTimeToFileTime = (requireSharedLibrary "kernel32.DLL" 'Pihhp "DosDate
 DosPathToSessionPathA unknown
 DosPathToSessionPathW unknown
 DuplicateConsoleHandle unknown
-let DuplicateHandle = (requireSharedLibrary "kernel32.DLL" 'Pippp?iii "DuplicateHandle") in 
+let DuplicateHandle = (requireSharedLibrary "kernel32.DLL" 'Pippppiii "DuplicateHandle") in 
 EncodePointer unknown
 EncodeSystemPointer unknown
 let EndUpdateResourceA = (requireSharedLibrary "kernel32.DLL" 'Pipi "EndUpdateResourceA") in 
 let EndUpdateResourceW = (requireSharedLibrary "kernel32.DLL" 'Pipi "EndUpdateResourceW") in 
 let EnterCriticalSection = (requireSharedLibrary "kernel32.DLL" 'Pvp "EnterCriticalSection") in 
-let EnumCalendarInfoA = (requireSharedLibrary "kernel32.DLL" 'Pi???? "EnumCalendarInfoA") in 
+let EnumCalendarInfoA = (requireSharedLibrary "kernel32.DLL" 'Pi?iii "EnumCalendarInfoA") in 
 EnumCalendarInfoExA unknown
 EnumCalendarInfoExW unknown
-let EnumCalendarInfoW = (requireSharedLibrary "kernel32.DLL" 'Pi???? "EnumCalendarInfoW") in 
-let EnumDateFormatsA = (requireSharedLibrary "kernel32.DLL" 'Pi??i "EnumDateFormatsA") in 
+let EnumCalendarInfoW = (requireSharedLibrary "kernel32.DLL" 'Pi?iii "EnumCalendarInfoW") in 
+let EnumDateFormatsA = (requireSharedLibrary "kernel32.DLL" 'Pi?ii "EnumDateFormatsA") in 
 EnumDateFormatsExA unknown
 EnumDateFormatsExW unknown
-let EnumDateFormatsW = (requireSharedLibrary "kernel32.DLL" 'Pi??i "EnumDateFormatsW") in 
+let EnumDateFormatsW = (requireSharedLibrary "kernel32.DLL" 'Pi?ii "EnumDateFormatsW") in 
 EnumLanguageGroupLocalesA unknown
 EnumLanguageGroupLocalesW unknown
-let EnumResourceLanguagesA = (requireSharedLibrary "kernel32.DLL" 'Pi?ss?? "EnumResourceLanguagesA") in 
-let EnumResourceLanguagesW = (requireSharedLibrary "kernel32.DLL" 'Pi?pp?? "EnumResourceLanguagesW") in 
-let EnumResourceNamesA = (requireSharedLibrary "kernel32.DLL" 'Pi?s?? "EnumResourceNamesA") in 
-let EnumResourceNamesW = (requireSharedLibrary "kernel32.DLL" 'Pi?p?? "EnumResourceNamesW") in 
-let EnumResourceTypesA = (requireSharedLibrary "kernel32.DLL" 'Pi??? "EnumResourceTypesA") in 
-let EnumResourceTypesW = (requireSharedLibrary "kernel32.DLL" 'Pi??? "EnumResourceTypesW") in 
+let EnumResourceLanguagesA = (requireSharedLibrary "kernel32.DLL" 'Pipsspl "EnumResourceLanguagesA") in 
+let EnumResourceLanguagesW = (requireSharedLibrary "kernel32.DLL" 'Pippppl "EnumResourceLanguagesW") in 
+let EnumResourceNamesA = (requireSharedLibrary "kernel32.DLL" 'Pipspl "EnumResourceNamesA") in 
+let EnumResourceNamesW = (requireSharedLibrary "kernel32.DLL" 'Pipppl "EnumResourceNamesW") in 
+let EnumResourceTypesA = (requireSharedLibrary "kernel32.DLL" 'Pippl "EnumResourceTypesA") in 
+let EnumResourceTypesW = (requireSharedLibrary "kernel32.DLL" 'Pippl "EnumResourceTypesW") in 
 let EnumSystemCodePagesA = (requireSharedLibrary "kernel32.DLL" 'Pi?i "EnumSystemCodePagesA") in 
 let EnumSystemCodePagesW = (requireSharedLibrary "kernel32.DLL" 'Pi?i "EnumSystemCodePagesW") in 
-let EnumSystemGeoID = (requireSharedLibrary "kernel32.DLL" 'Pi??? "EnumSystemGeoID") in 
+let EnumSystemGeoID = (requireSharedLibrary "kernel32.DLL" 'Pi?i? "EnumSystemGeoID") in 
 EnumSystemLanguageGroupsA unknown
 EnumSystemLanguageGroupsW unknown
 let EnumSystemLocalesA = (requireSharedLibrary "kernel32.DLL" 'Pi?i "EnumSystemLocalesA") in 
 let EnumSystemLocalesW = (requireSharedLibrary "kernel32.DLL" 'Pi?i "EnumSystemLocalesW") in 
-let EnumTimeFormatsA = (requireSharedLibrary "kernel32.DLL" 'Pi??i "EnumTimeFormatsA") in 
-let EnumTimeFormatsW = (requireSharedLibrary "kernel32.DLL" 'Pi??i "EnumTimeFormatsW") in 
+let EnumTimeFormatsA = (requireSharedLibrary "kernel32.DLL" 'Pi?ii "EnumTimeFormatsA") in 
+let EnumTimeFormatsW = (requireSharedLibrary "kernel32.DLL" 'Pi?ii "EnumTimeFormatsW") in 
 EnumUILanguagesA unknown
 EnumUILanguagesW unknown
 EnumerateLocalComputerNamesA unknown
@@ -221,7 +221,7 @@ FindNextVolumeA unknown
 FindNextVolumeMountPointA unknown
 FindNextVolumeMountPointW unknown
 FindNextVolumeW unknown
-let FindResourceA = (requireSharedLibrary "kernel32.DLL" 'P??ss "FindResourceA") in 
+let FindResourceA = (requireSharedLibrary "kernel32.DLL" 'P?pss "FindResourceA") in 
 let FindResourceExA = (requireSharedLibrary "kernel32.DLL" 'P?pssh "FindResourceExA") in 
 let FindResourceExW = (requireSharedLibrary "kernel32.DLL" 'P?ppph "FindResourceExW") in 
 let FindResourceW = (requireSharedLibrary "kernel32.DLL" 'P?ppp "FindResourceW") in 
@@ -229,18 +229,18 @@ FindVolumeClose unknown
 FindVolumeMountPointClose unknown
 let FlushConsoleInputBuffer = (requireSharedLibrary "kernel32.DLL" 'Pip "FlushConsoleInputBuffer") in 
 let FlushFileBuffers = (requireSharedLibrary "kernel32.DLL" 'Pip "FlushFileBuffers") in 
-let FlushInstructionCache = (requireSharedLibrary "kernel32.DLL" 'Pip?i "FlushInstructionCache") in 
-let FlushViewOfFile = (requireSharedLibrary "kernel32.DLL" 'Pi?i "FlushViewOfFile") in 
+let FlushInstructionCache = (requireSharedLibrary "kernel32.DLL" 'Pippi "FlushInstructionCache") in 
+let FlushViewOfFile = (requireSharedLibrary "kernel32.DLL" 'Pipi "FlushViewOfFile") in 
 let FoldStringA = (requireSharedLibrary "kernel32.DLL" 'Piisipi "FoldStringA") in 
 let FoldStringW = (requireSharedLibrary "kernel32.DLL" 'Piipipi "FoldStringW") in 
-let FormatMessageA = (requireSharedLibrary "kernel32.DLL" 'Pii?iipip "FormatMessageA") in 
-let FormatMessageW = (requireSharedLibrary "kernel32.DLL" 'Pii?iipip "FormatMessageW") in 
+let FormatMessageA = (requireSharedLibrary "kernel32.DLL" 'Piipiipip "FormatMessageA") in 
+let FormatMessageW = (requireSharedLibrary "kernel32.DLL" 'Piipiipip "FormatMessageW") in 
 let FreeConsole = (requireSharedLibrary "kernel32.DLL" 'Piv "FreeConsole") in 
 let FreeEnvironmentStringsA = (requireSharedLibrary "kernel32.DLL" 'Pip "FreeEnvironmentStringsA") in 
 let FreeEnvironmentStringsW = (requireSharedLibrary "kernel32.DLL" 'Pip "FreeEnvironmentStringsW") in 
-let FreeLibrary = (requireSharedLibrary "kernel32.DLL" 'Pi? "FreeLibrary") in 
-let FreeLibraryAndExitThread = (requireSharedLibrary "kernel32.DLL" 'Pv?i "FreeLibraryAndExitThread") in 
-let FreeResource = (requireSharedLibrary "kernel32.DLL" 'Pi? "FreeResource") in 
+let FreeLibrary = (requireSharedLibrary "kernel32.DLL" 'Pip "FreeLibrary") in 
+let FreeLibraryAndExitThread = (requireSharedLibrary "kernel32.DLL" 'Pvpi "FreeLibraryAndExitThread") in 
+let FreeResource = (requireSharedLibrary "kernel32.DLL" 'Pip "FreeResource") in 
 FreeUserPhysicalPages unknown
 FreeVirtualBuffer unknown
 let GenerateConsoleCtrlEvent = (requireSharedLibrary "kernel32.DLL" 'Piii "GenerateConsoleCtrlEvent") in 
@@ -254,8 +254,8 @@ GetCPFileNameFromRegistry unknown
 let GetCPInfo = (requireSharedLibrary "kernel32.DLL" 'Piip "GetCPInfo") in 
 let GetCPInfoExA = (requireSharedLibrary "kernel32.DLL" 'Piiip "GetCPInfoExA") in 
 let GetCPInfoExW = (requireSharedLibrary "kernel32.DLL" 'Piiip "GetCPInfoExW") in 
-let GetCalendarInfoA = (requireSharedLibrary "kernel32.DLL" 'Pi???pip "GetCalendarInfoA") in 
-let GetCalendarInfoW = (requireSharedLibrary "kernel32.DLL" 'Pi???pip "GetCalendarInfoW") in 
+let GetCalendarInfoA = (requireSharedLibrary "kernel32.DLL" 'Piiiipip "GetCalendarInfoA") in 
+let GetCalendarInfoW = (requireSharedLibrary "kernel32.DLL" 'Piiiipip "GetCalendarInfoW") in 
 GetComPlusPackageInstallStatus unknown
 let GetCommConfig = (requireSharedLibrary "kernel32.DLL" 'Pippp "GetCommConfig") in 
 let GetCommMask = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetCommMask") in 
@@ -307,8 +307,8 @@ GetConsoleSelectionInfo unknown
 let GetConsoleTitleA = (requireSharedLibrary "kernel32.DLL" 'Pipi "GetConsoleTitleA") in 
 let GetConsoleTitleW = (requireSharedLibrary "kernel32.DLL" 'Pipi "GetConsoleTitleW") in 
 GetConsoleWindow unknown
-let GetCurrencyFormatA = (requireSharedLibrary "kernel32.DLL" 'Pi?isppi "GetCurrencyFormatA") in 
-let GetCurrencyFormatW = (requireSharedLibrary "kernel32.DLL" 'Pi?ipppi "GetCurrencyFormatW") in 
+let GetCurrencyFormatA = (requireSharedLibrary "kernel32.DLL" 'Piiisppi "GetCurrencyFormatA") in 
+let GetCurrencyFormatW = (requireSharedLibrary "kernel32.DLL" 'Piiipppi "GetCurrencyFormatW") in 
 GetCurrentActCtx unknown
 GetCurrentConsoleFont unknown
 let GetCurrentDirectoryA = (requireSharedLibrary "kernel32.DLL" 'Piip "GetCurrentDirectoryA") in 
@@ -317,15 +317,15 @@ let GetCurrentProcess = (requireSharedLibrary "kernel32.DLL" 'Ppv "GetCurrentPro
 let GetCurrentProcessId = (requireSharedLibrary "kernel32.DLL" 'Piv "GetCurrentProcessId") in 
 let GetCurrentThread = (requireSharedLibrary "kernel32.DLL" 'Ppv "GetCurrentThread") in 
 let GetCurrentThreadId = (requireSharedLibrary "kernel32.DLL" 'Piv "GetCurrentThreadId") in 
-let GetDateFormatA = (requireSharedLibrary "kernel32.DLL" 'Pi?ipspi "GetDateFormatA") in 
-let GetDateFormatW = (requireSharedLibrary "kernel32.DLL" 'Pi?ipppi "GetDateFormatW") in 
+let GetDateFormatA = (requireSharedLibrary "kernel32.DLL" 'Piiipspi "GetDateFormatA") in 
+let GetDateFormatW = (requireSharedLibrary "kernel32.DLL" 'Piiipppi "GetDateFormatW") in 
 let GetDefaultCommConfigA = (requireSharedLibrary "kernel32.DLL" 'Pispp "GetDefaultCommConfigA") in 
 let GetDefaultCommConfigW = (requireSharedLibrary "kernel32.DLL" 'Pippp "GetDefaultCommConfigW") in 
 GetDefaultSortkeySize unknown
 GetDevicePowerState unknown
 let GetDiskFreeSpaceA = (requireSharedLibrary "kernel32.DLL" 'Pispppp "GetDiskFreeSpaceA") in 
-let GetDiskFreeSpaceExA = (requireSharedLibrary "kernel32.DLL" 'Pis??? "GetDiskFreeSpaceExA") in 
-let GetDiskFreeSpaceExW = (requireSharedLibrary "kernel32.DLL" 'Pip??? "GetDiskFreeSpaceExW") in 
+let GetDiskFreeSpaceExA = (requireSharedLibrary "kernel32.DLL" 'Pisppp "GetDiskFreeSpaceExA") in 
+let GetDiskFreeSpaceExW = (requireSharedLibrary "kernel32.DLL" 'Pipppp "GetDiskFreeSpaceExW") in 
 let GetDiskFreeSpaceW = (requireSharedLibrary "kernel32.DLL" 'Pippppp "GetDiskFreeSpaceW") in 
 GetDllDirectoryA unknown
 GetDllDirectoryW unknown
@@ -353,16 +353,16 @@ GetFirmwareEnvironmentVariableA unknown
 GetFirmwareEnvironmentVariableW unknown
 let GetFullPathNameA = (requireSharedLibrary "kernel32.DLL" 'Pisipp "GetFullPathNameA") in 
 let GetFullPathNameW = (requireSharedLibrary "kernel32.DLL" 'Pipipp "GetFullPathNameW") in 
-let GetGeoInfoA = (requireSharedLibrary "kernel32.DLL" 'Pi??pi? "GetGeoInfoA") in 
-let GetGeoInfoW = (requireSharedLibrary "kernel32.DLL" 'Pi??pi? "GetGeoInfoW") in 
+let GetGeoInfoA = (requireSharedLibrary "kernel32.DLL" 'Piiipi? "GetGeoInfoA") in 
+let GetGeoInfoW = (requireSharedLibrary "kernel32.DLL" 'Piiipi? "GetGeoInfoW") in 
 GetHandleContext unknown
 let GetHandleInformation = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetHandleInformation") in 
 let GetLargestConsoleWindowSize = (requireSharedLibrary "kernel32.DLL" 'P?p "GetLargestConsoleWindowSize") in 
 let GetLastError = (requireSharedLibrary "kernel32.DLL" 'Piv "GetLastError") in 
 GetLinguistLangSize unknown
 let GetLocalTime = (requireSharedLibrary "kernel32.DLL" 'Pvp "GetLocalTime") in 
-let GetLocaleInfoA = (requireSharedLibrary "kernel32.DLL" 'Pi??pi "GetLocaleInfoA") in 
-let GetLocaleInfoW = (requireSharedLibrary "kernel32.DLL" 'Pi??pi "GetLocaleInfoW") in 
+let GetLocaleInfoA = (requireSharedLibrary "kernel32.DLL" 'Pii?pi "GetLocaleInfoA") in 
+let GetLocaleInfoW = (requireSharedLibrary "kernel32.DLL" 'Pii?pi "GetLocaleInfoW") in 
 let GetLogicalDriveStringsA = (requireSharedLibrary "kernel32.DLL" 'Piip "GetLogicalDriveStringsA") in 
 let GetLogicalDriveStringsW = (requireSharedLibrary "kernel32.DLL" 'Piip "GetLogicalDriveStringsW") in 
 let GetLogicalDrives = (requireSharedLibrary "kernel32.DLL" 'Piv "GetLogicalDrives") in 
@@ -372,10 +372,10 @@ GetLongPathNameW unknown
 let GetMailslotInfo = (requireSharedLibrary "kernel32.DLL" 'Pippppp "GetMailslotInfo") in 
 let GetModuleFileNameA = (requireSharedLibrary "kernel32.DLL" 'Pippi "GetModuleFileNameA") in 
 let GetModuleFileNameW = (requireSharedLibrary "kernel32.DLL" 'Pippi "GetModuleFileNameW") in 
-let GetModuleHandleA = (requireSharedLibrary "kernel32.DLL" 'P?s "GetModuleHandleA") in 
+let GetModuleHandleA = (requireSharedLibrary "kernel32.DLL" 'Pps "GetModuleHandleA") in 
 GetModuleHandleExA unknown
 GetModuleHandleExW unknown
-let GetModuleHandleW = (requireSharedLibrary "kernel32.DLL" 'P?p "GetModuleHandleW") in 
+let GetModuleHandleW = (requireSharedLibrary "kernel32.DLL" 'Ppp "GetModuleHandleW") in 
 let GetNamedPipeHandleStateA = (requireSharedLibrary "kernel32.DLL" 'Pippppppi "GetNamedPipeHandleStateA") in 
 let GetNamedPipeHandleStateW = (requireSharedLibrary "kernel32.DLL" 'Pippppppi "GetNamedPipeHandleStateW") in 
 let GetNamedPipeInfo = (requireSharedLibrary "kernel32.DLL" 'Pippppp "GetNamedPipeInfo") in 
@@ -388,8 +388,8 @@ GetNumaHighestNodeNumber unknown
 GetNumaNodeProcessorMask unknown
 GetNumaProcessorMap unknown
 GetNumaProcessorNode unknown
-let GetNumberFormatA = (requireSharedLibrary "kernel32.DLL" 'Pi?isppi "GetNumberFormatA") in 
-let GetNumberFormatW = (requireSharedLibrary "kernel32.DLL" 'Pi?ipppi "GetNumberFormatW") in 
+let GetNumberFormatA = (requireSharedLibrary "kernel32.DLL" 'Piiisppi "GetNumberFormatA") in 
+let GetNumberFormatW = (requireSharedLibrary "kernel32.DLL" 'Piiipppi "GetNumberFormatW") in 
 GetNumberOfConsoleFonts unknown
 let GetNumberOfConsoleInputEvents = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetNumberOfConsoleInputEvents") in 
 let GetNumberOfConsoleMouseButtons = (requireSharedLibrary "kernel32.DLL" 'Pip "GetNumberOfConsoleMouseButtons") in 
@@ -411,7 +411,7 @@ let GetProcessAffinityMask = (requireSharedLibrary "kernel32.DLL" 'Pippp "GetPro
 GetProcessDEPPolicy unknown
 GetProcessHandleCount unknown
 let GetProcessHeap = (requireSharedLibrary "kernel32.DLL" 'Ppv "GetProcessHeap") in 
-let GetProcessHeaps = (requireSharedLibrary "kernel32.DLL" 'Pii? "GetProcessHeaps") in 
+let GetProcessHeaps = (requireSharedLibrary "kernel32.DLL" 'Piip "GetProcessHeaps") in 
 GetProcessId unknown
 GetProcessIoCounters unknown
 let GetProcessPriorityBoost = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetProcessPriorityBoost") in 
@@ -431,12 +431,12 @@ let GetShortPathNameW = (requireSharedLibrary "kernel32.DLL" 'Pippi "GetShortPat
 let GetStartupInfoA = (requireSharedLibrary "kernel32.DLL" 'Pvp "GetStartupInfoA") in 
 let GetStartupInfoW = (requireSharedLibrary "kernel32.DLL" 'Pvp "GetStartupInfoW") in 
 let GetStdHandle = (requireSharedLibrary "kernel32.DLL" 'Ppi "GetStdHandle") in 
-let GetStringTypeA = (requireSharedLibrary "kernel32.DLL" 'Pi?isip "GetStringTypeA") in 
-let GetStringTypeExA = (requireSharedLibrary "kernel32.DLL" 'Pi?isip "GetStringTypeExA") in 
-let GetStringTypeExW = (requireSharedLibrary "kernel32.DLL" 'Pi?ipip "GetStringTypeExW") in 
+let GetStringTypeA = (requireSharedLibrary "kernel32.DLL" 'Piiisip "GetStringTypeA") in 
+let GetStringTypeExA = (requireSharedLibrary "kernel32.DLL" 'Piiisip "GetStringTypeExA") in 
+let GetStringTypeExW = (requireSharedLibrary "kernel32.DLL" 'Piiipip "GetStringTypeExW") in 
 let GetStringTypeW = (requireSharedLibrary "kernel32.DLL" 'Piipip "GetStringTypeW") in 
 GetSystemDEPPolicy unknown
-let GetSystemDefaultLCID = (requireSharedLibrary "kernel32.DLL" 'P?v "GetSystemDefaultLCID") in 
+let GetSystemDefaultLCID = (requireSharedLibrary "kernel32.DLL" 'Piv "GetSystemDefaultLCID") in 
 let GetSystemDefaultLangID = (requireSharedLibrary "kernel32.DLL" 'P?v "GetSystemDefaultLangID") in 
 GetSystemDefaultUILanguage unknown
 let GetSystemDirectoryA = (requireSharedLibrary "kernel32.DLL" 'Pipi "GetSystemDirectoryA") in 
@@ -461,19 +461,19 @@ let GetTempPathA = (requireSharedLibrary "kernel32.DLL" 'Piip "GetTempPathA") in
 let GetTempPathW = (requireSharedLibrary "kernel32.DLL" 'Piip "GetTempPathW") in 
 let GetThreadContext = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetThreadContext") in 
 GetThreadIOPendingFlag unknown
-let GetThreadLocale = (requireSharedLibrary "kernel32.DLL" 'P?v "GetThreadLocale") in 
+let GetThreadLocale = (requireSharedLibrary "kernel32.DLL" 'Piv "GetThreadLocale") in 
 let GetThreadPriority = (requireSharedLibrary "kernel32.DLL" 'Pip "GetThreadPriority") in 
 let GetThreadPriorityBoost = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetThreadPriorityBoost") in 
 let GetThreadSelectorEntry = (requireSharedLibrary "kernel32.DLL" 'Pipip "GetThreadSelectorEntry") in 
 let GetThreadTimes = (requireSharedLibrary "kernel32.DLL" 'Pippppp "GetThreadTimes") in 
 let GetTickCount = (requireSharedLibrary "kernel32.DLL" 'Piv "GetTickCount") in 
-let GetTimeFormatA = (requireSharedLibrary "kernel32.DLL" 'Pi?ipspi "GetTimeFormatA") in 
-let GetTimeFormatW = (requireSharedLibrary "kernel32.DLL" 'Pi?ipppi "GetTimeFormatW") in 
+let GetTimeFormatA = (requireSharedLibrary "kernel32.DLL" 'Piiipspi "GetTimeFormatA") in 
+let GetTimeFormatW = (requireSharedLibrary "kernel32.DLL" 'Piiipppi "GetTimeFormatW") in 
 let GetTimeZoneInformation = (requireSharedLibrary "kernel32.DLL" 'Pip "GetTimeZoneInformation") in 
-let GetUserDefaultLCID = (requireSharedLibrary "kernel32.DLL" 'P?v "GetUserDefaultLCID") in 
+let GetUserDefaultLCID = (requireSharedLibrary "kernel32.DLL" 'Piv "GetUserDefaultLCID") in 
 let GetUserDefaultLangID = (requireSharedLibrary "kernel32.DLL" 'P?v "GetUserDefaultLangID") in 
 GetUserDefaultUILanguage unknown
-let GetUserGeoID = (requireSharedLibrary "kernel32.DLL" 'P?? "GetUserGeoID") in 
+let GetUserGeoID = (requireSharedLibrary "kernel32.DLL" 'Pi? "GetUserGeoID") in 
 GetVDMCurrentDirectories unknown
 let GetVersion = (requireSharedLibrary "kernel32.DLL" 'Piv "GetVersion") in 
 let GetVersionExA = (requireSharedLibrary "kernel32.DLL" 'Pip "GetVersionExA") in 
@@ -491,26 +491,26 @@ let GetWindowsDirectoryW = (requireSharedLibrary "kernel32.DLL" 'Pipi "GetWindow
 let GetWriteWatch = (requireSharedLibrary "kernel32.DLL" 'Piiplp?? "GetWriteWatch") in 
 let GlobalAddAtomA = (requireSharedLibrary "kernel32.DLL" 'Phs "GlobalAddAtomA") in 
 let GlobalAddAtomW = (requireSharedLibrary "kernel32.DLL" 'Php "GlobalAddAtomW") in 
-let GlobalAlloc = (requireSharedLibrary "kernel32.DLL" 'P?ii "GlobalAlloc") in 
+let GlobalAlloc = (requireSharedLibrary "kernel32.DLL" 'Ppii "GlobalAlloc") in 
 let GlobalCompact = (requireSharedLibrary "kernel32.DLL" 'Pli "GlobalCompact") in 
 let GlobalDeleteAtom = (requireSharedLibrary "kernel32.DLL" 'Phh "GlobalDeleteAtom") in 
 let GlobalFindAtomA = (requireSharedLibrary "kernel32.DLL" 'Phs "GlobalFindAtomA") in 
 let GlobalFindAtomW = (requireSharedLibrary "kernel32.DLL" 'Php "GlobalFindAtomW") in 
-let GlobalFix = (requireSharedLibrary "kernel32.DLL" 'Pv? "GlobalFix") in 
-let GlobalFlags = (requireSharedLibrary "kernel32.DLL" 'Pi? "GlobalFlags") in 
-let GlobalFree = (requireSharedLibrary "kernel32.DLL" 'P?? "GlobalFree") in 
+let GlobalFix = (requireSharedLibrary "kernel32.DLL" 'Pvp "GlobalFix") in 
+let GlobalFlags = (requireSharedLibrary "kernel32.DLL" 'Pip "GlobalFlags") in 
+let GlobalFree = (requireSharedLibrary "kernel32.DLL" 'Ppp "GlobalFree") in 
 let GlobalGetAtomNameA = (requireSharedLibrary "kernel32.DLL" 'Pihpi "GlobalGetAtomNameA") in 
 let GlobalGetAtomNameW = (requireSharedLibrary "kernel32.DLL" 'Pihpi "GlobalGetAtomNameW") in 
-let GlobalHandle = (requireSharedLibrary "kernel32.DLL" 'P?? "GlobalHandle") in 
-let GlobalLock = (requireSharedLibrary "kernel32.DLL" 'Pp? "GlobalLock") in 
+let GlobalHandle = (requireSharedLibrary "kernel32.DLL" 'Ppp "GlobalHandle") in 
+let GlobalLock = (requireSharedLibrary "kernel32.DLL" 'Ppp "GlobalLock") in 
 let GlobalMemoryStatus = (requireSharedLibrary "kernel32.DLL" 'Pvp "GlobalMemoryStatus") in 
 GlobalMemoryStatusEx unknown
-let GlobalReAlloc = (requireSharedLibrary "kernel32.DLL" 'P??ii "GlobalReAlloc") in 
-let GlobalSize = (requireSharedLibrary "kernel32.DLL" 'Pi? "GlobalSize") in 
-let GlobalUnWire = (requireSharedLibrary "kernel32.DLL" 'Pi? "GlobalUnWire") in 
-let GlobalUnfix = (requireSharedLibrary "kernel32.DLL" 'Pv? "GlobalUnfix") in 
-let GlobalUnlock = (requireSharedLibrary "kernel32.DLL" 'Pi? "GlobalUnlock") in 
-let GlobalWire = (requireSharedLibrary "kernel32.DLL" 'Pp? "GlobalWire") in 
+let GlobalReAlloc = (requireSharedLibrary "kernel32.DLL" 'Pppii "GlobalReAlloc") in 
+let GlobalSize = (requireSharedLibrary "kernel32.DLL" 'Pip "GlobalSize") in 
+let GlobalUnWire = (requireSharedLibrary "kernel32.DLL" 'Pip "GlobalUnWire") in 
+let GlobalUnfix = (requireSharedLibrary "kernel32.DLL" 'Pvp "GlobalUnfix") in 
+let GlobalUnlock = (requireSharedLibrary "kernel32.DLL" 'Pip "GlobalUnlock") in 
+let GlobalWire = (requireSharedLibrary "kernel32.DLL" 'Ppp "GlobalWire") in 
 Heap32First unknown
 Heap32ListFirst unknown
 Heap32ListNext unknown
@@ -527,11 +527,11 @@ HeapQueryInformation unknown
 HeapQueryTagW unknown
 let HeapReAlloc = (requireSharedLibrary "kernel32.DLL" 'Pppipi "HeapReAlloc") in 
 HeapSetInformation unknown
-let HeapSize = (requireSharedLibrary "kernel32.DLL" 'Pipi? "HeapSize") in 
+let HeapSize = (requireSharedLibrary "kernel32.DLL" 'Pipip "HeapSize") in 
 HeapSummary unknown
 let HeapUnlock = (requireSharedLibrary "kernel32.DLL" 'Pip "HeapUnlock") in 
 HeapUsage unknown
-let HeapValidate = (requireSharedLibrary "kernel32.DLL" 'Pipi? "HeapValidate") in 
+let HeapValidate = (requireSharedLibrary "kernel32.DLL" 'Pipip "HeapValidate") in 
 let HeapWalk = (requireSharedLibrary "kernel32.DLL" 'Pipp "HeapWalk") in 
 let InitAtomTable = (requireSharedLibrary "kernel32.DLL" 'Pii "InitAtomTable") in 
 let InitializeCriticalSection = (requireSharedLibrary "kernel32.DLL" 'Pvp "InitializeCriticalSection") in 
@@ -547,9 +547,9 @@ InterlockedPopEntrySList unknown
 InterlockedPushEntrySList unknown
 InvalidateConsoleDIBits unknown
 let IsBadCodePtr = (requireSharedLibrary "kernel32.DLL" 'Pi? "IsBadCodePtr") in 
-let IsBadHugeReadPtr = (requireSharedLibrary "kernel32.DLL" 'Pi?i "IsBadHugeReadPtr") in 
+let IsBadHugeReadPtr = (requireSharedLibrary "kernel32.DLL" 'Pipi "IsBadHugeReadPtr") in 
 let IsBadHugeWritePtr = (requireSharedLibrary "kernel32.DLL" 'Pipi "IsBadHugeWritePtr") in 
-let IsBadReadPtr = (requireSharedLibrary "kernel32.DLL" 'Pi?i "IsBadReadPtr") in 
+let IsBadReadPtr = (requireSharedLibrary "kernel32.DLL" 'Pipi "IsBadReadPtr") in 
 let IsBadStringPtrA = (requireSharedLibrary "kernel32.DLL" 'Pisi "IsBadStringPtrA") in 
 let IsBadStringPtrW = (requireSharedLibrary "kernel32.DLL" 'Pipi "IsBadStringPtrW") in 
 let IsBadWritePtr = (requireSharedLibrary "kernel32.DLL" 'Pipi "IsBadWritePtr") in 
@@ -561,11 +561,11 @@ let IsProcessorFeaturePresent = (requireSharedLibrary "kernel32.DLL" 'Pii "IsPro
 let IsSystemResumeAutomatic = (requireSharedLibrary "kernel32.DLL" 'Piv "IsSystemResumeAutomatic") in 
 let IsValidCodePage = (requireSharedLibrary "kernel32.DLL" 'Pii "IsValidCodePage") in 
 IsValidLanguageGroup unknown
-let IsValidLocale = (requireSharedLibrary "kernel32.DLL" 'Pi?i "IsValidLocale") in 
+let IsValidLocale = (requireSharedLibrary "kernel32.DLL" 'Piii "IsValidLocale") in 
 IsValidUILanguage unknown
 IsWow64Process unknown
-let LCMapStringA = (requireSharedLibrary "kernel32.DLL" 'Pi?isipi "LCMapStringA") in 
-let LCMapStringW = (requireSharedLibrary "kernel32.DLL" 'Pi?ipipi "LCMapStringW") in 
+let LCMapStringA = (requireSharedLibrary "kernel32.DLL" 'Piiisipi "LCMapStringA") in 
+let LCMapStringW = (requireSharedLibrary "kernel32.DLL" 'Piiipipi "LCMapStringW") in 
 let LZClose = (requireSharedLibrary "kernel32.DLL" 'Pvi "LZClose") in 
 LZCloseFile unknown
 let LZCopy = (requireSharedLibrary "kernel32.DLL" 'Plii "LZCopy") in 
@@ -583,21 +583,21 @@ let LoadLibraryExA = (requireSharedLibrary "kernel32.DLL" 'Ppspi "LoadLibraryExA
 let LoadLibraryExW = (requireSharedLibrary "kernel32.DLL" 'Ppppi "LoadLibraryExW") in 
 let LoadLibraryW = (requireSharedLibrary "kernel32.DLL" 'Ppp "LoadLibraryW") in 
 let LoadModule = (requireSharedLibrary "kernel32.DLL" 'Pisp "LoadModule") in 
-let LoadResource = (requireSharedLibrary "kernel32.DLL" 'P?p? "LoadResource") in 
-let LocalAlloc = (requireSharedLibrary "kernel32.DLL" 'P?il "LocalAlloc") in 
+let LoadResource = (requireSharedLibrary "kernel32.DLL" 'Ppp? "LoadResource") in 
+let LocalAlloc = (requireSharedLibrary "kernel32.DLL" 'Ppil "LocalAlloc") in 
 let LocalCompact = (requireSharedLibrary "kernel32.DLL" 'Pli "LocalCompact") in 
 let LocalFileTimeToFileTime = (requireSharedLibrary "kernel32.DLL" 'Pipp "LocalFileTimeToFileTime") in 
-let LocalFlags = (requireSharedLibrary "kernel32.DLL" 'Pi? "LocalFlags") in 
-let LocalFree = (requireSharedLibrary "kernel32.DLL" 'P?? "LocalFree") in 
-let LocalHandle = (requireSharedLibrary "kernel32.DLL" 'P?p "LocalHandle") in 
-let LocalLock = (requireSharedLibrary "kernel32.DLL" 'Pp? "LocalLock") in 
-let LocalReAlloc = (requireSharedLibrary "kernel32.DLL" 'P??li "LocalReAlloc") in 
-let LocalShrink = (requireSharedLibrary "kernel32.DLL" 'Pl?i "LocalShrink") in 
-let LocalSize = (requireSharedLibrary "kernel32.DLL" 'Pi? "LocalSize") in 
-let LocalUnlock = (requireSharedLibrary "kernel32.DLL" 'Pi? "LocalUnlock") in 
+let LocalFlags = (requireSharedLibrary "kernel32.DLL" 'Pip "LocalFlags") in 
+let LocalFree = (requireSharedLibrary "kernel32.DLL" 'Ppp "LocalFree") in 
+let LocalHandle = (requireSharedLibrary "kernel32.DLL" 'Ppp "LocalHandle") in 
+let LocalLock = (requireSharedLibrary "kernel32.DLL" 'Ppp "LocalLock") in 
+let LocalReAlloc = (requireSharedLibrary "kernel32.DLL" 'Pppli "LocalReAlloc") in 
+let LocalShrink = (requireSharedLibrary "kernel32.DLL" 'Plpi "LocalShrink") in 
+let LocalSize = (requireSharedLibrary "kernel32.DLL" 'Pip "LocalSize") in 
+let LocalUnlock = (requireSharedLibrary "kernel32.DLL" 'Pip "LocalUnlock") in 
 let LockFile = (requireSharedLibrary "kernel32.DLL" 'Pipiiii "LockFile") in 
 let LockFileEx = (requireSharedLibrary "kernel32.DLL" 'Pipiiiip "LockFileEx") in 
-let LockResource = (requireSharedLibrary "kernel32.DLL" 'Pp? "LockResource") in 
+let LockResource = (requireSharedLibrary "kernel32.DLL" 'Ppp "LockResource") in 
 MapUserPhysicalPages unknown
 MapUserPhysicalPagesScatter unknown
 let MapViewOfFile = (requireSharedLibrary "kernel32.DLL" 'Pppiiii "MapViewOfFile") in 
@@ -679,7 +679,7 @@ let ReadDirectoryChangesW = (requireSharedLibrary "kernel32.DLL" 'Pippiiippp "Re
 let ReadFile = (requireSharedLibrary "kernel32.DLL" 'Pippipp "ReadFile") in 
 let ReadFileEx = (requireSharedLibrary "kernel32.DLL" 'Pippipp "ReadFileEx") in 
 let ReadFileScatter = (requireSharedLibrary "kernel32.DLL" 'Pippipp "ReadFileScatter") in 
-let ReadProcessMemory = (requireSharedLibrary "kernel32.DLL" 'Pip?pip "ReadProcessMemory") in 
+let ReadProcessMemory = (requireSharedLibrary "kernel32.DLL" 'Pipppip "ReadProcessMemory") in 
 RegisterConsoleIME unknown
 RegisterConsoleOS2 unknown
 RegisterConsoleVDM unknown
@@ -716,8 +716,8 @@ let ScrollConsoleScreenBufferW = (requireSharedLibrary "kernel32.DLL" 'Pippp?p "
 let SearchPathA = (requireSharedLibrary "kernel32.DLL" 'Pisssipp "SearchPathA") in 
 let SearchPathW = (requireSharedLibrary "kernel32.DLL" 'Pipppipp "SearchPathW") in 
 SetCPGlobal unknown
-let SetCalendarInfoA = (requireSharedLibrary "kernel32.DLL" 'Pi???s "SetCalendarInfoA") in 
-let SetCalendarInfoW = (requireSharedLibrary "kernel32.DLL" 'Pi???p "SetCalendarInfoW") in 
+let SetCalendarInfoA = (requireSharedLibrary "kernel32.DLL" 'Piiiis "SetCalendarInfoA") in 
+let SetCalendarInfoW = (requireSharedLibrary "kernel32.DLL" 'Piiiip "SetCalendarInfoW") in 
 SetClientTimeZoneInformation unknown
 SetComPlusPackageInstallStatus unknown
 let SetCommBreak = (requireSharedLibrary "kernel32.DLL" 'Pip "SetCommBreak") in 
@@ -792,8 +792,8 @@ let SetLastError = (requireSharedLibrary "kernel32.DLL" 'Pvi "SetLastError") in
 SetLocalPrimaryComputerNameA unknown
 SetLocalPrimaryComputerNameW unknown
 let SetLocalTime = (requireSharedLibrary "kernel32.DLL" 'Pip "SetLocalTime") in 
-let SetLocaleInfoA = (requireSharedLibrary "kernel32.DLL" 'Pi??s "SetLocaleInfoA") in 
-let SetLocaleInfoW = (requireSharedLibrary "kernel32.DLL" 'Pi??p "SetLocaleInfoW") in 
+let SetLocaleInfoA = (requireSharedLibrary "kernel32.DLL" 'Pii?s "SetLocaleInfoA") in 
+let SetLocaleInfoW = (requireSharedLibrary "kernel32.DLL" 'Pii?p "SetLocaleInfoW") in 
 let SetMailslotInfo = (requireSharedLibrary "kernel32.DLL" 'Pipi "SetMailslotInfo") in 
 SetMessageWaitingIndicator unknown
 let SetNamedPipeHandleState = (requireSharedLibrary "kernel32.DLL" 'Pipppp "SetNamedPipeHandleState") in 
@@ -815,14 +815,14 @@ let SetThreadAffinityMask = (requireSharedLibrary "kernel32.DLL" 'Pipi "SetThrea
 let SetThreadContext = (requireSharedLibrary "kernel32.DLL" 'Pipp "SetThreadContext") in 
 SetThreadExecutionState unknown
 let SetThreadIdealProcessor = (requireSharedLibrary "kernel32.DLL" 'Pipi "SetThreadIdealProcessor") in 
-let SetThreadLocale = (requireSharedLibrary "kernel32.DLL" 'Pi? "SetThreadLocale") in 
+let SetThreadLocale = (requireSharedLibrary "kernel32.DLL" 'Pii "SetThreadLocale") in 
 let SetThreadPriority = (requireSharedLibrary "kernel32.DLL" 'Pipi "SetThreadPriority") in 
 let SetThreadPriorityBoost = (requireSharedLibrary "kernel32.DLL" 'Pipi "SetThreadPriorityBoost") in 
 SetThreadUILanguage unknown
 let SetTimeZoneInformation = (requireSharedLibrary "kernel32.DLL" 'Pip "SetTimeZoneInformation") in 
 SetTimerQueueTimer unknown
 let SetUnhandledExceptionFilter = (requireSharedLibrary "kernel32.DLL" 'Ppp "SetUnhandledExceptionFilter") in 
-let SetUserGeoID = (requireSharedLibrary "kernel32.DLL" 'Pi? "SetUserGeoID") in 
+let SetUserGeoID = (requireSharedLibrary "kernel32.DLL" 'Pii "SetUserGeoID") in 
 SetVDMCurrentDirectories unknown
 let SetVolumeLabelA = (requireSharedLibrary "kernel32.DLL" 'Piss "SetVolumeLabelA") in 
 let SetVolumeLabelW = (requireSharedLibrary "kernel32.DLL" 'Pipp "SetVolumeLabelW") in 
@@ -899,7 +899,7 @@ let WaitNamedPipeA = (requireSharedLibrary "kernel32.DLL" 'Pisi "WaitNamedPipeA"
 let WaitNamedPipeW = (requireSharedLibrary "kernel32.DLL" 'Pipi "WaitNamedPipeW") in 
 let WideCharToMultiByte = (requireSharedLibrary "kernel32.DLL" 'Piiipipisp "WideCharToMultiByte") in 
 let WinExec = (requireSharedLibrary "kernel32.DLL" 'Pisi "WinExec") in 
-let WriteConsoleA = (requireSharedLibrary "kernel32.DLL" 'Pip?ipp "WriteConsoleA") in 
+let WriteConsoleA = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteConsoleA") in 
 let WriteConsoleInputA = (requireSharedLibrary "kernel32.DLL" 'Pippip "WriteConsoleInputA") in 
 WriteConsoleInputVDMA unknown
 WriteConsoleInputVDMW unknown
@@ -909,9 +909,9 @@ let WriteConsoleOutputAttribute = (requireSharedLibrary "kernel32.DLL" 'Pippi?p 
 let WriteConsoleOutputCharacterA = (requireSharedLibrary "kernel32.DLL" 'Pipsi?p "WriteConsoleOutputCharacterA") in 
 let WriteConsoleOutputCharacterW = (requireSharedLibrary "kernel32.DLL" 'Pippi?p "WriteConsoleOutputCharacterW") in 
 let WriteConsoleOutputW = (requireSharedLibrary "kernel32.DLL" 'Pipp??? "WriteConsoleOutputW") in 
-let WriteConsoleW = (requireSharedLibrary "kernel32.DLL" 'Pip?ipp "WriteConsoleW") in 
-let WriteFile = (requireSharedLibrary "kernel32.DLL" 'Pip?ipp "WriteFile") in 
-let WriteFileEx = (requireSharedLibrary "kernel32.DLL" 'Pip?ipp "WriteFileEx") in 
+let WriteConsoleW = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteConsoleW") in 
+let WriteFile = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteFile") in 
+let WriteFileEx = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteFileEx") in 
 let WriteFileGather = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteFileGather") in 
 let WritePrivateProfileSectionA = (requireSharedLibrary "kernel32.DLL" 'Pisss "WritePrivateProfileSectionA") in 
 let WritePrivateProfileSectionW = (requireSharedLibrary "kernel32.DLL" 'Pippp "WritePrivateProfileSectionW") in 

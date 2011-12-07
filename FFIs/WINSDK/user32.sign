@@ -1,4 +1,4 @@
-let ActivateKeyboardLayout = (requireSharedLibrary "user32.DLL" 'P??i "ActivateKeyboardLayout") in 
+let ActivateKeyboardLayout = (requireSharedLibrary "user32.DLL" 'Pppi "ActivateKeyboardLayout") in 
 let AdjustWindowRect = (requireSharedLibrary "user32.DLL" 'Pipii "AdjustWindowRect") in 
 let AdjustWindowRectEx = (requireSharedLibrary "user32.DLL" 'Pipiii "AdjustWindowRectEx") in 
 AlignRects unknown
@@ -77,7 +77,7 @@ let CountClipboardFormats = (requireSharedLibrary "user32.DLL" 'Piv "CountClipbo
 let CreateAcceleratorTableA = (requireSharedLibrary "user32.DLL" 'Pppi "CreateAcceleratorTableA") in 
 let CreateAcceleratorTableW = (requireSharedLibrary "user32.DLL" 'Pppi "CreateAcceleratorTableW") in 
 let CreateCaret = (requireSharedLibrary "user32.DLL" 'Pippii "CreateCaret") in 
-let CreateCursor = (requireSharedLibrary "user32.DLL" 'Pppiiii?? "CreateCursor") in 
+let CreateCursor = (requireSharedLibrary "user32.DLL" 'Pppiiiipp "CreateCursor") in 
 let CreateDesktopA = (requireSharedLibrary "user32.DLL" 'Ppsspi?p "CreateDesktopA") in 
 let CreateDesktopW = (requireSharedLibrary "user32.DLL" 'Pppppi?p "CreateDesktopW") in 
 let CreateDialogIndirectParamA = (requireSharedLibrary "user32.DLL" 'Ppppppp "CreateDialogIndirectParamA") in 
@@ -288,7 +288,7 @@ let GetKBCodePage = (requireSharedLibrary "user32.DLL" 'Piv "GetKBCodePage") in
 let GetKeyNameTextA = (requireSharedLibrary "user32.DLL" 'Pilpi "GetKeyNameTextA") in 
 let GetKeyNameTextW = (requireSharedLibrary "user32.DLL" 'Pilpi "GetKeyNameTextW") in 
 let GetKeyState = (requireSharedLibrary "user32.DLL" 'Phi "GetKeyState") in 
-let GetKeyboardLayout = (requireSharedLibrary "user32.DLL" 'P?i "GetKeyboardLayout") in 
+let GetKeyboardLayout = (requireSharedLibrary "user32.DLL" 'Ppi "GetKeyboardLayout") in 
 let GetKeyboardLayoutList = (requireSharedLibrary "user32.DLL" 'Piip "GetKeyboardLayoutList") in 
 let GetKeyboardLayoutNameA = (requireSharedLibrary "user32.DLL" 'Pip "GetKeyboardLayoutNameA") in 
 let GetKeyboardLayoutNameW = (requireSharedLibrary "user32.DLL" 'Pip "GetKeyboardLayoutNameW") in 
@@ -445,9 +445,9 @@ let LoadIconA = (requireSharedLibrary "user32.DLL" 'Ppps "LoadIconA") in
 let LoadIconW = (requireSharedLibrary "user32.DLL" 'Pppp "LoadIconW") in 
 let LoadImageA = (requireSharedLibrary "user32.DLL" 'Pppsiiii "LoadImageA") in 
 let LoadImageW = (requireSharedLibrary "user32.DLL" 'Ppppiiii "LoadImageW") in 
-let LoadKeyboardLayoutA = (requireSharedLibrary "user32.DLL" 'P?si "LoadKeyboardLayoutA") in 
+let LoadKeyboardLayoutA = (requireSharedLibrary "user32.DLL" 'Ppsi "LoadKeyboardLayoutA") in 
 LoadKeyboardLayoutEx unknown
-let LoadKeyboardLayoutW = (requireSharedLibrary "user32.DLL" 'P?pi "LoadKeyboardLayoutW") in 
+let LoadKeyboardLayoutW = (requireSharedLibrary "user32.DLL" 'Pppi "LoadKeyboardLayoutW") in 
 LoadLocalFonts unknown
 let LoadMenuA = (requireSharedLibrary "user32.DLL" 'Ppps "LoadMenuA") in 
 let LoadMenuIndirectA = (requireSharedLibrary "user32.DLL" 'Ppp "LoadMenuIndirectA") in 
@@ -466,8 +466,8 @@ MBToWCSEx unknown
 MB_GetString unknown
 let MapDialogRect = (requireSharedLibrary "user32.DLL" 'Pipp "MapDialogRect") in 
 let MapVirtualKeyA = (requireSharedLibrary "user32.DLL" 'Piii "MapVirtualKeyA") in 
-let MapVirtualKeyExA = (requireSharedLibrary "user32.DLL" 'Piii? "MapVirtualKeyExA") in 
-let MapVirtualKeyExW = (requireSharedLibrary "user32.DLL" 'Piii? "MapVirtualKeyExW") in 
+let MapVirtualKeyExA = (requireSharedLibrary "user32.DLL" 'Piiip "MapVirtualKeyExA") in 
+let MapVirtualKeyExW = (requireSharedLibrary "user32.DLL" 'Piiip "MapVirtualKeyExW") in 
 let MapVirtualKeyW = (requireSharedLibrary "user32.DLL" 'Piii "MapVirtualKeyW") in 
 let MapWindowPoints = (requireSharedLibrary "user32.DLL" 'Pipppi "MapWindowPoints") in 
 let MenuItemFromPoint = (requireSharedLibrary "user32.DLL" 'Pipp? "MenuItemFromPoint") in 
@@ -670,9 +670,9 @@ let TabbedTextOutW = (requireSharedLibrary "user32.DLL" 'Plpiipiipi "TabbedTextO
 TileChildWindows unknown
 let TileWindows = (requireSharedLibrary "user32.DLL" 'Phpipip "TileWindows") in 
 let ToAscii = (requireSharedLibrary "user32.DLL" 'Piiippi "ToAscii") in 
-let ToAsciiEx = (requireSharedLibrary "user32.DLL" 'Piiippi? "ToAsciiEx") in 
+let ToAsciiEx = (requireSharedLibrary "user32.DLL" 'Piiippip "ToAsciiEx") in 
 let ToUnicode = (requireSharedLibrary "user32.DLL" 'Piiippii "ToUnicode") in 
-let ToUnicodeEx = (requireSharedLibrary "user32.DLL" 'Piiippii? "ToUnicodeEx") in 
+let ToUnicodeEx = (requireSharedLibrary "user32.DLL" 'Piiippiip "ToUnicodeEx") in 
 let TrackMouseEvent = (requireSharedLibrary "user32.DLL" 'Pip "TrackMouseEvent") in 
 let TrackPopupMenu = (requireSharedLibrary "user32.DLL" 'Pipiiiipp "TrackPopupMenu") in 
 let TrackPopupMenuEx = (requireSharedLibrary "user32.DLL" 'Pipiiipp "TrackPopupMenuEx") in 
@@ -686,7 +686,7 @@ UnhookWinEvent unknown
 let UnhookWindowsHook = (requireSharedLibrary "user32.DLL" 'Piip "UnhookWindowsHook") in 
 let UnhookWindowsHookEx = (requireSharedLibrary "user32.DLL" 'Pi? "UnhookWindowsHookEx") in 
 let UnionRect = (requireSharedLibrary "user32.DLL" 'Pippp "UnionRect") in 
-let UnloadKeyboardLayout = (requireSharedLibrary "user32.DLL" 'Pi? "UnloadKeyboardLayout") in 
+let UnloadKeyboardLayout = (requireSharedLibrary "user32.DLL" 'Pip "UnloadKeyboardLayout") in 
 UnlockWindowStation unknown
 let UnpackDDElParam = (requireSharedLibrary "user32.DLL" 'Piippp "UnpackDDElParam") in 
 let UnregisterClassA = (requireSharedLibrary "user32.DLL" 'Pisp "UnregisterClassA") in 
@@ -710,8 +710,8 @@ VTagOutput unknown
 let ValidateRect = (requireSharedLibrary "user32.DLL" 'Pipp "ValidateRect") in 
 let ValidateRgn = (requireSharedLibrary "user32.DLL" 'Pipp "ValidateRgn") in 
 let VkKeyScanA = (requireSharedLibrary "user32.DLL" 'Phi "VkKeyScanA") in 
-let VkKeyScanExA = (requireSharedLibrary "user32.DLL" 'Phi? "VkKeyScanExA") in 
-let VkKeyScanExW = (requireSharedLibrary "user32.DLL" 'Phi? "VkKeyScanExW") in 
+let VkKeyScanExA = (requireSharedLibrary "user32.DLL" 'Phip "VkKeyScanExA") in 
+let VkKeyScanExW = (requireSharedLibrary "user32.DLL" 'Phip "VkKeyScanExW") in 
 let VkKeyScanW = (requireSharedLibrary "user32.DLL" 'Phi "VkKeyScanW") in 
 WCSToMBEx unknown
 WINNLSEnableIME unknown
@@ -725,7 +725,7 @@ let WinHelpW = (requireSharedLibrary "user32.DLL" 'Pippii "WinHelpW") in
 let WindowFromDC = (requireSharedLibrary "user32.DLL" 'Ppp "WindowFromDC") in 
 let WindowFromPoint = (requireSharedLibrary "user32.DLL" 'Pp? "WindowFromPoint") in 
 let keybd_event = (requireSharedLibrary "user32.DLL" 'Pviiii "keybd_event") in 
-let mouse_event = (requireSharedLibrary "user32.DLL" 'PviiiiP "mouse_event") in 
+let mouse_event = (requireSharedLibrary "user32.DLL" 'Pviiiil "mouse_event") in 
 let wsprintfA = (requireSharedLibrary "user32.DLL" 'Pips? "wsprintfA") in 
 let wsprintfW = (requireSharedLibrary "user32.DLL" 'Pipp? "wsprintfW") in 
 let wvsprintfA = (requireSharedLibrary "user32.DLL" 'Pips? "wvsprintfA") in 
