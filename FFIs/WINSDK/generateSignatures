@@ -134,6 +134,9 @@ def getType(t):
 		"GEOID": "i", # FIXME
 		"GEOTYPE": "i", # FIXME
 		"LANGID": "h",
+		"CODEPAGE_ENUMPROC": "p",
+		"GEO_ENUMPROC": "p",
+		"GEOCLASS": "i", # FIXME
 	}.get(t)
 	if m:
 		return(m)

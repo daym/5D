@@ -167,7 +167,7 @@ let EnumResourceTypesA = (requireSharedLibrary "kernel32.DLL" 'Pippl "EnumResour
 let EnumResourceTypesW = (requireSharedLibrary "kernel32.DLL" 'Pippl "EnumResourceTypesW") in 
 let EnumSystemCodePagesA = (requireSharedLibrary "kernel32.DLL" 'Pi?i "EnumSystemCodePagesA") in 
 let EnumSystemCodePagesW = (requireSharedLibrary "kernel32.DLL" 'Pi?i "EnumSystemCodePagesW") in 
-let EnumSystemGeoID = (requireSharedLibrary "kernel32.DLL" 'Pi?i? "EnumSystemGeoID") in 
+let EnumSystemGeoID = (requireSharedLibrary "kernel32.DLL" 'Piiip "EnumSystemGeoID") in 
 EnumSystemLanguageGroupsA unknown
 EnumSystemLanguageGroupsW unknown
 let EnumSystemLocalesA = (requireSharedLibrary "kernel32.DLL" 'Pi?i "EnumSystemLocalesA") in 
@@ -473,7 +473,7 @@ let GetTimeZoneInformation = (requireSharedLibrary "kernel32.DLL" 'Pip "GetTimeZ
 let GetUserDefaultLCID = (requireSharedLibrary "kernel32.DLL" 'Piv "GetUserDefaultLCID") in 
 let GetUserDefaultLangID = (requireSharedLibrary "kernel32.DLL" 'Phv "GetUserDefaultLangID") in 
 GetUserDefaultUILanguage unknown
-let GetUserGeoID = (requireSharedLibrary "kernel32.DLL" 'Pi? "GetUserGeoID") in 
+let GetUserGeoID = (requireSharedLibrary "kernel32.DLL" 'Pii "GetUserGeoID") in 
 GetVDMCurrentDirectories unknown
 let GetVersion = (requireSharedLibrary "kernel32.DLL" 'Piv "GetVersion") in 
 let GetVersionExA = (requireSharedLibrary "kernel32.DLL" 'Pip "GetVersionExA") in 
