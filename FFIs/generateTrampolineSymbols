@@ -4,7 +4,7 @@ import sys
 
 def checks(combination):
     result = [combination]
-    if combination.startswith("C"):
+    if combination.startswith("C") and len(combination) == 5:
       c = combination
       while c != "" and c[-1] == "i":
         c = c[:-1]

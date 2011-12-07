@@ -191,9 +191,9 @@ extras = [
 	"viiiil",
 ]
 for cc in ccs:
+  reset(cc)
   for extra in extras:
     print("%s%s" % (cc, extra))
-  reset(cc)
   while True:
       v = ("%s%s%s%s%s%s" % (cc, galphabet(digits[0]), galphabet(digits[1]), galphabet(digits[2]), galphabet(digits[3]), galphabet(digits[4])))
       if len(v) > 1:

@@ -60,4 +60,22 @@ AST::Node* operator<=(const Real& a, const Real& b) {
 
 REGISTER_BUILTIN(FloatP, 1, 0, AST::symbolFromStr("float?"))
 
+NativeFloat toNativeFloat(AST::Node* node, bool& B_ok) {
+	Float* floatNode;
+	Real* realNode;
+	B_ok = false;
+	node = evaluate(node);
+	if(node == NULL)
+		return(0);
+	else if((floatNode = dynamic_cast<Float*>(node)) != NULL) {
+		B_ok = true;
+		return(floatNode->value);
+	} else if((realNode = dynamic_cast<Real*>(node)) != NULL) {
+		//NativeFloat result = realNode->toNativeFloat();
+		//B_ok = true;
+		return(0.0f);
+	} else
+		return(0.0f);
+}
+
 }; /* end namespace Numbers */

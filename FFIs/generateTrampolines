@@ -61,12 +61,14 @@ static inline AST::Node* makeStrOrNil(const char* s) {
 #define unL iter == end ? 0 : Evaluators::get_native_long_long(extr(iter++))
 #define uns iter == end ? NULL : strdup(Evaluators::get_native_string(extr(iter++)))
 #define unS iter == end ? NULL : strdupOrNull(Evaluators::get_native_string(extr(iter++)))
+#define unf iter == end ? 0 : Evaluators::get_native_float(extr(iter++))
 #define inv
 #define inp AST::makeBox(
 #define ini Numbers::internNative((Numbers::NativeInt) 
 #define inl Numbers::internNative((Numbers::NativeInt) 
 #define inh Numbers::internNative((Numbers::NativeInt) 
 #define inL Numbers::internNative((Numbers::NativeInt) 
+#define inf Numbers::internNative((Numbers::NativeFloat) 
 #define ins AST::makeStr(
 #define inS makeStrOrNil(
 /* FIXME do inL properly */
@@ -125,6 +127,8 @@ print("""
 #undef inL
 #undef ins
 #undef inS
+#undef inf
+#undef unf
 
 static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::Node* world) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, world);
@@ -137,7 +141,7 @@ static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::N
 
 def checks(combination):
     result = [combination]
-    if combination.startswith("C"):
+    if combination.startswith("C") and len(combination) == 5:
       c = combination
       while c != "" and c[-1] == "i":
         c = c[:-1]

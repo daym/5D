@@ -11,6 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/Builtins"
 #include "AST/AST"
 #include "Numbers/Integer"
+#include "Numbers/Real"
 #include "Evaluators/Operation"
 
 namespace Evaluators {
@@ -23,6 +24,15 @@ typedef long long long_long;
 typ get_native_##typ(AST::Node* root) { \
 	bool B_ok; \
 	typ result = Numbers::toNativeInt(root, B_ok); \
+	if(!B_ok) \
+		result = 0; /* FIXME FALLBACK */ \
+	return(result); \
+	/* FIXME support bigger than NativeInt */ \
+}
+
+float get_native_float(AST::Node* root) {
+	bool B_ok; \
+	float result = Numbers::toNativeFloat(root, B_ok); \
 	if(!B_ok) \
 		result = 0; /* FIXME FALLBACK */ \
 	return(result); \
