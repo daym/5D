@@ -189,6 +189,7 @@ extras = [
 	"psipipi",
 	"pssiiiiippp",
 	"viiiil",
+	"ipppipppppp",
 ]
 for cc in ccs:
   reset(cc)
