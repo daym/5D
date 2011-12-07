@@ -70,11 +70,9 @@ let DebugBreak = (requireSharedLibrary "kernel32.DLL" 'Pvv "DebugBreak") in
 let DefineDosDeviceA = (requireSharedLibrary "kernel32.DLL" 'Piiss "DefineDosDeviceA") in 
 let DefineDosDeviceW = (requireSharedLibrary "kernel32.DLL" 'Piipp "DefineDosDeviceW") in 
 let DeleteAtom = (requireSharedLibrary "kernel32.DLL" 'Phh "DeleteAtom") in 
-let DeleteCriticalSection = (requireSharedLibrary "kernel32.DLL" 'Pv? "DeleteCriticalSection") in 
 let DeleteFiber = (requireSharedLibrary "kernel32.DLL" 'Pvp "DeleteFiber") in 
 let DeleteFileA = (requireSharedLibrary "kernel32.DLL" 'Pis "DeleteFileA") in 
 let DeleteFileW = (requireSharedLibrary "kernel32.DLL" 'Pip "DeleteFileW") in 
-let DeviceIoControl = (requireSharedLibrary "kernel32.DLL" 'Pipipipip? "DeviceIoControl") in 
 let DisableThreadLibraryCalls = (requireSharedLibrary "kernel32.DLL" 'Pip "DisableThreadLibraryCalls") in 
 let DisconnectNamedPipe = (requireSharedLibrary "kernel32.DLL" 'Pip "DisconnectNamedPipe") in 
 let DosDateTimeToFileTime = (requireSharedLibrary "kernel32.DLL" 'Pihhp "DosDateTimeToFileTime") in 
@@ -82,23 +80,13 @@ let DuplicateHandle = (requireSharedLibrary "kernel32.DLL" 'Pippppiii "Duplicate
 let EndUpdateResourceA = (requireSharedLibrary "kernel32.DLL" 'Pipi "EndUpdateResourceA") in 
 let EndUpdateResourceW = (requireSharedLibrary "kernel32.DLL" 'Pipi "EndUpdateResourceW") in 
 let EnterCriticalSection = (requireSharedLibrary "kernel32.DLL" 'Pvp "EnterCriticalSection") in 
-let EnumCalendarInfoA = (requireSharedLibrary "kernel32.DLL" 'Pi?iii "EnumCalendarInfoA") in 
-let EnumCalendarInfoW = (requireSharedLibrary "kernel32.DLL" 'Pi?iii "EnumCalendarInfoW") in 
-let EnumDateFormatsA = (requireSharedLibrary "kernel32.DLL" 'Pi?ii "EnumDateFormatsA") in 
-let EnumDateFormatsW = (requireSharedLibrary "kernel32.DLL" 'Pi?ii "EnumDateFormatsW") in 
 let EnumResourceLanguagesA = (requireSharedLibrary "kernel32.DLL" 'Pipsspl "EnumResourceLanguagesA") in 
 let EnumResourceLanguagesW = (requireSharedLibrary "kernel32.DLL" 'Pippppl "EnumResourceLanguagesW") in 
 let EnumResourceNamesA = (requireSharedLibrary "kernel32.DLL" 'Pipspl "EnumResourceNamesA") in 
 let EnumResourceNamesW = (requireSharedLibrary "kernel32.DLL" 'Pipppl "EnumResourceNamesW") in 
 let EnumResourceTypesA = (requireSharedLibrary "kernel32.DLL" 'Pippl "EnumResourceTypesA") in 
 let EnumResourceTypesW = (requireSharedLibrary "kernel32.DLL" 'Pippl "EnumResourceTypesW") in 
-let EnumSystemCodePagesA = (requireSharedLibrary "kernel32.DLL" 'Pi?i "EnumSystemCodePagesA") in 
-let EnumSystemCodePagesW = (requireSharedLibrary "kernel32.DLL" 'Pi?i "EnumSystemCodePagesW") in 
 let EnumSystemGeoID = (requireSharedLibrary "kernel32.DLL" 'Piiip "EnumSystemGeoID") in 
-let EnumSystemLocalesA = (requireSharedLibrary "kernel32.DLL" 'Pi?i "EnumSystemLocalesA") in 
-let EnumSystemLocalesW = (requireSharedLibrary "kernel32.DLL" 'Pi?i "EnumSystemLocalesW") in 
-let EnumTimeFormatsA = (requireSharedLibrary "kernel32.DLL" 'Pi?ii "EnumTimeFormatsA") in 
-let EnumTimeFormatsW = (requireSharedLibrary "kernel32.DLL" 'Pi?ii "EnumTimeFormatsW") in 
 let EraseTape = (requireSharedLibrary "kernel32.DLL" 'Pipii "EraseTape") in 
 let EscapeCommFunction = (requireSharedLibrary "kernel32.DLL" 'Pipi "EscapeCommFunction") in 
 let ExitProcess = (requireSharedLibrary "kernel32.DLL" 'Pvi "ExitProcess") in 
@@ -111,9 +99,6 @@ let FatalExit = (requireSharedLibrary "kernel32.DLL" 'Pvi "FatalExit") in
 let FileTimeToDosDateTime = (requireSharedLibrary "kernel32.DLL" 'Pippp "FileTimeToDosDateTime") in 
 let FileTimeToLocalFileTime = (requireSharedLibrary "kernel32.DLL" 'Pipp "FileTimeToLocalFileTime") in 
 let FileTimeToSystemTime = (requireSharedLibrary "kernel32.DLL" 'Pipp "FileTimeToSystemTime") in 
-let FillConsoleOutputAttribute = (requireSharedLibrary "kernel32.DLL" 'Piphi?p "FillConsoleOutputAttribute") in 
-let FillConsoleOutputCharacterA = (requireSharedLibrary "kernel32.DLL" 'Pipii?p "FillConsoleOutputCharacterA") in 
-let FillConsoleOutputCharacterW = (requireSharedLibrary "kernel32.DLL" 'Pipii?p "FillConsoleOutputCharacterW") in 
 let FindAtomA = (requireSharedLibrary "kernel32.DLL" 'Phs "FindAtomA") in 
 let FindAtomW = (requireSharedLibrary "kernel32.DLL" 'Php "FindAtomW") in 
 let FindClose = (requireSharedLibrary "kernel32.DLL" 'Pip "FindClose") in 
@@ -169,10 +154,8 @@ let GetCompressedFileSizeW = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetComp
 let GetComputerNameA = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetComputerNameA") in 
 let GetComputerNameW = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetComputerNameW") in 
 let GetConsoleCP = (requireSharedLibrary "kernel32.DLL" 'Piv "GetConsoleCP") in 
-let GetConsoleCursorInfo = (requireSharedLibrary "kernel32.DLL" 'Pip? "GetConsoleCursorInfo") in 
 let GetConsoleMode = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetConsoleMode") in 
 let GetConsoleOutputCP = (requireSharedLibrary "kernel32.DLL" 'Piv "GetConsoleOutputCP") in 
-let GetConsoleScreenBufferInfo = (requireSharedLibrary "kernel32.DLL" 'Pip? "GetConsoleScreenBufferInfo") in 
 let GetConsoleTitleA = (requireSharedLibrary "kernel32.DLL" 'Pipi "GetConsoleTitleA") in 
 let GetConsoleTitleW = (requireSharedLibrary "kernel32.DLL" 'Pipi "GetConsoleTitleW") in 
 let GetCurrencyFormatA = (requireSharedLibrary "kernel32.DLL" 'Piiisppi "GetCurrencyFormatA") in 
@@ -215,7 +198,6 @@ let GetFullPathNameW = (requireSharedLibrary "kernel32.DLL" 'Pipipp "GetFullPath
 let GetGeoInfoA = (requireSharedLibrary "kernel32.DLL" 'Piiipih "GetGeoInfoA") in 
 let GetGeoInfoW = (requireSharedLibrary "kernel32.DLL" 'Piiipih "GetGeoInfoW") in 
 let GetHandleInformation = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetHandleInformation") in 
-let GetLargestConsoleWindowSize = (requireSharedLibrary "kernel32.DLL" 'P?p "GetLargestConsoleWindowSize") in 
 let GetLastError = (requireSharedLibrary "kernel32.DLL" 'Piv "GetLastError") in 
 let GetLocalTime = (requireSharedLibrary "kernel32.DLL" 'Pvp "GetLocalTime") in 
 let GetLocaleInfoA = (requireSharedLibrary "kernel32.DLL" 'Piiipi "GetLocaleInfoA") in 
@@ -248,7 +230,6 @@ let GetPrivateProfileStringA = (requireSharedLibrary "kernel32.DLL" 'Pissspis "G
 let GetPrivateProfileStringW = (requireSharedLibrary "kernel32.DLL" 'Pippppip "GetPrivateProfileStringW") in 
 let GetPrivateProfileStructA = (requireSharedLibrary "kernel32.DLL" 'Pisspis "GetPrivateProfileStructA") in 
 let GetPrivateProfileStructW = (requireSharedLibrary "kernel32.DLL" 'Pipppip "GetPrivateProfileStructW") in 
-let GetProcAddress = (requireSharedLibrary "kernel32.DLL" 'P?ps "GetProcAddress") in 
 let GetProcessAffinityMask = (requireSharedLibrary "kernel32.DLL" 'Pippp "GetProcessAffinityMask") in 
 let GetProcessHeap = (requireSharedLibrary "kernel32.DLL" 'Ppv "GetProcessHeap") in 
 let GetProcessHeaps = (requireSharedLibrary "kernel32.DLL" 'Piip "GetProcessHeaps") in 
@@ -256,7 +237,6 @@ let GetProcessPriorityBoost = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetPro
 let GetProcessShutdownParameters = (requireSharedLibrary "kernel32.DLL" 'Pipp "GetProcessShutdownParameters") in 
 let GetProcessTimes = (requireSharedLibrary "kernel32.DLL" 'Pippppp "GetProcessTimes") in 
 let GetProcessVersion = (requireSharedLibrary "kernel32.DLL" 'Pii "GetProcessVersion") in 
-let GetProcessWorkingSetSize = (requireSharedLibrary "kernel32.DLL" 'Pip?? "GetProcessWorkingSetSize") in 
 let GetProfileIntA = (requireSharedLibrary "kernel32.DLL" 'Pissi "GetProfileIntA") in 
 let GetProfileIntW = (requireSharedLibrary "kernel32.DLL" 'Pippi "GetProfileIntW") in 
 let GetProfileSectionA = (requireSharedLibrary "kernel32.DLL" 'Pispi "GetProfileSectionA") in 
@@ -350,7 +330,6 @@ let InterlockedDecrement = (requireSharedLibrary "kernel32.DLL" 'Plp "Interlocke
 let InterlockedExchange = (requireSharedLibrary "kernel32.DLL" 'Plpl "InterlockedExchange") in 
 let InterlockedExchangeAdd = (requireSharedLibrary "kernel32.DLL" 'Plpl "InterlockedExchangeAdd") in 
 let InterlockedIncrement = (requireSharedLibrary "kernel32.DLL" 'Plp "InterlockedIncrement") in 
-let IsBadCodePtr = (requireSharedLibrary "kernel32.DLL" 'Pi? "IsBadCodePtr") in 
 let IsBadHugeReadPtr = (requireSharedLibrary "kernel32.DLL" 'Pipi "IsBadHugeReadPtr") in 
 let IsBadHugeWritePtr = (requireSharedLibrary "kernel32.DLL" 'Pipi "IsBadHugeWritePtr") in 
 let IsBadReadPtr = (requireSharedLibrary "kernel32.DLL" 'Pipi "IsBadReadPtr") in 
@@ -418,8 +397,6 @@ let OpenWaitableTimerA = (requireSharedLibrary "kernel32.DLL" 'Ppiis "OpenWaitab
 let OpenWaitableTimerW = (requireSharedLibrary "kernel32.DLL" 'Ppiip "OpenWaitableTimerW") in 
 let OutputDebugStringA = (requireSharedLibrary "kernel32.DLL" 'Pvs "OutputDebugStringA") in 
 let OutputDebugStringW = (requireSharedLibrary "kernel32.DLL" 'Pvp "OutputDebugStringW") in 
-let PeekConsoleInputA = (requireSharedLibrary "kernel32.DLL" 'Pip?ip "PeekConsoleInputA") in 
-let PeekConsoleInputW = (requireSharedLibrary "kernel32.DLL" 'Pip?ip "PeekConsoleInputW") in 
 let PeekNamedPipe = (requireSharedLibrary "kernel32.DLL" 'Pippippp "PeekNamedPipe") in 
 let PostQueuedCompletionStatus = (requireSharedLibrary "kernel32.DLL" 'Pipiip "PostQueuedCompletionStatus") in 
 let PrepareTape = (requireSharedLibrary "kernel32.DLL" 'Pipii "PrepareTape") in 
@@ -427,18 +404,8 @@ let PulseEvent = (requireSharedLibrary "kernel32.DLL" 'Pip "PulseEvent") in
 let PurgeComm = (requireSharedLibrary "kernel32.DLL" 'Pipi "PurgeComm") in 
 let QueryDosDeviceA = (requireSharedLibrary "kernel32.DLL" 'Pispi "QueryDosDeviceA") in 
 let QueryDosDeviceW = (requireSharedLibrary "kernel32.DLL" 'Pippi "QueryDosDeviceW") in 
-let QueryPerformanceCounter = (requireSharedLibrary "kernel32.DLL" 'Pi? "QueryPerformanceCounter") in 
-let QueryPerformanceFrequency = (requireSharedLibrary "kernel32.DLL" 'Pi? "QueryPerformanceFrequency") in 
-let QueueUserAPC = (requireSharedLibrary "kernel32.DLL" 'Pi?pi "QueueUserAPC") in 
 let RaiseException = (requireSharedLibrary "kernel32.DLL" 'Pviiip "RaiseException") in 
 let ReadConsoleA = (requireSharedLibrary "kernel32.DLL" 'Pippipp "ReadConsoleA") in 
-let ReadConsoleInputA = (requireSharedLibrary "kernel32.DLL" 'Pip?ip "ReadConsoleInputA") in 
-let ReadConsoleInputW = (requireSharedLibrary "kernel32.DLL" 'Pip?ip "ReadConsoleInputW") in 
-let ReadConsoleOutputA = (requireSharedLibrary "kernel32.DLL" 'Pip???p "ReadConsoleOutputA") in 
-let ReadConsoleOutputAttribute = (requireSharedLibrary "kernel32.DLL" 'Pippi?p "ReadConsoleOutputAttribute") in 
-let ReadConsoleOutputCharacterA = (requireSharedLibrary "kernel32.DLL" 'Pippi?p "ReadConsoleOutputCharacterA") in 
-let ReadConsoleOutputCharacterW = (requireSharedLibrary "kernel32.DLL" 'Pippi?p "ReadConsoleOutputCharacterW") in 
-let ReadConsoleOutputW = (requireSharedLibrary "kernel32.DLL" 'Pip???p "ReadConsoleOutputW") in 
 let ReadConsoleW = (requireSharedLibrary "kernel32.DLL" 'Pippipp "ReadConsoleW") in 
 let ReadDirectoryChangesW = (requireSharedLibrary "kernel32.DLL" 'Pippiiippp "ReadDirectoryChangesW") in 
 let ReadFile = (requireSharedLibrary "kernel32.DLL" 'Pippipp "ReadFile") in 
@@ -452,8 +419,6 @@ let RemoveDirectoryW = (requireSharedLibrary "kernel32.DLL" 'Pip "RemoveDirector
 let ResetEvent = (requireSharedLibrary "kernel32.DLL" 'Pip "ResetEvent") in 
 let ResetWriteWatch = (requireSharedLibrary "kernel32.DLL" 'Pipl "ResetWriteWatch") in 
 let ResumeThread = (requireSharedLibrary "kernel32.DLL" 'Pip "ResumeThread") in 
-let ScrollConsoleScreenBufferA = (requireSharedLibrary "kernel32.DLL" 'Pippp?p "ScrollConsoleScreenBufferA") in 
-let ScrollConsoleScreenBufferW = (requireSharedLibrary "kernel32.DLL" 'Pippp?p "ScrollConsoleScreenBufferW") in 
 let SearchPathA = (requireSharedLibrary "kernel32.DLL" 'Pisssipp "SearchPathA") in 
 let SearchPathW = (requireSharedLibrary "kernel32.DLL" 'Pipppipp "SearchPathW") in 
 let SetCalendarInfoA = (requireSharedLibrary "kernel32.DLL" 'Piiiis "SetCalendarInfoA") in 
@@ -467,12 +432,9 @@ let SetComputerNameA = (requireSharedLibrary "kernel32.DLL" 'Pis "SetComputerNam
 let SetComputerNameW = (requireSharedLibrary "kernel32.DLL" 'Pip "SetComputerNameW") in 
 let SetConsoleActiveScreenBuffer = (requireSharedLibrary "kernel32.DLL" 'Pip "SetConsoleActiveScreenBuffer") in 
 let SetConsoleCP = (requireSharedLibrary "kernel32.DLL" 'Pii "SetConsoleCP") in 
-let SetConsoleCtrlHandler = (requireSharedLibrary "kernel32.DLL" 'Pi?i "SetConsoleCtrlHandler") in 
 let SetConsoleCursorInfo = (requireSharedLibrary "kernel32.DLL" 'Pipp "SetConsoleCursorInfo") in 
-let SetConsoleCursorPosition = (requireSharedLibrary "kernel32.DLL" 'Pip? "SetConsoleCursorPosition") in 
 let SetConsoleMode = (requireSharedLibrary "kernel32.DLL" 'Pipi "SetConsoleMode") in 
 let SetConsoleOutputCP = (requireSharedLibrary "kernel32.DLL" 'Pii "SetConsoleOutputCP") in 
-let SetConsoleScreenBufferSize = (requireSharedLibrary "kernel32.DLL" 'Pip? "SetConsoleScreenBufferSize") in 
 let SetConsoleTextAttribute = (requireSharedLibrary "kernel32.DLL" 'Piph "SetConsoleTextAttribute") in 
 let SetConsoleTitleA = (requireSharedLibrary "kernel32.DLL" 'Pis "SetConsoleTitleA") in 
 let SetConsoleTitleW = (requireSharedLibrary "kernel32.DLL" 'Pip "SetConsoleTitleW") in 
@@ -492,7 +454,6 @@ let SetFileApisToOEM = (requireSharedLibrary "kernel32.DLL" 'Pvv "SetFileApisToO
 let SetFileAttributesA = (requireSharedLibrary "kernel32.DLL" 'Pisi "SetFileAttributesA") in 
 let SetFileAttributesW = (requireSharedLibrary "kernel32.DLL" 'Pipi "SetFileAttributesW") in 
 let SetFilePointer = (requireSharedLibrary "kernel32.DLL" 'Piplli "SetFilePointer") in 
-let SetFilePointerEx = (requireSharedLibrary "kernel32.DLL" 'Pip??i "SetFilePointerEx") in 
 let SetFileTime = (requireSharedLibrary "kernel32.DLL" 'Pipppp "SetFileTime") in 
 let SetHandleCount = (requireSharedLibrary "kernel32.DLL" 'Pii "SetHandleCount") in 
 let SetHandleInformation = (requireSharedLibrary "kernel32.DLL" 'Pipii "SetHandleInformation") in 
@@ -524,7 +485,6 @@ let SetUnhandledExceptionFilter = (requireSharedLibrary "kernel32.DLL" 'Ppp "Set
 let SetUserGeoID = (requireSharedLibrary "kernel32.DLL" 'Pii "SetUserGeoID") in 
 let SetVolumeLabelA = (requireSharedLibrary "kernel32.DLL" 'Piss "SetVolumeLabelA") in 
 let SetVolumeLabelW = (requireSharedLibrary "kernel32.DLL" 'Pipp "SetVolumeLabelW") in 
-let SetWaitableTimer = (requireSharedLibrary "kernel32.DLL" 'Pippl?pi "SetWaitableTimer") in 
 let SetupComm = (requireSharedLibrary "kernel32.DLL" 'Pipii "SetupComm") in 
 let SignalObjectAndWait = (requireSharedLibrary "kernel32.DLL" 'Pippii "SignalObjectAndWait") in 
 let SizeofResource = (requireSharedLibrary "kernel32.DLL" 'Pipp "SizeofResource") in 
@@ -552,8 +512,6 @@ let UpdateResourceA = (requireSharedLibrary "kernel32.DLL" 'Pipsshpi "UpdateReso
 let UpdateResourceW = (requireSharedLibrary "kernel32.DLL" 'Pippphpi "UpdateResourceW") in 
 let VerLanguageNameA = (requireSharedLibrary "kernel32.DLL" 'Piipi "VerLanguageNameA") in 
 let VerLanguageNameW = (requireSharedLibrary "kernel32.DLL" 'Piipi "VerLanguageNameW") in 
-let VerifyVersionInfoA = (requireSharedLibrary "kernel32.DLL" 'Pipi? "VerifyVersionInfoA") in 
-let VerifyVersionInfoW = (requireSharedLibrary "kernel32.DLL" 'Pipi? "VerifyVersionInfoW") in 
 let VirtualAlloc = (requireSharedLibrary "kernel32.DLL" 'Pppiii "VirtualAlloc") in 
 let VirtualAllocEx = (requireSharedLibrary "kernel32.DLL" 'Ppppiii "VirtualAllocEx") in 
 let VirtualFree = (requireSharedLibrary "kernel32.DLL" 'Pipii "VirtualFree") in 
@@ -561,8 +519,6 @@ let VirtualFreeEx = (requireSharedLibrary "kernel32.DLL" 'Pippii "VirtualFreeEx"
 let VirtualLock = (requireSharedLibrary "kernel32.DLL" 'Pipi "VirtualLock") in 
 let VirtualProtect = (requireSharedLibrary "kernel32.DLL" 'Pipiip "VirtualProtect") in 
 let VirtualProtectEx = (requireSharedLibrary "kernel32.DLL" 'Pippiip "VirtualProtectEx") in 
-let VirtualQuery = (requireSharedLibrary "kernel32.DLL" 'Pip?i "VirtualQuery") in 
-let VirtualQueryEx = (requireSharedLibrary "kernel32.DLL" 'Pipp?i "VirtualQueryEx") in 
 let VirtualUnlock = (requireSharedLibrary "kernel32.DLL" 'Pipi "VirtualUnlock") in 
 let WaitCommEvent = (requireSharedLibrary "kernel32.DLL" 'Pippp "WaitCommEvent") in 
 let WaitForDebugEvent = (requireSharedLibrary "kernel32.DLL" 'Pipi "WaitForDebugEvent") in 
@@ -577,11 +533,6 @@ let WinExec = (requireSharedLibrary "kernel32.DLL" 'Pisi "WinExec") in
 let WriteConsoleA = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteConsoleA") in 
 let WriteConsoleInputA = (requireSharedLibrary "kernel32.DLL" 'Pippip "WriteConsoleInputA") in 
 let WriteConsoleInputW = (requireSharedLibrary "kernel32.DLL" 'Pippip "WriteConsoleInputW") in 
-let WriteConsoleOutputA = (requireSharedLibrary "kernel32.DLL" 'Pipp??p "WriteConsoleOutputA") in 
-let WriteConsoleOutputAttribute = (requireSharedLibrary "kernel32.DLL" 'Pippi?p "WriteConsoleOutputAttribute") in 
-let WriteConsoleOutputCharacterA = (requireSharedLibrary "kernel32.DLL" 'Pipsi?p "WriteConsoleOutputCharacterA") in 
-let WriteConsoleOutputCharacterW = (requireSharedLibrary "kernel32.DLL" 'Pippi?p "WriteConsoleOutputCharacterW") in 
-let WriteConsoleOutputW = (requireSharedLibrary "kernel32.DLL" 'Pipp??p "WriteConsoleOutputW") in 
 let WriteConsoleW = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteConsoleW") in 
 let WriteFile = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteFile") in 
 let WriteFileEx = (requireSharedLibrary "kernel32.DLL" 'Pippipp "WriteFileEx") in 
@@ -691,11 +642,9 @@ dispatchModule $
 ['DefineDosDeviceA DefineDosDeviceA]
 ['DefineDosDeviceW DefineDosDeviceW]
 ['DeleteAtom DeleteAtom]
-['DeleteCriticalSection DeleteCriticalSection]
 ['DeleteFiber DeleteFiber]
 ['DeleteFileA DeleteFileA]
 ['DeleteFileW DeleteFileW]
-['DeviceIoControl DeviceIoControl]
 ['DisableThreadLibraryCalls DisableThreadLibraryCalls]
 ['DisconnectNamedPipe DisconnectNamedPipe]
 ['DosDateTimeToFileTime DosDateTimeToFileTime]
@@ -703,23 +652,13 @@ dispatchModule $
 ['EndUpdateResourceA EndUpdateResourceA]
 ['EndUpdateResourceW EndUpdateResourceW]
 ['EnterCriticalSection EnterCriticalSection]
-['EnumCalendarInfoA EnumCalendarInfoA]
-['EnumCalendarInfoW EnumCalendarInfoW]
-['EnumDateFormatsA EnumDateFormatsA]
-['EnumDateFormatsW EnumDateFormatsW]
 ['EnumResourceLanguagesA EnumResourceLanguagesA]
 ['EnumResourceLanguagesW EnumResourceLanguagesW]
 ['EnumResourceNamesA EnumResourceNamesA]
 ['EnumResourceNamesW EnumResourceNamesW]
 ['EnumResourceTypesA EnumResourceTypesA]
 ['EnumResourceTypesW EnumResourceTypesW]
-['EnumSystemCodePagesA EnumSystemCodePagesA]
-['EnumSystemCodePagesW EnumSystemCodePagesW]
 ['EnumSystemGeoID EnumSystemGeoID]
-['EnumSystemLocalesA EnumSystemLocalesA]
-['EnumSystemLocalesW EnumSystemLocalesW]
-['EnumTimeFormatsA EnumTimeFormatsA]
-['EnumTimeFormatsW EnumTimeFormatsW]
 ['EraseTape EraseTape]
 ['EscapeCommFunction EscapeCommFunction]
 ['ExitProcess ExitProcess]
@@ -732,9 +671,6 @@ dispatchModule $
 ['FileTimeToDosDateTime FileTimeToDosDateTime]
 ['FileTimeToLocalFileTime FileTimeToLocalFileTime]
 ['FileTimeToSystemTime FileTimeToSystemTime]
-['FillConsoleOutputAttribute FillConsoleOutputAttribute]
-['FillConsoleOutputCharacterA FillConsoleOutputCharacterA]
-['FillConsoleOutputCharacterW FillConsoleOutputCharacterW]
 ['FindAtomA FindAtomA]
 ['FindAtomW FindAtomW]
 ['FindClose FindClose]
@@ -790,10 +726,8 @@ dispatchModule $
 ['GetComputerNameA GetComputerNameA]
 ['GetComputerNameW GetComputerNameW]
 ['GetConsoleCP GetConsoleCP]
-['GetConsoleCursorInfo GetConsoleCursorInfo]
 ['GetConsoleMode GetConsoleMode]
 ['GetConsoleOutputCP GetConsoleOutputCP]
-['GetConsoleScreenBufferInfo GetConsoleScreenBufferInfo]
 ['GetConsoleTitleA GetConsoleTitleA]
 ['GetConsoleTitleW GetConsoleTitleW]
 ['GetCurrencyFormatA GetCurrencyFormatA]
@@ -836,7 +770,6 @@ dispatchModule $
 ['GetGeoInfoA GetGeoInfoA]
 ['GetGeoInfoW GetGeoInfoW]
 ['GetHandleInformation GetHandleInformation]
-['GetLargestConsoleWindowSize GetLargestConsoleWindowSize]
 ['GetLastError GetLastError]
 ['GetLocalTime GetLocalTime]
 ['GetLocaleInfoA GetLocaleInfoA]
@@ -869,7 +802,6 @@ dispatchModule $
 ['GetPrivateProfileStringW GetPrivateProfileStringW]
 ['GetPrivateProfileStructA GetPrivateProfileStructA]
 ['GetPrivateProfileStructW GetPrivateProfileStructW]
-['GetProcAddress GetProcAddress]
 ['GetProcessAffinityMask GetProcessAffinityMask]
 ['GetProcessHeap GetProcessHeap]
 ['GetProcessHeaps GetProcessHeaps]
@@ -877,7 +809,6 @@ dispatchModule $
 ['GetProcessShutdownParameters GetProcessShutdownParameters]
 ['GetProcessTimes GetProcessTimes]
 ['GetProcessVersion GetProcessVersion]
-['GetProcessWorkingSetSize GetProcessWorkingSetSize]
 ['GetProfileIntA GetProfileIntA]
 ['GetProfileIntW GetProfileIntW]
 ['GetProfileSectionA GetProfileSectionA]
@@ -971,7 +902,6 @@ dispatchModule $
 ['InterlockedExchange InterlockedExchange]
 ['InterlockedExchangeAdd InterlockedExchangeAdd]
 ['InterlockedIncrement InterlockedIncrement]
-['IsBadCodePtr IsBadCodePtr]
 ['IsBadHugeReadPtr IsBadHugeReadPtr]
 ['IsBadHugeWritePtr IsBadHugeWritePtr]
 ['IsBadReadPtr IsBadReadPtr]
@@ -1039,8 +969,6 @@ dispatchModule $
 ['OpenWaitableTimerW OpenWaitableTimerW]
 ['OutputDebugStringA OutputDebugStringA]
 ['OutputDebugStringW OutputDebugStringW]
-['PeekConsoleInputA PeekConsoleInputA]
-['PeekConsoleInputW PeekConsoleInputW]
 ['PeekNamedPipe PeekNamedPipe]
 ['PostQueuedCompletionStatus PostQueuedCompletionStatus]
 ['PrepareTape PrepareTape]
@@ -1048,18 +976,8 @@ dispatchModule $
 ['PurgeComm PurgeComm]
 ['QueryDosDeviceA QueryDosDeviceA]
 ['QueryDosDeviceW QueryDosDeviceW]
-['QueryPerformanceCounter QueryPerformanceCounter]
-['QueryPerformanceFrequency QueryPerformanceFrequency]
-['QueueUserAPC QueueUserAPC]
 ['RaiseException RaiseException]
 ['ReadConsoleA ReadConsoleA]
-['ReadConsoleInputA ReadConsoleInputA]
-['ReadConsoleInputW ReadConsoleInputW]
-['ReadConsoleOutputA ReadConsoleOutputA]
-['ReadConsoleOutputAttribute ReadConsoleOutputAttribute]
-['ReadConsoleOutputCharacterA ReadConsoleOutputCharacterA]
-['ReadConsoleOutputCharacterW ReadConsoleOutputCharacterW]
-['ReadConsoleOutputW ReadConsoleOutputW]
 ['ReadConsoleW ReadConsoleW]
 ['ReadDirectoryChangesW ReadDirectoryChangesW]
 ['ReadFile ReadFile]
@@ -1073,8 +991,6 @@ dispatchModule $
 ['ResetEvent ResetEvent]
 ['ResetWriteWatch ResetWriteWatch]
 ['ResumeThread ResumeThread]
-['ScrollConsoleScreenBufferA ScrollConsoleScreenBufferA]
-['ScrollConsoleScreenBufferW ScrollConsoleScreenBufferW]
 ['SearchPathA SearchPathA]
 ['SearchPathW SearchPathW]
 ['SetCalendarInfoA SetCalendarInfoA]
@@ -1088,12 +1004,9 @@ dispatchModule $
 ['SetComputerNameW SetComputerNameW]
 ['SetConsoleActiveScreenBuffer SetConsoleActiveScreenBuffer]
 ['SetConsoleCP SetConsoleCP]
-['SetConsoleCtrlHandler SetConsoleCtrlHandler]
 ['SetConsoleCursorInfo SetConsoleCursorInfo]
-['SetConsoleCursorPosition SetConsoleCursorPosition]
 ['SetConsoleMode SetConsoleMode]
 ['SetConsoleOutputCP SetConsoleOutputCP]
-['SetConsoleScreenBufferSize SetConsoleScreenBufferSize]
 ['SetConsoleTextAttribute SetConsoleTextAttribute]
 ['SetConsoleTitleA SetConsoleTitleA]
 ['SetConsoleTitleW SetConsoleTitleW]
@@ -1113,7 +1026,6 @@ dispatchModule $
 ['SetFileAttributesA SetFileAttributesA]
 ['SetFileAttributesW SetFileAttributesW]
 ['SetFilePointer SetFilePointer]
-['SetFilePointerEx SetFilePointerEx]
 ['SetFileTime SetFileTime]
 ['SetHandleCount SetHandleCount]
 ['SetHandleInformation SetHandleInformation]
@@ -1145,7 +1057,6 @@ dispatchModule $
 ['SetUserGeoID SetUserGeoID]
 ['SetVolumeLabelA SetVolumeLabelA]
 ['SetVolumeLabelW SetVolumeLabelW]
-['SetWaitableTimer SetWaitableTimer]
 ['SetupComm SetupComm]
 ['SignalObjectAndWait SignalObjectAndWait]
 ['SizeofResource SizeofResource]
@@ -1173,8 +1084,6 @@ dispatchModule $
 ['UpdateResourceW UpdateResourceW]
 ['VerLanguageNameA VerLanguageNameA]
 ['VerLanguageNameW VerLanguageNameW]
-['VerifyVersionInfoA VerifyVersionInfoA]
-['VerifyVersionInfoW VerifyVersionInfoW]
 ['VirtualAlloc VirtualAlloc]
 ['VirtualAllocEx VirtualAllocEx]
 ['VirtualFree VirtualFree]
@@ -1182,8 +1091,6 @@ dispatchModule $
 ['VirtualLock VirtualLock]
 ['VirtualProtect VirtualProtect]
 ['VirtualProtectEx VirtualProtectEx]
-['VirtualQuery VirtualQuery]
-['VirtualQueryEx VirtualQueryEx]
 ['VirtualUnlock VirtualUnlock]
 ['WaitCommEvent WaitCommEvent]
 ['WaitForDebugEvent WaitForDebugEvent]
@@ -1198,11 +1105,6 @@ dispatchModule $
 ['WriteConsoleA WriteConsoleA]
 ['WriteConsoleInputA WriteConsoleInputA]
 ['WriteConsoleInputW WriteConsoleInputW]
-['WriteConsoleOutputA WriteConsoleOutputA]
-['WriteConsoleOutputAttribute WriteConsoleOutputAttribute]
-['WriteConsoleOutputCharacterA WriteConsoleOutputCharacterA]
-['WriteConsoleOutputCharacterW WriteConsoleOutputCharacterW]
-['WriteConsoleOutputW WriteConsoleOutputW]
 ['WriteConsoleW WriteConsoleW]
 ['WriteFile WriteFile]
 ['WriteFileEx WriteFileEx]

@@ -33,7 +33,6 @@ let CreateDCA = (requireSharedLibrary "gdi32.DLL" 'Ppsssp "CreateDCA") in
 let CreateDCW = (requireSharedLibrary "gdi32.DLL" 'Pppppp "CreateDCW") in 
 let CreateDIBPatternBrush = (requireSharedLibrary "gdi32.DLL" 'Pppi "CreateDIBPatternBrush") in 
 let CreateDIBPatternBrushPt = (requireSharedLibrary "gdi32.DLL" 'Pppi "CreateDIBPatternBrushPt") in 
-let CreateDIBSection = (requireSharedLibrary "gdi32.DLL" 'Ppppi?pi "CreateDIBSection") in 
 let CreateDIBitmap = (requireSharedLibrary "gdi32.DLL" 'Ppppippi "CreateDIBitmap") in 
 let CreateDiscardableBitmap = (requireSharedLibrary "gdi32.DLL" 'Pppii "CreateDiscardableBitmap") in 
 let CreateEllipticRgn = (requireSharedLibrary "gdi32.DLL" 'Ppiiii "CreateEllipticRgn") in 
@@ -350,7 +349,6 @@ dispatchModule $
 ['CreateDCW CreateDCW]
 ['CreateDIBPatternBrush CreateDIBPatternBrush]
 ['CreateDIBPatternBrushPt CreateDIBPatternBrushPt]
-['CreateDIBSection CreateDIBSection]
 ['CreateDIBitmap CreateDIBitmap]
 ['CreateDiscardableBitmap CreateDiscardableBitmap]
 ['CreateEllipticRgn CreateEllipticRgn]

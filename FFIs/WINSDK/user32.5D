@@ -6,7 +6,6 @@ let AppendMenuA = (requireSharedLibrary "user32.DLL" 'Pipiis "AppendMenuA") in
 let AppendMenuW = (requireSharedLibrary "user32.DLL" 'Pipiip "AppendMenuW") in 
 let ArrangeIconicWindows = (requireSharedLibrary "user32.DLL" 'Pip "ArrangeIconicWindows") in 
 let AttachThreadInput = (requireSharedLibrary "user32.DLL" 'Piiii "AttachThreadInput") in 
-let BeginDeferWindowPos = (requireSharedLibrary "user32.DLL" 'P?i "BeginDeferWindowPos") in 
 let BeginPaint = (requireSharedLibrary "user32.DLL" 'Pppp "BeginPaint") in 
 let BringWindowToTop = (requireSharedLibrary "user32.DLL" 'Pip "BringWindowToTop") in 
 let BroadcastSystemMessage = (requireSharedLibrary "user32.DLL" 'Plipiip "BroadcastSystemMessage") in 
@@ -19,10 +18,8 @@ let CallWindowProcA = (requireSharedLibrary "user32.DLL" 'Plppiip "CallWindowPro
 let CallWindowProcW = (requireSharedLibrary "user32.DLL" 'Plppiip "CallWindowProcW") in 
 let CascadeWindows = (requireSharedLibrary "user32.DLL" 'Phpipip "CascadeWindows") in 
 let ChangeClipboardChain = (requireSharedLibrary "user32.DLL" 'Pipp "ChangeClipboardChain") in 
-let ChangeDisplaySettingsA = (requireSharedLibrary "user32.DLL" 'Pl?i "ChangeDisplaySettingsA") in 
 let ChangeDisplaySettingsExA = (requireSharedLibrary "user32.DLL" 'Plsppip "ChangeDisplaySettingsExA") in 
 let ChangeDisplaySettingsExW = (requireSharedLibrary "user32.DLL" 'Plpppip "ChangeDisplaySettingsExW") in 
-let ChangeDisplaySettingsW = (requireSharedLibrary "user32.DLL" 'Pl?i "ChangeDisplaySettingsW") in 
 let ChangeMenuA = (requireSharedLibrary "user32.DLL" 'Pipisii "ChangeMenuA") in 
 let ChangeMenuW = (requireSharedLibrary "user32.DLL" 'Pipipii "ChangeMenuW") in 
 let CharLowerA = (requireSharedLibrary "user32.DLL" 'Ppp "CharLowerA") in 
@@ -47,14 +44,11 @@ let CheckDlgButton = (requireSharedLibrary "user32.DLL" 'Pipii "CheckDlgButton")
 let CheckMenuItem = (requireSharedLibrary "user32.DLL" 'Pipii "CheckMenuItem") in 
 let CheckMenuRadioItem = (requireSharedLibrary "user32.DLL" 'Pipiiii "CheckMenuRadioItem") in 
 let CheckRadioButton = (requireSharedLibrary "user32.DLL" 'Pipiii "CheckRadioButton") in 
-let ChildWindowFromPoint = (requireSharedLibrary "user32.DLL" 'Ppp? "ChildWindowFromPoint") in 
-let ChildWindowFromPointEx = (requireSharedLibrary "user32.DLL" 'Ppp?i "ChildWindowFromPointEx") in 
 let ClientToScreen = (requireSharedLibrary "user32.DLL" 'Pipp "ClientToScreen") in 
 let ClipCursor = (requireSharedLibrary "user32.DLL" 'Pip "ClipCursor") in 
 let CloseClipboard = (requireSharedLibrary "user32.DLL" 'Piv "CloseClipboard") in 
 let CloseDesktop = (requireSharedLibrary "user32.DLL" 'Pip "CloseDesktop") in 
 let CloseWindow = (requireSharedLibrary "user32.DLL" 'Pip "CloseWindow") in 
-let CloseWindowStation = (requireSharedLibrary "user32.DLL" 'Pi? "CloseWindowStation") in 
 let CopyAcceleratorTableA = (requireSharedLibrary "user32.DLL" 'Pippi "CopyAcceleratorTableA") in 
 let CopyAcceleratorTableW = (requireSharedLibrary "user32.DLL" 'Pippi "CopyAcceleratorTableW") in 
 let CopyIcon = (requireSharedLibrary "user32.DLL" 'Ppp "CopyIcon") in 
@@ -65,8 +59,6 @@ let CreateAcceleratorTableA = (requireSharedLibrary "user32.DLL" 'Pppi "CreateAc
 let CreateAcceleratorTableW = (requireSharedLibrary "user32.DLL" 'Pppi "CreateAcceleratorTableW") in 
 let CreateCaret = (requireSharedLibrary "user32.DLL" 'Pippii "CreateCaret") in 
 let CreateCursor = (requireSharedLibrary "user32.DLL" 'Pppiiiipp "CreateCursor") in 
-let CreateDesktopA = (requireSharedLibrary "user32.DLL" 'Ppsspi?p "CreateDesktopA") in 
-let CreateDesktopW = (requireSharedLibrary "user32.DLL" 'Pppppi?p "CreateDesktopW") in 
 let CreateDialogIndirectParamA = (requireSharedLibrary "user32.DLL" 'Ppppppp "CreateDialogIndirectParamA") in 
 let CreateDialogIndirectParamW = (requireSharedLibrary "user32.DLL" 'Ppppppp "CreateDialogIndirectParamW") in 
 let CreateDialogParamA = (requireSharedLibrary "user32.DLL" 'Pppsppp "CreateDialogParamA") in 
@@ -81,39 +73,24 @@ let CreateMenu = (requireSharedLibrary "user32.DLL" 'Ppv "CreateMenu") in
 let CreatePopupMenu = (requireSharedLibrary "user32.DLL" 'Ppv "CreatePopupMenu") in 
 let CreateWindowExA = (requireSharedLibrary "user32.DLL" 'Ppissiiiiipppp "CreateWindowExA") in 
 let CreateWindowExW = (requireSharedLibrary "user32.DLL" 'Ppippiiiiipppp "CreateWindowExW") in 
-let CreateWindowStationA = (requireSharedLibrary "user32.DLL" 'P?piip "CreateWindowStationA") in 
-let CreateWindowStationW = (requireSharedLibrary "user32.DLL" 'P?piip "CreateWindowStationW") in 
 let DdeAbandonTransaction = (requireSharedLibrary "user32.DLL" 'Piipi "DdeAbandonTransaction") in 
-let DdeAccessData = (requireSharedLibrary "user32.DLL" 'Pp?p "DdeAccessData") in 
-let DdeAddData = (requireSharedLibrary "user32.DLL" 'P??pii "DdeAddData") in 
-let DdeClientTransaction = (requireSharedLibrary "user32.DLL" 'P?pippiiip "DdeClientTransaction") in 
 let DdeCmpStringHandles = (requireSharedLibrary "user32.DLL" 'Pipp "DdeCmpStringHandles") in 
-let DdeConnect = (requireSharedLibrary "user32.DLL" 'Ppipp? "DdeConnect") in 
-let DdeConnectList = (requireSharedLibrary "user32.DLL" 'Ppippp? "DdeConnectList") in 
-let DdeCreateDataHandle = (requireSharedLibrary "user32.DLL" 'P?ipiipii "DdeCreateDataHandle") in 
 let DdeCreateStringHandleA = (requireSharedLibrary "user32.DLL" 'Ppipi "DdeCreateStringHandleA") in 
 let DdeCreateStringHandleW = (requireSharedLibrary "user32.DLL" 'Ppipi "DdeCreateStringHandleW") in 
 let DdeDisconnect = (requireSharedLibrary "user32.DLL" 'Pip "DdeDisconnect") in 
 let DdeDisconnectList = (requireSharedLibrary "user32.DLL" 'Pip "DdeDisconnectList") in 
 let DdeEnableCallback = (requireSharedLibrary "user32.DLL" 'Piipi "DdeEnableCallback") in 
-let DdeFreeDataHandle = (requireSharedLibrary "user32.DLL" 'Pi? "DdeFreeDataHandle") in 
 let DdeFreeStringHandle = (requireSharedLibrary "user32.DLL" 'Piip "DdeFreeStringHandle") in 
-let DdeGetData = (requireSharedLibrary "user32.DLL" 'Pi?pii "DdeGetData") in 
 let DdeGetLastError = (requireSharedLibrary "user32.DLL" 'Pii "DdeGetLastError") in 
 let DdeImpersonateClient = (requireSharedLibrary "user32.DLL" 'Pip "DdeImpersonateClient") in 
-let DdeInitializeA = (requireSharedLibrary "user32.DLL" 'Pip?ii "DdeInitializeA") in 
-let DdeInitializeW = (requireSharedLibrary "user32.DLL" 'Pip?ii "DdeInitializeW") in 
 let DdeKeepStringHandle = (requireSharedLibrary "user32.DLL" 'Piip "DdeKeepStringHandle") in 
-let DdeNameService = (requireSharedLibrary "user32.DLL" 'P?ippi "DdeNameService") in 
 let DdePostAdvise = (requireSharedLibrary "user32.DLL" 'Piipp "DdePostAdvise") in 
 let DdeQueryConvInfo = (requireSharedLibrary "user32.DLL" 'Pipip "DdeQueryConvInfo") in 
 let DdeQueryNextServer = (requireSharedLibrary "user32.DLL" 'Pppp "DdeQueryNextServer") in 
 let DdeQueryStringA = (requireSharedLibrary "user32.DLL" 'Piippii "DdeQueryStringA") in 
 let DdeQueryStringW = (requireSharedLibrary "user32.DLL" 'Piippii "DdeQueryStringW") in 
 let DdeReconnect = (requireSharedLibrary "user32.DLL" 'Ppp "DdeReconnect") in 
-let DdeSetQualityOfService = (requireSharedLibrary "user32.DLL" 'Pipp? "DdeSetQualityOfService") in 
 let DdeSetUserHandle = (requireSharedLibrary "user32.DLL" 'Pipii "DdeSetUserHandle") in 
-let DdeUnaccessData = (requireSharedLibrary "user32.DLL" 'Pi? "DdeUnaccessData") in 
 let DdeUninitialize = (requireSharedLibrary "user32.DLL" 'Pii "DdeUninitialize") in 
 let DefDlgProcA = (requireSharedLibrary "user32.DLL" 'Plpiip "DefDlgProcA") in 
 let DefDlgProcW = (requireSharedLibrary "user32.DLL" 'Plpiip "DefDlgProcW") in 
@@ -123,7 +100,6 @@ let DefMDIChildProcA = (requireSharedLibrary "user32.DLL" 'Plpiip "DefMDIChildPr
 let DefMDIChildProcW = (requireSharedLibrary "user32.DLL" 'Plpiip "DefMDIChildProcW") in 
 let DefWindowProcA = (requireSharedLibrary "user32.DLL" 'Plpiip "DefWindowProcA") in 
 let DefWindowProcW = (requireSharedLibrary "user32.DLL" 'Plpiip "DefWindowProcW") in 
-let DeferWindowPos = (requireSharedLibrary "user32.DLL" 'P??ppiiiii "DeferWindowPos") in 
 let DeleteMenu = (requireSharedLibrary "user32.DLL" 'Pipii "DeleteMenu") in 
 let DeregisterShellHookWindow = (requireSharedLibrary "user32.DLL" 'Pip "DeregisterShellHookWindow") in 
 let DestroyAcceleratorTable = (requireSharedLibrary "user32.DLL" 'Pip "DestroyAcceleratorTable") in 
@@ -146,7 +122,6 @@ let DlgDirSelectComboBoxExA = (requireSharedLibrary "user32.DLL" 'Pippii "DlgDir
 let DlgDirSelectComboBoxExW = (requireSharedLibrary "user32.DLL" 'Pippii "DlgDirSelectComboBoxExW") in 
 let DlgDirSelectExA = (requireSharedLibrary "user32.DLL" 'Pippii "DlgDirSelectExA") in 
 let DlgDirSelectExW = (requireSharedLibrary "user32.DLL" 'Pippii "DlgDirSelectExW") in 
-let DragDetect = (requireSharedLibrary "user32.DLL" 'Pip? "DragDetect") in 
 let DragObject = (requireSharedLibrary "user32.DLL" 'Pippiip "DragObject") in 
 let DrawAnimatedRects = (requireSharedLibrary "user32.DLL" 'Pipipp "DrawAnimatedRects") in 
 let DrawCaption = (requireSharedLibrary "user32.DLL" 'Pipppi "DrawCaption") in 
@@ -156,8 +131,6 @@ let DrawFrameControl = (requireSharedLibrary "user32.DLL" 'Pippii "DrawFrameCont
 let DrawIcon = (requireSharedLibrary "user32.DLL" 'Pipiip "DrawIcon") in 
 let DrawIconEx = (requireSharedLibrary "user32.DLL" 'Pipiipiiipi "DrawIconEx") in 
 let DrawMenuBar = (requireSharedLibrary "user32.DLL" 'Pip "DrawMenuBar") in 
-let DrawStateA = (requireSharedLibrary "user32.DLL" 'Pipp?piiiiii "DrawStateA") in 
-let DrawStateW = (requireSharedLibrary "user32.DLL" 'Pipp?piiiiii "DrawStateW") in 
 let DrawTextA = (requireSharedLibrary "user32.DLL" 'Pipsipi "DrawTextA") in 
 let DrawTextExA = (requireSharedLibrary "user32.DLL" 'Pippipip "DrawTextExA") in 
 let DrawTextExW = (requireSharedLibrary "user32.DLL" 'Pippipip "DrawTextExW") in 
@@ -166,28 +139,10 @@ let EmptyClipboard = (requireSharedLibrary "user32.DLL" 'Piv "EmptyClipboard") i
 let EnableMenuItem = (requireSharedLibrary "user32.DLL" 'Pipii "EnableMenuItem") in 
 let EnableScrollBar = (requireSharedLibrary "user32.DLL" 'Pipii "EnableScrollBar") in 
 let EnableWindow = (requireSharedLibrary "user32.DLL" 'Pipi "EnableWindow") in 
-let EndDeferWindowPos = (requireSharedLibrary "user32.DLL" 'Pi? "EndDeferWindowPos") in 
 let EndDialog = (requireSharedLibrary "user32.DLL" 'Pipi "EndDialog") in 
 let EndMenu = (requireSharedLibrary "user32.DLL" 'Piv "EndMenu") in 
 let EndPaint = (requireSharedLibrary "user32.DLL" 'Pipp "EndPaint") in 
-let EnumChildWindows = (requireSharedLibrary "user32.DLL" 'Pip?p "EnumChildWindows") in 
 let EnumClipboardFormats = (requireSharedLibrary "user32.DLL" 'Pii "EnumClipboardFormats") in 
-let EnumDesktopWindows = (requireSharedLibrary "user32.DLL" 'Pip?p "EnumDesktopWindows") in 
-let EnumDesktopsA = (requireSharedLibrary "user32.DLL" 'Pi??p "EnumDesktopsA") in 
-let EnumDesktopsW = (requireSharedLibrary "user32.DLL" 'Pi??p "EnumDesktopsW") in 
-let EnumDisplayDevicesA = (requireSharedLibrary "user32.DLL" 'Pisi?i "EnumDisplayDevicesA") in 
-let EnumDisplayDevicesW = (requireSharedLibrary "user32.DLL" 'Pipi?i "EnumDisplayDevicesW") in 
-let EnumDisplayMonitors = (requireSharedLibrary "user32.DLL" 'Pipp?p "EnumDisplayMonitors") in 
-let EnumDisplaySettingsA = (requireSharedLibrary "user32.DLL" 'Pisi? "EnumDisplaySettingsA") in 
-let EnumDisplaySettingsW = (requireSharedLibrary "user32.DLL" 'Pipi? "EnumDisplaySettingsW") in 
-let EnumPropsA = (requireSharedLibrary "user32.DLL" 'Pip? "EnumPropsA") in 
-let EnumPropsExA = (requireSharedLibrary "user32.DLL" 'Pip?p "EnumPropsExA") in 
-let EnumPropsExW = (requireSharedLibrary "user32.DLL" 'Pip?p "EnumPropsExW") in 
-let EnumPropsW = (requireSharedLibrary "user32.DLL" 'Pip? "EnumPropsW") in 
-let EnumThreadWindows = (requireSharedLibrary "user32.DLL" 'Pii?p "EnumThreadWindows") in 
-let EnumWindowStationsA = (requireSharedLibrary "user32.DLL" 'Pi?p "EnumWindowStationsA") in 
-let EnumWindowStationsW = (requireSharedLibrary "user32.DLL" 'Pi?p "EnumWindowStationsW") in 
-let EnumWindows = (requireSharedLibrary "user32.DLL" 'Pi?p "EnumWindows") in 
 let EqualRect = (requireSharedLibrary "user32.DLL" 'Pipp "EqualRect") in 
 let ExcludeUpdateRgn = (requireSharedLibrary "user32.DLL" 'Pipp "ExcludeUpdateRgn") in 
 let ExitWindowsEx = (requireSharedLibrary "user32.DLL" 'Piii "ExitWindowsEx") in 
@@ -255,7 +210,6 @@ let GetLastActivePopup = (requireSharedLibrary "user32.DLL" 'Ppp "GetLastActiveP
 let GetLastInputInfo = (requireSharedLibrary "user32.DLL" 'Pip "GetLastInputInfo") in 
 let GetListBoxInfo = (requireSharedLibrary "user32.DLL" 'Pip "GetListBoxInfo") in 
 let GetMenu = (requireSharedLibrary "user32.DLL" 'Ppp "GetMenu") in 
-let GetMenuBarInfo = (requireSharedLibrary "user32.DLL" 'Pipll? "GetMenuBarInfo") in 
 let GetMenuCheckMarkDimensions = (requireSharedLibrary "user32.DLL" 'Plv "GetMenuCheckMarkDimensions") in 
 let GetMenuContextHelpId = (requireSharedLibrary "user32.DLL" 'Pip "GetMenuContextHelpId") in 
 let GetMenuDefaultItem = (requireSharedLibrary "user32.DLL" 'Pipii "GetMenuDefaultItem") in 
@@ -280,7 +234,6 @@ let GetNextDlgTabItem = (requireSharedLibrary "user32.DLL" 'Ppppi "GetNextDlgTab
 let GetOpenClipboardWindow = (requireSharedLibrary "user32.DLL" 'Ppv "GetOpenClipboardWindow") in 
 let GetParent = (requireSharedLibrary "user32.DLL" 'Ppp "GetParent") in 
 let GetPriorityClipboardFormat = (requireSharedLibrary "user32.DLL" 'Pipi "GetPriorityClipboardFormat") in 
-let GetProcessWindowStation = (requireSharedLibrary "user32.DLL" 'P?v "GetProcessWindowStation") in 
 let GetPropA = (requireSharedLibrary "user32.DLL" 'Ppps "GetPropA") in 
 let GetPropW = (requireSharedLibrary "user32.DLL" 'Pppp "GetPropW") in 
 let GetQueueStatus = (requireSharedLibrary "user32.DLL" 'Pii "GetQueueStatus") in 
@@ -302,7 +255,6 @@ let GetUpdateRect = (requireSharedLibrary "user32.DLL" 'Pippi "GetUpdateRect") i
 let GetUpdateRgn = (requireSharedLibrary "user32.DLL" 'Pippi "GetUpdateRgn") in 
 let GetUserObjectInformationA = (requireSharedLibrary "user32.DLL" 'Pipipip "GetUserObjectInformationA") in 
 let GetUserObjectInformationW = (requireSharedLibrary "user32.DLL" 'Pipipip "GetUserObjectInformationW") in 
-let GetUserObjectSecurity = (requireSharedLibrary "user32.DLL" 'Pip??ip "GetUserObjectSecurity") in 
 let GetWindow = (requireSharedLibrary "user32.DLL" 'Pppi "GetWindow") in 
 let GetWindowContextHelpId = (requireSharedLibrary "user32.DLL" 'Pip "GetWindowContextHelpId") in 
 let GetWindowDC = (requireSharedLibrary "user32.DLL" 'Ppp "GetWindowDC") in 
@@ -387,7 +339,6 @@ let MapVirtualKeyExA = (requireSharedLibrary "user32.DLL" 'Piiip "MapVirtualKeyE
 let MapVirtualKeyExW = (requireSharedLibrary "user32.DLL" 'Piiip "MapVirtualKeyExW") in 
 let MapVirtualKeyW = (requireSharedLibrary "user32.DLL" 'Piii "MapVirtualKeyW") in 
 let MapWindowPoints = (requireSharedLibrary "user32.DLL" 'Pipppi "MapWindowPoints") in 
-let MenuItemFromPoint = (requireSharedLibrary "user32.DLL" 'Pipp? "MenuItemFromPoint") in 
 let MessageBeep = (requireSharedLibrary "user32.DLL" 'Pii "MessageBeep") in 
 let MessageBoxA = (requireSharedLibrary "user32.DLL" 'Pipssi "MessageBoxA") in 
 let MessageBoxExA = (requireSharedLibrary "user32.DLL" 'Pipssih "MessageBoxExA") in 
@@ -411,8 +362,6 @@ let OpenDesktopA = (requireSharedLibrary "user32.DLL" 'Pppiii "OpenDesktopA") in
 let OpenDesktopW = (requireSharedLibrary "user32.DLL" 'Pppiii "OpenDesktopW") in 
 let OpenIcon = (requireSharedLibrary "user32.DLL" 'Pip "OpenIcon") in 
 let OpenInputDesktop = (requireSharedLibrary "user32.DLL" 'Ppiii "OpenInputDesktop") in 
-let OpenWindowStationA = (requireSharedLibrary "user32.DLL" 'P?pii "OpenWindowStationA") in 
-let OpenWindowStationW = (requireSharedLibrary "user32.DLL" 'P?pii "OpenWindowStationW") in 
 let PackDDElParam = (requireSharedLibrary "user32.DLL" 'Ppiii "PackDDElParam") in 
 let PaintDesktop = (requireSharedLibrary "user32.DLL" 'Pip "PaintDesktop") in 
 let PeekMessageA = (requireSharedLibrary "user32.DLL" 'Pippiii "PeekMessageA") in 
@@ -422,8 +371,6 @@ let PostMessageW = (requireSharedLibrary "user32.DLL" 'Pipiip "PostMessageW") in
 let PostQuitMessage = (requireSharedLibrary "user32.DLL" 'Pvi "PostQuitMessage") in 
 let PostThreadMessageA = (requireSharedLibrary "user32.DLL" 'Piiiip "PostThreadMessageA") in 
 let PostThreadMessageW = (requireSharedLibrary "user32.DLL" 'Piiiip "PostThreadMessageW") in 
-let PtInRect = (requireSharedLibrary "user32.DLL" 'Pip? "PtInRect") in 
-let RealChildWindowFromPoint = (requireSharedLibrary "user32.DLL" 'Ppp? "RealChildWindowFromPoint") in 
 let RealGetWindowClassA = (requireSharedLibrary "user32.DLL" 'Pippi "RealGetWindowClassA") in 
 let RealGetWindowClassW = (requireSharedLibrary "user32.DLL" 'Pippi "RealGetWindowClassW") in 
 let RedrawWindow = (requireSharedLibrary "user32.DLL" 'Pipppi "RedrawWindow") in 
@@ -450,8 +397,6 @@ let ScrollWindowEx = (requireSharedLibrary "user32.DLL" 'Pipiippppi "ScrollWindo
 let SendDlgItemMessageA = (requireSharedLibrary "user32.DLL" 'Plpiiip "SendDlgItemMessageA") in 
 let SendDlgItemMessageW = (requireSharedLibrary "user32.DLL" 'Plpiiip "SendDlgItemMessageW") in 
 let SendMessageA = (requireSharedLibrary "user32.DLL" 'Plpiip "SendMessageA") in 
-let SendMessageCallbackA = (requireSharedLibrary "user32.DLL" 'Pipiip?i "SendMessageCallbackA") in 
-let SendMessageCallbackW = (requireSharedLibrary "user32.DLL" 'Pipiip?i "SendMessageCallbackW") in 
 let SendMessageTimeoutA = (requireSharedLibrary "user32.DLL" 'Plpiipiip "SendMessageTimeoutA") in 
 let SendMessageTimeoutW = (requireSharedLibrary "user32.DLL" 'Plpiipiip "SendMessageTimeoutW") in 
 let SendMessageW = (requireSharedLibrary "user32.DLL" 'Plpiip "SendMessageW") in 
@@ -487,7 +432,6 @@ let SetMenuItemInfoW = (requireSharedLibrary "user32.DLL" 'Pipiip "SetMenuItemIn
 let SetMessageExtraInfo = (requireSharedLibrary "user32.DLL" 'Ppp "SetMessageExtraInfo") in 
 let SetMessageQueue = (requireSharedLibrary "user32.DLL" 'Pii "SetMessageQueue") in 
 let SetParent = (requireSharedLibrary "user32.DLL" 'Pppp "SetParent") in 
-let SetProcessWindowStation = (requireSharedLibrary "user32.DLL" 'Pi? "SetProcessWindowStation") in 
 let SetPropA = (requireSharedLibrary "user32.DLL" 'Pipsp "SetPropA") in 
 let SetPropW = (requireSharedLibrary "user32.DLL" 'Pippp "SetPropW") in 
 let SetRect = (requireSharedLibrary "user32.DLL" 'Pipiiii "SetRect") in 
@@ -501,7 +445,6 @@ let SetThreadDesktop = (requireSharedLibrary "user32.DLL" 'Pip "SetThreadDesktop
 let SetTimer = (requireSharedLibrary "user32.DLL" 'Pipiip "SetTimer") in 
 let SetUserObjectInformationA = (requireSharedLibrary "user32.DLL" 'Pipipi "SetUserObjectInformationA") in 
 let SetUserObjectInformationW = (requireSharedLibrary "user32.DLL" 'Pipipi "SetUserObjectInformationW") in 
-let SetUserObjectSecurity = (requireSharedLibrary "user32.DLL" 'Pip?? "SetUserObjectSecurity") in 
 let SetWindowContextHelpId = (requireSharedLibrary "user32.DLL" 'Pipi "SetWindowContextHelpId") in 
 let SetWindowLongA = (requireSharedLibrary "user32.DLL" 'Plpil "SetWindowLongA") in 
 let SetWindowLongW = (requireSharedLibrary "user32.DLL" 'Plpil "SetWindowLongW") in 
@@ -560,13 +503,8 @@ let WaitMessage = (requireSharedLibrary "user32.DLL" 'Piv "WaitMessage") in
 let WinHelpA = (requireSharedLibrary "user32.DLL" 'Pipsii "WinHelpA") in 
 let WinHelpW = (requireSharedLibrary "user32.DLL" 'Pippii "WinHelpW") in 
 let WindowFromDC = (requireSharedLibrary "user32.DLL" 'Ppp "WindowFromDC") in 
-let WindowFromPoint = (requireSharedLibrary "user32.DLL" 'Pp? "WindowFromPoint") in 
 let keybd_event = (requireSharedLibrary "user32.DLL" 'Pviiii "keybd_event") in 
 let mouse_event = (requireSharedLibrary "user32.DLL" 'Pviiiil "mouse_event") in 
-let wsprintfA = (requireSharedLibrary "user32.DLL" 'Pips? "wsprintfA") in 
-let wsprintfW = (requireSharedLibrary "user32.DLL" 'Pipp? "wsprintfW") in 
-let wvsprintfA = (requireSharedLibrary "user32.DLL" 'Pips? "wvsprintfA") in 
-let wvsprintfW = (requireSharedLibrary "user32.DLL" 'Pipp? "wvsprintfW") in 
 dispatchModule $
 [['ActivateKeyboardLayout ActivateKeyboardLayout]
 ['AdjustWindowRect AdjustWindowRect]
@@ -576,7 +514,6 @@ dispatchModule $
 ['AppendMenuW AppendMenuW]
 ['ArrangeIconicWindows ArrangeIconicWindows]
 ['AttachThreadInput AttachThreadInput]
-['BeginDeferWindowPos BeginDeferWindowPos]
 ['BeginPaint BeginPaint]
 ['BringWindowToTop BringWindowToTop]
 ['BroadcastSystemMessage BroadcastSystemMessage]
@@ -589,10 +526,8 @@ dispatchModule $
 ['CallWindowProcW CallWindowProcW]
 ['CascadeWindows CascadeWindows]
 ['ChangeClipboardChain ChangeClipboardChain]
-['ChangeDisplaySettingsA ChangeDisplaySettingsA]
 ['ChangeDisplaySettingsExA ChangeDisplaySettingsExA]
 ['ChangeDisplaySettingsExW ChangeDisplaySettingsExW]
-['ChangeDisplaySettingsW ChangeDisplaySettingsW]
 ['ChangeMenuA ChangeMenuA]
 ['ChangeMenuW ChangeMenuW]
 ['CharLowerA CharLowerA]
@@ -617,14 +552,11 @@ dispatchModule $
 ['CheckMenuItem CheckMenuItem]
 ['CheckMenuRadioItem CheckMenuRadioItem]
 ['CheckRadioButton CheckRadioButton]
-['ChildWindowFromPoint ChildWindowFromPoint]
-['ChildWindowFromPointEx ChildWindowFromPointEx]
 ['ClientToScreen ClientToScreen]
 ['ClipCursor ClipCursor]
 ['CloseClipboard CloseClipboard]
 ['CloseDesktop CloseDesktop]
 ['CloseWindow CloseWindow]
-['CloseWindowStation CloseWindowStation]
 ['CopyAcceleratorTableA CopyAcceleratorTableA]
 ['CopyAcceleratorTableW CopyAcceleratorTableW]
 ['CopyIcon CopyIcon]
@@ -635,8 +567,6 @@ dispatchModule $
 ['CreateAcceleratorTableW CreateAcceleratorTableW]
 ['CreateCaret CreateCaret]
 ['CreateCursor CreateCursor]
-['CreateDesktopA CreateDesktopA]
-['CreateDesktopW CreateDesktopW]
 ['CreateDialogIndirectParamA CreateDialogIndirectParamA]
 ['CreateDialogIndirectParamW CreateDialogIndirectParamW]
 ['CreateDialogParamA CreateDialogParamA]
@@ -651,39 +581,24 @@ dispatchModule $
 ['CreatePopupMenu CreatePopupMenu]
 ['CreateWindowExA CreateWindowExA]
 ['CreateWindowExW CreateWindowExW]
-['CreateWindowStationA CreateWindowStationA]
-['CreateWindowStationW CreateWindowStationW]
 ['DdeAbandonTransaction DdeAbandonTransaction]
-['DdeAccessData DdeAccessData]
-['DdeAddData DdeAddData]
-['DdeClientTransaction DdeClientTransaction]
 ['DdeCmpStringHandles DdeCmpStringHandles]
-['DdeConnect DdeConnect]
-['DdeConnectList DdeConnectList]
-['DdeCreateDataHandle DdeCreateDataHandle]
 ['DdeCreateStringHandleA DdeCreateStringHandleA]
 ['DdeCreateStringHandleW DdeCreateStringHandleW]
 ['DdeDisconnect DdeDisconnect]
 ['DdeDisconnectList DdeDisconnectList]
 ['DdeEnableCallback DdeEnableCallback]
-['DdeFreeDataHandle DdeFreeDataHandle]
 ['DdeFreeStringHandle DdeFreeStringHandle]
-['DdeGetData DdeGetData]
 ['DdeGetLastError DdeGetLastError]
 ['DdeImpersonateClient DdeImpersonateClient]
-['DdeInitializeA DdeInitializeA]
-['DdeInitializeW DdeInitializeW]
 ['DdeKeepStringHandle DdeKeepStringHandle]
-['DdeNameService DdeNameService]
 ['DdePostAdvise DdePostAdvise]
 ['DdeQueryConvInfo DdeQueryConvInfo]
 ['DdeQueryNextServer DdeQueryNextServer]
 ['DdeQueryStringA DdeQueryStringA]
 ['DdeQueryStringW DdeQueryStringW]
 ['DdeReconnect DdeReconnect]
-['DdeSetQualityOfService DdeSetQualityOfService]
 ['DdeSetUserHandle DdeSetUserHandle]
-['DdeUnaccessData DdeUnaccessData]
 ['DdeUninitialize DdeUninitialize]
 ['DefDlgProcA DefDlgProcA]
 ['DefDlgProcW DefDlgProcW]
@@ -693,7 +608,6 @@ dispatchModule $
 ['DefMDIChildProcW DefMDIChildProcW]
 ['DefWindowProcA DefWindowProcA]
 ['DefWindowProcW DefWindowProcW]
-['DeferWindowPos DeferWindowPos]
 ['DeleteMenu DeleteMenu]
 ['DeregisterShellHookWindow DeregisterShellHookWindow]
 ['DestroyAcceleratorTable DestroyAcceleratorTable]
@@ -716,7 +630,6 @@ dispatchModule $
 ['DlgDirSelectComboBoxExW DlgDirSelectComboBoxExW]
 ['DlgDirSelectExA DlgDirSelectExA]
 ['DlgDirSelectExW DlgDirSelectExW]
-['DragDetect DragDetect]
 ['DragObject DragObject]
 ['DrawAnimatedRects DrawAnimatedRects]
 ['DrawCaption DrawCaption]
@@ -726,8 +639,6 @@ dispatchModule $
 ['DrawIcon DrawIcon]
 ['DrawIconEx DrawIconEx]
 ['DrawMenuBar DrawMenuBar]
-['DrawStateA DrawStateA]
-['DrawStateW DrawStateW]
 ['DrawTextA DrawTextA]
 ['DrawTextExA DrawTextExA]
 ['DrawTextExW DrawTextExW]
@@ -736,28 +647,10 @@ dispatchModule $
 ['EnableMenuItem EnableMenuItem]
 ['EnableScrollBar EnableScrollBar]
 ['EnableWindow EnableWindow]
-['EndDeferWindowPos EndDeferWindowPos]
 ['EndDialog EndDialog]
 ['EndMenu EndMenu]
 ['EndPaint EndPaint]
-['EnumChildWindows EnumChildWindows]
 ['EnumClipboardFormats EnumClipboardFormats]
-['EnumDesktopWindows EnumDesktopWindows]
-['EnumDesktopsA EnumDesktopsA]
-['EnumDesktopsW EnumDesktopsW]
-['EnumDisplayDevicesA EnumDisplayDevicesA]
-['EnumDisplayDevicesW EnumDisplayDevicesW]
-['EnumDisplayMonitors EnumDisplayMonitors]
-['EnumDisplaySettingsA EnumDisplaySettingsA]
-['EnumDisplaySettingsW EnumDisplaySettingsW]
-['EnumPropsA EnumPropsA]
-['EnumPropsExA EnumPropsExA]
-['EnumPropsExW EnumPropsExW]
-['EnumPropsW EnumPropsW]
-['EnumThreadWindows EnumThreadWindows]
-['EnumWindowStationsA EnumWindowStationsA]
-['EnumWindowStationsW EnumWindowStationsW]
-['EnumWindows EnumWindows]
 ['EqualRect EqualRect]
 ['ExcludeUpdateRgn ExcludeUpdateRgn]
 ['ExitWindowsEx ExitWindowsEx]
@@ -825,7 +718,6 @@ dispatchModule $
 ['GetLastInputInfo GetLastInputInfo]
 ['GetListBoxInfo GetListBoxInfo]
 ['GetMenu GetMenu]
-['GetMenuBarInfo GetMenuBarInfo]
 ['GetMenuCheckMarkDimensions GetMenuCheckMarkDimensions]
 ['GetMenuContextHelpId GetMenuContextHelpId]
 ['GetMenuDefaultItem GetMenuDefaultItem]
@@ -850,7 +742,6 @@ dispatchModule $
 ['GetOpenClipboardWindow GetOpenClipboardWindow]
 ['GetParent GetParent]
 ['GetPriorityClipboardFormat GetPriorityClipboardFormat]
-['GetProcessWindowStation GetProcessWindowStation]
 ['GetPropA GetPropA]
 ['GetPropW GetPropW]
 ['GetQueueStatus GetQueueStatus]
@@ -872,7 +763,6 @@ dispatchModule $
 ['GetUpdateRgn GetUpdateRgn]
 ['GetUserObjectInformationA GetUserObjectInformationA]
 ['GetUserObjectInformationW GetUserObjectInformationW]
-['GetUserObjectSecurity GetUserObjectSecurity]
 ['GetWindow GetWindow]
 ['GetWindowContextHelpId GetWindowContextHelpId]
 ['GetWindowDC GetWindowDC]
@@ -957,7 +847,6 @@ dispatchModule $
 ['MapVirtualKeyExW MapVirtualKeyExW]
 ['MapVirtualKeyW MapVirtualKeyW]
 ['MapWindowPoints MapWindowPoints]
-['MenuItemFromPoint MenuItemFromPoint]
 ['MessageBeep MessageBeep]
 ['MessageBoxA MessageBoxA]
 ['MessageBoxExA MessageBoxExA]
@@ -981,8 +870,6 @@ dispatchModule $
 ['OpenDesktopW OpenDesktopW]
 ['OpenIcon OpenIcon]
 ['OpenInputDesktop OpenInputDesktop]
-['OpenWindowStationA OpenWindowStationA]
-['OpenWindowStationW OpenWindowStationW]
 ['PackDDElParam PackDDElParam]
 ['PaintDesktop PaintDesktop]
 ['PeekMessageA PeekMessageA]
@@ -992,8 +879,6 @@ dispatchModule $
 ['PostQuitMessage PostQuitMessage]
 ['PostThreadMessageA PostThreadMessageA]
 ['PostThreadMessageW PostThreadMessageW]
-['PtInRect PtInRect]
-['RealChildWindowFromPoint RealChildWindowFromPoint]
 ['RealGetWindowClassA RealGetWindowClassA]
 ['RealGetWindowClassW RealGetWindowClassW]
 ['RedrawWindow RedrawWindow]
@@ -1020,8 +905,6 @@ dispatchModule $
 ['SendDlgItemMessageA SendDlgItemMessageA]
 ['SendDlgItemMessageW SendDlgItemMessageW]
 ['SendMessageA SendMessageA]
-['SendMessageCallbackA SendMessageCallbackA]
-['SendMessageCallbackW SendMessageCallbackW]
 ['SendMessageTimeoutA SendMessageTimeoutA]
 ['SendMessageTimeoutW SendMessageTimeoutW]
 ['SendMessageW SendMessageW]
@@ -1057,7 +940,6 @@ dispatchModule $
 ['SetMessageExtraInfo SetMessageExtraInfo]
 ['SetMessageQueue SetMessageQueue]
 ['SetParent SetParent]
-['SetProcessWindowStation SetProcessWindowStation]
 ['SetPropA SetPropA]
 ['SetPropW SetPropW]
 ['SetRect SetRect]
@@ -1071,7 +953,6 @@ dispatchModule $
 ['SetTimer SetTimer]
 ['SetUserObjectInformationA SetUserObjectInformationA]
 ['SetUserObjectInformationW SetUserObjectInformationW]
-['SetUserObjectSecurity SetUserObjectSecurity]
 ['SetWindowContextHelpId SetWindowContextHelpId]
 ['SetWindowLongA SetWindowLongA]
 ['SetWindowLongW SetWindowLongW]
@@ -1130,10 +1011,5 @@ dispatchModule $
 ['WinHelpA WinHelpA]
 ['WinHelpW WinHelpW]
 ['WindowFromDC WindowFromDC]
-['WindowFromPoint WindowFromPoint]
 ['keybd_event keybd_event]
-['mouse_event mouse_event]
-['wsprintfA wsprintfA]
-['wsprintfW wsprintfW]
-['wvsprintfA wvsprintfA]
-['wvsprintfW wvsprintfW]]
+['mouse_event mouse_event]]
