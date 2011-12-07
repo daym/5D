@@ -361,8 +361,8 @@ let GetLargestConsoleWindowSize = (requireSharedLibrary "kernel32.DLL" 'P?p "Get
 let GetLastError = (requireSharedLibrary "kernel32.DLL" 'Piv "GetLastError") in 
 GetLinguistLangSize unknown
 let GetLocalTime = (requireSharedLibrary "kernel32.DLL" 'Pvp "GetLocalTime") in 
-let GetLocaleInfoA = (requireSharedLibrary "kernel32.DLL" 'Pii?pi "GetLocaleInfoA") in 
-let GetLocaleInfoW = (requireSharedLibrary "kernel32.DLL" 'Pii?pi "GetLocaleInfoW") in 
+let GetLocaleInfoA = (requireSharedLibrary "kernel32.DLL" 'Piiipi "GetLocaleInfoA") in 
+let GetLocaleInfoW = (requireSharedLibrary "kernel32.DLL" 'Piiipi "GetLocaleInfoW") in 
 let GetLogicalDriveStringsA = (requireSharedLibrary "kernel32.DLL" 'Piip "GetLogicalDriveStringsA") in 
 let GetLogicalDriveStringsW = (requireSharedLibrary "kernel32.DLL" 'Piip "GetLogicalDriveStringsW") in 
 let GetLogicalDrives = (requireSharedLibrary "kernel32.DLL" 'Piv "GetLogicalDrives") in 
@@ -792,8 +792,8 @@ let SetLastError = (requireSharedLibrary "kernel32.DLL" 'Pvi "SetLastError") in
 SetLocalPrimaryComputerNameA unknown
 SetLocalPrimaryComputerNameW unknown
 let SetLocalTime = (requireSharedLibrary "kernel32.DLL" 'Pip "SetLocalTime") in 
-let SetLocaleInfoA = (requireSharedLibrary "kernel32.DLL" 'Pii?s "SetLocaleInfoA") in 
-let SetLocaleInfoW = (requireSharedLibrary "kernel32.DLL" 'Pii?p "SetLocaleInfoW") in 
+let SetLocaleInfoA = (requireSharedLibrary "kernel32.DLL" 'Piiis "SetLocaleInfoA") in 
+let SetLocaleInfoW = (requireSharedLibrary "kernel32.DLL" 'Piiip "SetLocaleInfoW") in 
 let SetMailslotInfo = (requireSharedLibrary "kernel32.DLL" 'Pipi "SetMailslotInfo") in 
 SetMessageWaitingIndicator unknown
 let SetNamedPipeHandleState = (requireSharedLibrary "kernel32.DLL" 'Pipppp "SetNamedPipeHandleState") in 

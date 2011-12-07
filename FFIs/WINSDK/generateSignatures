@@ -137,6 +137,8 @@ def getType(t):
 		"CODEPAGE_ENUMPROC": "p",
 		"GEO_ENUMPROC": "p",
 		"GEOCLASS": "i", # FIXME
+		"CALINFO_ENUMPROC": "p",
+		"LCTYPE": "i", # FIXME
 	}.get(t)
 	if m:
 		return(m)
