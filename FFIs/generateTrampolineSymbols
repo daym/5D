@@ -4,9 +4,9 @@ import sys
 
 def checks(combination):
     result = [combination]
-    if combination.startswith("C") and len(combination) == 5:
+    if combination.startswith("C") and len(combination) == 6:
       c = combination
-      while c != "" and c[-1] == "i":
+      while len(c) > 1 and c[-1] == "i":
         c = c[:-1]
         result.append(c)
     return(result)
