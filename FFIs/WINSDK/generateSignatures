@@ -139,6 +139,13 @@ def getType(t):
 		"GEOCLASS": "i", # FIXME
 		"CALINFO_ENUMPROC": "p",
 		"LCTYPE": "i", # FIXME
+		"GET_FILEEX_INFO_LEVELS": "i", # enum
+		"FINDEX_INFO_LEVELS": "i", # enum
+		"FINDEX_SEARCH_OPS": "i", # enum
+		"LPOVERLAPPED": "p",
+		"HRSRC": "p",
+		"PULONG": "p",
+		"PULONG_PTR": "p",
 	}.get(t)
 	if m:
 		return(m)
