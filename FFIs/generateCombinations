@@ -47,6 +47,9 @@ for cc in ccs:
   print("%ssp" % cc)
   print("%svpp" % cc)
   print("%sis" % cc)
+  print("%sipiiiiiiiippii" % cc)
+  print("%sipiiiipiiiii" % cc)
+  print("%sPippiippi" % cc)
   reset(cc)
   while True:
       v = ("%s%s%s%s%s%s" % (cc, galphabet(digits[0]), galphabet(digits[1]), galphabet(digits[2]), galphabet(digits[3]), galphabet(digits[4])))
