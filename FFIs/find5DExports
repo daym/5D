@@ -15,5 +15,6 @@ def getNames(n):
 			result.append(name)
 	return(result)
 
+l = ["['%s %s]" % (n, n) for n in getNames(sys.argv[1])]
 print "dispatchModule $"		
-print "[" + ("\n".join(["['%s %s]" % (n, n) for n in getNames(sys.argv[1])])) + "]"
+print "[" + ("\n".join(l)) + "]"
