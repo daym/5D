@@ -12,6 +12,57 @@ span.pre { font-family: monospace; color: blue; }
 <h1>Programming in 5D</h1>
 <h2>Gentle Introduction</h2>
 <p>For a gentle introduction, see <a href="../tutorial/index.html">5D Tutorial</a>.</p>
+<h2>Source Code Character Set</h2>
+<p>The Source Code Character Set is supposed to be UTF-8.</p>
+<p>The first 128 characters are used for the following:</p>
+<table border="1">
+<tr><th>Code</th><th>Usage</th></tr>
+<tr><td>NUL, SOH, STX, ETX, EOT, ENQ, ACK, BEL, BS</td><td>Have no meaning</td></tr>
+<tr><td>TAB</td><td>Significant Whitespace</td></tr>
+<tr><td>LF</td><td>Newline, used for indentation tracking</td></tr>
+<tr><td>VT</td><td>Has no meaning</td></tr>
+<tr><td>FF</td><td>Has no meaning</td></tr>
+<tr><td>CR</td><td>Ignored (!!!)</td></tr>
+<tr><td>SO, SI, DLE, DC1, DC2, DC3, DC4, NAK, SYN, ETB, CAN, EM, SUB</td><td>Has no meaning</td></tr>
+<tr><td>ESC</td><td>Has no meaning</td></tr>
+<tr><td>FS, GS, RS, US</td><td>Have no meaning</td></tr>
+<tr><td>space</td><td>Significant Whitespace</td></tr>
+<tr><td>!</td><td>Part of identifiers</td></tr>
+<tr><td>"</td><td>Marks literal Str</td></tr>
+<tr><td>#</td><td>Special literal values</td></tr>
+<tr><td>$</td><td>Operator</td></tr>
+<tr><td>%</td><td>Operator</td></tr>
+<tr><td>&amp;</td><td>Operator</td></tr>
+<tr><td>'</td><td>Marks quoted symbol</td></tr>
+<tr><td>(</td><td>Grouping</td></tr>
+<tr><td>)</td><td>Grouping</td></tr>
+<tr><td>*</td><td>Operator</td></tr>
+<tr><td>+</td><td>Operator</td></tr>
+<tr><td>,</td><td>Operator</td></tr>
+<tr><td>-</td><td>Operator</td></tr>
+<tr><td>.</td><td>Operator or part of a floating-point number</td></tr>
+<tr><td>/</td><td>Operator</td></tr>
+<tr><td>0..9</td><td>Numbers</td></tr>
+<tr><td>:</td><td>Operator</td></tr>
+<tr><td>;</td><td>Operator</td></tr>
+<tr><td>&lt;</td><td>Operator</td></tr>
+<tr><td>=</td><td>Operator</td></tr>
+<tr><td>></td><td>Operator</td></tr>
+<tr><td>?</td><td>Part of identifiers</td></tr>
+<tr><td>@</td><td>Keywords</td></tr>
+<tr><td>A..Z</td><td>Part of identifiers</td></tr>
+<tr><td>[</td><td>List macro</td></tr>
+<tr><td>\</td><td>Abstraction</td></tr>
+<tr><td>]</td><td>List macro</td></tr>
+<tr><td>^</td><td>Operator</td></tr>
+<tr><td>_</td><td>Operator</td></tr>
+<tr><td>`</td><td>Operator ?</td></tr>
+<tr><td>a..z</td><td>Part of identifiers</td></tr>
+<tr><td>{</td><td>Literal Sets, Dictionaries</td></tr>
+<tr><td>|</td><td>Operator</td></tr>
+<tr><td>}</td><td>Literal Sets, Dictionaries</td></tr>
+<tr><td>~</td><td>Operator</td></tr>
+<tr><td>DEL</td><td>Has no meaning</td></tr>
 <h2>Module System</h2>
 <p>In order to import modules, use the <span class="pre">import</span> function.</p>
 <h2>import 'name</h2>
