@@ -228,7 +228,7 @@ static char hexdigits[17] = "0123456789abcdef";
 REGISTER_STR(Str, {
 	std::stringstream sst;
 	const char* item;
-	char c;
+	unsigned char c;
 	sst << "\"";
 	for(item = node->text.c_str(); (c = *item); ++item) {
 		if(c == '"')
