@@ -108,10 +108,10 @@ static void print_text(std::ostream& output, int& visible_position, const char* 
 static void print_text_raw(std::ostream& output, int& visible_position, const std::string& textStr, bool spaces) {
 	const char* text = textStr.c_str();
 	if(spaces)
-		output << ' ';
+		output << "\\:";
 	print_text_LATEX(output, text);
 	if(spaces)
-		output << ' ';
+		output << "\\:";
 	for(; *text; ++text) {
 		unsigned c = (unsigned) *text;
 		if(c == 10)
