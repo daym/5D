@@ -229,8 +229,9 @@ REGISTER_STR(Str, {
 	std::stringstream sst;
 	const char* item;
 	unsigned char c;
+	size_t len = node->text.length();
 	sst << "\"";
-	for(item = node->text.c_str(); (c = *item); ++item) {
+	for(item = node->text.c_str(); len > 0; ++item, --len) {
 		if(c == '"')
 			sst << "\\\"";
 		else if(c == '\\')
