@@ -293,7 +293,7 @@ AST::Node* MathParser::parse(OperatorPrecedenceList* operator_precedence_list) {
 	return(result);
 }
 AST::Cons* MathParser::parse_S_list_body(void) {
-	if(input_value == Symbols::Srightparen)
+	if(input_value == Symbols::Srightparen || input_value == Symbols::SlessEOFgreater)
 		return(NULL);
 	else {
 		AST::Node* head;
