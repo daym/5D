@@ -10,6 +10,7 @@
 #include "Evaluators/Builtins"
 
 namespace Formatters {
+namespace Math {
 using namespace Evaluators;
 
 // TODO make this a combination of LATEX and S Expression output.
@@ -83,7 +84,7 @@ static inline void maybe_print_closing_paren(std::ostream& output, int& position
 		++position, output << ')';
 	}
 }
-void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::Node* node, int precedence_limit, bool B_paren_equal_levels) {
+void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::Node* node, int precedence_limit, bool B_paren_equal_levels) {
 	/* the easiest way to think about this is that any and each node has a precedence level. 
 	   The precedence level of the atoms is just very high. 
 	   The reason it is not explicitly programmed that way is that there are a lot of temporary variables that are used in both precedence level detection and recursion and that would be much code duplication to do two. */
@@ -101,9 +102,9 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		AST::Node* body = get_abstraction_body(node);
 		++position, output << '\\';
 		print_text_raw(output, position, str(parameter), false);
-		//print_math_CXX(OPL, output, position, parameter, precedence, false);
+		//print_CXX(OPL, output, position, parameter, precedence, false);
 		++position, output << ' ';
-		print_math_CXX(OPL, output, position, body, precedence, false);
+		print_CXX(OPL, output, position, body, precedence, false);
 		maybe_print_closing_paren(output, position, B_parend);
 	} else if(application_P(node)) { /* application */
 		AST::Node* envelope = get_application_operator(node);
@@ -116,12 +117,12 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		int precedence = operatorSymbol ? OPL->get_operator_precedence_and_associativity(operatorSymbol, operatorAssociativity) : -1;
 		if(precedence != -1 && application_P(envelope)) { // is a (binary) operator and the envelope is not a builtin (i.e. (+))
 			bool B_parend = maybe_print_opening_paren(output, position, precedence, precedence_limit, B_paren_equal_levels);
-			print_math_CXX(OPL, output, position, get_application_operand(envelope), precedence, operatorAssociativity != Symbols::Sleft);
+			print_CXX(OPL, output, position, get_application_operand(envelope), precedence, operatorAssociativity != Symbols::Sleft);
 			print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
-			////print_math_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
-			print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != Symbols::Sright);
+			////print_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
+			print_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != Symbols::Sright);
 			//print_text(output, position, operator_);
-			//print_math_CXX(OPL, output, position, get_application_operand(node), precedence);
+			//print_CXX(OPL, output, position, get_application_operand(node), precedence);
 			maybe_print_closing_paren(output, position, B_parend);
 		} else { // function application is fine and VERY greedy
 			operatorAssociativity = Symbols::Sleft;
@@ -135,17 +136,17 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
                                 print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
 				++position, output << ')';
 			} else
-				print_math_CXX(OPL, output, position, operator_, precedence, operatorAssociativity != Symbols::Sleft);
+				print_CXX(OPL, output, position, operator_, precedence, operatorAssociativity != Symbols::Sleft);
 			++position, output << ' ';
-			print_math_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != Symbols::Sright);
+			print_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != Symbols::Sright);
 			maybe_print_closing_paren(output, position, B_parend); // f.e. we now are at +, but came from *, i.e. 2*(3+5)
 		}
 	} else if(cons_P(node)) {
 		output << "[";
-		print_math_CXX(OPL, output, position, ((AST::Cons*)node)->head, 0, false);
+		print_CXX(OPL, output, position, ((AST::Cons*)node)->head, 0, false);
 		for(AST::Cons* vnode = Evaluators::evaluateToCons(((AST::Cons*)node)->tail); vnode; vnode = Evaluators::evaluateToCons(vnode->tail)) {
 			output << " ";
-			print_math_CXX(OPL, output, position, dynamic_cast<AST::Cons*>(vnode)->head, 0, false);
+			print_CXX(OPL, output, position, dynamic_cast<AST::Cons*>(vnode)->head, 0, false);
 		}
 		output << "]";
 	} else { /* literal etc */
@@ -155,13 +156,14 @@ void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output,
 		print_text(output, position, value.c_str(), pl != -1); // , pl < OPL->apply_level && pl != -1);
 	}
 }
-void print_math(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, AST::Node* node) {
+void print(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, AST::Node* node) {
 	std::stringstream sst;
 	std::string value;
-	print_math_CXX(OPL, sst, position, node, 0, false);
+	print_CXX(OPL, sst, position, node, 0, false);
 	value = sst.str();
 	fprintf(output_file, "%s", value.c_str());
 }
 
-}; /* end namespace formatters */
+}; /* end namespace Math */
+}; /* end namespace Formatters */
 

@@ -784,7 +784,7 @@ GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));
 }
 static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* destination) {
-	Formatters::print_math(REPL_ensure_operator_precedence_list(self), stdout, 0, 0, node);
+	Formatters::Math::print(REPL_ensure_operator_precedence_list(self), stdout, 0, 0, node);
 	//Formatters::print_S_Expression(stdout, 0, 0, node);
 	fprintf(stdout, "\n");
 	fflush(stdout);

@@ -16,8 +16,10 @@ namespace Scanners {
 struct OperatorPrecedenceList;
 };
 namespace Formatters {
-void print_math(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, AST::Node* node);
-void print_math_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::Node* node, int precedence_limit, bool B_brace_equal_levels);
+namespace Math {
+void print(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, AST::Node* node);
+void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::Node* node, int precedence_limit, bool B_brace_equal_levels);
+}; // end namespace Math
 }; // end namespace Formatters
 
 #endif /* ndef __FORMATTERS_MATH_H */
