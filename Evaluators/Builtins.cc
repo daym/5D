@@ -225,13 +225,13 @@ REGISTER_STR(Cons, {
 
 static char hexdigits[17] = "0123456789abcdef";
 
-REGISTER_STR(Str, {
+static std::string strStr(AST::Str* node) {
 	std::stringstream sst;
 	const char* item;
 	unsigned char c;
 	size_t len = node->text.length();
 	sst << "\"";
-	for(item = node->text.c_str(); len > 0; ++item, --len) {
+	for(item = node->text.c_str(); (c = *item), len > 0; ++item, --len) {
 		if(c == '"')
 			sst << "\\\"";
 		else if(c == '\\')
@@ -270,6 +270,9 @@ REGISTER_STR(Str, {
 	}
 	sst << "\"";
 	return(sst.str());
+}
+REGISTER_STR(Str, {
+	return(strStr(node));
 })
 REGISTER_STR(Box, return("box");)
 REGISTER_STR(Application,  {
