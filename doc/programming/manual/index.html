@@ -5,6 +5,25 @@
 <style type="text/css">
 pre { font-family: monospace; color: blue; }
 span.pre { font-family: monospace; color: blue; }
+/* nice normal tables: */
+table[border="1"] th, table[border="1"] td {
+        padding: 5px;
+        border: 1px;
+	border-color: gray;
+        border-style: solid;
+        white-space: nowrap;
+       /* text-align: right*/
+}
+
+table[border="1"] {
+	margin: 4px;
+        border: 1px; border-style: solid;
+        border-spacing: 0px;
+/*      background-color: ack; */
+        empty-cells: show;
+	border-collapse: collapse;
+}
+
 </style>
 
 </head>
@@ -64,6 +83,7 @@ span.pre { font-family: monospace; color: blue; }
 <tr><td>~</td><td>Operator</td></tr>
 <tr><td>DEL</td><td>Has no meaning</td></tr>
 </table>
+<hr/>
 <h2>Module System</h2>
 <p>In order to import modules, use the <span class="pre">import</span> function.</p>
 <h2>import 'name</h2>
