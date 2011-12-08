@@ -72,10 +72,10 @@ $! strict applicator
 make AST::Symbol const everywhere (best to introduce a Symbol_t or something)
 maybe delay and force
 optimize module system and FFI system: if there are 4 or more "if"s in a row and all only check for equality, replace them by a hash table automatically.
+tail recursion elimination.
 
 = Parser =
 
-1+2⋅ => error or partial application
 --x
 "# " as line comment starter (=> rem)
 unary posfix operators like "!"?
