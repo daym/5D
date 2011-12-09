@@ -346,6 +346,18 @@ void Scanner::parse_string(int input) {
 			case 'e':
 				matchtext << (char) 27;
 				break;
+			case 'x':
+				{
+					int digit1;
+					int digit2;
+					input = increment_position(fgetc(input_file));
+					// TODO handle invalid escapes.
+					digit1 = (input >= '0' && input <= '9') ? (input - '0') : (input >= 'a' && input <= 'f') ? (10 + (input - 'a')) : (input >= 'A' && input <= 'F') ? (10 + (input - 'A')) : 0;
+					input = increment_position(fgetc(input_file));
+					digit2 = (input >= '0' && input <= '9') ? (input - '0') : (input >= 'a' && input <= 'f') ? (10 + (input - 'a')) : (input >= 'A' && input <= 'F') ? (10 + (input - 'A')) : 0;
+					matchtext << (char) (digit1 * 16 + digit2);
+				}
+				break;
 			case '\\':
 			default:
 				matchtext << (char) input;
