@@ -77,15 +77,6 @@ static AST::Node* P##_execute(AST::Node* fn, AST::Node* argument) { \
 	return(B(c->fArgument, argument, c->fOperation)); \
 }
 
-/* BEGIN Curried Operations */
-
-struct CurriedOperation : AST::Node {
-	AST::Node* fOperation; /* either CurriedOperation* or CProcedure* */
-	AST::Node* fArgument;
-	CurriedOperation(AST::Node* operation, AST::Node* argument) : fOperation(operation), fArgument(argument) {}
-};
-
-/* END Curried Operations */
 
 /* BEGIN Binary Operations */
 

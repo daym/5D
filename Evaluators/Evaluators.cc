@@ -206,8 +206,11 @@ static AST::Node* ensureApplication(AST::Node* term, AST::Node* fn, AST::Node* a
 	else
 		return(makeApplication(fn, argument));
 }
-AST::Node* replace(AST::Node* needle, AST::Node* replacement, AST::Node* term) {/* intended for builtins only */
+typedef AST::Node* (replace_predicate_t)(void* userData, AST::Node* node);
+AST::Node* mapTree(void* userData, replace_predicate_t* replacer, AST::Node* term) {/* intended for builtins only */
 	// TODO CurriedOperation ? 
+	if(term)
+		term = replacer(userData, term);
 	if(term == NULL) 
 		return(NULL);
 	else if(application_P(term)) {
@@ -215,8 +218,8 @@ AST::Node* replace(AST::Node* needle, AST::Node* replacement, AST::Node* term) {
 		AST::Node* argument = get_application_operator(term);
 		AST::Node* new_fn;
 		AST::Node* new_argument;
-		new_fn = replace(needle, replacement, fn);
-		new_argument = replace(needle, replacement, argument);
+		new_fn = mapTree(userData, replacer, fn);
+		new_argument = mapTree(userData, replacer, argument);
 		if(new_fn == fn && new_argument == argument)
 			return(term);
 		else
@@ -225,14 +228,37 @@ AST::Node* replace(AST::Node* needle, AST::Node* replacement, AST::Node* term) {
 		AST::Node* body;
 		AST::Node* parameter;
 		AST::Node* new_body;
+		AST::Node* new_parameter;
 		new_body = body = get_abstraction_body(term);
 		parameter = get_abstraction_parameter(term);
-		if(new_body == body)
+		new_body = mapTree(userData, replacer, body);
+		new_parameter = mapTree(userData, replacer, parameter);
+		if(new_body == body && new_parameter == parameter)
 			return(term);
 		else
 			return(makeAbstraction(parameter, new_body));
+	} else if(curried_operation_P(term)) {
+		AST::Node* operator_ = Evaluators::get_curried_operation_operation(term);
+		AST::Node* operand = Evaluators::get_curried_operation_argument(term);
+		AST::Node* new_operator_ = mapTree(userData, replacer, operator_);
+		AST::Node* new_operand = mapTree(userData, replacer, operand);
+		if(new_operator_ == operator_ && new_operand == operand)
+			return(term);
+		else
+			return(makeCurriedOperation(new_operator_, new_operand));
 	} else
 		return(term);
+}
+static AST::Node* replaceSingleNode(void* userData, AST::Node* node) {
+	AST::Cons* data = (AST::Cons*) userData;
+	if(node == data->head) {
+		return(Evaluators::evaluateToCons(data->tail)->head);
+	} else
+		return(node);
+}
+AST::Node* replace(AST::Node* needle /* not Symbol */, AST::Node* replacement, AST::Node* haystack) /* intended for builtins only */ {
+	AST::Node* data = AST::makeCons(needle, AST::makeCons(replacement, NULL));
+	return(mapTree(data, replaceSingleNode, haystack));
 }
 AST::Node* reduce1(AST::Node* term) {
 	if(GUI::interrupted_P())
@@ -365,6 +391,13 @@ REGISTER_BUILTIN(Quoter, 1, 0, Symbols::Squote)
 
 AST::Node* quote(AST::Node* value) {
 	return(makeApplication(&Quoter, value));
+}
+
+CurriedOperation* makeCurriedOperation(Node* operation, Node* argument) {
+	CurriedOperation* result = new CurriedOperation;
+	result->fOperation  = operation;
+	result->fArgument = argument;
+	return(result);
 }
 
 }; // end namespace Evaluators.

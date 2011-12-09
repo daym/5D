@@ -501,7 +501,7 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destina
 	std::stringstream buffer;
 	std::string v;
 	if(result)
-		Formatters::print_math_CXX(REPL_ensure_operator_precedence_list(self), buffer, position, result, 0, false);
+		Formatters::Math::print_CXX(REPL_ensure_operator_precedence_list(self), buffer, position, result, 0, false);
 	else
 		buffer << "nil";
 	v = buffer.str();

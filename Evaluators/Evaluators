@@ -32,7 +32,6 @@ static inline AST::Node* reduce(AST::Node* term) {
 	}
 }
 AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body);
-AST::Node* replace(AST::Node* needle /* not Symbol */, AST::Node* replacement, AST::Node* haystack);/* intended for builtins only */
 AST::Node* makeError(const char* reason);
 bool define_P(AST::Node* input);
 AST::Node* programFromSExpression(AST::Node* root);
@@ -43,8 +42,31 @@ AST::Node* strFromList(AST::Cons* node);
 AST::Node* quote(AST::Node* node);
 int increaseGeneration(void);
 
+AST::Node* replace(AST::Node* needle /* not Symbol */, AST::Node* replacement, AST::Node* haystack);/* intended for builtins only */
+typedef AST::Node* (replace_predicate_t)(void* userData, AST::Node* node);
+AST::Node* mapTree(void* userData, replace_predicate_t* replacer, AST::Node* term);
+
 DECLARE_SIMPLE_OPERATION(Reducer)
 DECLARE_SIMPLE_OPERATION(Quoter)
+/* BEGIN Curried Operations */
+
+struct CurriedOperation : AST::Node {
+	AST::Node* fOperation; /* either CurriedOperation* or CProcedure* */
+	AST::Node* fArgument;
+	//CurriedOperation(AST::Node* operation, AST::Node* argument) : fOperation(operation), fArgument(argument) {}
+};
+static inline AST::Node* get_curried_operation_operation(AST::Node* operation) {
+	return(((CurriedOperation*)operation)->fOperation);
+}
+static inline AST::Node* get_curried_operation_argument(AST::Node* operation) {
+	return(((CurriedOperation*)operation)->fArgument);
+}
+CurriedOperation* makeCurriedOperation(AST::Node* operation, AST::Node* argument);
+static inline bool curried_operation_P(AST::Node* root) {
+	return(dynamic_cast<CurriedOperation*>(root) != NULL);
+}
+
+/* END Curried Operations */
 
 static inline AST::Node* uncurried(AST::Node* actualOperation, AST::Node* fallback) {
 	return(AST::makeApplication(&Evaluators::Reducer, AST::makeApplication(actualOperation, fallback)));

@@ -62,7 +62,7 @@ AST::Node* call_builtin(AST::Node* fn, AST::Node* argument) {
 		return(AST::makeApplication(replace(proc2, proc2->fRepr, fn), argument));
 	}
 	if(argumentCount != proc2->fArgumentCount && argumentCount != -proc2->fArgumentCount) {
-		return new CurriedOperation(fn, argument);
+		return Evaluators::makeCurriedOperation(fn, argument);
 	}
 	if(proc2->fSignature == NULL) { // probably wants the arguments unevaluated, so stop messing with them.
 		AST::Node* (*proc3)(AST::Node*, AST::Node*) = (AST::Node* (*)(AST::Node*, AST::Node*)) proc2->native;
@@ -98,5 +98,6 @@ AST::Node* repr(AST::Node* node) {
 	} else
 		return(node);
 }
+
 
 }; /* end namespace Evaluators */
