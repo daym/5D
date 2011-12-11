@@ -126,4 +126,26 @@ REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write"))
 REGISTER_BUILTIN(Flusher, 2, 0, AST::symbolFromStr("flush"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline"))
 
+// FIXME WIN32 support.
+char* get_absolute_path(const char* filename) {
+#ifdef WIN32
+	return(strdup(filename));
+#else
+	if(filename[0] == '/')
+		return(strdup(filename));
+	else {
+		char buffer[2049];
+		std::stringstream sst;
+		if(getcwd(buffer, 2048)) {
+			sst << buffer;
+			if(buffer[0] && buffer[strlen(buffer) - 1] != '/')
+				sst << '/';
+		}
+		sst << filename;
+		std::string v = sst.str();
+		return(strdup(v.c_str()));
+	}
+#endif
+}
+
 }; /* end namespace */
