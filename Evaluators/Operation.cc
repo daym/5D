@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string>
+#include <string.h>
 #include <sstream>
 #include "AST/AST"
 #include "AST/Keyword"
@@ -19,7 +20,8 @@ struct eqstr {
 	}
 };
 
-typedef __gnu_cxx::hash_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr> HashTable;
+typedef AST::Node* (jumper_t)(void* p, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end);
+typedef __gnu_cxx::hash_map<const char*, jumper_t*, __gnu_cxx::hash<const char*>, eqstr> HashTable;
 };
 #include "FFIs/Trampolines"
 

@@ -19,6 +19,16 @@ longNames = {
 
 def getLongName(c):
     return longNames[c]
+    
+def checks(combination):
+    result = [combination]
+    if combination.startswith("C") and len(combination) == 6:
+      c = combination
+      while len(c) > 1 and c[-1] == "i":
+        c = c[:-1]
+        result.append(c)
+    return(result)
+
 print("""
 #include <assert.h>
 #include <string.h>
@@ -71,13 +81,18 @@ static inline AST::Node* makeStrOrNil(const char* s) {
 #define ini Numbers::internNative((Numbers::NativeInt) 
 #define inl Numbers::internNative((Numbers::NativeInt) 
 #define inh Numbers::internNative((Numbers::NativeInt) 
-#define inL Numbers::internNative((Numbers::NativeInt) 
+#define inL Numbers::internNative((long long) 
 #define inf Numbers::internNative((Numbers::NativeFloat) 
 #define inD Numbers::internNative((long double) 
 #define ind Numbers::internNative((double) 
 #define ins AST::makeStr(
 #define inS makeStrOrNil(
 /* FIXME do inL properly */
+
+typedef AST::Node* (jumper_t)(void* p, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end);
+
+static HashTable fMarshallers;
+
 """)
 combinations = []
 for combination in sys.stdin.readlines():
@@ -136,33 +151,34 @@ print("""
 #undef inf
 #undef unf
 
+static void initMarshallers(void) {
+""")
+for combination in combinations:
+    for check in checks(combination):
+      #print("	fMarshallers[S_%(check)s->name] = jump%(check)s;" % { "check": check })
+      print("	fMarshallers[\"%(check)s\"] = jump%(combination)s;" % { "check": check, "combination": combination })
+print("""
+} /* end initMarshallers */
+""")
+print("""
 static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::Node* world) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, world);
 	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
 	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator endIter = arguments.end();
+	if(fMarshallers.empty())
+        	initMarshallers();
 	assert(iter != endIter);
         assert(iter->first == NULL);
 	AST::Symbol* signature = proc->fSignature;
 	--endIter; /* hide the world */
-	return """)
-
-def checks(combination):
-    result = [combination]
-    if combination.startswith("C") and len(combination) == 6:
-      c = combination
-      while len(c) > 1 and c[-1] == "i":
-        c = c[:-1]
-        result.append(c)
-    return(result)
+	HashTable::const_iterator iterMarshaller = fMarshallers.find(signature->name);
+	if(iterMarshaller == fMarshallers.end())
+	    return Evaluators::makeIOMonad(NULL, Evaluators::reduce(world));
+        else
+            return (*iterMarshaller->second)(proc->native, iter, endIter);
+}
        
-
-for combination in combinations:
-    print("  (%(checks)s) ? jump%(combination)s(proc->native, iter, endIter) : " % {"checks": " || ".join(map(lambda s: "signature == S_%s" % s, checks(combination))), "combination": combination})
     
-print("""
-    Evaluators::makeIOMonad(NULL, Evaluators::reduce(world));
-} /* jumpTrampoline */
-
 };
 
 #undef unproc
