@@ -201,10 +201,8 @@ extras = set([
 	"iipppp",
 	"iippppp",
 	"ilppip",
-	"ipbbbb",
 	"ipddpippppp",
 	"ipdiiiLiL",
-	"iphbihbi",
 	"ipiiii",
 	"ipiiiii",
 	"ipiiippp",
@@ -285,7 +283,6 @@ extras = set([
 	"plpppppp",
 	"ppdddd",
 	"ppfffi",
-	"ppibbb",
 	"ppiiii",
 	"ppiiiii",
 	"ppiiiiid",
@@ -323,7 +320,6 @@ extras = set([
 	"pppliippp",
 	"ppplipip",
 	"ppplipp",
-	"ppppbbbi",
 	"ppppdddi",
 	"ppppfffi",
 	"ppppii",
@@ -440,6 +436,10 @@ extras = set([
 	"vppppppi",
 	"vppppppp",
 	"vpppppppp",
+	"ipiiii",
+	"iphiihii",
+	"ppiiii",
+	"ppppiiii",
 ])
 for cc in ccs:
   reset(cc)
