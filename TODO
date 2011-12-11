@@ -89,6 +89,7 @@ It would be possible to make numbers like 3E3 mean 3000 and not 3000.0 - do we w
 Reintroduce FALLBACK, i.e. tail [] shouldn't reduce.
 If there are open parens, ignore indentation (note that this is the LEXER and so it technically can't distinguish between quoted or macro braces and actual braces).
 dispatchModule reflection
+sort exports
 
 = Debugging Macros =
 

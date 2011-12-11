@@ -264,9 +264,10 @@ static AST::Node* REPL_import_module(AST::Node* options, AST::Node* filename) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, filename);
 	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
 	assert(self);
-	AST::Node* body = REPL_require_module(self, Evaluators::get_native_string(filename));
+	char* actualFilename = Evaluators::get_absolute_path(Evaluators::get_native_string(filename)); /* TODO use an absolute path */
+	AST::Node* body = REPL_require_module(self, actualFilename);
 	//return(Evaluators::reduce(new Evaluators::CurriedOperation(new Evaluators::CurriedOperation(&RModule, body), filename)));
-	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&RModule, body)), filename)));
+	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&RModule, body)), AST::makeStr(actualFilename))));
 }
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument);
 DEFINE_REPL_OPERATION(RImporter, {
@@ -412,6 +413,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("readline"), &Evaluators::LineReader);
 	REPL_add_builtin_method(self, AST::symbolFromStr("messageBox"), &FFIs::MessageBoxDisplayer);
 	REPL_add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
+	REPL_add_builtin_method(self, AST::symbolFromStr("absolutePath"), &Evaluators::AbsolutePathGetter);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }

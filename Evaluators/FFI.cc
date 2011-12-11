@@ -112,6 +112,16 @@ static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
 	return(Evaluators::makeIOMonad(result, world));
 }
 
+static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	char* text = get_native_string(iter->second);
+	++iter;
+	AST::Node* world = iter->second;
+	text = get_absolute_path(text);
+	return(Evaluators::makeIOMonad(AST::makeStr(text), world));
+}
+
 DEFINE_FULL_OPERATION(Writer, {
 	return(wrapWrite(fn, argument));
 })
@@ -121,10 +131,14 @@ DEFINE_FULL_OPERATION(LineReader, {
 DEFINE_FULL_OPERATION(Flusher, {
 	return(wrapFlush(fn, argument));
 })
+DEFINE_FULL_OPERATION(AbsolutePathGetter, {
+	return(wrapGetAbsolutePath(fn, argument));
+})
 
 REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write"))
 REGISTER_BUILTIN(Flusher, 2, 0, AST::symbolFromStr("flush"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline"))
+REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath"))
 
 // FIXME WIN32 support.
 char* get_absolute_path(const char* filename) {

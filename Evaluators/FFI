@@ -29,6 +29,7 @@ char* get_absolute_path(const char* filename);
 DECLARE_FULL_OPERATION(Writer)
 DECLARE_FULL_OPERATION(Flusher)
 DECLARE_FULL_OPERATION(LineReader)
+DECLARE_FULL_OPERATION(AbsolutePathGetter)
 
 }; // end namespace
 
