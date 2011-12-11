@@ -66,6 +66,7 @@ Auto-load libc (or at least determine the file name?)
 
 = Performance =
 
+use hash table for dispatching FFI
 performance optimisation: use the lowest bit to signify pointers (1=it is one). This will have problems with native pointers maybe, so also override the native allocator.
 degrade from Integer to Int when possible.
 $! strict applicator

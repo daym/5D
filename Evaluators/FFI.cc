@@ -38,6 +38,14 @@ float get_native_float(AST::Node* root) {
 	return(result); \
 	/* FIXME support bigger than NativeInt */ \
 }
+long double get_native_long_double(AST::Node* root) {
+	// FIXME more precision.
+	return(get_native_float(root));
+}
+double get_native_double(AST::Node* root) {
+	// FIXME more precision.
+	return(get_native_float(root));
+}
 
 IMPLEMENT_NATIVE_GETTER(int)
 IMPLEMENT_NATIVE_GETTER(long)

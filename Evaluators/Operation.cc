@@ -10,6 +10,17 @@
 #include "AST/Symbols"
 #include "Evaluators/Operation"
 #include "Evaluators/Evaluators"
+#include <ext/hash_map>
+namespace Trampolines {
+//typedef std::unordered_map<const char* , AST:Node*, std::hash<AST::Node*> > HashTable;
+struct eqstr {
+	bool operator()(const char* s1, const char* s2) const {
+		return strcmp(s1, s2) == 0;
+	}
+};
+
+typedef __gnu_cxx::hash_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr> HashTable;
+};
 #include "FFIs/Trampolines"
 
 namespace Evaluators {

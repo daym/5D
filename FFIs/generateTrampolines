@@ -8,6 +8,8 @@ longNames = {
     "l": "long",
     "h": "short",
     "L": "long long",
+    "d": "double",
+    "D": "long double",
     "s": "char*", # for the copying version
     "v": "void",
     "P": "void*", # or null
@@ -62,6 +64,8 @@ static inline AST::Node* makeStrOrNil(const char* s) {
 #define uns iter == end ? NULL : strdup(Evaluators::get_native_string(extr(iter++)))
 #define unS iter == end ? NULL : strdupOrNull(Evaluators::get_native_string(extr(iter++)))
 #define unf iter == end ? 0 : Evaluators::get_native_float(extr(iter++))
+#define unD iter == end ? 0.0L : Evaluators::get_native_long_double(extr(iter++))
+#define und iter == end ? 0.0 : Evaluators::get_native_double(extr(iter++))
 #define inv
 #define inp AST::makeBox(
 #define ini Numbers::internNative((Numbers::NativeInt) 
@@ -69,6 +73,8 @@ static inline AST::Node* makeStrOrNil(const char* s) {
 #define inh Numbers::internNative((Numbers::NativeInt) 
 #define inL Numbers::internNative((Numbers::NativeInt) 
 #define inf Numbers::internNative((Numbers::NativeFloat) 
+#define inD Numbers::internNative((long double) 
+#define ind Numbers::internNative((double) 
 #define ins AST::makeStr(
 #define inS makeStrOrNil(
 /* FIXME do inL properly */
