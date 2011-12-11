@@ -434,7 +434,13 @@ class std::hash<AST::Node*> {
 */
 // <http://forums.devshed.com/c-programming-42/tip-about-stl-hash-map-and-string-55093.html>
 //typedef std::unordered_map<const char* , AST:Node*, std::hash<AST::Node*> > HashTable;
-typedef __gnu_cxx::hash_map<const char*, AST::Node*> HashTable;
+struct eqstr {
+	bool operator()(const char* s1, const char* s2) const {
+		return strcmp(s1, s2) == 0;
+	}
+};
+
+typedef __gnu_cxx::hash_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr> HashTable;
 static AST::Node* listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
 	if(iter == endIter)
 		return(NULL);
@@ -442,6 +448,12 @@ static AST::Node* listFromHashTable(HashTable::const_iterator iter, HashTable::c
 		++iter;
 		return(AST::makeCons(AST::symbolFromStr(iter->first), listFromHashTable(iter, endIter)));
 	}
+}
+static AST::Node* mapGetFst(AST::Cons* c) {
+	if(c == NULL)
+		return(NULL);
+	else
+		return(AST::makeCons(reduce(evaluateToCons(reduce(c->head))->head), mapGetFst(evaluateToCons(c->tail))));
 }
 static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
@@ -469,12 +481,18 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 				(*m)[name] = value;
 		}
 		AST::Cons* table = (AST::Cons*) mBox->native;
-		(*m)["moduleKeys"] = table;
+		(*m)["exports"] = mapGetFst(table);
 		mBox->native = m;
 	}
 	m = (HashTable*) mBox->native;
 	AST::Symbol* s = dynamic_cast<AST::Symbol*>(key);
 	if(s) {
+		/*HashTable::const_iterator b = m->begin();
+		HashTable::const_iterator e = m->end();
+		for(; b != e; ++b) {
+			printf("%s<\n", b->first);
+		}
+		printf("searching \"%s\"\n", s->name);*/
 		HashTable::const_iterator iter = m->find(s->name);
 		if(iter != m->end())
 			return(iter->second);
