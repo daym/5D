@@ -95,5 +95,8 @@ AST::Symbol* Simport = AST::symbolFromStr("import");
 AST::Symbol* Sdescribe = AST::symbolFromStr("describe");
 AST::Symbol* SrequireModule = AST::symbolFromStr("requireModule");
 AST::Symbol* Sunderline = AST::symbolFromStr("_");
+AST::Symbol* SmoduleKeys = AST::symbolFromStr("moduleKeys");
+AST::Symbol* Sexports = AST::symbolFromStr("exports");
+AST::Symbol* SdispatchModule = AST::symbolFromStr("dispatchModule");
 
 };

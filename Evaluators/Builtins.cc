@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <sstream>
 #include <assert.h>
+#include <string.h>
 #include <limits.h>
+#include <functional>
+#include <hash_map>
 #include "AST/AST"
 #include "AST/Symbol"
 #include "AST/Keyword"
@@ -424,6 +427,67 @@ static AST::Node* addrsEqualA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	b = reduce(b);
 	return(internNative((void*) a == (void*) b));
 }
+/*
+template<>
+class std::hash<AST::Node*> {
+};
+*/
+// <http://forums.devshed.com/c-programming-42/tip-about-stl-hash-map-and-string-55093.html>
+//typedef std::unordered_map<const char* , AST:Node*, std::hash<AST::Node*> > HashTable;
+typedef __gnu_cxx::hash_map<const char*, AST::Node*> HashTable;
+static AST::Node* listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
+	if(iter == endIter)
+		return(NULL);
+	else {
+		++iter;
+		return(AST::makeCons(AST::symbolFromStr(iter->first), listFromHashTable(iter, endIter)));
+	}
+}
+static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	AST::Box* mBox = dynamic_cast<AST::Box*>(iter->second);
+	++iter;
+	AST::Node* key = iter->second;
+	HashTable* m;
+	if(cons_P((AST::Node*) mBox->native)) {
+		m = new HashTable;
+		for(AST::Cons* table = (AST::Cons*) mBox->native; table; table = Evaluators::evaluateToCons(table->tail)) {
+			AST::Cons* entry = evaluateToCons(reduce(table->head));
+			//std::string v = str(entry);
+			//printf("%s\n", v.c_str());
+			AST::Node* x_key = reduce(entry->head);
+			AST::Cons* snd = evaluateToCons(entry->tail);
+			if(!snd)
+				throw Evaluators::EvaluationException("invalid symbol table entry");
+			AST::Node* value = reduce(snd->head);
+			AST::Symbol* s = dynamic_cast<AST::Symbol*>(x_key);
+			if(!s)
+				throw Evaluators::EvaluationException("invalid symbol table entry");
+			const char* name = s->name;
+			if(m->find(name) == m->end())
+				(*m)[name] = value;
+		}
+		AST::Cons* table = (AST::Cons*) mBox->native;
+		(*m)["moduleKeys"] = table;
+		mBox->native = m;
+	}
+	m = (HashTable*) mBox->native;
+	AST::Symbol* s = dynamic_cast<AST::Symbol*>(key);
+	if(s) {
+		HashTable::const_iterator iter = m->find(s->name);
+		if(iter != m->end())
+			return(iter->second);
+		else {
+			std::stringstream sst;
+			sst << "unknown symbol '" << s->name;
+			std::string v = sst.str();
+			throw Evaluators::EvaluationException(strdup(v.c_str()));
+		}
+	} else
+		throw Evaluators::EvaluationException("not a symbol");
+	return(NULL);
+}
 DEFINE_BINARY_OPERATION(Conser, makeACons)
 DEFINE_SIMPLE_OPERATION(ConsP, cons_P(reduce(argument)))
 DEFINE_SIMPLE_OPERATION(NilP, nil_P(reduce(argument)))
@@ -450,6 +514,8 @@ IMPLEMENT_NUMERIC_BUILTIN(leqA, <=)
 DEFINE_BINARY_OPERATION(LEComparer, leqA)
 DEFINE_BINARY_OPERATION(AddrLEComparer, compareAddrsLEA)
 DEFINE_BINARY_OPERATION(SymbolEqualityChecker, addrsEqualA)
+DEFINE_FULL_OPERATION(ModuleDispatcher, return(dispatchModule(fn, argument));)
+DEFINE_SIMPLE_OPERATION(ModuleBoxMaker, AST::makeBox(reduce(argument)))
 
 REGISTER_BUILTIN(Conser, 2, 0, AST::symbolFromStr(":"))
 REGISTER_BUILTIN(ConsP, 1, 0, AST::symbolFromStr("cons?"))
@@ -473,6 +539,8 @@ REGISTER_BUILTIN(KeywordStr, 1, 0, AST::symbolFromStr("keywordStr"))
 REGISTER_BUILTIN(ListFromStrGetter, 1, 0, AST::symbolFromStr("listFromStr"))
 REGISTER_BUILTIN(StrFromListGetter, 1, 0, AST::symbolFromStr("strFromList"))
 REGISTER_BUILTIN(WorldRunner, 1, 0, AST::symbolFromStr("runWorld"))
+REGISTER_BUILTIN(ModuleDispatcher, 2, 1, AST::symbolFromStr("dispatchModule"))
+REGISTER_BUILTIN(ModuleBoxMaker, 1, 0, AST::symbolFromStr("makeModuleBox"));
 
 std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > result;
@@ -513,5 +581,6 @@ AST::Node* CXXgetKeywordArgumentValue(const std::list<std::pair<AST::Keyword*, A
 			return(iter->second);
 	return(NULL);
 }
+
 
 }; /* end namespace Evaluators */

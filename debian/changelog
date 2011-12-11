@@ -1,3 +1,9 @@
+5d (0.0.12) unstable; urgency=low
+
+  * add faster default module dispatcher.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Thu, 11 Dec 2011 01:06:00 +0100
+
 5d (0.0.11) unstable; urgency=low
 
   * allow NUL bytes in Str.
