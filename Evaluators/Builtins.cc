@@ -5,7 +5,7 @@
 #include <string.h>
 #include <limits.h>
 #include <functional>
-#include <hash_map>
+#include <ext/hash_map>
 #include "AST/AST"
 #include "AST/Symbol"
 #include "AST/Keyword"
