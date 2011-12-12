@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <string.h>
 #include <limits.h>
+#include <math.h>
 #include <functional>
 #include <ext/hash_map>
 #include "AST/AST"
@@ -152,12 +153,6 @@ static Real* toHeap(const Real& v) {
 static AST::Node* toHeap(bool v) {
 	return(internNative(v));
 }
-static AST::Node* addrEqualsP(AST::Node* a, AST::Node* b) {
-	return(internNative(a == b));
-}
-static AST::Node* addrLEP(AST::Node* a, AST::Node* b) {
-	return(internNative(a <= b));
-}
 using namespace AST;
 
 static AST::Node* divmodInt(const Numbers::Int& a, const Numbers::Int& b) {
@@ -173,46 +168,17 @@ static AST::Node* divmodInteger(const Numbers::Integer& a, const Numbers::Intege
 		throw EvaluationException("division by zero");
 	Numbers::Integer r(a);
 	Numbers::Integer q;
+	/* TODO just use bit shifts for positive powers of two, if that's faster. */
 	r.divideWithRemainder(b, q);
 	return(AST::makeCons(toHeap(q), AST::makeCons(toHeap(r), NULL)));
 }
 static AST::Node* divmodFloat(const Numbers::Float& a, const Numbers::Float& b) {
 	if(b.value == 0.0)
 		throw EvaluationException("division by zero");
-	// FIXME
-	//return(divmodInt((NativeInt) a.value, (NativeInt) b.value));
-	return(makeOperation(Symbols::Sdivmod, toHeap(a), toHeap(b)));
-}
-static AST::Node* divmod(AST::Node* a, AST::Node* b) {
-	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a); \
-	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b); \
-	if(aInt && bInt) { \
-		return toHeap(divmodInt(*aInt, *bInt)); \
-	} else { \
-		Numbers::Integer* aInteger = dynamic_cast<Numbers::Integer*>(a);
-		Numbers::Integer* bInteger = dynamic_cast<Numbers::Integer*>(b);
-		if(aInteger && bInteger) {
-			return toHeap(divmodInteger((*aInteger), (*bInteger)));
-		} else {
-			if(aInteger && bInt)
-				return toHeap(divmodInteger((*aInteger), Integer(bInt->value)));
-			else if(aInt && bInteger)
-				return toHeap(divmodInteger(Integer(aInt->value), (*bInteger)));
-			Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
-			Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
-			if(aFloat && bFloat)
-				return toHeap(divmodFloat(*aFloat, *bFloat));
-			else if(aFloat && bInt) \
-				return toHeap(divmodFloat(*aFloat, promoteToFloat(*bInt)));
-			else if(aInt && bFloat) \
-				return toHeap(divmodFloat(promoteToFloat(*aInt), *bFloat));
-			else if(aFloat && bInteger) \
-				return toHeap(divmodFloat(*aFloat, promoteToFloat(*bInteger)));
-			else if(aInteger && bFloat) \
-				return toHeap(divmodFloat(promoteToFloat(*aInteger), *bFloat));
-		}
-	}
-	return(makeOperation(Symbols::Sdivmod, a, b));
+	NativeFloat q = floorf(a.value / b.value);
+	NativeFloat r = a.value - q * b.value; // FIXME semantics for negative numbers.
+	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
+	//return(makeOperation(Symbols::Sdivmod, toHeap(a), toHeap(b)));
 }
 
 REGISTER_STR(Cons, {
@@ -528,6 +494,7 @@ DEFINE_BINARY_OPERATION(Multiplicator, multiplyA)
 IMPLEMENT_NUMERIC_BUILTIN(divideA, /)
 DEFINE_BINARY_OPERATION(Divider, divideA)
 DEFINE_BINARY_OPERATION(QModulator, divmodA)
+/* TODO "non-numeric" comparison (i.e. strings) */
 IMPLEMENT_NUMERIC_BUILTIN(leqA, <=)
 DEFINE_BINARY_OPERATION(LEComparer, leqA)
 DEFINE_BINARY_OPERATION(AddrLEComparer, compareAddrsLEA)
