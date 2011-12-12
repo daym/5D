@@ -416,6 +416,21 @@ runWorld readFile
 <h3><del>monadWorld \m</del></h3>
 <p>Given a monad, results in the World State of the monad.</p>
 <hr/>
+<h3>until \predicate \m</h3>
+<p>Given a monad, results in a monad which will repeat its action until result fulfills <span class="pre">predicate</span>.</p>
+<hr/>
+<!--
+<h3>andLazy \m1predicate \m2predicate</h3>
+<p>Given two predicate monads, results in a monad which will short-circuit-and the predicates.</p>
+<hr/>
+<h3>orLazy \m1predicate \m2predicate</h3>
+<p>Given two predicate monads, results in a monad which will short-circuit-or the predicates.</p>
+<hr/>
+<h3>iterateLimit \count \monadifier \value</h3>
+<p>Given a count, monadifier and value, results in a monad of a list of the values.</p>
+-->
+<hr/>
+
 </a>
 
 <a name="builtins"><h2>Builtin Types Except Lists</h2>

@@ -62,6 +62,10 @@ monadLift
 ;
 monadValue
 runWorld
+until
+andLazy
+orLazy
+iterateLimit
 
 = List Functionals =
 
