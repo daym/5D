@@ -213,7 +213,6 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			int currentPrecedence = get_operator_precedence(value);
 			while(!fOperators.empty() && prefix_operator_P(fOperators.top()) && currentPrecedence < get_operator_precedence(fOperators.top()))
 				CONSUME_OPERATION
-			;
 			fOperators.push(handle_unary_operator(value));
 		} else if(value == Symbols::Sleftparen || value == Symbols::Sautoleftparen || any_operator_P(value)) { /* operator */ // FIXME
 			AST::Symbol* currentAssociativity = Symbols::Sright; // FIXME
