@@ -82,11 +82,9 @@ AST::Node* ShuntingYardParser::parse_value(void) {
 	fOperands.push_back(AST::makeOperation(op1, a, b)); \
 	fOperators.pop_back(); }
 AST::Node* ShuntingYardParser::parse(OperatorPrecedenceList* OPL) {
-	// TODO macros (especially 'let and quote) (handle as prefix operators)
 	// TODO indentation parens
 	// TODO curried operators (probably easiest to generate a symbol and put it in place instead of the second operand?)
 	// TODO prefix-style operators on their own, i.e. (+)
-	// TODO function application
 	std::stack<AST::Symbol*> fOperators;
 	std::stack<AST::Node*> fOperands;
 	// "(" is an operator. ")" is an operand, more or less.
@@ -103,7 +101,7 @@ AST::Node* ShuntingYardParser::parse(OperatorPrecedenceList* OPL) {
 		} else if(prefix_operator_P(value)) {
 			while(!fOperators.empty() && prefix_operator_P(fOperators.back()))
 				CONSUME_OPERATION
-			// FIXME parse the macro and replace the entire thing.
+			// FIXME parse the macro and replace the entire thing by some hint on what to do.
 			fOperators.push_back(value);
 		} else if(value == Symbols::Sleftparen || OPL->any_operator_P(value)) { /* operator */
 			AST::Symbol* currentAssociativity = Symbols::Sleft; // FIXME
