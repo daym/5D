@@ -209,12 +209,18 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 	// "(" is an operator. ")" is an operand, more or less.
 	AST::Node* previousValue = Symbols::Sleftparen;
 	AST::Node* value;
+	AST::Node* originalValue;
+	bool bNeedOriginalPush = false;
 	this->OPL = OPL;
 	for(; value = scanner->input_value, value != terminator && value != Symbols::SlessEOFgreater; previousValue = value) {
+		//printf("read %s\n", str(value).c_str());
 		scanner->consume();
+		bNeedOriginalPush = false;
 		if((!any_operator_P(previousValue) || previousValue == Symbols::Srightparen || previousValue == Symbols::Sautorightparen || previousValue == Symbols::Sspace || previousValue == Symbols::Sbackslash) && !any_operator_P(value)) {
 			// fake previousValue Sspace value operation. Note that previousValue has already been handled in the previous iteration.
-			fOperands.push(expand_simple_macro(value));
+			//fOperands.push(expand_simple_macro(value));
+			originalValue = value;
+			bNeedOriginalPush = true;
 			value = Symbols::Sspace;
 		} else if(any_operator_P(previousValue) && previousValue != Symbols::Sleftparen && previousValue != Symbols::Srightparen) {
 			// on the other hand, if both are, we have an unary operator - or at least something that looks like an unary operator.
@@ -250,6 +256,8 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		} else { /* operand */
 			fOperands.push(expand_simple_macro(value));
 		}
+		if(bNeedOriginalPush)
+			fOperands.push(expand_simple_macro(originalValue));
 	}
 	if(value != terminator)
 		scanner->raise_error(str(terminator), str(value));
