@@ -160,7 +160,6 @@ AST::Node* ShuntingYardParser::expand_macro(AST::Node* op1, AST::Node* suffix) {
 		scanner->raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
 	AST::Node* a = fOperands.top(); \
 	fOperands.pop(); \
-	printf("operation %s\n", str(AST::makeOperation(op1, a, b)).c_str()); \
 	fOperands.push(bUnary ? expand_macro(op1, a) : AST::makeOperation(op1, a, b)); \
 	fOperators.pop(); }
 bool ShuntingYardParser::any_operator_P(AST::Node* node) {
@@ -197,7 +196,6 @@ static bool second_paren_P(std::stack<AST::Node*>& stack) {
 }
 #define SCOPERANDS \
 	if(fOperands.empty() && second_paren_P(fOperators)) { \
-		printf("shortcut\n"); \
 		fOperands.push(fOperators.top()); \
 		fOperators.pop(); \
 	} else \
@@ -217,7 +215,6 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 	AST::Node* value;
 	this->OPL = OPL;
 	for(; value = scanner->input_value, value != terminator && value != Symbols::SlessEOFgreater; previousValue = value) {
-		printf("peek %s\n", str(value).c_str());
 		if(previousValue != Symbols::Sspace && 
 		(!OPL->any_operator_P(previousValue) && 
 		 previousValue != Symbols::Sleftparen && 
@@ -233,7 +230,6 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			//if(any_operator_P(previousValue) && previousValue != Symbols::Sleftparen && previousValue != Symbols::Srightparen) {
 			//// on the other hand, if both are, we have an unary operator - or at least something that looks like an unary operator.
 			//// we could do special handling here (i.e. rename "-" to "unary-" or whatever)
-			printf("consume %s\n", str(value).c_str());
 			scanner->consume();
 		}
 		if(value == Symbols::Srightparen || value == Symbols::Sautorightparen) {
