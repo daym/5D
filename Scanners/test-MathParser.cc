@@ -43,6 +43,7 @@ void test_expression(const char* source, const char* expected_tree) {
 }
 
 int main() {
+	test_expression("f g h", "((f g) h)");
 	test_expression("2+3⋅5", "((+ 2) ((* 3) 5))");
 	test_expression("2⋅3+5", "((+ ((* 2) 3)) 5)");
 	test_expression("2⋅x+5", "((+ ((* 2) x)) 5)");
