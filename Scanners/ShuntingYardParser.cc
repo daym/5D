@@ -28,37 +28,87 @@ using namespace Evaluators;
 
 ShuntingYardParser::ShuntingYardParser(void) {
 }
+AST::Node* MathParser::parse_abstraction(void) {
+	AST::Symbol* parameter;
+	if((parameter = dynamic_cast<AST::Symbol*>(input_value)) == NULL) {
+		raise_error("<symbol>", str(input_value));
+		return(NULL);
+	} else {
+		consume();
+		if(EOFP() || input_value == Symbols::Srightparen || input_value == Symbols::Srightbracket || input_value == Symbols::Sautorightparen)
+			raise_error("<body>", str(input_value));
+		enter_abstraction(parameter);
+		try {
+			AST::Node* expression = parse_expression();
+			leave_abstraction(parameter);
+			if(expression)
+				return(makeAbstraction(parameter, expression));
+			else // ???
+				return(makeAbstraction(parameter, NULL));
+		} catch (...) {
+			leave_abstraction(parameter);
+			throw;
+		}
+	}
+}
+AST::Node* ShuntingYardParser::parse_value(void) {
+	if(input_value == Symbols::Sbackslash) { // function abstraction
+		consume();
+		return(parse_abstraction());
+	} else
+		return(consume());
+}
 AST::Node* ShuntingYardParser::parse(OperatorPrecedenceList* OPL) {
 	// TODO macros (especially 'let)
+	// TODO indentation parens
+	// TODO curried operators (probably easiest to generate a symbol and put it in place instead of the second operand?)
+	// TODO prefix-style operators on their own, i.e. (+)
+	// TODO function application
 	std::stack<AST::Symbol*> fOperators;
 	std::stack<AST::Node*> fOperands;
 	// "(" is an operator. ")" is an operand, more or less.
-	if(input_value == AST::intern(")")) {
-		while(!fOperators.empty() && fOperators.back() != AST::intern(")")) {
-			// FIXME for right associativity, leave operators with equal precedence on the stack.
-			// TODO for unary operators (if there are any), only do this for other unary operators.
-			AST::Symbol* op1 = fOperators.back();
-			op1 fOperands.pop_back() fOperands.pop_back()
-			fOperators.pop_back();
+	while(AST::Node* value = parse_value(), value != Symbols::SlessEOFgreater) {
+		if(value == Symbols::Srightparen) {
+			while(!fOperators.empty() && fOperators.back() != Symbols::Sleftparen) {
+				AST::Symbol* op1 = fOperators.back();
+				if(fOperands.empty())
+					throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")"));
+				AST::Node* b = fOperands.back();
+				fOperands.pop_back();
+				if(fOperands.empty())
+					throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")"));
+				AST::Node* a = fOperands.back();
+				fOperands.pop_back();
+				fOperands.push_back(AST::makeOperation(op1, a, b));
+				fOperators.pop_back();
+			}
+			// discard fOperators.push_back(value);
+		} else if(value == Symbols::Sleftparen || OPL->any_operator_P(value)) { /* operator */
+			AST::Symbol* currentAssociativity = Symbols::Sleft; // FIXME
+			int currentPrecedence = value == Symbols::Sleftparen ? (-1) : OPL->get_operator_precedence_and_associativity(dynamic_cast<AST::Symbol*>(value), currentAssociativity);
+			while(!fOperators.empty() && OPL->get_operator_precedence(fOperators.back()) >= currentPrecedence) {
+				if(currentAssociativity == Symbols::Sright && OPL->get_operator_precedence(fOperators.back()) == currentPrecedence)
+					break;
+				// FIXME non-associative operators.
+				// TODO for unary operators (if there are any), only do this for other unary operators.
+				// TODO for prefix or postfix operators, check the previous value, if it was an operand, then binary and postfix.
+				//      otherwise (if there was an operator or none) then prefix.
+				AST::Symbol* op1 = fOperators.back();
+				if(fOperands.empty())
+					throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")"));
+				AST::Node* b = fOperands.back();
+				fOperands.pop_back();
+				if(fOperands.empty())
+					throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")"));
+				AST::Node* a = fOperands.back();
+				fOperands.pop_back();
+				fOperands.push_back(AST::makeOperation(op1, a, b));
+				fOperators.pop_back();
+			}
+			fOperators.push_back(value);
+		} else { /* operand */
+			fOperands.push_back(value);
 		}
-		// discard fOperators.push_back(consume());
-	} else if(input_value == AST::intern("(") || OPL->any_operator_P(input_value)) { /* operator */
-		AST::Symbol* currentAssociativity = AST::intern("left"); // FIXME
-		int currentPrecedence = input_value == AST::intern("(") ? (-1) : OPL->get_operator_precedence_and_associativity(dynamic_cast<AST::Symbol*>(input_value), currentAssociativity);
-		while(!fOperators.empty() && OPL->get_operator_precedence(fOperators.back()) >= currentPrecedence) {
-			if(currentAssociativity == AST::intern("right") && OPL->get_operator_precedence(fOperators.back()) == currentPrecedence)
-				break;
-			// FIXME for right associativity, leave operators with equal precedence on the stack.
-			// TODO for unary operators (if there are any), only do this for other unary operators.
-			// TODO for prefix or postfix operators, check the previous input_value, if it was an operand, then binary and postfix.
-			//      otherwise (if there was an operator or none) then prefix.
-			AST::Symbol* op1 = fOperators.back();
-			op1 fOperands.pop_back() fOperands.pop_back()
-			fOperators.pop_back();
-		}
-		fOperators.push_back(consume());
-	} else { /* operand */
-		fOperands.push_back(consume());
 	}
 	assert(fOperands.size() == 1);
 	return(fOperands.back());
