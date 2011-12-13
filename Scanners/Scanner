@@ -95,6 +95,11 @@ public:
 	bool EOFP(void) const;
 	void ensure_end(void);
 	AST::Node* consume(AST::Node* expected_value = NULL);
+	bool setHonorIndentation(bool value) {
+		bool result = B_honor_indentation;
+		B_honor_indentation = value;
+		return(result);
+	}
 private:
 	std::list<AST::Node*> injected_input_values;
 	bool deinject();

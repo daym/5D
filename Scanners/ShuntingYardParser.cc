@@ -39,6 +39,7 @@ B. simple macros ([] is the only one so far)
 All these levels of indirection are in order to conserve stack space. Otherwise a sane person would prefer to use the old-style MathParser - but it doesn't scale.
 
 */
+// keep in sync with OperatorPrecedenceList P entries.
 bool prefix_operator_P(AST::Node* operator_) {
 	return(operator_ == Symbols::Squote || operator_ == Symbols::Sbackslash || (macro_operator_P(operator_) && operator_ != Symbols::Sleftbracket));
 }
@@ -202,6 +203,9 @@ static bool second_paren_P(std::stack<AST::Node*>& stack) {
 	} else \
 
 AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST::Symbol* terminator) {
+	bool oldIndentationHonoring = false;
+	try {
+		oldIndentationHonoring = scanner->setHonorIndentation(true);
 	// TODO indentation parens
 	// TODO curried operators (probably easiest to generate a symbol and put it in place instead of the second operand?)
 	// TODO prefix-style operators on their own, i.e. (+)
@@ -213,8 +217,15 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 	AST::Node* value;
 	this->OPL = OPL;
 	for(; value = scanner->input_value, value != terminator && value != Symbols::SlessEOFgreater; previousValue = value) {
-		printf("read %s\n", str(value).c_str());
-		if(previousValue != Symbols::Sspace && ((!any_operator_P(previousValue) || previousValue == Symbols::Srightparen || previousValue == Symbols::Sautorightparen || previousValue == Symbols::Sspace /*|| previousValue == Symbols::Sbackslash*/) && (!any_operator_P(value) || value == Symbols::Sbackslash))) {
+		printf("peek %s\n", str(value).c_str());
+		if(previousValue != Symbols::Sspace && 
+		(!OPL->any_operator_P(previousValue) && 
+		 previousValue != Symbols::Sleftparen && 
+		 previousValue != Symbols::Sautoleftparen && 
+		 (((!OPL->any_operator_P(value) || prefix_operator_P(value)) &&
+		   value != Symbols::Srightparen && 
+		   value != Symbols::Sautorightparen) || value == Symbols::Sbackslash))) {
+			// not "x)" !
 			// fake previousValue Sspace value operation. Note that previousValue has already been handled in the previous iteration.
 			//fOperands.push(expand_simple_macro(value));
 			value = Symbols::Sspace;
@@ -222,6 +233,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			//if(any_operator_P(previousValue) && previousValue != Symbols::Sleftparen && previousValue != Symbols::Srightparen) {
 			//// on the other hand, if both are, we have an unary operator - or at least something that looks like an unary operator.
 			//// we could do special handling here (i.e. rename "-" to "unary-" or whatever)
+			printf("consume %s\n", str(value).c_str());
 			scanner->consume();
 		}
 		if(value == Symbols::Srightparen || value == Symbols::Sautorightparen) {
@@ -237,10 +249,12 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			SCOPERANDS while(!fOperators.empty() && prefix_operator_P(fOperators.top()) && currentPrecedence < get_operator_precedence(fOperators.top()))
 				CONSUME_OPERATION
 			fOperators.push(handle_unary_operator(value));
-		} else if(value == Symbols::Sleftparen || value == Symbols::Sautoleftparen || any_operator_P(value)) { /* operator */ // FIXME
+		} else if(value == Symbols::Sleftparen || value == Symbols::Sautoleftparen) {
+			fOperators.push(value);
+		} else if(any_operator_P(value)) { /* operator */ // FIXME
 			AST::Symbol* currentAssociativity = Symbols::Sright; // FIXME
 			// note that prefix associativity is right associativity.
-			int currentPrecedence = value == Symbols::Sleftparen ? (-1) : value == Symbols::Sautoleftparen ? (-1) : get_operator_precedence_and_associativity(value, currentAssociativity);
+			int currentPrecedence = get_operator_precedence_and_associativity(value, currentAssociativity);
 			SCOPERANDS while(!fOperators.empty() && currentPrecedence <= get_operator_precedence(fOperators.top())) {
 				if(currentAssociativity != Symbols::Sleft && currentPrecedence == get_operator_precedence(fOperators.top()))
 					break;
@@ -260,7 +274,12 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		while(!fOperators.empty())
 			CONSUME_OPERATION
 	assert(fOperands.size() == 1);
+	scanner->setHonorIndentation(oldIndentationHonoring);
 	return(fOperands.top());
+	} catch(...) {
+		scanner->setHonorIndentation(oldIndentationHonoring);
+		throw;
+	}
 }
 AST::Node* ShuntingYardParser::parse(OperatorPrecedenceList* OPL, AST::Symbol* terminator) {
 	return(parse_expression(OPL, terminator));
