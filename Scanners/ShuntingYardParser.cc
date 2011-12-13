@@ -5,7 +5,7 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-// TODO define def defrec
+// TODO define def defrec auto(
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -53,7 +53,7 @@ AST::Node* ShuntingYardParser::parse_abstraction_parameter(void) {
 		return(NULL);
 	} else {
 		scanner->consume(); /* consume parameter */
-		if(scanner->input_value == Symbols::SlessEOFgreater || scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::Srightbracket /* || scanner->input_value == Symbols::Sautorightparen*/)
+		if(scanner->input_value == Symbols::SlessEOFgreater || scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::Srightbracket || scanner->input_value == Symbols::Sautorightparen)
 			scanner->raise_error("<body>", str(scanner->input_value));
 		// TODO enter_abstraction(parameter);
 		// leave_abstraction(parameter);
@@ -71,6 +71,11 @@ AST::Node* ShuntingYardParser::parse_value(void) {
 	} else if(scanner->input_value == Symbols::Sleftparen) {
 		scanner->consume();
 		AST::Node* result = parse_expression(OPL, Symbols::Srightparen);
+		scanner->consume();
+		return(result);
+	} else if(scanner->input_value == Symbols::Sautoleftparen) {
+		scanner->consume();
+		AST::Node* result = parse_expression(OPL, Symbols::Sautorightparen);
 		scanner->consume();
 		return(result);
 	} else
@@ -188,7 +193,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 	this->OPL = OPL;
 	for(; value = scanner->input_value, value != terminator && value != Symbols::SlessEOFgreater; previousValue = value) {
 		scanner->consume();
-		if((!any_operator_P(previousValue) || previousValue == Symbols::Srightparen || previousValue == Symbols::Sspace || previousValue == Symbols::Sbackslash) && !any_operator_P(value)) {
+		if((!any_operator_P(previousValue) || previousValue == Symbols::Srightparen || previousValue == Symbols::Sautorightparen || previousValue == Symbols::Sspace || previousValue == Symbols::Sbackslash) && !any_operator_P(value)) {
 			// fake previousValue Sspace value operation. Note that previousValue has already been handled in the previous iteration.
 			fOperands.push(value);
 			value = Symbols::Sspace;
@@ -196,9 +201,13 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			// on the other hand, if both are, we have an unary operator - or at least something that looks like an unary operator.
 			// we could do special handling here (i.e. rename "-" to "unary-" or whatever)
 		}
-		if(value == Symbols::Srightparen) {
-			while(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen)
+		if(value == Symbols::Srightparen || value == Symbols::Sautorightparen) {
+			while(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen && fOperators.top() != Symbols::Sautoleftparen)
 				CONSUME_OPERATION
+			if(value == Symbols::Srightparen && fOperators.top() != Symbols::Sleftparen)
+				scanner->raise_error(str(Symbols::Sleftparen), str(fOperators.top()));
+			else if(value == Symbols::Sautorightparen && fOperators.top() != Symbols::Sautoleftparen)
+				scanner->raise_error(str(Symbols::Sautoleftparen), str(fOperators.top()));
 			fOperators.pop(); // "("
 		} else if(prefix_operator_P(value)) { // assumed to all be right-associative.
 			int currentPrecedence = get_operator_precedence(value);
@@ -206,10 +215,10 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 				CONSUME_OPERATION
 			;
 			fOperators.push(handle_unary_operator(value));
-		} else if(value == Symbols::Sleftparen || any_operator_P(value)) { /* operator */ // FIXME
+		} else if(value == Symbols::Sleftparen || value == Symbols::Sautoleftparen || any_operator_P(value)) { /* operator */ // FIXME
 			AST::Symbol* currentAssociativity = Symbols::Sright; // FIXME
 			// note that prefix associativity is right associativity.
-			int currentPrecedence = value == Symbols::Sleftparen ? (-1) : get_operator_precedence_and_associativity(value, currentAssociativity);
+			int currentPrecedence = value == Symbols::Sleftparen ? (-1) : Symbols::Sautoleftparen ? (-1) : get_operator_precedence_and_associativity(value, currentAssociativity);
 			while(!fOperators.empty() && currentPrecedence <= get_operator_precedence(fOperators.top())) {
 				if(currentAssociativity == Symbols::Sright && currentPrecedence == get_operator_precedence(fOperators.top()))
 					break;
