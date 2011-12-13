@@ -55,6 +55,7 @@ int main() {
 	test_expression("\\x x", "(\\x x)");
 	test_expression("(\\x x) 1", "((\\x x) 1)");
 	test_expression("(\\x x) (\\y y) 2", "(((\\x x) (\\y y)) 2)");
+	test_expression("'a 'a", "(' a) (' a)");
 	test_expression("a⨯b", "((⨯ a) b)");
 	test_expression("a⃗⨯b⃗", "((⨯ a⃗) b⃗)");
 	test_expression("cos cos x", "((cos cos) x)"); // well, it doesn't know that cos is a function.
