@@ -72,11 +72,11 @@ AST::Node* ShuntingYardParser::parse_value(void) {
 #define CONSUME_OPERATION { \
 	AST::Symbol* op1 = fOperators.back(); \
 	if(fOperands.empty()) \
-		throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")")); \
+		raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
 	AST::Node* b = fOperands.back(); \
 	fOperands.pop_back(); \
 	if(fOperands.empty()) \
-		throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")")); \
+		raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
 	AST::Node* a = fOperands.back(); \
 	fOperands.pop_back(); \
 	fOperands.push_back(AST::makeOperation(op1, a, b)); \
