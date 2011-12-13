@@ -25,6 +25,8 @@ public:
 	AST::Node* parse(OperatorPrecedenceList* operator_precedence_list);
 };
 
+bool macro_operator_P(AST::Node* operator_);
+
 }; /* end namespace */
 
 #endif /* ndef __SCANNERS_SHUNTING_YARD_PARSER_H */

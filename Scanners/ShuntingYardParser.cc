@@ -26,6 +26,17 @@ namespace Scanners {
 using namespace AST;
 using namespace Evaluators;
 
+bool macro_operator_P(AST::Node* operator_) {
+	return(operator_ == Symbols::Sdefine || 
+	       operator_ == Symbols::Sdef || 
+	       operator_ == Symbols::Sdefrec || 
+	       operator_ == Symbols::Squote || 
+	       operator_ == Symbols::Sleftbracket || 
+	       operator_ == Symbols::Slet);
+}
+bool prefix_operator_P(AST::Node* operator_) {
+	return(macro_operator_P(operator_));
+}
 ShuntingYardParser::ShuntingYardParser(void) {
 }
 AST::Node* MathParser::parse_abstraction(void) {
@@ -58,8 +69,20 @@ AST::Node* ShuntingYardParser::parse_value(void) {
 	} else
 		return(consume());
 }
+#define CONSUME_OPERATION { \
+	AST::Symbol* op1 = fOperators.back(); \
+	if(fOperands.empty()) \
+		throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")")); \
+	AST::Node* b = fOperands.back(); \
+	fOperands.pop_back(); \
+	if(fOperands.empty()) \
+		throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")")); \
+	AST::Node* a = fOperands.back(); \
+	fOperands.pop_back(); \
+	fOperands.push_back(AST::makeOperation(op1, a, b)); \
+	fOperators.pop_back(); }
 AST::Node* ShuntingYardParser::parse(OperatorPrecedenceList* OPL) {
-	// TODO macros (especially 'let)
+	// TODO macros (especially 'let and quote) (handle as prefix operators)
 	// TODO indentation parens
 	// TODO curried operators (probably easiest to generate a symbol and put it in place instead of the second operand?)
 	// TODO prefix-style operators on their own, i.e. (+)
@@ -67,22 +90,21 @@ AST::Node* ShuntingYardParser::parse(OperatorPrecedenceList* OPL) {
 	std::stack<AST::Symbol*> fOperators;
 	std::stack<AST::Node*> fOperands;
 	// "(" is an operator. ")" is an operand, more or less.
-	while(AST::Node* value = parse_value(), value != Symbols::SlessEOFgreater) {
+	AST::Node* previousValue = NULL;
+	for(; AST::Node* value = parse_value(), value != Symbols::SlessEOFgreater; previousValue = value) {
+		if(!OPL->any_operator_P(previousValue) && !OPL->any_operator_P(value)) {
+			// fake previousValue Sspace value operation. Note that previousValue has already been handled in the previous iteration.
+			fOperands.push_back(value);
+			value = Symbols::Sspace;
+		}
 		if(value == Symbols::Srightparen) {
-			while(!fOperators.empty() && fOperators.back() != Symbols::Sleftparen) {
-				AST::Symbol* op1 = fOperators.back();
-				if(fOperands.empty())
-					throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")"));
-				AST::Node* b = fOperands.back();
-				fOperands.pop_back();
-				if(fOperands.empty())
-					throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")"));
-				AST::Node* a = fOperands.back();
-				fOperands.pop_back();
-				fOperands.push_back(AST::makeOperation(op1, a, b));
-				fOperators.pop_back();
-			}
-			// discard fOperators.push_back(value);
+			while(!fOperators.empty() && fOperators.back() != Symbols::Sleftparen)
+				CONSUME_OPERATION
+		} else if(prefix_operator_P(value)) {
+			while(!fOperators.empty() && prefix_operator_P(fOperators.back()))
+				CONSUME_OPERATION
+			// FIXME parse the macro and replace the entire thing.
+			fOperators.push_back(value);
 		} else if(value == Symbols::Sleftparen || OPL->any_operator_P(value)) { /* operator */
 			AST::Symbol* currentAssociativity = Symbols::Sleft; // FIXME
 			int currentPrecedence = value == Symbols::Sleftparen ? (-1) : OPL->get_operator_precedence_and_associativity(dynamic_cast<AST::Symbol*>(value), currentAssociativity);
@@ -93,17 +115,7 @@ AST::Node* ShuntingYardParser::parse(OperatorPrecedenceList* OPL) {
 				// TODO for unary operators (if there are any), only do this for other unary operators.
 				// TODO for prefix or postfix operators, check the previous value, if it was an operand, then binary and postfix.
 				//      otherwise (if there was an operator or none) then prefix.
-				AST::Symbol* op1 = fOperators.back();
-				if(fOperands.empty())
-					throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")"));
-				AST::Node* b = fOperands.back();
-				fOperands.pop_back();
-				if(fOperands.empty())
-					throw Scanners::ParseException(std::string("not enough operands for operator (") + str(op1) + std::string(")"));
-				AST::Node* a = fOperands.back();
-				fOperands.pop_back();
-				fOperands.push_back(AST::makeOperation(op1, a, b));
-				fOperators.pop_back();
+				CONSUME_OPERATION
 			}
 			fOperators.push_back(value);
 		} else { /* operand */
