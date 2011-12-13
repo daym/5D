@@ -31,18 +31,28 @@ private:
 	OperatorPrecedenceList* OPL;
 	AST::Cons* bound_symbols;
 	AST::Node* parse_abstraction_parameter(void);
-	inline AST::Node* parse_value(void) {
-		return(scanner->consume());
-	}
 	int get_operator_precedence_and_associativity(AST::Node* node, AST::Symbol*& outAssociativity);
 	int get_operator_precedence(AST::Node* node);
 	AST::Node* expand_macro(AST::Node* op1, AST::Node* suffix);
 	bool macro_standin_P(AST::Node* op1);
+	AST::Node* expand_simple_macro(AST::Node* value);
+protected:
+	AST::Node* parse_list_macro(void);
+	AST::Node* parse_value(void); /* what the macros think constitutes an atom */
+	AST::Node* parse_let_macro(void);
 public:
 	ShuntingYardParser(void);
 	AST::Node* parse_expression(OperatorPrecedenceList* OPL, AST::Symbol* terminator);
-	AST::Node* parse(OperatorPrecedenceList* operator_precedence_list);
+	AST::Node* parse(OperatorPrecedenceList* operator_precedence_list, AST::Symbol* terminator);
 	bool any_operator_P(AST::Node* node);
+public: 
+	inline bool EOFP(void) const {
+		return(scanner->EOFP());
+	}
+	void push(FILE* input_file, int line_number);
+	void pop(void);
+	int get_position(void) const;
+
 protected:
 	AST::Node* handle_unary_operator(AST::Node* operator_);
 	void enter_abstraction(AST::Symbol* name);

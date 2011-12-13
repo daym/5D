@@ -110,6 +110,7 @@ private:
 	void parse_operator(int input);
 	void parse_symbol(int input, int special_prefix = 0, int special_prefix_2 = 0);
 };
+bool symbol_char_P(int input);
 
 }; /* end namespace Scanners */
 #endif /* ndef __SCANNER_H */

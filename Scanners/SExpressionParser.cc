@@ -90,5 +90,21 @@ AST::Node* SExpressionParser::parse(AST::Symbol* terminator) {
 		scanner->raise_error(str(terminator), str(scanner->input_value));
 	return(result);
 }
+void SExpressionParser::push(FILE* input_file, int line_number) {
+	// TODO maybe just replace the entire scanner (making sure to copy input_value over).
+	scanner->push(input_file, line_number);
+	scanner->consume();
+}
+void SExpressionParser::pop(void) {
+	// TODO maybe just replace the entire scanner (making sure to copy input_value over).
+	scanner->pop();
+}
+void SExpressionParser::parse_closing_brace(void) {
+	// TODO auto)
+	scanner->consume(Symbols::Srightparen);
+}
+int SExpressionParser::get_position(void) const {
+	return(scanner->get_position());
+}
 
 }; /* end namespace Scanners */

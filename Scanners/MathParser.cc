@@ -1,3 +1,4 @@
+#ifdef OLD_PARSER
 /*
 5D programming language
 Copyright (C) 2011  Danny Milosavljevic
@@ -21,6 +22,7 @@ You should have received a copy of the GNU General Public License along with thi
 /* for fmemopen used in parse_simple... */
 #include "stdafx.h"
 #endif
+// If you plan to revive this, handle (and ignore) operator associativity Sprefix
 namespace Scanners {
 using namespace AST;
 using namespace Evaluators;
@@ -167,11 +169,6 @@ AST::Node* MathParser::parse_macro(AST::Node* operand_1) {
 }
 AST::Node* MathParser::parse_application(void) {
 	AST::Node* hd = parse_value();
-#ifndef SIMPLE_APPLICATION
-	while(!EOFP() && input_value != Symbols::Srightparen && input_value != Symbols::Srightbracket && input_value && !operator_precedence_list->any_operator_P(input_value)) {
-		hd = AST::makeApplication(hd, parse_argument());
-	}
-#endif
 	return(hd);
 }
 AST::Node* MathParser::parse_abstraction(void) {
@@ -352,7 +349,6 @@ AST::Node* MathParser::parse_simple(const char* text, OperatorPrecedenceList* op
 	try {
 		input_file = fmemopen((void*) text, strlen(text), "r");
 		parser.push(input_file, 0);
-		parser.consume();
 		result = parser.parse(operator_precedence_list);
 		fclose(input_file);
 		return(result);
@@ -385,5 +381,10 @@ std::set<AST::Symbol*> MathParser::get_bound_symbols(const char* prefix) {
 	}
 	return(syms);
 }
+void MathParser::push(FILE* input_file, int line_number) {
+	Scanner::push(input_file, line_number);
+	consume();
+}
 
 };
+#endif /* def OLD_PARSER */

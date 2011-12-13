@@ -13,9 +13,13 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/AST"
 #include "AST/Symbol"
 #include "Scanners/OperatorPrecedenceList"
+#include "Scanners/ShuntingYardParser"
 
 namespace Scanners {
 
+#ifndef OLD_PARSER
+typedef ShuntingYardParser MathParser;
+#else
 class MathParser : public Scanner {
 protected:
 	bool B_process_macros;
@@ -44,6 +48,7 @@ public:
 	AST::Node* parse_S_Expression(void);
 	static AST::Node* parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list);
 	MathParser(void);
+	void push(FILE* input_file, int line_number);
 protected:
 	void enter_abstraction(AST::Symbol* name);
 	void leave_abstraction(AST::Symbol* name);
@@ -51,10 +56,8 @@ public:
 	std::set<AST::Symbol*> get_bound_symbols(const char* prefix);
 };
 
-extern const int apply_precedence_level;
-extern const int lambda_precedence_level;
 bool macro_operator_P(AST::Node* operator_);
-bool symbol_char_P(int input);
+#endif
 
 }; /* end namespace Scanners */
 

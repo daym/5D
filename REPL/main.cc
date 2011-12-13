@@ -7,12 +7,14 @@
 #include <sys/errno.h>
 #include <map>
 #include <string>
+#include "Scanners/SExpressionParser"
 #include "Scanners/MathParser"
 #include "FFIs/FFIs"
 #include "Formatters/SExpression"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "REPL/REPL"
+#include "AST/Symbols"
 
 namespace GUI {
 bool interrupted_P(void) {
@@ -105,7 +107,7 @@ struct REPL* REPL_new(void) {
 
 }; /* end namespace */
 int main() {
-	Scanners::MathParser parser;
+	Scanners::SExpressionParser parser;
 	int status = 0;
 	bool B_first = true;
 	FILE* input_file;
@@ -113,7 +115,6 @@ int main() {
 	struct REPL* REPL = REPL_new();
 	input_file = stdin;
 	parser.push(input_file, 0);
-	parser.consume();
 	while(!parser.EOFP()) {
 		try {
 			if(B_first)
@@ -131,7 +132,8 @@ int main() {
 			std::string errStr = str(err);
 			fprintf(stderr, "%s\n", errStr.c_str());
 			status = 1;
-			parser.consume();
+			break;
+			//parser.consume();
 		} catch(Evaluators::EvaluationException exception) {
 			AST::Node* err = Evaluators::makeError(exception.what());
 			std::string errStr = str(err);

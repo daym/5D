@@ -14,6 +14,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/AST"
 #include "AST/Symbol"
 #include "Scanners/MathParser"
+#include "Scanners/SExpressionParser"
 #include "Formatters/SExpression"
 #include "Evaluators/FFI"
 #include "Evaluators/Evaluators"
@@ -85,7 +86,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 	{
 		FILE* input_file;
 		AST::Node* content;
-		Scanners::MathParser parser;
+		Scanners::SExpressionParser parser;
 		input_file = fopen(name, "r");
 		if(!input_file) {
 			fprintf(stderr, "could not open \"%s\": %s\n", name, strerror(errno)); // FIXME nicer logging
@@ -93,7 +94,6 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 		}
 		try {
 			parser.push(input_file, 0);
-			parser.consume();
 			content = Evaluators::programFromSExpression(parser.parse_S_Expression());
 		} catch(Scanners::ParseException exception) {
 			fprintf(stderr, "error: failed to load file: \"%s\"\n", name);

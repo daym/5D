@@ -147,10 +147,8 @@ AST::Node* REPL_parse(struct REPL* self, const char* command, T destination/*for
 	if(input_file) {
 		try {
 			parser.push(input_file, 0);
-			parser.consume();
 			AST::Node* result = NULL;
-			result = parser.parse(REPL_ensure_operator_precedence_list(self));
-			parser.ensure_end();
+			result = parser.parse(REPL_ensure_operator_precedence_list(self), Symbols::SlessEOFgreater);
 			fclose(input_file);
 			return(result);
 		} catch(...) {
@@ -193,13 +191,11 @@ static AST::Node* REPL_force_import_module(struct REPL* self, const char* filena
 			return(FALLBACK);
 		try {
 			parser.push(input_file, 0);
-			parser.consume();
 			AST::Node* result = NULL;
-			result = parser.parse(REPL_ensure_operator_precedence_list(self));
+			result = parser.parse(REPL_ensure_operator_precedence_list(self), Symbols::SlessEOFgreater);
 			result = Evaluators::close(Symbols::SdispatchModule, AST::makeAbstraction(Symbols::Sexports, AST::makeApplication(&Evaluators::ModuleDispatcher, AST::makeApplication(&Evaluators::ModuleBoxMaker, Symbols::Sexports))), result);
 			result = REPL_prepare(self, result);
 	                result = Evaluators::reduce(result);
-			parser.ensure_end();
 			fclose(input_file);
 			return(result);
 		} catch(...) {

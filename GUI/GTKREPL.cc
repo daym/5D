@@ -20,6 +20,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include <fcntl.h>
 #include "GUI/GTKREPL"
 #include "Scanners/MathParser"
+#include "Scanners/SExpressionParser"
+#include "Scanners/ShuntingYardParser"
 #include "Config/Config"
 #include "Formatters/LATEX"
 #include "Formatters/SExpression"
@@ -450,10 +452,9 @@ void REPL_load_tips(struct REPL* self) {
 	FILE* input_file;
 	input_file = fopen("doc/tips", "r"); /* FIXME full path */
 	if(input_file) {
-		Scanners::MathParser parser;
+		Scanners::SExpressionParser parser;
 		AST::Node* contents;
 		parser.push(input_file, 0);
-		parser.consume();
 		contents = parser.parse_S_Expression();
 		fclose(input_file);
 		AST::Cons* contentsCons = dynamic_cast<AST::Cons*>(contents);
@@ -845,7 +846,7 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* o_text) {
 			gtk_text_buffer_insert(self->fOutputBuffer, &text_end, text, -1);
 		} else {
 			FILE* input_file;
-			Scanners::MathParser parser;
+			Scanners::SExpressionParser parser;
 			AST::Node* content;
 			next_text = image_match + 3;
 			*image_match = 0;
@@ -854,7 +855,6 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* o_text) {
 			try {
 				input_file = fmemopen((void*) next_text, strlen(next_text), "r");
 				parser.push(input_file, 0);
-				parser.consume();
 				content = Evaluators::programFromSExpression(parser.parse_S_Expression());
 				fclose(input_file);
 				gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);

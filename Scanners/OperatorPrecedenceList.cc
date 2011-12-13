@@ -47,10 +47,6 @@ void OperatorPrecedenceList::cons(int precedence_level, struct AST::Symbol* oper
 	}
 	++prefix_usages[(unsigned char) operator_->name[0]];
 	levels[precedence_level] = new OperatorPrecedenceItem(levels[precedence_level], operator_, associativity);
-#ifndef SIMPLE_APPLICATION
-	if(operator_ == symbolFromStr("+"))
-		apply_level = next_precedence_level(precedence_level);
-#endif
 	if(operator_ == symbolFromStr("-"))
 		minus_level = precedence_level;
 }
@@ -74,43 +70,43 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 #define L Symbols::Sleft
 #define N Symbols::Snone
 #define P Symbols::Sprefix
-#ifdef SIMPLE_APPLICATION
-	apply_level = 13;
+	apply_level = 14;
 	cons(apply_level, I(" "), L); // apply
-#endif
 	if(bInitDefaults) {
 		cons(19, I("_"), R);
 		cons(19, I("."), L);
 		cons(19, I("^"), R);
-		cons(17, I("**"), R);
-		cons(16, I("⨯"), R);
-		cons(15, I("*"), L);
-		cons(15, I("/"), L);
+		cons(18, I("**"), R);
+		cons(17, I("⨯"), R);
+		cons(16, I("*"), L);
+		cons(16, I("/"), L);
 		// TODO div rem quot 17 L
-		cons(14, I(":"), R);
-		cons(12, I("++"), L);
-		cons(11, I("+"), L);
-		cons(11, I("-"), L);
-		cons(10, I("%"), L);
-		cons(9, I("="), N);
-		cons(9, I("/="), N);
-		cons(8, I("<"), N);
-		cons(8, I("<="), N);
-		cons(8, I(">"), N);
-		cons(8, I(">="), N);
-		cons(8, I("≤"), N);
-		cons(8, I("≥"), N);
-		cons(7, I("&&"), L);
-		cons(6, I("||"), L);
-		cons(5, I(","), L), // FIXME R
-		cons(4, I("$"), R);
+		cons(15, I(":"), R);
+		cons(14, I("'"), P);
+		cons(13, I("++"), L);
+		cons(12, I("+"), L);
+		cons(12, I("-"), L);
+		cons(11, I("%"), L);
+		cons(10, I("="), N);
+		cons(10, I("/="), N);
+		cons(9, I("<"), N);
+		cons(9, I("<="), N);
+		cons(9, I(">"), N);
+		cons(9, I(">="), N);
+		cons(9, I("≤"), N);
+		cons(9, I("≥"), N);
+		cons(8, I("&&"), L);
+		cons(7, I("||"), L);
+		cons(6, I(","), L), // FIXME R
+		cons(5, I("$"), R);
 		//cons(?, I(">>"), L);
 		//cons(?, I(">>="), L);
 		//cons(?, I("$"), L);
-		cons(3, I("=>"), L); // FIXME precedence.
-		cons(2, I("|"), L);
-		cons(1, I(";"), L);
-		// cons(0, I("\\"), P);
+		cons(4, I("=>"), L); // FIXME precedence.
+		cons(3, I("|"), L);
+		cons(2, I(";"), L);
+		cons(1, I("\\"), P);
+		cons(0, I("let"), R); // let
 		// TODO '(', 'auto('
 	}
 #undef N
