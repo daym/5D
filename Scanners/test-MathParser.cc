@@ -48,9 +48,9 @@ int main() {
 	test_expression("2⋅x+5", "((+ ((* 2) x)) 5)");
 	test_expression("(2+3)⋅5", "((* ((+ 2) 3)) 5)");
 	test_expression("(sin 2+3)⋅5", "((* ((+ (sin 2)) 3)) 5)");
-	//FIXME test_expression("(div 2 4 5+3)⋅5", "((* ((+ (((div 2) 4) 5)) 3)) 5)");
+	test_expression("(div 2 4 5+3)⋅5", "((* ((+ (((div 2) 4) 5)) 3)) 5)");
 	test_expression("\\x x", "(\\x x)");
-	// FIXME test_expression("(\\x x) 1", "((\\x x) 1)");
+	test_expression("(\\x x) 1", "((\\x x) 1)");
 	test_expression("a⨯b", "((⨯ a) b)");
 	test_expression("a⃗⨯b⃗", "((⨯ a⃗) b⃗)");
 	test_expression("cos cos x", "((cos cos) x)"); // well, it doesn't know that cos is a function.
