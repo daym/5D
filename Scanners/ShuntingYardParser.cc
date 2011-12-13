@@ -216,7 +216,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		//printf("read %s\n", str(value).c_str());
 		scanner->consume();
 		bNeedOriginalPush = false;
-		if((!any_operator_P(previousValue) || previousValue == Symbols::Srightparen || previousValue == Symbols::Sautorightparen || previousValue == Symbols::Sspace /*|| previousValue == Symbols::Sbackslash*/) && !any_operator_P(value)) {
+		if((!any_operator_P(previousValue) || previousValue == Symbols::Srightparen || previousValue == Symbols::Sautorightparen || previousValue == Symbols::Sspace /*|| previousValue == Symbols::Sbackslash*/) && (!any_operator_P(value) || value == Symbols::Sbackslash)) {
 			// fake previousValue Sspace value operation. Note that previousValue has already been handled in the previous iteration.
 			//fOperands.push(expand_simple_macro(value));
 			originalValue = value;

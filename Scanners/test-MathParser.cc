@@ -46,6 +46,7 @@ int main() {
 	test_expression("f g h", "((f g) h)");
 	test_expression("f g h i", "(((f g) h) i)");
 	test_expression("f g h i j", "((((f g) h) i) j)");
+	test_expression("f g (2⋅h)", "((f g) (* 2 h))");
 	test_expression("2+3⋅5", "((+ 2) ((* 3) 5))");
 	test_expression("2⋅3+5", "((+ ((* 2) 3)) 5)");
 	test_expression("2⋅x+5", "((+ ((* 2) x)) 5)");
