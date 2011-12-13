@@ -195,7 +195,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		scanner->consume();
 		if((!any_operator_P(previousValue) || previousValue == Symbols::Srightparen || previousValue == Symbols::Sautorightparen || previousValue == Symbols::Sspace || previousValue == Symbols::Sbackslash) && !any_operator_P(value)) {
 			// fake previousValue Sspace value operation. Note that previousValue has already been handled in the previous iteration.
-			fOperands.push(value);
+			fOperands.push(expand_simple_macro(value));
 			value = Symbols::Sspace;
 		} else if(any_operator_P(previousValue) && previousValue != Symbols::Sleftparen && previousValue != Symbols::Srightparen) {
 			// on the other hand, if both are, we have an unary operator - or at least something that looks like an unary operator.
