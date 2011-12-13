@@ -13,6 +13,13 @@ public:
 	virtual const char* what() const throw();
 };
 
+static inline AST::Node* throwFallback(const char* text) {
+	throw Evaluators::EvaluationException(text);
+	return(NULL);
+}
+#define FALLBACK Evaluators::throwFallback("could not reduce")
+/* (AST::Node*) reduce(makeOperation(Symbols::Sspace, fallback, argument))*/
+
 void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames);
 AST::Node* annotate(AST::Node* root);
 extern int fGeneration;

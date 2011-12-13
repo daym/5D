@@ -1,6 +1,8 @@
 5d (0.0.13) unstable; urgency=low
 
   * use faster FFI.
+  * make fallback use exceptions to signify failure.
+  * use FFI caption on TUI messageBox.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 11 Dec 2011 22:00:00 +0100
 

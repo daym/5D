@@ -11,10 +11,6 @@ static inline AST::Node* internNative(AST::Node* n) {
 	return(n);
 }
 
-/* FIXME */
-#define FALLBACK NULL
-/* (AST::Node*) reduce(makeOperation(Symbols::Sspace, fallback, argument))*/
-
 /* BEGIN str() */
 
 std::string str(AST::Node* cons);
