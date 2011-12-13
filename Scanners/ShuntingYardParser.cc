@@ -79,6 +79,11 @@ AST::Node* ShuntingYardParser::parse_value(void) {
 		AST::Node* result = parse_expression(OPL, Symbols::Sautorightparen);
 		scanner->consume();
 		return(result);
+	} else if(scanner->input_value == Symbols::Sleftbracket) {
+		scanner->consume();
+		// TODO other macros blah blah blah
+		AST::Node* result = parse_list_macro();
+		return(result);
 	} else
 		return(scanner->consume());
 }
