@@ -41,6 +41,7 @@ protected:
 	AST::Node* parse_value(void); /* what the macros think constitutes an atom */
 	AST::Node* parse_let_macro(void);
 	AST::Node* parse_macro(void);
+	AST::Node* parse_quote_macro(void);
 public:
 	ShuntingYardParser(void);
 	AST::Node* parse_expression(OperatorPrecedenceList* OPL, AST::Symbol* terminator);

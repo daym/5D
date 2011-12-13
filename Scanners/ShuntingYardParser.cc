@@ -79,13 +79,8 @@ AST::Node* ShuntingYardParser::parse_value(void) {
 		AST::Node* result = parse_expression(OPL, Symbols::Sautorightparen);
 		scanner->consume();
 		return(result);
-	} else if(scanner->input_value == Symbols::Sleftbracket) {
-		scanner->consume();
-		// TODO other macros blah blah blah
-		AST::Node* result = parse_list_macro();
-		return(result);
-	} else
-		return(scanner->consume());
+	} else 
+		return(expand_simple_macro(scanner->consume()));
 }
 AST::Node* ShuntingYardParser::parse_let_macro(void) {
 	AST::Node* parameter = parse_value(); // this is supposed to be a symbol or so
@@ -95,13 +90,14 @@ AST::Node* ShuntingYardParser::parse_let_macro(void) {
 	return(AST::makeCons(Symbols::Slet, AST::makeCons(parameter, AST::makeCons(body, NULL))));
 }
 AST::Node* ShuntingYardParser::parse_list_macro(void) {
-	AST::Cons* root = NULL;
-	AST::Cons* tail = NULL;
+	// TODO use the colon operator!
+	AST::Application* root = NULL;
+	AST::Application* tail = NULL;
 	while(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
 		//value = parse_value(), value != Symbols::Srightbracket && value != Symbols::SlessEOFgreater) {
-		AST::Cons* n = AST::makeCons(parse_value(), NULL);
+		AST::Application* n = AST::makeApplication(AST::makeApplication(Symbols::Scolon, parse_value()), NULL);
 		if(tail)
-			tail->tail = n;
+			tail->operand = n;
 		else
 			root = n;
 		tail = n;
@@ -109,8 +105,14 @@ AST::Node* ShuntingYardParser::parse_list_macro(void) {
 	scanner->consume(Symbols::Srightbracket);
 	return(root);
 }
+AST::Node* ShuntingYardParser::parse_quote_macro(void) {
+	AST::Node* body = parse_value();
+	return(AST::makeApplication(Symbols::Squote, body));
+}
 AST::Node* ShuntingYardParser::expand_simple_macro(AST::Node* value) {
-	return (value == Symbols::Sleftbracket) ? parse_list_macro() : value;
+	return (value == Symbols::Sleftbracket) ? parse_list_macro() :
+	       (value == Symbols::Squote) ? parse_quote_macro() :
+	       value;
 }
 AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
 	// these will "prepare" macros by parsing the macro and representing everything but the tail (if applicable) in an AST. Later, expand_macro will fit it into the whole.
