@@ -11,43 +11,25 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/Scanner"
 #include "AST/AST"
 #include "AST/Symbol"
-#include "AST/Symbols"
 #include "Scanners/OperatorPrecedenceList"
 
 namespace Scanners {
 
-inline bool macro_operator_P(AST::Node* operator_) {
-	return(operator_ == Symbols::Sdefine || 
-	       operator_ == Symbols::Sdef || 
-	       operator_ == Symbols::Sdefrec || 
-	       operator_ == Symbols::Squote || 
-	       operator_ == Symbols::Sleftbracket || 
-	       operator_ == Symbols::Slet);
-}
-
-class ShuntingYardParser {
+class SExpressionParser {
 private:
 	Scanner* scanner;
-	OperatorPrecedenceList* OPL;
-	AST::Cons* bound_symbols;
-	AST::Node* parse_abstraction_parameter(void);
+	AST::Cons* parse_S_list_body(void);
+	AST::Cons* parse_S_list(bool B_consume_closing_brace);
+	AST::Node* parse_S_Expression(void);
 	inline AST::Node* parse_value(void) {
 		return(scanner->consume());
 	}
-	int get_operator_precedence_and_associativity(AST::Node* node, AST::Symbol*& outAssociativity);
-	int get_operator_precedence(AST::Node* node);
-	AST::Node* expand_macro(AST::Node* op1, AST::Node* suffix);
-	bool macro_standin_P(AST::Node* op1);
 public:
-	ShuntingYardParser(void);
-	AST::Node* parse_expression(OperatorPrecedenceList* OPL, AST::Symbol* terminator);
-	AST::Node* parse(OperatorPrecedenceList* operator_precedence_list);
-	bool any_operator_P(AST::Node* node);
-protected:
-	AST::Node* handle_unary_operator(AST::Node* operator_);
-	void enter_abstraction(AST::Symbol* name);
-	void leave_abstraction(AST::Symbol* name);
+	SExpressionParser(void);
+	AST::Node* parse(AST::Symbol* terminator);
 };
+
+bool macro_operator_P(AST::Node* operator_);
 
 }; /* end namespace */
 

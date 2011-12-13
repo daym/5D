@@ -73,6 +73,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 #define R Symbols::Sright
 #define L Symbols::Sleft
 #define N Symbols::Snone
+#define P Symbols::Sprefix
 #ifdef SIMPLE_APPLICATION
 	apply_level = 13;
 	cons(apply_level, I(" "), L); // apply
@@ -109,6 +110,8 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(3, I("=>"), L); // FIXME precedence.
 		cons(2, I("|"), L);
 		cons(1, I(";"), L);
+		// cons(0, I("\\"), P);
+		// TODO '(', 'auto('
 	}
 #undef N
 #undef L

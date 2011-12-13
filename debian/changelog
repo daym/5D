@@ -1,3 +1,9 @@
+5d (0.1.0) unstable; urgency=low
+
+  * switch to Shunting Yard Parser (in order to be able to load GTK - no, really).
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Tue, 13 Dec 2011 15:32:00 +0100
+
 5d (0.0.13) unstable; urgency=low
 
   * use faster FFI.

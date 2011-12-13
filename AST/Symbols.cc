@@ -98,5 +98,6 @@ AST::Symbol* Sunderline = AST::symbolFromStr("_");
 AST::Symbol* SmoduleKeys = AST::symbolFromStr("moduleKeys");
 AST::Symbol* Sexports = AST::symbolFromStr("exports");
 AST::Symbol* SdispatchModule = AST::symbolFromStr("dispatchModule");
+AST::Symbol* Sprefix = AST::symbolFromStr("prefix");
 
 };

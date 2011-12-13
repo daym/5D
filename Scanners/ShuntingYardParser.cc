@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <iostream>
 #include <stack>
 #include <string.h>
-#include "Scanners/MathParser"
+#include "Scanners/ShuntingYardParser"
 #include "Scanners/OperatorPrecedenceList"
 #include "AST/Symbol"
 #include "AST/Symbols"
@@ -26,88 +26,103 @@ namespace Scanners {
 using namespace AST;
 using namespace Evaluators;
 
-bool macro_operator_P(AST::Node* operator_) {
-	return(operator_ == Symbols::Sdefine || 
-	       operator_ == Symbols::Sdef || 
-	       operator_ == Symbols::Sdefrec || 
-	       operator_ == Symbols::Squote || 
-	       operator_ == Symbols::Sleftbracket || 
-	       operator_ == Symbols::Slet);
-}
 bool prefix_operator_P(AST::Node* operator_) {
 	return(macro_operator_P(operator_));
 }
 ShuntingYardParser::ShuntingYardParser(void) {
+	bound_symbols = NULL;
+	scanner = new Scanner();
 }
-AST::Node* MathParser::parse_abstraction(void) {
+AST::Node* ShuntingYardParser::parse_abstraction_parameter(void) {
 	AST::Symbol* parameter;
-	if((parameter = dynamic_cast<AST::Symbol*>(input_value)) == NULL) {
-		raise_error("<symbol>", str(input_value));
+	if((parameter = dynamic_cast<AST::Symbol*>(scanner->input_value)) == NULL) {
+		scanner->raise_error("<symbol>", str(scanner->input_value));
 		return(NULL);
 	} else {
-		consume();
-		if(EOFP() || input_value == Symbols::Srightparen || input_value == Symbols::Srightbracket || input_value == Symbols::Sautorightparen)
-			raise_error("<body>", str(input_value));
-		enter_abstraction(parameter);
-		try {
-			AST::Node* expression = parse_expression();
-			leave_abstraction(parameter);
-			if(expression)
-				return(makeAbstraction(parameter, expression));
-			else // ???
-				return(makeAbstraction(parameter, NULL));
-		} catch (...) {
-			leave_abstraction(parameter);
-			throw;
-		}
+		scanner->consume(); /* consume parameter */
+		if(scanner->input_value == Symbols::SlessEOFgreater || scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::Srightbracket /* || scanner->input_value == Symbols::Sautorightparen*/)
+			scanner->raise_error("<body>", str(scanner->input_value));
+		// TODO enter_abstraction(parameter);
+		// leave_abstraction(parameter);
+		return(parameter);
 	}
 }
-AST::Node* ShuntingYardParser::parse_value(void) {
-	if(input_value == Symbols::Sbackslash) { // function abstraction
-		consume();
-		return(parse_abstraction());
-	} else
-		return(consume());
+bool ShuntingYardParser::macro_standin_P(AST::Node* op1) {
+	return(dynamic_cast<AST::Symbol*>(op1) == NULL);
+}
+AST::Node* ShuntingYardParser::expand_macro(AST::Node* op1, AST::Node* suffix) {
+	// FIXME
+	printf("macro\n");
+	return(suffix);
 }
 #define CONSUME_OPERATION { \
-	AST::Symbol* op1 = fOperators.back(); \
+	AST::Node* op1 = fOperators.top(); \
+	bool bUnary = macro_standin_P(op1); \
+	AST::Node* b = NULL; \
+	if(!bUnary) { \
+		if(fOperands.empty()) \
+			scanner->raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
+		b = fOperands.top(); \
+		fOperands.pop(); \
+	} \
 	if(fOperands.empty()) \
-		raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
-	AST::Node* b = fOperands.back(); \
-	fOperands.pop_back(); \
-	if(fOperands.empty()) \
-		raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
-	AST::Node* a = fOperands.back(); \
-	fOperands.pop_back(); \
-	fOperands.push_back(AST::makeOperation(op1, a, b)); \
-	fOperators.pop_back(); }
-AST::Node* ShuntingYardParser::parse(OperatorPrecedenceList* OPL) {
+		scanner->raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
+	AST::Node* a = fOperands.top(); \
+	fOperands.pop(); \
+	fOperands.push(bUnary ? expand_macro(op1, a) : AST::makeOperation(op1, a, b)); \
+	fOperators.pop(); }
+AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
+	// FIXME parse the macro in value and replace the entire thing by some hint on what to do.
+	// the operators are:
+	//    lambda
+	//    let
+	//    (define and similar)
+	//    '
+	//    [
+	return(operator_);
+}
+bool ShuntingYardParser::any_operator_P(AST::Node* node) {
+	return(OPL->any_operator_P(node));
+}
+int ShuntingYardParser::get_operator_precedence_and_associativity(AST::Node* node, AST::Symbol*& outAssociativity) {
+	assert(dynamic_cast<AST::Symbol*>(node) != NULL);
+	return(OPL->get_operator_precedence_and_associativity((AST::Symbol*) node, outAssociativity));
+}
+int ShuntingYardParser::get_operator_precedence(AST::Node* node) {
+	AST::Symbol* associativity = NULL;
+	return(get_operator_precedence_and_associativity(node, associativity));
+}
+AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST::Symbol* terminator) {
 	// TODO indentation parens
 	// TODO curried operators (probably easiest to generate a symbol and put it in place instead of the second operand?)
 	// TODO prefix-style operators on their own, i.e. (+)
-	std::stack<AST::Symbol*> fOperators;
+	// TODO prefix-style lambda.
+	std::stack<AST::Node*> fOperators;
 	std::stack<AST::Node*> fOperands;
 	// "(" is an operator. ")" is an operand, more or less.
 	AST::Node* previousValue = NULL;
-	for(; AST::Node* value = parse_value(), value != Symbols::SlessEOFgreater; previousValue = value) {
-		if(!OPL->any_operator_P(previousValue) && !OPL->any_operator_P(value)) {
+	AST::Node* value;
+	this->OPL = OPL;
+	for(; value = parse_value(), value != terminator; previousValue = value) {
+		if(!any_operator_P(previousValue) && !any_operator_P(value)) {
 			// fake previousValue Sspace value operation. Note that previousValue has already been handled in the previous iteration.
-			fOperands.push_back(value);
+			fOperands.push(value);
 			value = Symbols::Sspace;
 		}
 		if(value == Symbols::Srightparen) {
-			while(!fOperators.empty() && fOperators.back() != Symbols::Sleftparen)
+			while(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen)
 				CONSUME_OPERATION
 		} else if(prefix_operator_P(value)) {
-			while(!fOperators.empty() && prefix_operator_P(fOperators.back()))
+			while(!fOperators.empty() && prefix_operator_P(fOperators.top()))
 				CONSUME_OPERATION
-			// FIXME parse the macro and replace the entire thing by some hint on what to do.
-			fOperators.push_back(value);
-		} else if(value == Symbols::Sleftparen || OPL->any_operator_P(value)) { /* operator */
+			;
+			fOperators.push(handle_unary_operator(value));
+		} else if(value == Symbols::Sleftparen || any_operator_P(value)) { /* operator */
 			AST::Symbol* currentAssociativity = Symbols::Sleft; // FIXME
-			int currentPrecedence = value == Symbols::Sleftparen ? (-1) : OPL->get_operator_precedence_and_associativity(dynamic_cast<AST::Symbol*>(value), currentAssociativity);
-			while(!fOperators.empty() && OPL->get_operator_precedence(fOperators.back()) >= currentPrecedence) {
-				if(currentAssociativity == Symbols::Sright && OPL->get_operator_precedence(fOperators.back()) == currentPrecedence)
+			// note that prefix associativity is right associativity.
+			int currentPrecedence = value == Symbols::Sleftparen ? (-1) : get_operator_precedence_and_associativity(value, currentAssociativity);
+			while(!fOperators.empty() && get_operator_precedence(fOperators.top()) >= currentPrecedence) {
+				if(currentAssociativity == Symbols::Sright && get_operator_precedence(fOperators.top()) == currentPrecedence)
 					break;
 				// FIXME non-associative operators.
 				// TODO for unary operators (if there are any), only do this for other unary operators.
@@ -115,13 +130,25 @@ AST::Node* ShuntingYardParser::parse(OperatorPrecedenceList* OPL) {
 				//      otherwise (if there was an operator or none) then prefix.
 				CONSUME_OPERATION
 			}
-			fOperators.push_back(value);
+			fOperators.push(value);
 		} else { /* operand */
-			fOperands.push_back(value);
+			fOperands.push(value);
 		}
 	}
 	assert(fOperands.size() == 1);
-	return(fOperands.back());
+	return(fOperands.top());
+}
+AST::Node* ShuntingYardParser::parse(OperatorPrecedenceList* OPL) {
+	return(parse_expression(OPL, Symbols::SlessEOFgreater));
+}
+void ShuntingYardParser::enter_abstraction(AST::Symbol* name) {
+	bound_symbols = AST::makeCons(name, bound_symbols);
+}
+void ShuntingYardParser::leave_abstraction(AST::Symbol* name) {
+	assert(bound_symbols && dynamic_cast<AST::Symbol*>(bound_symbols->head) == name);
+	AST::Node* n = bound_symbols->tail;
+	bound_symbols->tail = NULL;
+	bound_symbols = (AST::Cons*) n;
 }
 
 }; /* end namespace Scanners */
