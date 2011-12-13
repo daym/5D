@@ -100,15 +100,15 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(8, I("≤"), N);
 		cons(8, I("≥"), N);
 		cons(7, I("&&"), L);
-		cons(5, I("||"), L);
-		cons(4, I(","), L), // FIXME R
-		cons(3, I("$"), R);
+		cons(6, I("||"), L);
+		cons(5, I(","), L), // FIXME R
+		cons(4, I("$"), R);
 		//cons(?, I(">>"), L);
 		//cons(?, I(">>="), L);
 		//cons(?, I("$"), L);
-		cons(2, I("=>"), L); // FIXME precedence.
-		cons(1, I("|"), L);
-		cons(0, I(";"), L);
+		cons(3, I("=>"), L); // FIXME precedence.
+		cons(2, I("|"), L);
+		cons(1, I(";"), L);
 	}
 #undef N
 #undef L
