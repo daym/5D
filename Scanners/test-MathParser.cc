@@ -69,6 +69,7 @@ int main() {
 	test_expression("[1]", "((: 1) [])");
 	test_expression("[1 2]", "((: 1) ((: 2) []))");
 	test_expression("[1 '2]", "((: 1) ((: (' 2)) []))");
+	test_expression("let x = 2 in (let y = 3 in x + y)", "((\\x ((\\y ((+ x) y)) 3)) 2)");
 	//test_expression("2⋅f(x)", "((* 2) (f x))"); // doesn't work.
 	return(0);
 }
