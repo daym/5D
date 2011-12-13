@@ -25,7 +25,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 			 (type_ == AST::symbolFromStr("yesno")) ? "yes/no" :
 			 (type_ == AST::symbolFromStr("retrycancel")) ? "retry/cancel" :
 			 (type_ == AST::symbolFromStr("canceltrycontinue")) ? "cancel|try|continue" : 
-		    "ok";
+		    "close";
 	cIcon = (icon == AST::symbolFromStr("information")) ? "(i) " :
 		(icon == AST::symbolFromStr("exclamation")) ? "(!) " :
 		(icon == AST::symbolFromStr("hand")) ? "(H) " :
