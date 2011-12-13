@@ -24,7 +24,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 			 (type_ == AST::symbolFromStr("yesnocancel")) ? "yes/no/cancel" :
 			 (type_ == AST::symbolFromStr("yesno")) ? "yes/no" :
 			 (type_ == AST::symbolFromStr("retrycancel")) ? "retry/cancel" :
-			 (type_ == AST::symbolFromStr("canceltrycontinue")) ? "cancel|try|continue" : 
+			 (type_ == AST::symbolFromStr("canceltrycontinue")) ? "cancel/try/continue" : 
 		    "close";
 	cIcon = (icon == AST::symbolFromStr("information")) ? "(i) " :
 		(icon == AST::symbolFromStr("exclamation")) ? "(!) " :
@@ -53,7 +53,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 			break;
 		}
 		if(buffer[0] == 10) {
-			buffer[0] = buttons[0];
+			buffer[0] = buttons[0] == 'c' && buttons[1] == 'l' ? 'C' : buttons[0];
 			buffer[1] = 0;
 		}
 		switch(buffer[0]) {
@@ -61,7 +61,10 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 			result = AST::symbolFromStr("ok");
 			break;
 		case 'c':
-			result = AST::symbolFromStr("cancel");
+			result = (buffer[1] == 'l') ? AST::symbolFromStr("close") : AST::symbolFromStr("cancel");
+			break;
+		case 'C':
+			result = AST::symbolFromStr("close");
 			break;
 		case 'y':
 			result = AST::symbolFromStr("yes");
