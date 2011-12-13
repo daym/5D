@@ -220,7 +220,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			// note that prefix associativity is right associativity.
 			int currentPrecedence = value == Symbols::Sleftparen ? (-1) : Symbols::Sautoleftparen ? (-1) : get_operator_precedence_and_associativity(value, currentAssociativity);
 			while(!fOperators.empty() && currentPrecedence <= get_operator_precedence(fOperators.top())) {
-				if(currentAssociativity == Symbols::Sright && currentPrecedence == get_operator_precedence(fOperators.top()))
+				if(currentAssociativity != Symbols::Sleft && currentPrecedence == get_operator_precedence(fOperators.top()))
 					break;
 				// FIXME non-associative operators.
 				// TODO for unary operators (if there are any), only do this for other unary operators.
