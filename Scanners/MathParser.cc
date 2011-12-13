@@ -22,7 +22,8 @@ You should have received a copy of the GNU General Public License along with thi
 /* for fmemopen used in parse_simple... */
 #include "stdafx.h"
 #endif
-// If you plan to revive this, handle (and ignore) operator associativity Sprefix
+// If you plan to revive this, handle (and ignore) operator associativity Sprefix. remove parse_abstraction and instead just use unary operator "macro" for \\.
+// handle all the macros as unary operators
 namespace Scanners {
 using namespace AST;
 using namespace Evaluators;
