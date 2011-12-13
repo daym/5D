@@ -180,6 +180,25 @@ int ShuntingYardParser::get_operator_precedence(AST::Node* node) {
 	AST::Symbol* associativity = NULL;
 	return(get_operator_precedence_and_associativity(node, associativity));
 }
+static bool second_paren_P(std::stack<AST::Node*>& stack) {
+	if(stack.size() == 0)
+		return(false);
+	AST::Node* t = stack.top();
+	if(t == Symbols::Sleftparen || t == Symbols::Sautoleftparen)
+		return(false);
+	else if(stack.size() == 1)
+		return(true);
+	stack.pop();
+	AST::Node* result = stack.top();
+	stack.push(t);
+	return(result == Symbols::Sleftparen || result == Symbols::Sautoleftparen);
+}
+#define SCOPERANDS \
+	if(fOperands.empty() && second_paren_P(fOperators)) { \
+		fOperands.push(fOperators.top()); \
+		fOperators.pop(); \
+	} else \
+
 AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST::Symbol* terminator) {
 	// TODO indentation parens
 	// TODO curried operators (probably easiest to generate a symbol and put it in place instead of the second operand?)
@@ -188,7 +207,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 	std::stack<AST::Node*> fOperators;
 	std::stack<AST::Node*> fOperands;
 	// "(" is an operator. ")" is an operand, more or less.
-	AST::Node* previousValue = Symbols::Sdash;
+	AST::Node* previousValue = Symbols::Sleftparen;
 	AST::Node* value;
 	this->OPL = OPL;
 	for(; value = scanner->input_value, value != terminator && value != Symbols::SlessEOFgreater; previousValue = value) {
@@ -202,7 +221,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			// we could do special handling here (i.e. rename "-" to "unary-" or whatever)
 		}
 		if(value == Symbols::Srightparen || value == Symbols::Sautorightparen) {
-			while(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen && fOperators.top() != Symbols::Sautoleftparen)
+			SCOPERANDS while(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen && fOperators.top() != Symbols::Sautoleftparen)
 				CONSUME_OPERATION
 			if(value == Symbols::Srightparen && fOperators.top() != Symbols::Sleftparen)
 				scanner->raise_error(str(Symbols::Sleftparen), str(fOperators.top()));
@@ -211,14 +230,14 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			fOperators.pop(); // "("
 		} else if(prefix_operator_P(value)) { // assumed to all be right-associative.
 			int currentPrecedence = get_operator_precedence(value);
-			while(!fOperators.empty() && prefix_operator_P(fOperators.top()) && currentPrecedence < get_operator_precedence(fOperators.top()))
+			SCOPERANDS while(!fOperators.empty() && prefix_operator_P(fOperators.top()) && currentPrecedence < get_operator_precedence(fOperators.top()))
 				CONSUME_OPERATION
 			fOperators.push(handle_unary_operator(value));
 		} else if(value == Symbols::Sleftparen || value == Symbols::Sautoleftparen || any_operator_P(value)) { /* operator */ // FIXME
 			AST::Symbol* currentAssociativity = Symbols::Sright; // FIXME
 			// note that prefix associativity is right associativity.
 			int currentPrecedence = value == Symbols::Sleftparen ? (-1) : value == Symbols::Sautoleftparen ? (-1) : get_operator_precedence_and_associativity(value, currentAssociativity);
-			while(!fOperators.empty() && currentPrecedence <= get_operator_precedence(fOperators.top())) {
+			SCOPERANDS while(!fOperators.empty() && currentPrecedence <= get_operator_precedence(fOperators.top())) {
 				if(currentAssociativity != Symbols::Sleft && currentPrecedence == get_operator_precedence(fOperators.top()))
 					break;
 				// FIXME non-associative operators.
@@ -234,8 +253,8 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 	}
 	if(value != terminator)
 		scanner->raise_error(str(terminator), str(value));
-	while(!fOperators.empty())
-		CONSUME_OPERATION
+		while(!fOperators.empty())
+			CONSUME_OPERATION
 	assert(fOperands.size() == 1);
 	return(fOperands.top());
 }
