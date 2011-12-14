@@ -5,7 +5,6 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-// TODO define def defrec auto(
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -41,7 +40,7 @@ All these levels of indirection are in order to conserve stack space. Otherwise 
 */
 // keep in sync with OperatorPrecedenceList P entries.
 bool prefix_operator_P(AST::Node* operator_) {
-	return(operator_ == Symbols::Squote || operator_ == Symbols::Sbackslash || (macro_operator_P(operator_) && operator_ != Symbols::Sleftbracket));
+	return(operator_ == Symbols::Squote || operator_ == Symbols::Sbackslash || (macro_operator_P(operator_) && operator_ != Symbols::Sleftbracket && operator_ != Symbols::Sdefine && operator_ != Symbols::Sdef && operator_ != Symbols::Sdefrec));
 }
 ShuntingYardParser::ShuntingYardParser(void) {
 	bound_symbols = NULL;
@@ -82,6 +81,16 @@ AST::Node* ShuntingYardParser::parse_value(void) {
 	} else 
 		return(expand_simple_macro(scanner->consume()));
 }
+AST::Node* ShuntingYardParser::parse_define_macro(AST::Node* operator_) {
+	AST::Node* parameter = parse_value(); // this is supposed to be a symbol or so
+	AST::Node* body = parse_expression(OPL, Symbols::SlessEOFgreater); // backwards compat
+	//return(AST::makeCons(operator_, AST::makeCons(parameter, NULL)));
+	if(symbol_P(parameter))
+		parameter = quote(parameter);
+	if(dynamic_cast<AST::Abstraction*>(body))
+		body = quote(body);
+	return(AST::makeApplication(AST::makeApplication(operator_, parameter), body));
+}
 AST::Node* ShuntingYardParser::parse_let_macro(void) {
 	AST::Node* parameter = parse_value(); // this is supposed to be a symbol or so
 	scanner->consume(Symbols::Sequal);
@@ -112,6 +121,7 @@ AST::Node* ShuntingYardParser::parse_quote_macro(void) {
 AST::Node* ShuntingYardParser::expand_simple_macro(AST::Node* value) {
 	return (value == Symbols::Sleftbracket) ? parse_list_macro() :
 	       (value == Symbols::Squote) ? parse_quote_macro() :
+	       (value == Symbols::Sdefine || value == Symbols::Sdefrec || value == Symbols::Sdef) ? parse_define_macro(value) :
 	       value;
 }
 AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
@@ -125,6 +135,8 @@ AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
 		return(AST::makeCons(operator_, NULL));
 	} else if(operator_ == Symbols::Slet) {
 		return(parse_let_macro());
+	//} else if(operator_ == Symbols::Sdefine || operator_ == Symbols::Sdefrec || operator_ == Symbols::Sdef) {
+	//	return(parse_define_macro(operator_));
 	}
 	// the remaining operators are:
 	//    (define and similar)

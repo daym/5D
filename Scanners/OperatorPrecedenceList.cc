@@ -107,6 +107,9 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(2, I(";"), L);
 		cons(1, I("\\"), P);
 		cons(0, I("let"), R); // let
+		//cons(0, I("define"), R); // these are more or less synonymous to "let".
+		//cons(0, I("defrec"), R); // these are more or less synonymous to "let".
+		//cons(0, I("def"), R); // these are more or less synonymous to "let".
 		// TODO '(', 'auto('
 	}
 #undef N
