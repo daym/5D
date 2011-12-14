@@ -12,6 +12,7 @@ Complex number literals: #C(3.2 2)
 Array literals: #(a b c)
 subseq "Hello, World" 2 9
 string-upcase
+strcmp
 
 = Packages =
 
@@ -39,7 +40,6 @@ move provide_dynamic_builtins into the reduce phase (?)
 provide hooks for big integers (?)
 provide callback used by the scanner for getting currently registered operators and their precedence
 (+3) = \x (x+3)
-Only implement marshallers and demarshallers in C, let them return stand-in buffers
 #| commented out |#
 make it possible to define custom operators in the REPL
 function to join buffers (memoryview)
@@ -52,7 +52,6 @@ move str() to the actual language
 GUI: allow deletion environment nodes (includes usage check in the rest of the environment).
 GUI: allow moving of environment nodes.
 GUI: allow compacting of environment nodes.
-GUI: fix LATEX formatter again: Cons spaces are not printed for some reason.
 TUI: if trying to pass a path to a file that does not exist, it doesn't create it on exit. Should it?
 
 = Beauty =
@@ -63,6 +62,7 @@ nested lists: line-break only for the second list if the first list is short eno
 pattern-match env entry back to the let macro.
 Allow querying a list of exported symbols of a shared library.
 Auto-load libc (or at least determine the file name?)
+setlocale(LC_ALL, "") without string conversion functions being idiots
 
 = Performance =
 
@@ -101,7 +101,7 @@ disassemble
 
 = TODO =
 
-move all the builtins into an .so file and load them via FFI.
+move all the builtins into a .so file and load them via FFI.
 support reloading of modules (in that case, need to use monads)
 Multithreading: per-thread mutable boxes (monadic).
 Messagebox custom buttons
