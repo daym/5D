@@ -82,7 +82,7 @@ Scanners/OperatorPrecedenceList.o: Scanners/OperatorPrecedenceList.cc AST/AST AS
 Scanners/test-MathParser.o: Scanners/test-MathParser.cc Scanners/MathParser Scanners/Scanner Scanners/OperatorPrecedenceList Evaluators/Builtins
 Evaluators/Evaluators.o: Evaluators/Evaluators.cc Evaluators/Evaluators Evaluators/Operation AST/AST AST/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList
 Evaluators/Operation.o: Evaluators/Operation.cc Evaluators/Operation Evaluators/Evaluators AST/AST AST/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList FFIs/Trampolines
-	$(CC) -O3 -Wall -I. -fno-strict-overflow -c -o $@ $< 
+	$(CC) -O2 -Wall -I. -fno-strict-overflow -c -o $@ $< 
 Evaluators/Builtins.o: Evaluators/Builtins.cc Scanners/MathParser Evaluators/Builtins Numbers/Integer Numbers/Real AST/AST AST/Symbol AST/Keyword FFIs/FFIs  Scanners/OperatorPrecedenceList Numbers/Small Evaluators/Operation
 Evaluators/Backtracker.o: Evaluators/Backtracker.cc Evaluators/Backtracker
 Evaluators/FFI.o: Evaluators/FFI.cc Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation
