@@ -88,9 +88,9 @@ Floats only work to 3E38, it seems. What about higher numbers? (there's no such 
 It would be possible to make numbers like 3E3 mean 3000 and not 3000.0 - do we want that?
 Reintroduce FALLBACK, i.e. tail [] shouldn't reduce.
 If there are open parens, ignore indentation (note that this is the LEXER and so it technically can't distinguish between quoted or macro braces and actual braces).
-dispatchModule reflection
 sort exports
 Just representing Str as a Integer would be a lot less weird and automatically allow comparisons to work as one would expect. However, it's unconventional. However, this would only be fast for little-endian architectures (as BigUnsigned Blks are ordered LSB first). Moreover, I don't think that Strings are manipulated that often.
+quote operator printing?
 
 = Debugging Macros =
 
