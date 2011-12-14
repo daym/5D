@@ -287,7 +287,7 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	AST::Node* body = REPL_import_module(options/*FIXME*/, AST::makeStr(filename.c_str()));
 	REPL_prepare(self, body);
 	REPL_add_to_environment(self, name, body);
-	return(body);
+	return(name); // body can be too large // FIXME
 }
 static AST::Node* REPL_define(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
