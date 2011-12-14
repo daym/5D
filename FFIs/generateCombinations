@@ -42,6 +42,7 @@ def galphabet(a):
     else:
         return alphabet[a]
 extras = [
+	'si', 
 	'iippii', 
 	'ipiiippp', 
 	'pplpppp', 
