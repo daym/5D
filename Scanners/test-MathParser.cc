@@ -69,7 +69,12 @@ int main() {
 	test_expression("[1]", "((: 1) [])");
 	test_expression("[1 2]", "((: 1) ((: 2) []))");
 	test_expression("[1 '2]", "((: 1) ((: (' 2)) []))");
-	test_expression("let x = 2 in (let y = 3 in x + y)", "((\\x ((\\y ((+ x) y)) 3)) 2)");
+	test_expression("(\\f \\x 1)", "(\\f (\\x 1))");
+	test_expression("(\\f \\x (f x)) (\\y y + 2) 1", "(((\\f (\\x (f x))) (\\y ((+ y) 2))) 1)");
+	test_expression("(\\f \\x (f x) + 1) (\\y y + 2) 1", "(((\\f (\\x ((+ (f x)) 1))) (\\y ((+ y) 2))) 1)");
+	test_expression("(\\f \\x (f x) + (f x)) (\\y y + 2) 1", "(((\\f (\\x ((+ (f x)) (f x)))) (\\y ((+ y) 2))) 1)");
+	test_expression("let x = 2 in let y = 3 in x + y", "((\\x ((\\y ((+ x) y)) 3)) 2)");
+
 	//test_expression("2⋅f(x)", "((* 2) (f x))"); // doesn't work.
 	return(0);
 }

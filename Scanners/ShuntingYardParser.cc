@@ -117,7 +117,10 @@ AST::Node* ShuntingYardParser::expand_simple_macro(AST::Node* value) {
 AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
 	// these will "prepare" macros by parsing the macro and representing everything but the tail (if applicable) in an AST. Later, expand_macro will fit it into the whole.
 	if(operator_ == Symbols::Sbackslash) {
-		return(AST::makeCons(operator_, AST::makeCons(parse_abstraction_parameter(), NULL)));
+		AST::Node* parameter = parse_abstraction_parameter();
+		//std::string v = str(parameter);
+		//printf("abstr param %s\n", v.c_str());
+		return(AST::makeCons(operator_, AST::makeCons(parameter, NULL)));
 	} else if(operator_ == Symbols::Squote) {
 		return(AST::makeCons(operator_, NULL));
 	} else if(operator_ == Symbols::Slet) {
@@ -188,11 +191,11 @@ int ShuntingYardParser::get_operator_precedence(AST::Node* node) {
 	AST::Symbol* associativity = NULL;
 	return(get_operator_precedence_and_associativity(node, associativity));
 }
-static bool second_paren_P(std::stack<AST::Node*>& stack) {
+static bool second_paren_P(OperatorPrecedenceList* OPL, std::stack<AST::Node*>& stack) { /* for (+) etc */
 	if(stack.size() == 0)
 		return(false);
 	AST::Node* t = stack.top();
-	if(t == Symbols::Sleftparen || t == Symbols::Sautoleftparen)
+	if(t == Symbols::Sleftparen || t == Symbols::Sautoleftparen || !OPL->any_operator_P(t) || t == Symbols::Sbackslash)
 		return(false);
 	else if(stack.size() == 1)
 		return(true);
@@ -202,7 +205,7 @@ static bool second_paren_P(std::stack<AST::Node*>& stack) {
 	return(result == Symbols::Sleftparen || result == Symbols::Sautoleftparen);
 }
 #define SCOPERANDS \
-	if(fOperands.empty() && second_paren_P(fOperators)) { \
+	if(fOperands.empty() && second_paren_P(OPL, fOperators)) { \
 		fOperands.push(fOperators.top()); \
 		fOperators.pop(); \
 	} else \
@@ -211,13 +214,9 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 	bool oldIndentationHonoring = false;
 	try {
 		oldIndentationHonoring = scanner->setHonorIndentation(true);
-	// TODO indentation parens
 	// TODO curried operators (probably easiest to generate a symbol and put it in place instead of the second operand?)
-	// TODO prefix-style operators on their own, i.e. (+)
-	// TODO prefix-style lambda.
 	std::stack<AST::Node*> fOperators;
 	std::stack<AST::Node*> fOperands;
-	// "(" is an operator. ")" is an operand, more or less.
 	AST::Node* previousValue = Symbols::Sleftparen;
 	AST::Node* value;
 	this->OPL = OPL;
@@ -226,9 +225,9 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		(!OPL->any_operator_P(previousValue) && 
 		 previousValue != Symbols::Sleftparen && 
 		 previousValue != Symbols::Sautoleftparen && 
-		 (((!OPL->any_operator_P(value) || prefix_operator_P(value)) &&
+		 ((!OPL->any_operator_P(value) || prefix_operator_P(value) || value == Symbols::Sbackslash) &&
 		   value != Symbols::Srightparen && 
-		   value != Symbols::Sautorightparen) || value == Symbols::Sbackslash))) {
+		   value != Symbols::Sautorightparen))) {
 			// not "x)" !
 			// fake previousValue Sspace value operation. Note that previousValue has already been handled in the previous iteration.
 			//fOperands.push(expand_simple_macro(value));
@@ -251,8 +250,10 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			int currentPrecedence = get_operator_precedence(value);
 			SCOPERANDS while(!fOperators.empty() && prefix_operator_P(fOperators.top()) && currentPrecedence < get_operator_precedence(fOperators.top()))
 				CONSUME_OPERATION
+			//printf("prefix pushop %s\n", str(value).c_str());
 			fOperators.push(handle_unary_operator(value));
 		} else if(value == Symbols::Sleftparen || value == Symbols::Sautoleftparen) {
+			//printf("pushop %s\n", str(value).c_str());
 			fOperators.push(value);
 		} else if(any_operator_P(value)) { /* operator */ // FIXME
 			AST::Symbol* currentAssociativity = Symbols::Sright; // FIXME
@@ -267,15 +268,18 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 				//      otherwise (if there was an operator or none) then prefix.
 				CONSUME_OPERATION
 			}
+			//printf("pushop %s\n", str(value).c_str());
 			fOperators.push(value);
 		} else { /* operand */
 			fOperands.push(expand_simple_macro(value));
 		}
 	}
+	//printf("len operators %d %s\n", (int) fOperators.size(), fOperators.size() ? str(fOperators.top()).c_str() : "");
+	//printf("len operands %d %s\n", (int) fOperands.size(), fOperands.size() ? str(fOperands.top()).c_str() : "");
 	if(value != terminator)
 		scanner->raise_error(str(terminator), str(value));
-		while(!fOperators.empty())
-			CONSUME_OPERATION
+	while(!fOperators.empty())
+		CONSUME_OPERATION
 	assert(fOperands.size() == 1);
 	scanner->setHonorIndentation(oldIndentationHonoring);
 	return(fOperands.top());
