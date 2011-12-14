@@ -8,7 +8,7 @@ else:
    ccs = ["C"]
    
 # 32768 alphabet = ["*", "i", "h", "c", "f", "d", "L", "l"]
-alphabet = ["p", "i", "h", "l"]
+alphabet = ["p", "P", "i", "l"]
 
 result = []
 
@@ -367,6 +367,8 @@ extras = [
 	'vpiiipp', 
 	'ipiiii', 
 	'ippppppi', 
+	'v',
+	'vp',
 	'viiiil', 
 	'ipppipppppp', 
 	'Pdddddd', 
@@ -420,11 +422,11 @@ def retType(r): #  be forgiving in what you accept
 for cc in ccs:
   reset(cc)
   while True:
-      v = ("%s%s%s%s%s%s" % (cc, retType(galphabet(digits[0])), galphabet(digits[1]), galphabet(digits[2]), galphabet(digits[3]), galphabet(digits[4])))
-      if len(v) > 1:
-        print(v)
+      if digits[0] != 0: # too dangerous
+          v = ("%s%s%s%s%s%s" % (cc, retType(galphabet(digits[0])), galphabet(digits[1]), galphabet(digits[2]), galphabet(digits[3]), galphabet(digits[4])))
+          if len(v) > 1:
+            print(v)
       if not increase():
          break
   for extra in extras:
     print("%s%s" % (cc, extra))
-    

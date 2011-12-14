@@ -20,13 +20,19 @@ longNames = {
 def getLongName(c):
     return longNames[c]
     
-def checks(combination):
+def checks2(combination):
     result = [combination]
     if combination.startswith("C") and len(combination) == 6:
       c = combination
-      while len(c) > 1 and c[-1] == "i":
+      while len(c) > 2 and c[-1] == "i":
         c = c[:-1]
         result.append(c)
+    return(result)
+def checks(combination):
+    result = checks2(combination)
+    for entry in result:
+        if entry[1] == "P":
+            result.append(entry[:1] + "p" + entry[2:])
     return(result)
 
 print("""
@@ -47,10 +53,10 @@ static inline AST::Node* extr(const std::list<std::pair<AST::Keyword*, AST::Node
 
 static inline void* getSomethingUseful(AST::Node* n) {
   AST::Str* s;
-  if((s = dynamic_cast<AST::Str*>(n)) != NULL)
-     return((void*) s->text.c_str());
-  else
-     return(Evaluators::get_native_pointer(n));
+  void* result = ((s = dynamic_cast<AST::Str*>(n)) != NULL) ? ((void*) s->text.c_str()) : (Evaluators::get_native_pointer(n));
+  if(result == NULL)
+    throw Evaluators::EvaluationException("argument is required but empty");
+  return(result);
 }
 static inline void* getSomethingUsefulOrNull(AST::Node* n) {
   if(n == NULL)
@@ -177,9 +183,10 @@ static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::N
 	AST::Symbol* signature = proc->fSignature;
 	--endIter; /* hide the world */
 	HashTable::const_iterator iterMarshaller = fMarshallers.find(signature->name);
-	if(iterMarshaller == fMarshallers.end())
+	if(iterMarshaller == fMarshallers.end()) {
+	    fprintf(stderr, "warning: could not find marshaller for %s\\n", signature->name);
 	    return Evaluators::makeIOMonad(NULL, Evaluators::reduce(world));
-        else
+        } else
             return (*iterMarshaller->second)(proc->native, iter, endIter);
 }
        
