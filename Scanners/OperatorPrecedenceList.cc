@@ -110,7 +110,13 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		//cons(0, I("define"), R); // these are more or less synonymous to "let".
 		//cons(0, I("defrec"), R); // these are more or less synonymous to "let".
 		//cons(0, I("def"), R); // these are more or less synonymous to "let".
-		// TODO '(', 'auto('
+		/* TODO set theory:
+			intersection
+			union
+			∈
+		   TODO difference
+		   TODO excluding
+		*/
 	}
 #undef N
 #undef L
