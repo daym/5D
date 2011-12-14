@@ -26,8 +26,8 @@ void test_expression(const char* source, const char* expected_tree) {
 	const char* buf = source;
 	using namespace Scanners;
 	MathParser parser;
-	printf("==== %s\n", source);
-	printf("E====\n");
+	//printf("==== %s\n", source);
+	//printf("E====\n");
 	//std::cout << source << std::endl;
 	parser.push(fmemopen((void*) buf, strlen(buf), "r"), 0);
 	try {
