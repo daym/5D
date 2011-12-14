@@ -64,6 +64,9 @@ static inline char* strdupOrNull(const char* s) {
 static inline AST::Node* makeStrOrNil(const char* s) {
   return(s ? AST::makeStr(s) : NULL);
 }
+static inline AST::Node* makeBoxOrNil(void* s) {
+  return(s ? AST::makeBox(s) : NULL);
+}
 #define unproc iter == end ? NULL : dynamic_cast<Evaluators::CProcedure*>(extr(iter++))
 #define unp iter == end ? NULL : getSomethingUseful(extr(iter++))
 #define unP iter == end ? NULL : getSomethingUsefulOrNull(extr(iter++))
@@ -78,6 +81,7 @@ static inline AST::Node* makeStrOrNil(const char* s) {
 #define und iter == end ? 0.0 : Evaluators::get_native_double(extr(iter++))
 #define inv
 #define inp AST::makeBox(
+#define inP makeBoxOrNil(
 #define ini Numbers::internNative((Numbers::NativeInt) 
 #define inl Numbers::internNative((Numbers::NativeInt) 
 #define inh Numbers::internNative((Numbers::NativeInt) 
@@ -142,6 +146,7 @@ print("""
 #undef unS
 #undef inP
 #undef inp
+#undef inP
 #undef ini
 #undef inl
 #undef inh
