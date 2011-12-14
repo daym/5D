@@ -421,15 +421,19 @@ static AST::Node* mapGetFst(AST::Cons* c) {
 	else
 		return(AST::makeCons(reduce(evaluateToCons(reduce(c->head))->head), mapGetFst(evaluateToCons(c->tail))));
 }
+class MyHashTable : public AST::Node, public HashTable { /* makes sure dynamic_cast works! */
+	virtual ~MyHashTable(void) {}
+};
 static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
 	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
 	AST::Box* mBox = dynamic_cast<AST::Box*>(iter->second);
 	++iter;
 	AST::Node* key = iter->second;
-	HashTable* m;
-	if(cons_P((AST::Node*) mBox->native)) {
-		m = new HashTable;
+	MyHashTable* m;
+	if(dynamic_cast<MyHashTable*>((AST::Node*) mBox->native) == NULL) {
+		//cons_P((AST::Node*) mBox->native)) {
+		m = new MyHashTable;
 		for(AST::Cons* table = (AST::Cons*) mBox->native; table; table = Evaluators::evaluateToCons(table->tail)) {
 			AST::Cons* entry = evaluateToCons(reduce(table->head));
 			//std::string v = str(entry);
@@ -450,7 +454,7 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 		(*m)["exports"] = mapGetFst(table);
 		mBox->native = m;
 	}
-	m = (HashTable*) mBox->native;
+	m = (MyHashTable*) mBox->native;
 	AST::Symbol* s = dynamic_cast<AST::Symbol*>(key);
 	if(s) {
 		/*HashTable::const_iterator b = m->begin();
@@ -459,7 +463,7 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 			printf("%s<\n", b->first);
 		}
 		printf("searching \"%s\"\n", s->name);*/
-		HashTable::const_iterator iter = m->find(s->name);
+		MyHashTable::const_iterator iter = m->find(s->name);
 		if(iter != m->end())
 			return(iter->second);
 		else {
