@@ -7,8 +7,9 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 	if(node == NULL)
 		print_text(output, position, "[]", false);
 	else if(symbolNode) {
-		int pl = OPL->get_operator_precedence(symbolNode);
-		print_text(output, position, symbolNode->name, pl != -1);
+		AST::Symbol* fAssociativity = NULL;
+		int pl = OPL->get_operator_precedence_and_associativity(symbolNode, fAssociativity);
+		print_text(output, position, symbolNode->name, pl != -1 && fAssociativity != Symbols::Sprefix);
 	} else if(abstraction_P(node)) { /* abstraction */
 		process_abstraction(OPL, output, position, node, precedence_limit, B_paren_equal_levels);
 	} else if(application_P(node)) { /* application */
@@ -35,8 +36,9 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 			bool B_parend = maybe_print_opening_paren(output, position, precedence, precedence_limit, B_paren_equal_levels);
 			operator_ = get_application_operator(node);
 			operatorSymbol = dynamic_cast<AST::Symbol*>(operator_);
-			int xprecedence = operatorSymbol ? OPL->get_operator_precedence(operatorSymbol) : -1;
-			if(xprecedence != -1) { // incomplete binary operation
+			AST::Symbol* xoperatorAssociativity = NULL;
+			int xprecedence = operatorSymbol ? OPL->get_operator_precedence_and_associativity(operatorSymbol, xoperatorAssociativity) : -1;
+			if(xprecedence != -1 && xoperatorAssociativity != Symbols::Sprefix) { // incomplete binary operation
 				++position, output << '(';
                                 print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
 				++position, output << ')';
@@ -57,8 +59,9 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
 		std::string value = str(node);
-		int pl = OPL->get_operator_precedence(AST::symbolFromStr(value.c_str()));
-		print_text(output, position, value.c_str(), pl != -1); // , pl < OPL->apply_level && pl != -1);
+		AST::Symbol* fAssociativity = NULL;
+		int pl = OPL->get_operator_precedence_and_associativity(AST::symbolFromStr(value.c_str()), fAssociativity);
+		print_text(output, position, value.c_str(), pl != -1 && fAssociativity != Symbols::Sprefix); // , pl < OPL->apply_level && pl != -1);
 	}
 }
 void print(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, AST::Node* node) {
