@@ -5,6 +5,9 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifdef WIN32
+#include "stdafx.h"
+#endif
 #include <stdio.h>
 #include <string.h>
 #include "Evaluators/FFI"
@@ -115,7 +118,7 @@ static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
 static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
 	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
-	char* text = get_native_string(iter->second);
+	char* text = iter->second ? get_native_string(iter->second) : NULL;
 	++iter;
 	AST::Node* world = iter->second;
 	text = get_absolute_path(text);
@@ -140,10 +143,16 @@ REGISTER_BUILTIN(Flusher, 2, 0, AST::symbolFromStr("flush"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline"))
 REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath"))
 
-// FIXME WIN32 support.
 char* get_absolute_path(const char* filename) {
 #ifdef WIN32
-	return(strdup(filename));
+	if(filename == NULL || filename[0] == 0)
+		filename = ".";
+	std::wstring filenameW = FromUTF8(filename);
+	WCHAR buffer[2049];
+	if(GetFullPathNameW(filenameW.c_str(), 2048, buffer, NULL) != 0) {
+		return(ToUTF8(buffer));
+	} else
+		return(strdup(filename));
 #else
 	if(filename[0] == '/')
 		return(strdup(filename));
@@ -155,7 +164,8 @@ char* get_absolute_path(const char* filename) {
 			if(buffer[0] && buffer[strlen(buffer) - 1] != '/')
 				sst << '/';
 		}
-		sst << filename;
+		if(filename)
+			sst << filename;
 		std::string v = sst.str();
 		return(strdup(v.c_str()));
 	}
