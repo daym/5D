@@ -221,13 +221,13 @@ static std::string getModuleFileKey(const char* filename) {
 	struct _stat buf;
 	std::wstring filenameW = FromUTF8(filename);
 	if(_wstat(filenameW.c_str(), &buf) == -1) {
-		perror(filename);
+		//perror(filename);
 		return("");
 	}
 #else
 	struct stat buf;
 	if(stat(filename, &buf) == -1) {
-		perror(filename);
+		//perror(filename);
 		return("");
 	}
 #endif
@@ -238,8 +238,10 @@ static std::string getModuleFileKey(const char* filename) {
 }
 static AST::Node* REPL_require_module(struct REPL* self, const char* filename) {
 	std::string moduleKey = getModuleFileKey(filename);
-	if(moduleKey.length() == 0)
+	if(moduleKey.length() == 0) {
+		perror(filename);
 		return(FALLBACK);
+	}
 	if(self->fModules == NULL)
 		self->fModules = new std::map<std::string, AST::Node*>;
 	if((*self->fModules).find(moduleKey) == self->fModules->end()) {
