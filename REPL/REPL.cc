@@ -156,6 +156,16 @@ std::string REPL_get_shared_dir(void) {
 void REPL_set_shared_dir(const std::string& name) {
 	sharedDir = name;
 }
+void REPL_set_shared_dir_by_executable(const char* argv0) {
+	sharedDir = argv0;
+	std::string::size_type slashPos = sharedDir.find_last_of('/');
+	if(slashPos != std::string::npos) {
+		sharedDir = sharedDir.substr(0, slashPos + 1);
+		sharedDir += "../share/";
+	} else {
+		sharedDir = "";
+	}
+}
 
 }; // end namespace GUI
 

@@ -106,7 +106,9 @@ struct REPL* REPL_new(void) {
 }
 
 }; /* end namespace */
-int main() {
+int main(int argc, char* argv[]) {
+	if(argc >= 1)
+		REPL_set_shared_dir_by_executable(Evaluators::get_absolute_path(argv[0]));
 	Scanners::SExpressionParser parser;
 	int status = 0;
 	bool B_first = true;
