@@ -41,7 +41,7 @@ def galphabet(a):
         return ""
     else:
         return alphabet[a]
-extras = [
+extras = [ # do not start with 'p or 's (only with 'P or 'S)
 	'iippii', 
 	'ipiiippp', 
 	'Pplpppp', 
@@ -138,8 +138,6 @@ extras = [
 	'iiiiipp', 
 	'ipiiiipiipiii', 
 	'ipiippi', 
-	'si', 
-	'sp', 
 	'Si', 
 	'Sp', 
 	'vppiipppiiiiiii', 
@@ -423,10 +421,9 @@ def retType(r): #  be forgiving in what you accept
 for cc in ccs:
   reset(cc)
   while True:
-      if digits[0] != 0: # too dangerous
-          v = ("%s%s%s%s%s%s" % (cc, retType(galphabet(digits[0])), galphabet(digits[1]), galphabet(digits[2]), galphabet(digits[3]), galphabet(digits[4])))
-          if len(v) > 1:
-            print(v)
+      v = ("%s%s%s%s%s%s" % (cc, galphabet(digits[0]), galphabet(digits[1]), galphabet(digits[2]), galphabet(digits[3]), galphabet(digits[4])))
+      if len(v) > 1 and v[1] != "p":
+         print(v)
       if not increase():
          break
   for extra in extras:

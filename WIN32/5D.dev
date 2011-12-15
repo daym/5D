@@ -1,7 +1,7 @@
 [Project]
 FileName=5D.dev
 Name=5D
-UnitCount=68
+UnitCount=72
 Type=0
 Ver=1
 ObjFiles=
@@ -708,7 +708,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit69]
-FileName=..\Evaluators\Operation
+FileName=..\Scanners\ShuntingYardParser.cc
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit70]
+FileName=..\Scanners\ShuntingYardParser
+CompileCpp=1
 Folder=5D
 Compile=0
 Link=0
@@ -716,18 +727,18 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit70]
-FileName=..\FFIs\WIN32UI.cc
-CompileCpp=1
+[Unit71]
+FileName=..\Scanners\SExpressionParser.cc
 Folder=5D
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit71]
-FileName=..\FFIs\UI
+[Unit72]
+FileName=..\Scanners\SExpressionParser
 Folder=5D
 Compile=0
 Link=0

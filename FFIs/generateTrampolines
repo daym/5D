@@ -30,10 +30,11 @@ def checks2(combination):
     return(result)
 def checks(combination):
     result = checks2(combination)
+    extra = []
     for entry in result:
         if entry[1] == "P":
-            result.append(entry[:1] + "p" + entry[2:])
-    return(result)
+            extra.append(entry[:1] + "p" + entry[2:])
+    return(result + extra)
 
 print("""
 #include <assert.h>
