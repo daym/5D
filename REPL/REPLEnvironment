@@ -216,24 +216,30 @@ static AST::Node* REPL_force_import_module(struct REPL* self, const char* filena
 	return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 	// FIXME return(uncurried(&RModule, AST::makeStr(filename)));
 }
-static AST::Node* REPL_require_module(struct REPL* self, const char* filename) {
+static std::string getModuleFileKey(const char* filename) {
 #ifdef WIN32
 	struct _stat buf;
 	std::wstring filenameW = FromUTF8(filename);
 	if(_wstat(filenameW.c_str(), &buf) == -1) {
 		perror(filename);
-		return(FALLBACK);
+		return("");
 	}
 #else
 	struct stat buf;
 	if(stat(filename, &buf) == -1) {
 		perror(filename);
-		return(FALLBACK);
+		return("");
 	}
 #endif
 	std::stringstream moduleKeyStream;
 	moduleKeyStream << buf.st_dev << ":" << buf.st_ino;
 	std::string moduleKey = moduleKeyStream.str();
+	return(moduleKey);
+}
+static AST::Node* REPL_require_module(struct REPL* self, const char* filename) {
+	std::string moduleKey = getModuleFileKey(filename);
+	if(moduleKey.length() == 0)
+		return(FALLBACK);
 	if(self->fModules == NULL)
 		self->fModules = new std::map<std::string, AST::Node*>;
 	if((*self->fModules).find(moduleKey) == self->fModules->end()) {
@@ -280,9 +286,15 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	assert(iter != arguments.end());
 	AST::Node* name = iter->second;
 	assert(symbol_P(name));
-	// FIXME more options
+	// TODO more options
+	AST::Node* fileNameNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("fileName:"));
 	std::stringstream filenameStream;
-	filenameStream << Evaluators::str(name) << ".5D";
+	if(fileNameNode)
+		filenameStream << Evaluators::get_native_string(fileNameNode);
+	else {
+		// TODO getModuleFileKey(filenameStream.str().c_str());
+		filenameStream << Evaluators::str(name) << ".5D";
+	}
 	std::string filename = filenameStream.str();
 	AST::Node* body = REPL_import_module(options/*FIXME*/, AST::makeStr(filename.c_str()));
 	REPL_prepare(self, body);
