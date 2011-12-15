@@ -296,7 +296,7 @@ int main(int argc, char* argv[]) {
 	using namespace GUI;
 	const char* line;
 	if(argc >= 1)
-		REPL_set_shared_dir_by_executable(Evaluators::get_absolute_path(argv[0]));
+		REPL_set_shared_dir_by_executable(argv[0]);
 	REPL = REPL_new();
 	REPL1 = REPL;
 	if(argc > 1 && REPL_load_contents_by_name(REPL, argv[argc - 1])) {
