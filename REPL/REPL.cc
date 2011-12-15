@@ -149,6 +149,13 @@ void REPL_add_to_environment(struct REPL* self, AST::Node* name, AST::Node* body
 		REPL_add_to_environment_simple(self, nameSymbol, body);
 }
 
+static std::string sharedDir = "/usr/share/"; // keep "/" suffix.
+std::string REPL_get_shared_dir(void) {
+	return(sharedDir);
+}
+void REPL_set_shared_dir(const std::string& name) {
+	sharedDir = name;
+}
 
 }; // end namespace GUI
 

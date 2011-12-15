@@ -275,6 +275,17 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument);
 DEFINE_REPL_OPERATION(RImporter, {
 	return(REPL_import(fn, argument));
 })
+static std::vector<std::string> REPL_get_module_search_path(void) {
+	std::vector<std::string> result;
+#ifdef WIN32
+	result.push_back(".\\");
+	result.push_back(REPL_get_shared_dir());
+#else
+	result.push_back("");
+	result.push_back(REPL_get_shared_dir());
+#endif
+	return(result);
+}
 /* will result is a curried RModule */
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
@@ -288,14 +299,20 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	assert(symbol_P(name));
 	// TODO more options
 	AST::Node* fileNameNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("fileName:"));
-	std::stringstream filenameStream;
-	if(fileNameNode)
-		filenameStream << Evaluators::get_native_string(fileNameNode);
-	else {
-		// TODO getModuleFileKey(filenameStream.str().c_str());
-		filenameStream << Evaluators::str(name) << ".5D";
+	std::vector<std::string> searchPaths = REPL_get_module_search_path();
+	std::vector<std::string>::const_iterator endSearchPaths = searchPaths.end();
+	std::string filename = "";
+	for(std::vector<std::string>::const_iterator iterSearchPaths = searchPaths.begin(); iterSearchPaths != endSearchPaths; ++iterSearchPaths) {
+		std::stringstream filenameStream;
+		filenameStream << *iterSearchPaths;
+		if(fileNameNode)
+			filenameStream << Evaluators::get_native_string(fileNameNode);
+		else
+			filenameStream << Evaluators::str(name) << ".5D";
+		filename = filenameStream.str();
+		if(getModuleFileKey(filename.c_str()).length() != 0)
+			break;
 	}
-	std::string filename = filenameStream.str();
 	AST::Node* body = REPL_import_module(options/*FIXME*/, AST::makeStr(filename.c_str()));
 	REPL_prepare(self, body);
 	REPL_add_to_environment(self, name, body);

@@ -2,10 +2,13 @@
 //
 #include "stdafx.h"
 #include <tchar.h>
+#include <string.h>
 #include "resource.h"
 #include <stdio.h>
 #include "Commctrl.h"
 #include "GUI/WIN32REPL"
+#include "Evaluators/FFI"
+#include "REPL/REPL"
 
 #define MAX_LOADSTRING 100
 
@@ -50,6 +53,21 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	UNREFERENCED_PARAMETER(lpCmdLine);
 	MSG msg;
 	HACCEL hAccelTable;
+	WCHAR buffer[2049];
+	if(GetModuleFileNameW(GetModuleHandle(NULL), buffer, 2048) > 0) {
+		char* name = Evaluators::get_absolute_path(ToUTF8(buffer));
+		char* slash = strrchr(name, '\\');
+		std::string name2;
+		if(slash != NULL) {
+			*(slash + 1) = 0;
+			name2 = name;
+		} else {
+			name2 = name;
+			name2 += "\\";
+		}
+		name2 += "..\\share\\";
+		GUI::REPL_set_shared_dir(name2);
+	}
 	// Initialize global strings
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	//LoadString(hInstance, IDC_MY5D, szWindowClass, MAX_LOADSTRING);
