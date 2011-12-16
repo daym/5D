@@ -1,0 +1,17 @@
+#ifndef __FFIS_RECORD_PACKER_H
+#define __FFIS_RECORD_PACKER_H
+#include "Evaluators/Operation"
+#include "AST/AST"
+
+namespace FFIs {
+
+/* uses C packing alignment */
+AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data);
+AST::Node* Record_unpack(AST::Str* formatStr, AST::Str* dataStr);
+
+DECLARE_SIMPLE_OPERATION(RecordPacker)
+DECLARE_SIMPLE_OPERATION(RecordUnpacker)
+
+}; /* end namespace FFIs */
+
+#endif /* ndef __FFIS_RECORD_PACKER_H */
