@@ -103,6 +103,7 @@ extern AST::Symbol* SmoduleKeys;
 extern AST::Symbol* Sexports;
 extern AST::Symbol* SdispatchModule;
 extern AST::Symbol* Sprefix;
+extern AST::Symbol* Sdot;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */
