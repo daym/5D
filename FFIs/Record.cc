@@ -60,8 +60,7 @@ AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
 		for(; offset < new_offset; ++offset)
 			sst << '\0';
 	}
-	std::string v = sst.str();
-	return(AST::makeStr(v.c_str()));
+	return(new AST::Str(sst.str())); // NOT makeStr
 }
 AST::Node* Record_unpack(AST::Str* formatStr, AST::Str* dataStr) {
 	if(formatStr == NULL)
