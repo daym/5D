@@ -8,7 +8,7 @@
 #include "AST/AST"
 #include "AST/Keyword"
 #include "FFIs/UI"
-#include "FFIs/Record"
+#include "FFIs/RecordPacker"
 
 namespace GUI {
 };
