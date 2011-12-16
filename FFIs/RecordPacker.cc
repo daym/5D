@@ -8,6 +8,7 @@
 #include "Evaluators/Evaluators"
 #include "FFIs/RecordPacker"
 #include "Evaluators/FFI"
+#include "Numbers/Integer"
 
 namespace FFIs {
 
@@ -133,6 +134,32 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Str* dataStr) {
 	}
 	return(NULL); // FIXME
 }
+AST::Node* Record_get_size(AST::Str* formatStr) {
+	if(formatStr == NULL)
+		throw Evaluators::EvaluationException("Record_size needs format string.");
+	const char* format = formatStr->text.c_str();
+	size_t maxAlign = 0;
+	size_t padding = 0;
+	bool bBigEndian = false;
+	size_t offset = 0;
+	size_t new_offset = 0;
+	for(const char* format = formatStr->text.c_str(); *format; ++format) {
+		if(*format == '<' || *format == '>' || *format == '=')
+			continue;
+		size_t align = getAlignment(*format);
+		if(align > maxAlign)
+			maxAlign = align;
+	}
+	for(const char* format = formatStr->text.c_str(); *format; ++format) {
+		if(*format == '<' || *format == '>' || *format == '=')
+			continue;
+		size_t size = getSize(*format);
+		offset += size;
+		new_offset = (offset + maxAlign - 1) & ~(maxAlign - 1);
+		offset = new_offset;
+	}
+	return(Numbers::internNative((Numbers::NativeInt) offset));
+}
 using namespace Evaluators;
 static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
@@ -149,6 +176,8 @@ static AST::Node* unpack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 DEFINE_BINARY_OPERATION(RecordUnpacker, unpack)
 REGISTER_BUILTIN(RecordUnpacker, 2, 0, AST::symbolFromStr("unpackRecord"))
 
+DEFINE_SIMPLE_OPERATION(RecordSizeCalculator, Record_get_size(dynamic_cast<AST::Str*>(reduce(argument))))
+REGISTER_BUILTIN(RecordSizeCalculator, 1, 0, AST::symbolFromStr("recordSize"))
 
 }; /* end namespace FFIs */
 

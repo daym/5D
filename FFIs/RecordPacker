@@ -11,6 +11,7 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Str* dataStr);
 
 DECLARE_SIMPLE_OPERATION(RecordPacker)
 DECLARE_SIMPLE_OPERATION(RecordUnpacker)
+DECLARE_SIMPLE_OPERATION(RecordSizeCalculator)
 
 }; /* end namespace FFIs */
 
