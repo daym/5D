@@ -176,6 +176,12 @@ AST::Node* ShuntingYardParser::expand_macro(AST::Node* op1, AST::Node* suffix) {
 		return(NULL);
 	}
 }
+AST::Node* makeOperationDot(AST::Node* op, AST::Node* a, AST::Node* b) {
+	if(op == Symbols::Sdot)
+		return(AST::makeOperation(op, a, quote(b)));
+	else
+		return(AST::makeOperation(op, a, b));
+}
 #define CONSUME_OPERATION { \
 	AST::Node* op1 = fOperators.top(); \
 	/*std::cout << str(op1) << std::endl;*/ \
@@ -191,7 +197,7 @@ AST::Node* ShuntingYardParser::expand_macro(AST::Node* op1, AST::Node* suffix) {
 		scanner->raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
 	AST::Node* a = fOperands.top(); \
 	fOperands.pop(); \
-	fOperands.push(bUnary ? expand_macro(op1, a) : AST::makeOperation(op1, a, b)); \
+	fOperands.push(bUnary ? expand_macro(op1, a) : makeOperationDot(op1, a, b)); \
 	fOperators.pop(); }
 bool ShuntingYardParser::any_operator_P(AST::Node* node) {
 	// fake '(' and 'auto('
