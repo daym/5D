@@ -291,7 +291,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 	//printf("len operands %d %s\n", (int) fOperands.size(), fOperands.size() ? str(fOperands.top()).c_str() : "");
 	if(value != terminator)
 		scanner->raise_error(str(terminator), str(value));
-	while(!fOperators.empty())
+	SCOPERANDS while(!fOperators.empty())
 		CONSUME_OPERATION
 	assert(fOperands.size() == 1);
 	scanner->setHonorIndentation(oldIndentationHonoring);

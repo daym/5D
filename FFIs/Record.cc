@@ -1,4 +1,5 @@
 #include <sstream>
+#include <assert.h>
 #ifdef WIN32
 //typedef short uint16_t;
 #else
