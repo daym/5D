@@ -94,6 +94,21 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Str* dataStr) {
 	}
 	return(NULL); // FIXME
 }
+using namespace Evaluators;
+static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+	a = reduce(a);
+	b = reduce(b);
+	return(Record_pack(dynamic_cast<AST::Str*>(a), b));
+}
+DEFINE_BINARY_OPERATION(RecordPacker, pack)
+REGISTER_BUILTIN(RecordPacker, 2, 0, AST::symbolFromStr("packRecord"))
+static AST::Node* unpack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+	a = reduce(a);
+	b = reduce(b);
+	return(Record_unpack(dynamic_cast<AST::Str*>(a), dynamic_cast<AST::Str*>(b)));
+}
+DEFINE_BINARY_OPERATION(RecordUnpacker, pack)
+REGISTER_BUILTIN(RecordUnpacker, 2, 0, AST::symbolFromStr("unpackRecord"))
 
 
 }; /* end namespace FFIs */

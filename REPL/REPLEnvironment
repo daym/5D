@@ -8,6 +8,7 @@
 #include "AST/AST"
 #include "AST/Keyword"
 #include "FFIs/UI"
+#include "FFIs/Record"
 
 namespace GUI {
 };
@@ -441,6 +442,8 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("messageBox"), &FFIs::MessageBoxDisplayer);
 	REPL_add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
 	REPL_add_builtin_method(self, AST::symbolFromStr("absolutePath"), &Evaluators::AbsolutePathGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("packRecord"), &FFIs::RecordPacker);
+	REPL_add_builtin_method(self, AST::symbolFromStr("unpackRecord"), &FFIs::RecordUnpacker);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }
