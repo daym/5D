@@ -40,7 +40,7 @@ All these levels of indirection are in order to conserve stack space. Otherwise 
 */
 // keep in sync with OperatorPrecedenceList P entries.
 bool prefix_operator_P(AST::Node* operator_) {
-	return(operator_ == Symbols::Squote || operator_ == Symbols::Sdot || operator_ == Symbols::Sbackslash || (macro_operator_P(operator_) && operator_ != Symbols::Sleftbracket && operator_ != Symbols::Sdefine && operator_ != Symbols::Sdef && operator_ != Symbols::Sdefrec));
+	return(operator_ == Symbols::Squote || operator_ == Symbols::Sbackslash || (macro_operator_P(operator_) && operator_ != Symbols::Sleftbracket && operator_ != Symbols::Sdefine && operator_ != Symbols::Sdef && operator_ != Symbols::Sdefrec));
 }
 ShuntingYardParser::ShuntingYardParser(void) {
 	bound_symbols = NULL;
@@ -125,7 +125,7 @@ AST::Node* ShuntingYardParser::parse_quote_macro(void) {
 }
 AST::Node* ShuntingYardParser::expand_simple_macro(AST::Node* value) {
 	return (value == Symbols::Sleftbracket) ? parse_list_macro() :
-	       (value == Symbols::Squote || value == Symbols::Sdot) ? parse_quote_macro() :
+	       (value == Symbols::Squote) ? parse_quote_macro() :
 	       (value == Symbols::Sdefine || value == Symbols::Sdefrec || value == Symbols::Sdef) ? parse_define_macro(value) :
 	       value;
 }
@@ -136,7 +136,7 @@ AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
 		//std::string v = str(parameter);
 		//printf("abstr param %s\n", v.c_str());
 		return(AST::makeCons(operator_, AST::makeCons(parameter, NULL)));
-	} else if(operator_ == Symbols::Squote || operator_ == Symbols::Sdot) {
+	} else if(operator_ == Symbols::Squote) {
 		if(scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::Sautorightparen || scanner->input_value == Symbols::SlessEOFgreater) {
 			// these cannot be quoted.
 			return(Symbols::Squote);
@@ -160,7 +160,7 @@ AST::Node* ShuntingYardParser::expand_macro(AST::Node* op1, AST::Node* suffix) {
 		assert(consOp1->tail);
 		AST::Symbol* parameter = dynamic_cast<AST::Symbol*>(Evaluators::evaluateToCons(consOp1->tail)->head);
 		return(AST::makeAbstraction(parameter, suffix));
-	} else if(operator_ == Symbols::Squote || operator_ == Symbols::Sdot) {
+	} else if(operator_ == Symbols::Squote) {
 		return(AST::makeApplication(Symbols::Squote, suffix));
 	} else if(operator_ == Symbols::Slet) {
 		assert(consOp1->tail);

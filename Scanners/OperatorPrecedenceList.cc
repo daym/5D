@@ -73,7 +73,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 	apply_level = 14;
 	cons(apply_level, I(" "), L); // apply
 	if(bInitDefaults) {
-		cons(20, I("."), P); // like quote
+		cons(20, I("."), L); // like quote
 		cons(19, I("_"), R);
 		cons(19, I("^"), R);
 		cons(18, I("**"), R);

@@ -6,7 +6,7 @@
 #include <stdint.h>
 #endif
 #include "Evaluators/Evaluators"
-#include "FFIs/Record"
+#include "FFIs/RecordPacker"
 #include "Evaluators/FFI"
 
 namespace FFIs {
