@@ -117,7 +117,7 @@ TUI/main.o: TUI/main.cc REPL/REPLEnvironment FFIs/FFIs AST/AST AST/Symbol Format
 TUI2/main.o: TUI2/main.cc REPL/REPLEnvironment FFIs/FFIs AST/AST AST/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators Scanners/MathParser Scanners/ShuntingYardParser Scanners/SExpressionParser  Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Numbers/Integer Numbers/Real TUI/Interrupt Config/Config Evaluators/Evaluators Evaluators/Builtins
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-FFIs/RecordPacker.o: FFIs/RecordPacker.cc FFIs/Record FFIs/FFIs AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real 
+FFIs/RecordPacker.o: FFIs/RecordPacker.cc FFIs/RecordPacker FFIs/FFIs AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real 
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 FFIs/TUI.o: FFIs/TUI.cc FFIs/UI FFIs/FFIs AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real 
