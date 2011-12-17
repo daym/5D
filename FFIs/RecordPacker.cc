@@ -5,10 +5,12 @@
 #else
 #include <stdint.h>
 #endif
+#include <string.h>
 #include "Evaluators/Evaluators"
 #include "FFIs/RecordPacker"
 #include "Evaluators/FFI"
 #include "Numbers/Integer"
+#include "Evaluators/Builtins"
 
 namespace FFIs {
 
@@ -51,14 +53,14 @@ static size_t getAlignment(char c) {
 // TODO sub-records, arrays, endianness.
 AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
 	size_t offset = 0;
-	size_t padding = 0;
 	size_t new_offset = 0;
 	bool bBigEndian = false;
 	std::stringstream sst;
 	if(formatStr == NULL)
 		return(NULL);
 	size_t maxAlign = 0;
-	for(const char* format = formatStr->text.c_str(); *format; ++format) {
+	size_t position = 0; // in format
+	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=')
 			continue;
 		size_t align = getAlignment(*format);
@@ -66,7 +68,8 @@ AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
 			maxAlign = align;
 	}
 	AST::Cons* consNode = Evaluators::evaluateToCons(data);
-	for(const char* format = formatStr->text.c_str(); *format; ++format) {
+	position = 0;
+	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=')
 			continue;
 		if(consNode == NULL)
@@ -96,27 +99,29 @@ double get_native_double(AST::Node* root);
 		for(; offset < new_offset; ++offset)
 			sst << '\0';
 	}
-	return(new AST::Str(sst.str())); // NOT makeStr
+	std::string v = sst.str();
+	return(AST::makeStrRaw(strdup(v.c_str()), v.length()));
 }
 AST::Node* Record_unpack(AST::Str* formatStr, AST::Str* dataStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("Record_unpack needs format string.");
-	const char* format = formatStr->text.c_str();
-	const char* codedData = dataStr->text.c_str();
-	size_t remainderLen = dataStr->text.length();
+	const unsigned char* codedData = (const unsigned char*) dataStr->native;
+	size_t remainderLen = dataStr->size;
 	size_t maxAlign = 0;
 	size_t padding = 0;
 	bool bBigEndian = false;
 	size_t offset = 0;
 	size_t new_offset = 0;
-	for(const char* format = formatStr->text.c_str(); *format; ++format) {
+	size_t position = 0; // in format
+	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=')
 			continue;
 		size_t align = getAlignment(*format);
 		if(align > maxAlign)
 			maxAlign = align;
 	}
-	for(const char* format = formatStr->text.c_str(); *format; ++format) {
+	position = 0;
+	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=')
 			continue;
 		size_t size = getSize(*format);
@@ -134,23 +139,24 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Str* dataStr) {
 	}
 	return(NULL); // FIXME
 }
-AST::Node* Record_get_size(AST::Str* formatStr) {
+size_t Record_get_size(AST::Str* formatStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("Record_size needs format string.");
-	const char* format = formatStr->text.c_str();
+	const char* format = (const char*) formatStr->native;
 	size_t maxAlign = 0;
 	size_t padding = 0;
-	bool bBigEndian = false;
 	size_t offset = 0;
 	size_t new_offset = 0;
-	for(const char* format = formatStr->text.c_str(); *format; ++format) {
+	size_t position = 0; // in format
+	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=')
 			continue;
 		size_t align = getAlignment(*format);
 		if(align > maxAlign)
 			maxAlign = align;
 	}
-	for(const char* format = formatStr->text.c_str(); *format; ++format) {
+	position = 0;
+	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=')
 			continue;
 		size_t size = getSize(*format);
@@ -158,7 +164,14 @@ AST::Node* Record_get_size(AST::Str* formatStr) {
 		new_offset = (offset + maxAlign - 1) & ~(maxAlign - 1);
 		offset = new_offset;
 	}
-	return(Numbers::internNative((Numbers::NativeInt) offset));
+	return(offset);
+}
+AST::Node* Record_allocate(size_t size) {
+	char* buffer = (char*) calloc(1, size);
+	if(size < 1) // TODO
+		throw Evaluators::EvaluationException("cannot allocate record with unknown size");
+	AST::Str* result = AST::makeStrRaw(buffer, size);
+	return(result);
 }
 using namespace Evaluators;
 static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
@@ -171,13 +184,27 @@ REGISTER_BUILTIN(RecordPacker, 2, 0, AST::symbolFromStr("packRecord"))
 static AST::Node* unpack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
+	// TODO size
 	return(Record_unpack(dynamic_cast<AST::Str*>(a), dynamic_cast<AST::Str*>(b)));
 }
 DEFINE_BINARY_OPERATION(RecordUnpacker, unpack)
 REGISTER_BUILTIN(RecordUnpacker, 2, 0, AST::symbolFromStr("unpackRecord"))
 
-DEFINE_SIMPLE_OPERATION(RecordSizeCalculator, Record_get_size(dynamic_cast<AST::Str*>(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(RecordSizeCalculator, Numbers::internNative((Numbers::NativeInt) Record_get_size(dynamic_cast<AST::Str*>(reduce(argument)))))
 REGISTER_BUILTIN(RecordSizeCalculator, 1, 0, AST::symbolFromStr("recordSize"))
 
-}; /* end namespace FFIs */
+static AST::Node* wrapAllocateRecord(AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	AST::Str* format = dynamic_cast<AST::Str*>(iter->second);
+	++iter;
+	AST::Node* world = iter->second;
+	AST::Node* result = Record_allocate(Record_get_size(format));
+	return(Evaluators::makeIOMonad(result, world));
+}
+DEFINE_FULL_OPERATION(RecordAllocator, {
+	return(wrapAllocateRecord(fn, argument));
+})
+REGISTER_BUILTIN(RecordAllocator, 2, 0, AST::symbolFromStr("allocateRecord"))
 
+}; /* end namespace FFIs */
