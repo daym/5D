@@ -10,6 +10,7 @@ You should have received a copy of the GNU General Public License along with thi
 #endif
 #include <stdio.h>
 #include <string.h>
+#include <sys/utsname.h>
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
 #include "AST/AST"
@@ -142,7 +143,13 @@ static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
 	// keep that result constant and invariant.
 	std::stringstream sst;
 	std::string name((char*) nameNode->native, nameNode->size);
-	sst << "/lib/x86_64-linux-gnu/";
+	sst << "/lib/";
+	struct utsname buf;
+	if(uname(&buf) == -1)
+		sst << "x86_64";
+	else
+		sst << buf.machine;
+	sst << "-linux-gnu/";
 	sst << name;
 	return(AST::makeStrCXX(sst.str()));
 }
