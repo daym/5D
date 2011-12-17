@@ -46,6 +46,7 @@ int main() {
 	test_expression("-2", "((- 0) 2)");
 	test_expression("'a", "(' a)");
 	test_expression("'=", "(' =)");
+	test_expression("(=)", "=");
 	test_expression("b'a", "(b (' a))");
 	test_expression("f g h", "((f g) h)");
 	test_expression("f g h i", "(((f g) h) i)");

@@ -250,7 +250,8 @@ static bool second_paren_P(OperatorPrecedenceList* OPL, std::stack<AST::Node*>& 
 	return(result == Symbols::Sleftparen || result == Symbols::Sautoleftparen);
 }
 #define SCOPERANDS \
-	if(fOperands.empty() && second_paren_P(OPL, fOperators)) { \
+	unsigned int prevOperandCount = fOperandCounts.top(); \
+	if(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen && fOperators.top() != Symbols::Sautoleftparen && !macro_standin_P(fOperators.top()) && fOperands.size() <= prevOperandCount) { /* well, there has been nothing interesting in the parentesized expression yet. */ \
 		fOperands.push(fOperators.top()); \
 		fOperators.pop(); \
 	} else \
@@ -262,6 +263,8 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 	// TODO curried operators (probably easiest to generate a symbol and put it in place instead of the second operand?)
 	std::stack<AST::Node*> fOperators;
 	std::stack<AST::Node*> fOperands;
+	std::stack<unsigned int> fOperandCounts; // for paren operand counting
+	fOperandCounts.push(0U);
 	AST::Node* previousValue = Symbols::Sleftparen;
 	AST::Node* value;
 	this->OPL = OPL;
@@ -289,6 +292,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		if(value == Symbols::Srightparen || value == Symbols::Sautorightparen) {
 			SCOPERANDS while(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen && fOperators.top() != Symbols::Sautoleftparen)
 				CONSUME_OPERATION
+			fOperandCounts.pop();
 			if(fOperators.empty())
 				scanner->raise_error("<stuff>", str(value)); 
 			else if(value == Symbols::Srightparen && fOperators.top() != Symbols::Sleftparen)
@@ -307,6 +311,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		} else if(value == Symbols::Sleftparen || value == Symbols::Sautoleftparen) {
 			//printf("pushop %s\n", str(value).c_str());
 			fOperators.push(value);
+			fOperandCounts.push(fOperands.size());
 		} else if(any_operator_P(value) && (fOperators.empty() || macro_standin_operator(fOperators.top()) != Symbols::Squote || value == Symbols::Sspace)) { /* operator */ // FIXME
 			AST::Symbol* currentAssociativity = Symbols::Sright; // FIXME
 			// note that prefix associativity is right associativity.
