@@ -3,8 +3,10 @@
   * make "dot" do the same as "quote".
   * make Str a Box that carries along the size.
   * add allocateRecord.
+  * fix parsing of unary minus.
+  * fix listFromStr and strFromList.
 
- -- Danny Milosavljevic <danny_milo@yahoo.com>  Fri, 16 Dec 2011 19:52:00 +0100
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Fri, 17 Dec 2011 15:04:00 +0100
 
 5d (0.1.0) unstable; urgency=low
 

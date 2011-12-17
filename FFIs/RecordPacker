@@ -14,6 +14,8 @@ DECLARE_SIMPLE_OPERATION(RecordUnpacker)
 DECLARE_SIMPLE_OPERATION(RecordSizeCalculator)
 DECLARE_SIMPLE_OPERATION(RecordAllocator)
 DECLARE_SIMPLE_OPERATION(RecordDuplicator)
+DECLARE_BINARY_OPERATION(ListFromStrGetter)
+DECLARE_BINARY_OPERATION(StrFromListGetter)
 
 }; /* end namespace FFIs */
 

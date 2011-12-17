@@ -46,8 +46,6 @@ DECLARE_BINARY_OPERATION(KeywordP)
 DECLARE_BINARY_OPERATION(SymbolFromStrGetter)
 DECLARE_BINARY_OPERATION(KeywordFromStrGetter)
 DECLARE_BINARY_OPERATION(KeywordStr)
-DECLARE_BINARY_OPERATION(ListFromStrGetter)
-DECLARE_BINARY_OPERATION(StrFromListGetter)
 DECLARE_SIMPLE_OPERATION(WorldRunner)
 
 /* first arg is a Box with a list of [key value] */

@@ -365,27 +365,6 @@ AST::Node* programFromSExpression(AST::Node* root) {
 		return(root);
 }
 
-AST::Node* listFromCharS(const char* text, size_t remainder) {
-	if(remainder == 0)
-		return(NULL);
-	else
-		return(makeCons(Numbers::internNative((Numbers::NativeInt) (unsigned char) *text), listFromCharS(text + 1, remainder - 1)));
-}
-AST::Node* listFromStr(AST::Str* node) {
-	return(listFromCharS((const char*) node->native, node->size));
-}
-AST::Node* strFromList(AST::Cons* node) {
-	std::stringstream sst;
-	bool B_ok;
-	for(; node; node = evaluateToCons(node->tail)) {
-		int c = Numbers::toNativeInt(node->head, B_ok);
-		if(c < 0 || c > 255) // oops
-			return(makeApplication(Symbols::SstrFromList, node)); 
-		sst << (char) c;
-	}
-	return(makeStr(sst.str().c_str()));
-}
-
 REGISTER_BUILTIN(Reducer, 1, 0, Symbols::Sinline)
 REGISTER_BUILTIN(Quoter, 1, 0, Symbols::Squote)
 

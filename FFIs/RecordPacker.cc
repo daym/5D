@@ -243,4 +243,32 @@ DEFINE_FULL_OPERATION(RecordDuplicator, {
 })
 REGISTER_BUILTIN(RecordDuplicator, 2, 0, AST::symbolFromStr("duplicateRecord"))
 
+AST::Node* listFromCharS(const char* text, size_t remainder) {
+	if(remainder == 0)
+		return(NULL);
+	else
+		return(makeCons(Numbers::internNative((Numbers::NativeInt) (unsigned char) *text), listFromCharS(text + 1, remainder - 1)));
+}
+AST::Node* listFromStr(AST::Str* node) {
+	return(listFromCharS((const char*) node->native, node->size));
+}
+AST::Node* strFromList(AST::Cons* node) {
+	std::stringstream sst;
+	bool B_ok;
+	for(; node; node = evaluateToCons(node->tail)) {
+		int c = Numbers::toNativeInt(node->head, B_ok);
+		if(c < 0 || c > 255) // oops
+			throw Evaluators::EvaluationException("list cannot be represented as a str.");
+		sst << (char) c;
+	}
+	std::string v = sst.str();
+	AST::Str* result = Record_allocate(v.length());
+	memcpy(result->native, v.c_str(), result->size);
+	return(result);
+}
+DEFINE_SIMPLE_OPERATION(ListFromStrGetter, (argument = reduce(argument), str_P(argument) ? listFromStr(dynamic_cast<AST::Str*>(argument)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(StrFromListGetter, (argument = reduce(argument), (cons_P(argument) || nil_P(argument)) ? strFromList(dynamic_cast<AST::Cons*>(argument)) : FALLBACK))
+REGISTER_BUILTIN(ListFromStrGetter, 1, 0, AST::symbolFromStr("listFromStr"))
+REGISTER_BUILTIN(StrFromListGetter, 1, 0, AST::symbolFromStr("strFromList"))
+
 }; /* end namespace FFIs */
