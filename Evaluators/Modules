@@ -1,0 +1,26 @@
+#ifndef __EVALUATORS_MODULES_H
+#define __EVALUATORS_MODULES_H
+#include <string>
+
+static inline std::string getModuleFileKey(const std::string& filename) {
+#ifdef WIN32
+	struct _stat buf;
+	std::wstring filenameW = FromUTF8(filename.c_str());
+	if(_wstat(filenameW.c_str(), &buf) == -1) {
+		//perror(filename.c_str());
+		return("");
+	}
+#else
+	struct stat buf;
+	if(stat(filename.c_str(), &buf) == -1) {
+		//perror(filename.c_str());
+		return("");
+	}
+#endif
+	std::stringstream moduleKeyStream;
+	moduleKeyStream << buf.st_dev << ":" << buf.st_ino;
+	std::string moduleKey = moduleKeyStream.str();
+	return(moduleKey);
+}
+
+#endif /* ndef __EVALUATORS_MODULES_H */
