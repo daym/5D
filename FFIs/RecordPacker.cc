@@ -50,7 +50,7 @@ static size_t getAlignment(char c) {
 	default: return(0); /* FIXME */
 	}
 }
-// TODO sub-records, arrays, endianness.
+// TODO sub-records, arrays, endianness. pointers to other stuff.
 AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
 	size_t offset = 0;
 	size_t new_offset = 0;
@@ -114,7 +114,7 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("Record_unpack needs format string.");
 	const unsigned char* codedData = (const unsigned char*) dataStr->native;
-	size_t remainderLen = dynamic_cast<AST::Str*>(dataStr) ? ((AST::Str*) dataStr)->size : 9999999999; // FIXME
+	size_t remainderLen = dynamic_cast<AST::Str*>(dataStr) ? ((AST::Str*) dataStr)->size : 9999999; // FIXME
 	size_t maxAlign = 0;
 	size_t padding = 0;
 	bool bBigEndian = false;
