@@ -38,8 +38,20 @@ static size_t getAlignment(char c) {
 	case 'h': return(2);
 	case 'i': return(4);
 	case 'f': return(4);
-	case 'd': return(sizeof(long) == 8 ? 8 : 8); // FIXME latter: 4 for Linux
-	case 'D': return(sizeof(long) == 8 ? 16 : 8); // FIXME latter: 4 for Linux
+	case 'd': return(sizeof(long) == 8 ? 8 : 
+#ifdef WIN32
+8
+#else
+4
+#endif
+);
+	case 'D': return(sizeof(long) == 8 ? 16 : 
+#ifdef WIN32
+8
+#else
+4
+#endif
+); 
 	case 'l': return(sizeof(long));
 	case 'p': return(sizeof(long) == 8 ? 8 : 4);
 	case 'P': return(sizeof(long) == 8 ? 8 : 4);
@@ -58,15 +70,7 @@ AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
 	std::stringstream sst;
 	if(formatStr == NULL)
 		return(NULL);
-	size_t maxAlign = 0;
 	size_t position = 0; // in format
-	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
-		if(*format == '<' || *format == '>' || *format == '=')
-			continue;
-		size_t align = getAlignment(*format);
-		if(align > maxAlign)
-			maxAlign = align;
-	}
 	AST::Cons* consNode = Evaluators::evaluateToCons(data);
 	position = 0;
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
@@ -77,6 +81,7 @@ AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
 		AST::Node* headNode = Evaluators::reduce(consNode->head);
 		consNode = Evaluators::evaluateToCons(consNode->tail);
 		size_t size = getSize(*format);
+		size_t align = getAlignment(*format);
 		unsigned long value = (unsigned long) Evaluators::get_native_long(headNode); // FIXME the others
 /*
 int get_native_int(AST::Node* root);
@@ -95,7 +100,7 @@ double get_native_double(AST::Node* root);
 			value >>= 8;
 		}
 		offset += size;
-		new_offset = (offset + maxAlign - 1) & ~(maxAlign - 1);
+		new_offset = (offset + align - 1) & ~(align - 1);
 		for(; offset < new_offset; ++offset)
 			sst << '\0';
 	}
@@ -115,8 +120,6 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 		throw Evaluators::EvaluationException("Record_unpack needs format string.");
 	const unsigned char* codedData = (const unsigned char*) dataStr->native;
 	size_t remainderLen = dynamic_cast<AST::Str*>(dataStr) ? ((AST::Str*) dataStr)->size : 9999999; // FIXME
-	size_t maxAlign = 0;
-	size_t padding = 0;
 	bool bBigEndian = false;
 	size_t offset = 0;
 	size_t new_offset = 0;
@@ -126,15 +129,8 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=')
 			continue;
-		size_t align = getAlignment(*format);
-		if(align > maxAlign)
-			maxAlign = align;
-	}
-	position = 0;
-	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
-		if(*format == '<' || *format == '>' || *format == '=')
-			continue;
 		size_t size = getSize(*format);
+		size_t align = getAlignment(*format);
 		if(remainderLen < size)
 			throw Evaluators::EvaluationException("Record_unpack: not enough coded data for format.");
 		char formatC = *format;
@@ -147,12 +143,10 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 		codedData += size;
 		remainderLen -= size;
 		offset += size;
-		new_offset = (offset + maxAlign - 1) & ~(maxAlign - 1);
+		new_offset = (offset + align - 1) & ~(align - 1);
 		if(remainderLen < new_offset - offset)
 			throw Evaluators::EvaluationException("Record_unpack: not enough coded data for format padding.");
 		offset = new_offset;
-		codedData += padding;
-		remainderLen -= padding;
 	}
 	return(result);
 }
@@ -160,25 +154,16 @@ size_t Record_get_size(AST::Str* formatStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("Record_size needs format string.");
 	const char* format = (const char*) formatStr->native;
-	size_t maxAlign = 0;
-	size_t padding = 0;
 	size_t offset = 0;
 	size_t new_offset = 0;
 	size_t position = 0; // in format
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=')
 			continue;
-		size_t align = getAlignment(*format);
-		if(align > maxAlign)
-			maxAlign = align;
-	}
-	position = 0;
-	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
-		if(*format == '<' || *format == '>' || *format == '=')
-			continue;
 		size_t size = getSize(*format);
+		size_t align = getAlignment(*format);
 		offset += size;
-		new_offset = (offset + maxAlign - 1) & ~(maxAlign - 1);
+		new_offset = (offset + align - 1) & ~(align - 1);
 		offset = new_offset;
 	}
 	return(offset);
@@ -266,9 +251,41 @@ AST::Node* strFromList(AST::Cons* node) {
 	memcpy(result->native, v.c_str(), result->size);
 	return(result);
 }
+static AST::Node* substr(AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	AST::Str* mBox = dynamic_cast<AST::Str*>(iter->second);
+	if(iter->second == NULL)
+		return(NULL);
+	++iter;
+	if(!mBox)
+		throw Evaluators::EvaluationException("substr on non-string is undefined");
+	int beginning = Evaluators::get_native_int(iter->second);
+	++iter;
+	int end = Evaluators::get_native_int(iter->second);
+	++iter;
+	char* p = (char*) mBox->native;
+	size_t sz = mBox->size;
+	if(beginning < 0)
+		beginning = sz + beginning;
+	if(end < 0)
+		end = sz + end;
+	if(beginning < 0)
+		beginning = 0;
+	if(end > sz)
+		end = sz;
+	int len = (end > beginning) ? end - beginning : 0;
+	if(len == 0)
+		return(NULL);
+	p += beginning;
+	return(AST::makeStrRaw(p, len)); // TODO maybe copy.
+}
+
 DEFINE_SIMPLE_OPERATION(ListFromStrGetter, (argument = reduce(argument), str_P(argument) ? listFromStr(dynamic_cast<AST::Str*>(argument)) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(StrFromListGetter, (argument = reduce(argument), (cons_P(argument) || nil_P(argument)) ? strFromList(dynamic_cast<AST::Cons*>(argument)) : FALLBACK))
+DEFINE_FULL_OPERATION(SubstrGetter, return(substr(fn, argument));)
 REGISTER_BUILTIN(ListFromStrGetter, 1, 0, AST::symbolFromStr("listFromStr"))
 REGISTER_BUILTIN(StrFromListGetter, 1, 0, AST::symbolFromStr("strFromList"))
+REGISTER_BUILTIN(SubstrGetter, 3, 0, AST::symbolFromStr("substr"))
 
 }; /* end namespace FFIs */

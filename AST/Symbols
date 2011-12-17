@@ -105,6 +105,7 @@ extern AST::Symbol* SdispatchModule;
 extern AST::Symbol* Sprefix;
 extern AST::Symbol* Sdot;
 extern AST::Symbol* Sunarydash;
+extern AST::Symbol* Ssubstr;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */
