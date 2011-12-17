@@ -104,6 +104,7 @@ extern AST::Symbol* Sexports;
 extern AST::Symbol* SdispatchModule;
 extern AST::Symbol* Sprefix;
 extern AST::Symbol* Sdot;
+extern AST::Symbol* Sunarydash;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

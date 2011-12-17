@@ -40,7 +40,11 @@ All these levels of indirection are in order to conserve stack space. Otherwise 
 */
 // keep in sync with OperatorPrecedenceList P entries.
 bool prefix_operator_P(AST::Node* operator_) {
-	return(operator_ == Symbols::Squote || operator_ == Symbols::Sbackslash || (macro_operator_P(operator_) && operator_ != Symbols::Sleftbracket && operator_ != Symbols::Sdefine && operator_ != Symbols::Sdef && operator_ != Symbols::Sdefrec));
+	return(operator_ == Symbols::Squote || 
+	       operator_ == Symbols::Sbackslash || 
+	       operator_ == Symbols::Sdash ||
+	       operator_ == Symbols::Sunarydash ||
+	       (macro_operator_P(operator_) && operator_ != Symbols::Sleftbracket && operator_ != Symbols::Sdefine && operator_ != Symbols::Sdef && operator_ != Symbols::Sdefrec));
 }
 ShuntingYardParser::ShuntingYardParser(void) {
 	bound_symbols = NULL;
@@ -144,9 +148,11 @@ AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
 			return(AST::makeCons(Symbols::Squote, NULL));
 	} else if(operator_ == Symbols::Slet) {
 		return(parse_let_macro());
+	} else if(operator_ == Symbols::Sunarydash) {
+		return(AST::makeCons(Symbols::Sunarydash, NULL));
+	}
 	//} else if(operator_ == Symbols::Sdefine || operator_ == Symbols::Sdefrec || operator_ == Symbols::Sdef) {
 	//	return(parse_define_macro(operator_));
-	}
 	// the remaining operators are:
 	//    (define and similar)
 	return(operator_);
@@ -171,6 +177,8 @@ AST::Node* ShuntingYardParser::expand_macro(AST::Node* op1, AST::Node* suffix) {
 		AST::Cons* c3 = Evaluators::evaluateToCons(c2->tail);
 		AST::Node* replacement = c3->head;
 		return(Evaluators::close(parameter, replacement, suffix));
+	} else if(operator_ == Symbols::Sunarydash) {
+		return(AST::makeOperation(Symbols::Sdash, Symbols::Szero, suffix));
 	} else {
 		scanner->raise_error("<macro-body>", str(op1));
 		return(NULL);
@@ -252,13 +260,14 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		(!OPL->any_operator_P(previousValue) && 
 		 previousValue != Symbols::Sleftparen && 
 		 previousValue != Symbols::Sautoleftparen && 
-		 ((!OPL->any_operator_P(value) || prefix_operator_P(value) || value == Symbols::Sbackslash) &&
+		 ((!OPL->any_operator_P(value) || (prefix_operator_P(value) && value != Symbols::Sdash) || value == Symbols::Sbackslash) &&
 		   value != Symbols::Srightparen && 
-		   value != Symbols::Sautorightparen))) {
+		   value != Symbols::Sautorightparen))) { // two consecutive non-operators: function application.
 			// not "x)" !
 			// fake previousValue Sspace value operation. Note that previousValue has already been handled in the previous iteration.
 			//fOperands.push(expand_simple_macro(value));
 			value = Symbols::Sspace;
+			// do not consume
 		} else {
 			//if(any_operator_P(previousValue) && previousValue != Symbols::Sleftparen && previousValue != Symbols::Srightparen) {
 			//// on the other hand, if both are, we have an unary operator - or at least something that looks like an unary operator.
@@ -275,7 +284,9 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			else if(value == Symbols::Sautorightparen && fOperators.top() != Symbols::Sautoleftparen)
 				scanner->raise_error(std::string("close-") + str(fOperators.top()), str(value));
 			fOperators.pop(); // "("
-		} else if(prefix_operator_P(value)) { // assumed to all be right-associative.
+		} else if(prefix_operator_P(value) && any_operator_P(previousValue) && previousValue != Symbols::Srightparen && previousValue != Symbols::Sautorightparen) { // assumed to all be right-associative.
+			if(value == Symbols::Sdash)
+				value = Symbols::Sunarydash;
 			int currentPrecedence = get_operator_precedence(value);
 			SCOPERANDS while(!fOperators.empty() && prefix_operator_P(fOperators.top()) && currentPrecedence < get_operator_precedence(fOperators.top()))
 				CONSUME_OPERATION

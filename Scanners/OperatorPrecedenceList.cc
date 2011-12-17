@@ -85,6 +85,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(14, I("'"), P);
 		cons(13, I("++"), L);
 		cons(12, I("+"), L);
+		cons(12, I("unary-"), P);
 		cons(12, I("-"), L);
 		cons(11, I("%"), L);
 		cons(10, I("="), N);
