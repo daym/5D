@@ -103,8 +103,8 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		//cons(?, I(">>"), L);
 		//cons(?, I(">>="), L);
 		//cons(?, I("$"), L);
-		cons(4, I("=>"), L); // FIXME precedence.
 		cons(3, I("|"), L);
+		cons(2, I("=>"), L);
 		cons(2, I(";"), L);
 		cons(1, I("\\"), P);
 		cons(0, I("let"), R); // let
