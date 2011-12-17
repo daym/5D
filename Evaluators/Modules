@@ -27,7 +27,7 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 		return("");
 	}
 	if(S_ISDIR(buf.st_mode)) {
-		outActualFilename = filename + "\\init.5D";
+		outActualFilename = filename + "/init.5D";
 		if(stat(outActualFilename.c_str(), &buf) == -1) {
 			//perror(filename.c_str());
 			return("");

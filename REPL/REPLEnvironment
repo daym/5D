@@ -298,7 +298,7 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	assert(symbol_P(name));
 	// TODO more options
 	AST::Node* fileNameNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("fileName:"));
-	AST::Node* body = REPL_import_module(options/*FIXME*/, fileNameNode ? fileNameNode : makeStr2(Evaluators::str(name) + ".5D"));
+	AST::Node* body = REPL_import_module(options/*FIXME*/, fileNameNode ? fileNameNode : makeStr2(Evaluators::str(name)));
 	REPL_prepare(self, body);
 	REPL_add_to_environment(self, name, body);
 	return(name); // body can be too large // FIXME
