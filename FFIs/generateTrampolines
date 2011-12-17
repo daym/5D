@@ -53,8 +53,7 @@ static inline AST::Node* extr(const std::list<std::pair<AST::Keyword*, AST::Node
 }
 
 static inline void* getSomethingUseful(AST::Node* n) {
-  AST::Str* s;
-  void* result = ((s = dynamic_cast<AST::Str*>(n)) != NULL) ? ((void*) s->text.c_str()) : (Evaluators::get_native_pointer(n));
+  void* result = Evaluators::get_native_pointer(n);
   if(result == NULL)
     throw Evaluators::EvaluationException("argument is required but empty");
   return(result);
