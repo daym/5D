@@ -504,6 +504,42 @@ runWorld (puts "Hello world")
 </pre>
 <p>See the <a href="../programming/manual/index.html">5D Programming Manual</a> for more details.</p>
 <hr/>
+<h3>packRecord \format \list</h3>
+<p>Packs the given list using the given format, resulting in a Box (or Str). Note that the result can be reused later. If you want to detach it, use <span class="pre">duplicateRecord</span> on the result.</p>
+<p>Example:</p>
+<pre>
+packRecord "ii" [1 2] =&gt; "\x01\x00\x00\x00\x02\x00\x00\x00"
+</pre>
+<hr/>
+<h3>unpackRecord \format \box</h3>
+<p>Unpacks the given box using the given format, resulting in a List.</p>
+<p>Example:</p>
+<pre>
+unpackRecord "ii" "\x01\x00\x00\x00\x02\x00\x00\x00" =&gt; [1 2]
+</pre>
+<hr/>
+<h3>allocateRecord \format \world</h3>
+<p>Given a world, allocates an empty record with the given format, resulting in a Box (or Str) and a new World.</p>
+<p>Example:</p>
+<pre>
+allocateRecord "ii" ;\r
+return r
+</pre>
+<hr/>
+<h3>duplicateRecord \box \world</h3>
+<p>Given a world, duplicates the record in <span class="pre">box</span>, resulting in the new Box and a new World.</p>
+<p>Example:</p>
+<pre>
+duplicateRecord (packRecord "ii" [1 2]) ;\r
+return r
+</pre>
+<hr/>
+<h3>recordSize \format</h3>
+<p>Results in the size (in bytes) a record with the given format would have.</p>
+<p>Example:</p>
+<pre>
+recordSize "i" =&gt; 4
+</pre>
 </a>
 
 <a name="math"><h2>Higher Mathematics</h2>
