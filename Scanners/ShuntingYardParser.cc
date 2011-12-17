@@ -268,10 +268,12 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		if(value == Symbols::Srightparen || value == Symbols::Sautorightparen) {
 			SCOPERANDS while(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen && fOperators.top() != Symbols::Sautoleftparen)
 				CONSUME_OPERATION
-			if(value == Symbols::Srightparen && fOperators.top() != Symbols::Sleftparen)
-				scanner->raise_error(str(Symbols::Sleftparen), str(fOperators.top()));
+			if(fOperators.empty())
+				scanner->raise_error("<stuff>", str(value)); 
+			else if(value == Symbols::Srightparen && fOperators.top() != Symbols::Sleftparen)
+				scanner->raise_error(std::string("close-") + str(fOperators.top()), str(value));
 			else if(value == Symbols::Sautorightparen && fOperators.top() != Symbols::Sautoleftparen)
-				scanner->raise_error(str(Symbols::Sautoleftparen), str(fOperators.top()));
+				scanner->raise_error(std::string("close-") + str(fOperators.top()), str(value));
 			fOperators.pop(); // "("
 		} else if(prefix_operator_P(value)) { // assumed to all be right-associative.
 			int currentPrecedence = get_operator_precedence(value);
