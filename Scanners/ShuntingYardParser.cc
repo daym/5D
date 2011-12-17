@@ -160,6 +160,13 @@ AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
 	//    (define and similar)
 	return(operator_);
 }
+static AST::Node* macro_standin_operator(AST::Node* op1) {
+	AST::Cons* consOp1 = dynamic_cast<AST::Cons*>(op1);
+	if(consOp1 == NULL)
+		return(NULL);
+	AST::Node* operator_ = consOp1->head; 
+	return(operator_);
+}
 AST::Node* ShuntingYardParser::expand_macro(AST::Node* op1, AST::Node* suffix) {
 	AST::Cons* consOp1 = dynamic_cast<AST::Cons*>(op1);
 	if(consOp1 == NULL)
@@ -300,7 +307,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		} else if(value == Symbols::Sleftparen || value == Symbols::Sautoleftparen) {
 			//printf("pushop %s\n", str(value).c_str());
 			fOperators.push(value);
-		} else if(any_operator_P(value)) { /* operator */ // FIXME
+		} else if(any_operator_P(value) && (fOperators.empty() || macro_standin_operator(fOperators.top()) != Symbols::Squote || value == Symbols::Sspace)) { /* operator */ // FIXME
 			AST::Symbol* currentAssociativity = Symbols::Sright; // FIXME
 			// note that prefix associativity is right associativity.
 			int currentPrecedence = get_operator_precedence_and_associativity(value, currentAssociativity);
