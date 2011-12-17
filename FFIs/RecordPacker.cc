@@ -102,17 +102,27 @@ double get_native_double(AST::Node* root);
 	std::string v = sst.str();
 	return(AST::makeStrRaw(strdup(v.c_str()), v.length()));
 }
-AST::Node* Record_unpack(AST::Str* formatStr, AST::Str* dataStr) {
+static inline AST::Node* decode(char format, const unsigned char* codedData, size_t size) {
+	Numbers::NativeInt value = 0; // TODO bigger ones
+	int offset = 0;
+	for(; size > 0; --size, offset += 8, ++codedData) {
+		value |= (*codedData) << offset;
+	}
+	return(Numbers::internNative(value));
+}
+AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("Record_unpack needs format string.");
 	const unsigned char* codedData = (const unsigned char*) dataStr->native;
-	size_t remainderLen = dataStr->size;
+	size_t remainderLen = dynamic_cast<AST::Str*>(dataStr) ? ((AST::Str*) dataStr)->size : 9999999999; // FIXME
 	size_t maxAlign = 0;
 	size_t padding = 0;
 	bool bBigEndian = false;
 	size_t offset = 0;
 	size_t new_offset = 0;
 	size_t position = 0; // in format
+	AST::Cons* result = NULL;
+	AST::Cons* tail = NULL;
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=')
 			continue;
@@ -127,7 +137,14 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Str* dataStr) {
 		size_t size = getSize(*format);
 		if(remainderLen < size)
 			throw Evaluators::EvaluationException("Record_unpack: not enough coded data for format.");
-		codedData += size; // FIXME the actual value.
+		char formatC = *format;
+		AST::Cons* n = AST::makeCons(decode(formatC, codedData, size), NULL);
+		if(!tail)
+			result = n;
+		else
+			tail->tail = n;
+		tail = n;
+		codedData += size;
 		remainderLen -= size;
 		offset += size;
 		new_offset = (offset + maxAlign - 1) & ~(maxAlign - 1);
@@ -137,7 +154,7 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Str* dataStr) {
 		codedData += padding;
 		remainderLen -= padding;
 	}
-	return(NULL); // FIXME
+	return(result);
 }
 size_t Record_get_size(AST::Str* formatStr) {
 	if(formatStr == NULL)
@@ -166,7 +183,7 @@ size_t Record_get_size(AST::Str* formatStr) {
 	}
 	return(offset);
 }
-AST::Node* Record_allocate(size_t size) {
+AST::Str* Record_allocate(size_t size) {
 	char* buffer = (char*) calloc(1, size);
 	if(size < 1) // TODO
 		throw Evaluators::EvaluationException("cannot allocate record with unknown size");
@@ -185,7 +202,7 @@ static AST::Node* unpack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	// TODO size
-	return(Record_unpack(dynamic_cast<AST::Str*>(a), dynamic_cast<AST::Str*>(b)));
+	return(Record_unpack(dynamic_cast<AST::Str*>(a), dynamic_cast<AST::Box*>(b)));
 }
 DEFINE_BINARY_OPERATION(RecordUnpacker, unpack)
 REGISTER_BUILTIN(RecordUnpacker, 2, 0, AST::symbolFromStr("unpackRecord"))
@@ -206,5 +223,24 @@ DEFINE_FULL_OPERATION(RecordAllocator, {
 	return(wrapAllocateRecord(fn, argument));
 })
 REGISTER_BUILTIN(RecordAllocator, 2, 0, AST::symbolFromStr("allocateRecord"))
+static AST::Node* wrapDuplicateRecord(AST::Node* options, AST::Node* argument) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	AST::Str* record = dynamic_cast<AST::Str*>(iter->second);
+	++iter;
+	AST::Node* world = iter->second;
+	AST::Str* result;
+	if(record == NULL)
+		result = NULL;
+	else {
+		result = Record_allocate(record->size);
+		memcpy(result->native, record->native, record->size);
+	}
+	return(Evaluators::makeIOMonad(result, world));
+}
+DEFINE_FULL_OPERATION(RecordDuplicator, {
+	return(wrapDuplicateRecord(fn, argument));
+})
+REGISTER_BUILTIN(RecordDuplicator, 2, 0, AST::symbolFromStr("duplicateRecord"))
 
 }; /* end namespace FFIs */
