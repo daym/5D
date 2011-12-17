@@ -25,12 +25,17 @@ Cons* makeCons(Node* head, Node* tail) {
 	return(result);
 }
 Str* makeStrRaw(char* mutableText, size_t size) {
+	if(size < 1)
+		return(NULL);
 	AST::Str* result = new AST::Str((void*) mutableText);
 	result->size = size;
 	return(result);
 }
 Str* makeStr(const char* text) {
-	return(makeStrRaw(strdup(text), strlen(text)));
+	if(strlen(text) < 1)
+		return(NULL);
+	else
+		return(makeStrRaw(strdup(text), strlen(text)));
 }
 Str* makeStrCXX(const std::string& text) {
 	char* result = new char[text.length() + 1];
