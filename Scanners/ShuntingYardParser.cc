@@ -98,7 +98,8 @@ AST::Node* ShuntingYardParser::parse_define_macro(AST::Node* operator_) {
 	return(AST::makeApplication(AST::makeApplication(operator_, parameter), body));
 }
 AST::Node* ShuntingYardParser::parse_let_macro(void) {
-	AST::Node* parameter = parse_value(); // this is supposed to be a symbol or so
+	AST::Node* parameter = scanner->consume(); // a symbol
+	//parse_value(); // this is supposed to be a symbol or so
 	scanner->consume(Symbols::Sequal);
 	//AST::Node* body = parse_value();
 	AST::Node* body = parse_expression(OPL, Symbols::Sin);
