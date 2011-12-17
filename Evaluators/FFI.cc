@@ -158,7 +158,6 @@ char* get_absolute_path(const char* filename) {
 	if(filename[0] == '/')
 		return(strdup(filename));
 	else {
-		printf("WQD\n");
 		char buffer[2049];
 		std::stringstream sst;
 		if(getcwd(buffer, 2048)) {
