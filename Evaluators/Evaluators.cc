@@ -365,14 +365,14 @@ AST::Node* programFromSExpression(AST::Node* root) {
 		return(root);
 }
 
-AST::Node* listFromCharZ(const char* text) {
-	if(*text == 0)
+AST::Node* listFromCharS(const char* text, size_t remainder) {
+	if(remainder == 0)
 		return(NULL);
 	else
-		return(makeCons(Numbers::internNative((Numbers::NativeInt) (unsigned char) *text), listFromCharZ(text + 1)));
+		return(makeCons(Numbers::internNative((Numbers::NativeInt) (unsigned char) *text), listFromCharS(text + 1, remainder - 1)));
 }
 AST::Node* listFromStr(AST::Str* node) {
-	return(listFromCharZ(node->text.c_str()));
+	return(listFromCharS((const char*) node->native, node->size));
 }
 AST::Node* strFromList(AST::Cons* node) {
 	std::stringstream sst;
