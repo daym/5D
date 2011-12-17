@@ -6,9 +6,8 @@ def getNames(n):
 	with open(n, "r") as f:
 		for line in f.readlines():
 			sys.stdout.write(line)
-			if line.find("=") == -1:
+			if line.find("=") == -1 or not line.startswith("let "):
 				continue
-			assert(line.startswith("let "))
 			rest = line[len("let ") : ]
 			rest = rest[: rest.find("=")].strip()
 			name = rest
