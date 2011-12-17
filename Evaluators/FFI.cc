@@ -68,9 +68,10 @@ bool get_native_boolean(AST::Node* root) {
 }
 char* get_native_string(AST::Node* root) {
 	AST::Str* rootString = dynamic_cast<AST::Str*>(root);
-	if(rootString)
-		return(strdup(rootString->text.c_str()));
-	else {
+	if(rootString) {
+		// TODO maybe check terminating zero? Maybe not.
+		return((char*) rootString->native);
+	} else {
 		std::string value = str(root); /* FIXME */
 		return(strdup(value.c_str()));
 	}
