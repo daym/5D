@@ -2,7 +2,8 @@
 #define __EVALUATORS_MODULES_H
 #include <string>
 
-static inline std::string getModuleFileKey(const std::string& filename) {
+static inline std::string getModuleFileKey(const std::string& filename, std::string& outActualFilename) {
+	outActualFilename = "";
 #ifdef WIN32
 	struct _stat buf;
 	std::wstring filenameW = FromUTF8(filename.c_str());
@@ -10,12 +11,29 @@ static inline std::string getModuleFileKey(const std::string& filename) {
 		//perror(filename.c_str());
 		return("");
 	}
+	if(S_ISDIR(buf.st_mode)) {
+		outActualFilename = filename + "\\init.5D";
+		filenameW = FromUTF8(outActualFilename.c_str());
+		if(_wstat(filenameW.c_str(), &buf) == -1) {
+			//perror(filename.c_str());
+			return("");
+		}
+	} else
+		outActualFilename = filename;
 #else
 	struct stat buf;
 	if(stat(filename.c_str(), &buf) == -1) {
 		//perror(filename.c_str());
 		return("");
 	}
+	if(S_ISDIR(buf.st_mode)) {
+		outActualFilename = filename + "\\init.5D";
+		if(stat(outActualFilename.c_str(), &buf) == -1) {
+			//perror(filename.c_str());
+			return("");
+		}
+	} else
+		outActualFilename = filename;
 #endif
 	std::stringstream moduleKeyStream;
 	moduleKeyStream << buf.st_dev << ":" << buf.st_ino;

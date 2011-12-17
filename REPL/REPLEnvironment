@@ -259,23 +259,23 @@ static AST::Node* REPL_import_module(AST::Node* options, AST::Node* fileNameNode
 	std::vector<std::string> searchPaths = REPL_get_module_search_path();
 	std::vector<std::string>::const_iterator endSearchPaths = searchPaths.end();
 	std::string filename = "";
+	std::string realFilename = "";
 	std::string moduleKey = "";
 	for(std::vector<std::string>::const_iterator iterSearchPaths = searchPaths.begin(); iterSearchPaths != endSearchPaths; ++iterSearchPaths) {
 		std::stringstream filenameStream;
 		filenameStream << *iterSearchPaths;
 		filenameStream << Evaluators::get_native_string(fileNameNode);
 		filename = filenameStream.str();
-		moduleKey = getModuleFileKey(filename);
+		moduleKey = getModuleFileKey(filename, realFilename);
 		if(moduleKey.length() != 0)
 			break;
 	}
-	if(moduleKey.length() == 0) {
+	if(moduleKey.length() == 0 || realFilename.length() == 0) {
 		perror(filename.c_str());
 		return(FALLBACK);
 	}
-	char* actualFilename = Evaluators::get_absolute_path(filename.c_str());
+	char* actualFilename = Evaluators::get_absolute_path(realFilename.c_str());
 	AST::Node* body = REPL_require_module(self, actualFilename, moduleKey);
-	//return(Evaluators::reduce(new Evaluators::CurriedOperation(new Evaluators::CurriedOperation(&RModule, body), filename)));
 	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&RModule, body)), AST::makeStr(actualFilename))));
 }
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument);
