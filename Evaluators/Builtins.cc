@@ -198,9 +198,9 @@ static std::string strStr(AST::Str* node) {
 	std::stringstream sst;
 	const char* item;
 	unsigned char c;
-	size_t len = node->text.length();
+	size_t len = node->size;
 	sst << "\"";
-	for(item = node->text.c_str(); (c = *item), len > 0; ++item, --len) {
+	for(item = (const char*) node->native; (c = *item), len > 0; ++item, --len) {
 		if(c == '"')
 			sst << "\\\"";
 		else if(c == '\\')
@@ -240,10 +240,10 @@ static std::string strStr(AST::Str* node) {
 	sst << "\"";
 	return(sst.str());
 }
+REGISTER_STR(Box, return("box");)
 REGISTER_STR(Str, {
 	return(strStr(node));
 })
-REGISTER_STR(Box, return("box");)
 REGISTER_STR(Application,  {
 	std::stringstream result;
 	result << '(';
