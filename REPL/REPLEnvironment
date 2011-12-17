@@ -9,6 +9,7 @@
 #include "AST/Keyword"
 #include "FFIs/UI"
 #include "FFIs/RecordPacker"
+#include "Evaluators/Modules"
 
 namespace GUI {
 };
@@ -210,39 +211,13 @@ static AST::Node* REPL_force_import_module(struct REPL* self, const char* filena
 		// FIXME REPL_insert_into_output_buffer(self, destination, v.c_str());
 	} catch(Scanners::ParseException& e) {
 		std::string v = e.what() ? e.what() : "error";
-		// FIXME REPL_insert_error_message(self, &self->fCursorPosition, (std::string("\n") + text), v);
 		fprintf(stderr, "%s\n", v.c_str());
 	}
 	// FIXME pop symbol table
 	return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 	// FIXME return(uncurried(&RModule, AST::makeStr(filename)));
 }
-static std::string getModuleFileKey(const char* filename) {
-#ifdef WIN32
-	struct _stat buf;
-	std::wstring filenameW = FromUTF8(filename);
-	if(_wstat(filenameW.c_str(), &buf) == -1) {
-		//perror(filename);
-		return("");
-	}
-#else
-	struct stat buf;
-	if(stat(filename, &buf) == -1) {
-		//perror(filename);
-		return("");
-	}
-#endif
-	std::stringstream moduleKeyStream;
-	moduleKeyStream << buf.st_dev << ":" << buf.st_ino;
-	std::string moduleKey = moduleKeyStream.str();
-	return(moduleKey);
-}
-static AST::Node* REPL_require_module(struct REPL* self, const char* filename) {
-	std::string moduleKey = getModuleFileKey(filename);
-	if(moduleKey.length() == 0) {
-		perror(filename);
-		return(FALLBACK);
-	}
+static AST::Node* REPL_require_module(struct REPL* self, const char* filename, const std::string& moduleKey) {
 	if(self->fModules == NULL)
 		self->fModules = new std::map<std::string, AST::Node*>;
 	if((*self->fModules).find(moduleKey) == self->fModules->end()) {
@@ -265,19 +240,6 @@ static AST::Node* REPL_import_module(AST::Node* options, AST::Node* filename);
 DEFINE_REPL_OPERATION(RModuleLoader, {
 	return(REPL_import_module(fn, argument));
 })
-static AST::Node* REPL_import_module(AST::Node* options, AST::Node* filename) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, filename);
-	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
-	assert(self);
-	char* actualFilename = Evaluators::get_absolute_path(Evaluators::get_native_string(filename)); /* TODO use an absolute path */
-	AST::Node* body = REPL_require_module(self, actualFilename);
-	//return(Evaluators::reduce(new Evaluators::CurriedOperation(new Evaluators::CurriedOperation(&RModule, body), filename)));
-	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&RModule, body)), AST::makeStr(actualFilename))));
-}
-static AST::Node* REPL_import(AST::Node* options, AST::Node* argument);
-DEFINE_REPL_OPERATION(RImporter, {
-	return(REPL_import(fn, argument));
-})
 static std::vector<std::string> REPL_get_module_search_path(void) {
 	std::vector<std::string> result;
 #ifdef WIN32
@@ -289,7 +251,41 @@ static std::vector<std::string> REPL_get_module_search_path(void) {
 #endif
 	return(result);
 }
+static AST::Node* REPL_import_module(AST::Node* options, AST::Node* fileNameNode) {
+	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, fileNameNode);
+	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
+	assert(self);
+
+	std::vector<std::string> searchPaths = REPL_get_module_search_path();
+	std::vector<std::string>::const_iterator endSearchPaths = searchPaths.end();
+	std::string filename = "";
+	std::string moduleKey = "";
+	for(std::vector<std::string>::const_iterator iterSearchPaths = searchPaths.begin(); iterSearchPaths != endSearchPaths; ++iterSearchPaths) {
+		std::stringstream filenameStream;
+		filenameStream << *iterSearchPaths;
+		filenameStream << Evaluators::get_native_string(fileNameNode);
+		filename = filenameStream.str();
+		moduleKey = getModuleFileKey(filename);
+		if(moduleKey.length() != 0)
+			break;
+	}
+	if(moduleKey.length() == 0) {
+		perror(filename.c_str());
+		return(FALLBACK);
+	}
+	char* actualFilename = Evaluators::get_absolute_path(filename.c_str());
+	AST::Node* body = REPL_require_module(self, actualFilename, moduleKey);
+	//return(Evaluators::reduce(new Evaluators::CurriedOperation(new Evaluators::CurriedOperation(&RModule, body), filename)));
+	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&RModule, body)), AST::makeStr(actualFilename))));
+}
+static AST::Node* REPL_import(AST::Node* options, AST::Node* argument);
+DEFINE_REPL_OPERATION(RImporter, {
+	return(REPL_import(fn, argument));
+})
 /* will result is a curried RModule */
+static inline AST::Str* makeStr2(std::string v) {
+	return(AST::makeStr(v.c_str()));
+}
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
 	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
@@ -302,21 +298,7 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	assert(symbol_P(name));
 	// TODO more options
 	AST::Node* fileNameNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("fileName:"));
-	std::vector<std::string> searchPaths = REPL_get_module_search_path();
-	std::vector<std::string>::const_iterator endSearchPaths = searchPaths.end();
-	std::string filename = "";
-	for(std::vector<std::string>::const_iterator iterSearchPaths = searchPaths.begin(); iterSearchPaths != endSearchPaths; ++iterSearchPaths) {
-		std::stringstream filenameStream;
-		filenameStream << *iterSearchPaths;
-		if(fileNameNode)
-			filenameStream << Evaluators::get_native_string(fileNameNode);
-		else
-			filenameStream << Evaluators::str(name) << ".5D";
-		filename = filenameStream.str();
-		if(getModuleFileKey(filename.c_str()).length() != 0)
-			break;
-	}
-	AST::Node* body = REPL_import_module(options/*FIXME*/, AST::makeStr(filename.c_str()));
+	AST::Node* body = REPL_import_module(options/*FIXME*/, fileNameNode ? fileNameNode : makeStr2(Evaluators::str(name) + ".5D"));
 	REPL_prepare(self, body);
 	REPL_add_to_environment(self, name, body);
 	return(name); // body can be too large // FIXME
