@@ -213,3 +213,7 @@ install: $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  
 	strip $(DESTDIR)/usr/bin/T5D
 	install -m 755 REPL/5DREPL $(DESTDIR)/usr/bin/5DREPL
 	strip $(DESTDIR)/usr/bin/5DREPL
+	install -m 755 -d $(DESTDIR)/usr/share
+	install -m 755 -d $(DESTDIR)/usr/share/5D
+	install -m 755 FFIs/find5DExports $(DESTDIR)/usr/share/5D/find5DExports
+	install -m 755 FFIs/extractGNUSymbols $(DESTDIR)/usr/share/5D/extractGNUSymbols
