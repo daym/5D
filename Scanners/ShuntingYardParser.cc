@@ -82,8 +82,10 @@ AST::Node* ShuntingYardParser::parse_value(void) {
 		AST::Node* result = parse_expression(OPL, Symbols::Sautorightparen);
 		scanner->consume();
 		return(result);
-	} else 
+	} else if(macro_operator_P(scanner->input_value))
 		return(expand_simple_macro(scanner->consume()));
+	else
+		return(parse_expression(OPL, Symbols::Sspace));
 }
 AST::Node* ShuntingYardParser::parse_define_macro(AST::Node* operator_) {
 	AST::Node* parameter = parse_value(); // this is supposed to be a symbol or so
@@ -268,6 +270,8 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			//fOperands.push(expand_simple_macro(value));
 			value = Symbols::Sspace;
 			// do not consume
+			if(value == terminator)
+				break;
 		} else {
 			//if(any_operator_P(previousValue) && previousValue != Symbols::Sleftparen && previousValue != Symbols::Srightparen) {
 			//// on the other hand, if both are, we have an unary operator - or at least something that looks like an unary operator.
