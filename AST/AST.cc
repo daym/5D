@@ -32,6 +32,11 @@ Str* makeStrRaw(char* mutableText, size_t size) {
 Str* makeStr(const char* text) {
 	return(makeStrRaw(strdup(text), strlen(text)));
 }
+Str* makeStrCXX(const std::string& text) {
+	char* result = new char[text.length() + 1];
+	memcpy(result, text.c_str(), text.length() + 1);
+	return(makeStrRaw(result, text.length()));
+}
 bool str_P(AST::Node* node) {
 	return(dynamic_cast<AST::Str*>(node) != NULL);
 }

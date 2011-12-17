@@ -138,11 +138,21 @@ DEFINE_FULL_OPERATION(Flusher, {
 DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 	return(wrapGetAbsolutePath(fn, argument));
 })
+static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
+	// keep that result constant and invariant.
+	std::stringstream sst;
+	std::string name((char*) nameNode->native, nameNode->size);
+	sst << "/lib/x86_64-linux-gnu/";
+	sst << name;
+	return(AST::makeStrCXX(sst.str()));
+}
+DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(reduce(argument))))
 
 REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write"))
 REGISTER_BUILTIN(Flusher, 2, 0, AST::symbolFromStr("flush"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline"))
 REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath"))
+REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"))
 
 char* get_absolute_path(const char* filename) {
 #ifdef WIN32
@@ -172,5 +182,6 @@ char* get_absolute_path(const char* filename) {
 	}
 #endif
 }
+
 
 }; /* end namespace */

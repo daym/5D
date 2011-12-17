@@ -50,6 +50,7 @@ struct Str : Box {
 
 Cons* makeCons(Node* head, Node* tail);
 Str* makeStr(const char* text);
+Str* makeStrCXX(const std::string& text);
 Str* makeStrRaw(char* mutableText, size_t size);
 static inline Box* makeBox(void* native) {
 	return new Box(native);

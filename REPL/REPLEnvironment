@@ -429,6 +429,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("recordSize"), &FFIs::RecordSizeCalculator);
 	REPL_add_builtin_method(self, AST::symbolFromStr("allocateRecord"), &FFIs::RecordAllocator);
 	REPL_add_builtin_method(self, AST::symbolFromStr("duplicateRecord"), &FFIs::RecordDuplicator);
+	REPL_add_builtin_method(self, AST::symbolFromStr("archDepLibName"), &Evaluators::ArchDepLibNameGetter);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }
