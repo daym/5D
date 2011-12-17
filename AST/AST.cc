@@ -24,9 +24,13 @@ Cons* makeCons(Node* head, Node* tail) {
 	result->tail = tail;
 	return(result);
 }
-Str* makeStr(const char* text) {
-	Str* result = new Str(text);
+Str* makeStrRaw(char* mutableText, size_t size) {
+	AST::Str* result = new AST::Str((void*) mutableText);
+	result->size = size;
 	return(result);
+}
+Str* makeStr(const char* text) {
+	return(makeStrRaw(strdup(text), strlen(text)));
 }
 bool str_P(AST::Node* node) {
 	return(dynamic_cast<AST::Str*>(node) != NULL);

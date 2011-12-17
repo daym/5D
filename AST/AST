@@ -32,13 +32,6 @@ struct Abstraction : Node {
 	Node* body;
 	//virtual std::string str(void) const;
 };
-struct Str : Node {
-	std::string text; // char* text;
-	Str(const std::string& value) {
-		text = value;
-	}
-	//virtual std::string str(void) const;
-};
 struct Box : Node {
 	void* native;
 	Box(void* native) {
@@ -46,9 +39,18 @@ struct Box : Node {
 	}
 	//virtual std::string str(void) const;
 };
+struct Str : Box {
+	size_t size;
+	Str(void* native) :
+		Box(native)
+	{
+	}
+	//virtual std::string str(void) const;
+};
 
 Cons* makeCons(Node* head, Node* tail);
 Str* makeStr(const char* text);
+Str* makeStrRaw(char* mutableText, size_t size);
 static inline Box* makeBox(void* native) {
 	return new Box(native);
 }
