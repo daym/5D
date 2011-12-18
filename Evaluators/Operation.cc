@@ -39,7 +39,6 @@ CProcedure::CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int a
 	std::string v = aSym ? aSym->name : str(aRepr);
 	if(v == "<node>")
 		abort();
-	printf("%s is %p\n", v.c_str(), native);
 }
 REGISTER_STR(CProcedure, return(str(node->fRepr));)
 REGISTER_STR(CurriedOperation, {
