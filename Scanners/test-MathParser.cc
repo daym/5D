@@ -61,6 +61,7 @@ void test_error_expression(const char* source, const char* expected_text) {
 
 int main() {
 	test_error_expression("()", "empty application");
+	test_expression("[(map (\\i i) [])]", "(: )");
 	test_expression("-2", "((- 0) 2)");
 	test_expression("'a", "(' a)");
 	test_expression("'=", "(' =)");

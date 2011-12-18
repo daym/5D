@@ -255,7 +255,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 	AST::Node* previousValue = Symbols::Sleftparen;
 	AST::Node* value;
 	this->OPL = OPL;
-	for(; value = scanner->input_value, value != terminator && value != Symbols::SlessEOFgreater; previousValue = value) {
+	for(; value = scanner->input_value, (value != terminator || fOperandCounts.size() > 1) && value != Symbols::SlessEOFgreater; previousValue = value) {
 		if(previousValue != Symbols::Sspace && 
 		(!OPL->any_operator_P(previousValue) && 
 		 previousValue != Symbols::Sleftparen && 
@@ -268,7 +268,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			//fOperands.push(expand_simple_macro(value));
 			value = Symbols::Sspace;
 			// do not consume
-			if(value == terminator)
+			if(value == terminator && fOperandCounts.size() <= 1)
 				break;
 		} else {
 			//if(any_operator_P(previousValue) && previousValue != Symbols::Sleftparen && previousValue != Symbols::Srightparen) {
