@@ -151,10 +151,11 @@ static inline size_t pack_atom_value(char formatC, AST::Node* headNode, std::str
 		std::string v = sst.str();
 		throw Evaluators::EvaluationException(v.c_str());
 	}
-	for(; size > 0; --size) {
+	for(size_t c; c > 0; --c) {
 		sst << (char) (((unsigned char) value) & 0xFF);
 		value >>= 8;
 	}
+	return(size);
 }
 
 AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
@@ -172,7 +173,7 @@ AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
 		if(formatC == '<' || formatC == '>' || formatC == '=')
 			continue;
 		if(consNode == NULL)
-			throw Evaluators::EvaluationException("Record_pack: not enough data for format.");
+			throw Evaluators::EvaluationException("packRecord: not enough data for format.");
 		AST::Node* headNode = Evaluators::reduce(consNode->head);
 		consNode = Evaluators::evaluateToCons(consNode->tail);
 
@@ -198,19 +199,122 @@ double get_native_double(AST::Node* root);
 	std::string v = sst.str();
 	return(AST::makeStrCXX(v));
 }
-static inline AST::Node* decode(char format, const unsigned char* codedData, size_t size) {
-	Numbers::NativeInt value = 0; // TODO bigger ones
-	int offset = 0;
-	for(; size > 0; --size, offset += 8, ++codedData) {
-		value |= (*codedData) << offset;
+#define DECODE_BUF(destination) \
+	unsigned char* d = (unsigned char*) &destination; \
+	for(; size > 0; --size, ++codedData, ++d) \
+		*d = *codedData;
+
+static inline AST::Node* decode(char formatC, const unsigned char* codedData, size_t size) {
+	switch(formatC) {
+	case 'b':
+		{
+			char value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeInt) value));
+		}
+	case 'h':
+		{
+			short value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeInt) value));
+		}
+	case 'i':
+		{
+			int value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeInt) value));
+		}
+	case 'l':
+		{
+			long value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeInt) value));
+		}
+	case 'B':
+		{
+			unsigned char value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeInt) value));
+		}
+	case 'H':
+		{
+			unsigned short value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeInt) value));
+		}
+	case 'I':
+		{
+			unsigned int value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeInt) value));
+		}
+	case 'L':
+		{
+			unsigned long value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeInt) value));
+		}
+	case 'q':
+		{
+			long long value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeInt) value)); // FIXME larger
+		}
+	case 'Q':
+		{
+			unsigned long long value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeInt) value)); // FIXME larger
+		}
+	case 'f':
+		{
+			float value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeFloat) value));
+		}
+	case 'd':
+		{
+			double value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeFloat) value)); // FIXME larger
+		}
+	case 'D':
+		{
+			long double value;
+			DECODE_BUF(value)
+			return(Numbers::internNative((Numbers::NativeFloat) value)); // FIXME larger
+		}
+	case 'p':
+		{
+			void* value;
+			DECODE_BUF(value)
+			if(value == NULL)
+				throw Evaluators::EvaluationException("unpack: cannot decode NULL pointer (maybe use \"P\" ?)");
+			return(AST::makeBox(value)); // this could also be made to reuse existing wrappers.
+		}
+	case 'P':
+		{
+			void* value;
+			DECODE_BUF(value)
+			if(value == NULL)
+				return(NULL);
+			else
+				return(AST::makeBox(value));
+		}
+	default:
+		{
+			std::stringstream sst;
+			sst << "unpack: unknown format \"" << formatC << "\"";
+			std::string v = sst.str();
+			throw Evaluators::EvaluationException(v.c_str());
+		}
 	}
-	return(Numbers::internNative(value));
 }
 // TODO record packer "[p]"
 // TODO float etc.
 AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 	if(formatStr == NULL)
-		throw Evaluators::EvaluationException("Record_unpack needs format string.");
+		throw Evaluators::EvaluationException("unpackRecord needs format string.");
 	const unsigned char* codedData = (const unsigned char*) dataStr->native;
 	size_t remainderLen = dynamic_cast<AST::Str*>(dataStr) ? ((AST::Str*) dataStr)->size : 9999999; // FIXME
 	bool bBigEndian = false;
@@ -226,7 +330,7 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 		size_t size = getSize(*format);
 		size_t align = getAlignment(*format);
 		if(remainderLen < size)
-			throw Evaluators::EvaluationException("Record_unpack: not enough coded data for format.");
+			throw Evaluators::EvaluationException("unpackRecord: not enough coded data for format.");
 		AST::Cons* n = AST::makeCons(decode(formatC, codedData, size), NULL);
 		if(!tail)
 			result = n;
@@ -238,7 +342,7 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 		offset += size;
 		new_offset = (offset + align - 1) & ~(align - 1);
 		if(remainderLen < new_offset - offset)
-			throw Evaluators::EvaluationException("Record_unpack: not enough coded data for format padding.");
+			throw Evaluators::EvaluationException("unpackRecord: not enough coded data for format padding.");
 		offset = new_offset;
 	}
 	return(result);
@@ -246,7 +350,7 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 // this doesn't work with record packers like "[p]" which have dynamic length.
 size_t Record_get_size(AST::Str* formatStr) {
 	if(formatStr == NULL)
-		throw Evaluators::EvaluationException("Record_size needs format string.");
+		throw Evaluators::EvaluationException("recordSize needs format string.");
 	const char* format = (const char*) formatStr->native;
 	size_t offset = 0;
 	size_t new_offset = 0;
