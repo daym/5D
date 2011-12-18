@@ -289,15 +289,15 @@ static inline AST::Node* bug(AST::Node* f) {
 	return(f);
 }
 static AST::Node* fetchValueAndWorld(AST::Node* n) {
-	AST::Cons* cons = dynamic_cast<AST::Cons*>(n);
+	AST::Cons* cons = dynamic_cast<AST::Cons*>(Evaluators::evaluateToCons(reduce(n)));
 	if(!cons)
 		return(FALLBACK); /* WTF */
 	// DO NOT REMOVE because it is possible that the monad only changes the world even though we don't care about the result.
 	Evaluators::evaluateToCons(cons->tail);
 	return(cons->head);
 }
-/* TODO reduce once: */
-DEFINE_SIMPLE_OPERATION(WorldRunner, fetchValueAndWorld(reduce(makeApplication(reduce(argument), Numbers::internNative((Numbers::NativeInt) 42)))))
+#define WORLD Numbers::internNative((Numbers::NativeInt) 42)
+DEFINE_SIMPLE_OPERATION(WorldRunner, fetchValueAndWorld(makeApplication(argument, WORLD)))
 
 AST::Node* operator/(const Integer& a, const Integer& b) {
 	if (b.isZero()) throw Evaluators::EvaluationException("Integer::operator /: division by zero");
