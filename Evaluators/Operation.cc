@@ -35,6 +35,11 @@ CProcedure::CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int a
 	fSignature(aSignature)
 {
 	assert(fReservedArgumentCount == 0 || fReservedArgumentCount == 1);
+	AST::Symbol* aSym = dynamic_cast<AST::Symbol*>(aRepr);
+	std::string v = aSym ? aSym->name : str(aRepr);
+	if(v == "<node>")
+		abort();
+	printf("%s is %p\n", v.c_str(), native);
 }
 REGISTER_STR(CProcedure, return(str(node->fRepr));)
 REGISTER_STR(CurriedOperation, {
@@ -72,11 +77,13 @@ AST::Node* call_builtin(AST::Node* fn, AST::Node* argument) {
 	proc2 = dynamic_cast<CProcedure*>(proc1);
 	assert(proc2);
 	if(B_had_keyword_arguments && proc2->fArgumentCount >= 0) { /* not allowed */
-		return(AST::makeApplication(replace(proc2, proc2->fRepr, fn), argument));
+		// TODO throw Evaluators::EvaluationException("could not reduce");
+		return(AST::makeApplication(replace(proc2, proc2->fRepr, fn), argument)); // TODO exception
 	}
 	if(argumentCount != proc2->fArgumentCount && argumentCount != -proc2->fArgumentCount) {
 		return Evaluators::makeCurriedOperation(fn, argument);
 	}
+	printf("call %p\n", proc2->native);
 	if(proc2->fSignature == NULL) { // probably wants the arguments unevaluated, so stop messing with them.
 		AST::Node* (*proc3)(AST::Node*, AST::Node*) = (AST::Node* (*)(AST::Node*, AST::Node*)) proc2->native;
 		return((*proc3)(fn, argument));
