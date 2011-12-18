@@ -324,6 +324,8 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		scanner->raise_error(str(terminator), str(value));
 	SCOPERANDS while(!fOperators.empty())
 		CONSUME_OPERATION
+	if(fOperands.empty())
+		scanner->raise_error("<something>", "<nothing>");
 	assert(fOperands.size() == 1);
 	scanner->setHonorIndentation(oldIndentationHonoring);
 	return(fOperands.top());

@@ -53,15 +53,17 @@ void test_error_expression(const char* source, const char* expected_text) {
 		parser.parse(new OperatorPrecedenceList(), Symbols::SlessEOFgreater);
 		abort();
 	} catch(Scanners::ParseException e) {
-		if(strstr(e.what(), expected_text) == 0)
+		if(strstr(e.what(), expected_text) == NULL) {
 			std::cerr << "error: error was " << e.what() << "; expected " << expected_text << std::endl;
-		throw;
+			throw;
+		}
 	}
 }
 
 int main() {
-	test_error_expression("()", "empty application");
-	test_expression("[(map (\\i i) [])]", "(: )");
+	test_error_expression("()", "got <nothing>");
+	test_error_expression("id ()", "got <nothing>");
+	test_expression("[(map (\\i i) [])]", "((: ((map (\\i i)) [])) [])");
 	test_expression("-2", "((- 0) 2)");
 	test_expression("'a", "(' a)");
 	test_expression("'=", "(' =)");
