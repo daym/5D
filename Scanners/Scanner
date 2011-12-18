@@ -34,7 +34,7 @@ public:
 #define SCROLL_RIGHT(x) \
 	(x[4] = x[3], x[3] = x[2], x[2] = x[1], x[1] = x[0], x[4])
 
-class Scanner : AST::Node {
+class Scanner : public AST::Node {
 protected:
 	FILE* input_file;
 	//std::stringstream matchtext;
