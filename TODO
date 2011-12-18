@@ -94,6 +94,7 @@ If there are open parens, ignore indentation (note that this is the LEXER and so
 sort exports
 Just representing Str as a Integer would be a lot less weird and automatically allow comparisons to work as one would expect. However, it's unconventional. However, this would only be fast for little-endian architectures (as BigUnsigned Blks are ordered LSB first). Moreover, I don't think that Strings are manipulated that often.
 quote operator printing?
+add atomic? flag to allocateRecord and duplicateRecord.
 
 = Debugging Macros =
 
