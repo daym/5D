@@ -46,7 +46,8 @@ protected:
 	bool backtracking_beginning_of_line[5]; /* last is dummy */
 	bool B_honor_indentation;
 	bool B_beginning_of_line;
-	std::list<std::pair<int, int> > open_indentations;
+	int brace_level; // non-indentation braces.
+	std::list<std::pair<int, int> > open_indentations; // line and column number.
 	void update_indentation();
 	inline int increment_position(int input) {
 		++position;
@@ -74,6 +75,12 @@ protected:
 		} else
 			--column_number;
 		return(input);
+	}
+	void increase_brace_level() {
+		++brace_level;
+	}
+	void decrease_brace_level() {
+		--brace_level;
 	}
 	void inject(AST::Node* input_value);
 public:

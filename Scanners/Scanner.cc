@@ -39,6 +39,7 @@ Scanner::Scanner(void) {
 	backtracking_column_numbers[2] = 0;
 	backtracking_column_numbers[3] = 0;
 	B_beginning_of_line = true;
+	brace_level = 0;
 }
 void Scanner::push(FILE* input_file, int line_number) {
 	this->input_file = input_file;
@@ -285,21 +286,27 @@ static bool structural_P(int input) {
 void Scanner::parse_structural(int input) {
 	switch(input) {
 	case '(':
+		increase_brace_level();
 		input_value = Symbols::Sleftparen;
 		return;
 	case ')':
+		decrease_brace_level();
 		input_value = Symbols::Srightparen;
 		return;
 	case '[':
+		increase_brace_level();
 		input_value = Symbols::Sleftbracket;
 		return;
 	case ']':
+		decrease_brace_level();
 		input_value = Symbols::Srightbracket;
 		return;
 	case '{':
+		increase_brace_level();
 		input_value = Symbols::Sleftcurly;
 		return;
 	case '}':
+		decrease_brace_level();
 		input_value = Symbols::Srightcurly;
 		return;
 	/* TODO other kind of braces? */

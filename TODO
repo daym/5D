@@ -63,6 +63,9 @@ pattern-match env entry back to the let macro.
 Allow querying a list of exported symbols of a shared library.
 Auto-load libc (or at least determine the file name?)
 setlocale(LC_ALL, "") without string conversion functions being idiots
+Indentation:
+	[(]    note how the auto) shouldn't close down yet - but it should close if we are back at the same paren level than we were before.
+
 
 = Performance =
 
