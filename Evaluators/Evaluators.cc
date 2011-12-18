@@ -297,7 +297,8 @@ AST::Node* reduce1(AST::Node* term) {
 				result = call_builtin(fn, argument);
 				return(remember(term, result));
 			} else {
-				// TODO: remove this:
+				//std::string v = std::string("could not reduce ") + str(term);
+				//throw Evaluators::EvaluationException(v.c_str());
 				return(remember(term, ensureApplication(term, fn, argument)));
 			}
 		}
