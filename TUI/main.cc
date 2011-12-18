@@ -21,6 +21,7 @@
 #include "REPL/REPL"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
+#include "Version"
 //#include "Config/Config"
 
 namespace REPLX {
@@ -306,6 +307,10 @@ int main(int argc, char* argv[]) {
 		if(stat(environment_name, &stat_buf) != -1)
 			REPL_load_contents_by_name(REPL, environment_name);
 	}
+	printf("5D Version %s - Copyright (C) 2011 Danny Milosavljevic et al.\n", VERSION);
+	printf("This program comes with ABSOLUTELY NO WARRANTY.\n");
+	printf("This is free software, and you are welcome to redistribute it under certain conditions.\n");
+	printf("See /usr/share/doc/5d/copyright for details.\n");
 	install_SIGQUIT_handler();
 	install_SIGINT_handler();
 	initialize_readline();
