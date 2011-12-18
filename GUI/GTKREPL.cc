@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "Version"
 #include "GUI/GTKREPL"
 #include "Scanners/MathParser"
 #include "Scanners/SExpressionParser"
@@ -504,6 +505,7 @@ static void handle_tips_response(GtkDialog* dialog, gint response_id, struct REP
 static void REPL_handle_about(struct REPL* self, GtkAction* action) {
 	GtkDialog* dialog;
 	dialog = (GtkDialog*) gtk_builder_get_object(self->UI_builder, "aboutDialog");
+	gtk_about_dialog_set_version((GtkAboutDialog*) dialog, VERSION);
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), self->fWidget);
 	g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(handle_about_response), NULL);
 	gtk_dialog_run(dialog);
