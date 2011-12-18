@@ -376,7 +376,7 @@ size_t Record_get_size(AST::Str* formatStr) {
 AST::Str* Record_allocate(size_t size) {
 	if(size < 1) // TODO
 		throw Evaluators::EvaluationException("cannot allocate record with unknown size");
-	char* buffer = new char[size]; // FIXME GC this
+	char* buffer = new (UseGC) char[size];
 	AST::Str* result = AST::makeStrRaw(buffer, size);
 	return(result);
 }

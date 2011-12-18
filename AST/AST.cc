@@ -35,12 +35,12 @@ Str* makeStr(const char* text) {
 	if(strlen(text) < 1)
 		return(NULL);
 	else
-		return(makeStrRaw(strdup(text), strlen(text))); // FIXME GC this
+		return(makeStrRaw(GC_strdup(text), strlen(text)));
 }
 Str* makeStrCXX(const std::string& text) {
 	if(text.length() == 0)
 		return(NULL);
-	char* result = new char[text.length() + 1]; // FIXME GC this
+	char* result = new (UseGC) char[text.length() + 1];
 	memcpy(result, text.c_str(), text.length() + 1);
 	return(makeStrRaw(result, text.length()));
 }
