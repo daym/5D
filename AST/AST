@@ -8,10 +8,11 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <string>
+#include <gc/gc_cpp.h>
 
 namespace AST {
 
-struct Node {
+struct Node : public gc {
 	//virtual std::string str(void) const;
 	virtual ~Node(void);
 };
