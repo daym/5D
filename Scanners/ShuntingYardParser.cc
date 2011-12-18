@@ -236,19 +236,6 @@ int ShuntingYardParser::get_operator_precedence(AST::Node* node) {
 	AST::Symbol* associativity = NULL;
 	return(get_operator_precedence_and_associativity(node, associativity));
 }
-static bool second_paren_P(OperatorPrecedenceList* OPL, std::stack<AST::Node*>& stack) { /* for (+) etc */
-	if(stack.size() == 0)
-		return(false);
-	AST::Node* t = stack.top();
-	if(t == Symbols::Sleftparen || t == Symbols::Sautoleftparen || !OPL->any_operator_P(t) || t == Symbols::Sbackslash)
-		return(false);
-	else if(stack.size() == 1)
-		return(true);
-	stack.pop();
-	AST::Node* result = stack.top();
-	stack.push(t);
-	return(result == Symbols::Sleftparen || result == Symbols::Sautoleftparen);
-}
 #define SCOPERANDS \
 	unsigned int prevOperandCount = fOperandCounts.top(); \
 	if(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen && fOperators.top() != Symbols::Sautoleftparen && !macro_standin_P(fOperators.top()) && fOperands.size() <= prevOperandCount) { /* well, there has been nothing interesting in the parentesized expression yet. */ \
