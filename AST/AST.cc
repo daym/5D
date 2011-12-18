@@ -34,8 +34,9 @@ Str* makeStrRaw(char* mutableText, size_t size) {
 Str* makeStr(const char* text) {
 	if(strlen(text) < 1)
 		return(NULL);
-	else
-		return(makeStrRaw(GC_strdup(text), strlen(text)));
+	else {
+		return(makeStrCXX(text));
+	}
 }
 Str* makeStrCXX(const std::string& text) {
 	if(text.length() == 0)
