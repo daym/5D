@@ -19,10 +19,9 @@ FILE* fmemopen(void* contents, size_t contents_length, const char* mode) {
 	InitializeCriticalSection( &(((_FILEX *)str)->lock) );
 	__crtInitCritSecAndSpinCount
 	*/
-	str = _getstream(); // (FILE*) calloc(1, sizeof(FILE));
+	str = _getstream();
 #else
 	str = _tfdopen(0, _T("r"));
-	//str = (FILE*) calloc(1, sizeof(FILE));
 	str->_bufsiz = 0;
 #endif
 	str->_flag = _IOREAD|_IOSTRG|_IOMYBUF;
@@ -38,7 +37,7 @@ FILE* fmemopen(void* contents, size_t contents_length, const char* mode) {
 
 char* ToUTF8(const std::wstring& source) {
 	int count = WideCharToMultiByte(CP_UTF8, 0, source.c_str(), -1, NULL, 0, NULL, NULL);
-	char* result = (char*) calloc(count, sizeof(char));
+	char* result = new char[count];
 	if(WideCharToMultiByte(CP_UTF8, 0, source.c_str(), -1, result, count, NULL, NULL) != count)
 		abort();
 	return(result);
@@ -46,7 +45,7 @@ char* ToUTF8(const std::wstring& source) {
 
 std::wstring FromUTF8(const char* source) {
 	int count = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
-	WCHAR* result = (WCHAR*) calloc(count, sizeof(WCHAR));
+	WCHAR* result = new WCHAR[count];
 	if(MultiByteToWideChar(CP_UTF8, 0, source, -1, result, count) != count)
 		abort();
 	return(result);
