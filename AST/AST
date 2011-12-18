@@ -51,8 +51,8 @@ struct Str : Box {
 };
 
 Cons* makeCons(Node* head, Node* tail);
-Str* makeStr(const char* text);
-Str* makeStrCXX(const std::string& text);
+Str* makeStr(const char* text); // this can contain no pointers
+Str* makeStrCXX(const std::string& text, bool bAtomic = false); // this can contain pointers
 Str* makeStrRaw(char* mutableText, size_t size);
 static inline Box* makeBox(void* native) {
 	return new Box(native);
