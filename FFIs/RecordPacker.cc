@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <sstream>
 #include <assert.h>
 #ifdef WIN32
@@ -27,13 +28,14 @@ static size_t getSize(char c) {
 	case 'H': return(sizeof(uint16_t));
 	case 'I': return(sizeof(unsigned int));
 	case 'L': return(sizeof(unsigned long));
-	case 'p': return(sizeof(void*));
-	case 'P': return(sizeof(void*));
 	case 'q': return(sizeof(long long));
 	case 'Q': return(sizeof(unsigned long long));
+	case 'p': return(sizeof(void*));
+	case 'P': return(sizeof(void*));
 	default: return(0); /* FIXME */
 	}
 }
+// TODO do 64 bit systems align Q differently?
 static size_t getAlignment(char c) {
 	switch(c) {
 	case 'b': return(1);
@@ -61,14 +63,14 @@ static size_t getAlignment(char c) {
 	case 'H': return(2);
 	case 'I': return(4);
 	case 'L': return(sizeof(long));
-	case 'q': return(
+	case 'q': return(sizeof(long) == 8 ? 8 : 
 #ifdef WIN32
 8
 #else
 4
 #endif
 );
-	case 'Q': return(
+	case 'Q': return(sizeof(long) == 8 ? 8 : 
 #ifdef WIN32
 8
 #else
@@ -80,6 +82,81 @@ static size_t getAlignment(char c) {
 }
 // TODO sub-records, arrays, endianness. pointers to other stuff.
 // at least: execv "ls" ["ls"]  with record packer "[p]"
+
+#define PACK_BUF(buffer) \
+	assert(sizeof(buffer) == size); \
+	char* b = (char*) &buffer; \
+	for(; size > 0; --size, ++b) \
+		sst << *b;
+
+static inline size_t pack_atom_value(char formatC, AST::Node* headNode, std::stringstream& sst) {
+	size_t size = getSize(formatC); 
+	uint64_t mask = ~0; 
+	uint64_t limit;
+	long value = 0;
+	bool B_out_of_range = false;
+	limit = (1 << (8 * size - 1));
+	mask = limit - 1;
+	if(formatC == 'b' || formatC == 'h' || formatC == 'i' || formatC == 'l' || formatC == 'q') {
+		value = (long) Evaluators::get_native_long(headNode); // FIXME bigger values
+		mask = ~mask;
+		if((value > 0 && (value & mask) != 0) || (value < 0 && ((-value-1) & mask) != 0))
+			B_out_of_range = true;
+	} else if(formatC == 'B' || formatC == 'H' || formatC == 'I' || formatC == 'L' || formatC == 'Q') {
+		value = (long) Evaluators::get_native_long(headNode); // FIXME bigger values
+		mask = (mask << 1) + 1;
+		mask = ~mask;
+		if((value > 0 && (value & mask) != 0) || (value < 0))
+			B_out_of_range = true;
+	} else { /* non-integral */
+		switch(formatC) {
+		case 'f': {
+			float result = Evaluators::get_native_float(headNode);
+			PACK_BUF(result)
+			return(size);
+		}
+		case 'd': {
+			double result = Evaluators::get_native_double(headNode);
+			PACK_BUF(result)
+			return(size);
+		}
+		case 'D': {
+			long double result = Evaluators::get_native_long_double(headNode);
+			PACK_BUF(result)
+			return(size);
+		}
+		case 'p': {
+			if(headNode == NULL)
+				throw Evaluators::EvaluationException("packRecord: that field cannot be nil");
+			void* result = Evaluators::get_native_pointer(headNode);
+			PACK_BUF(result)
+			return(size);
+		}
+		case 'P': {
+			void* result = headNode ? Evaluators::get_native_pointer(headNode) : NULL;
+			PACK_BUF(result)
+			return(size);
+		}
+		default: {
+			std::stringstream sst;
+			sst << "unknown format \"" << formatC << "\"";
+			std::string v = sst.str();
+			throw Evaluators::EvaluationException(v.c_str());
+		}
+		}
+	}
+	if(B_out_of_range) {
+		std::stringstream sst;
+		sst << "value out of range for format \"" << formatC << "\"";
+		std::string v = sst.str();
+		throw Evaluators::EvaluationException(v.c_str());
+	}
+	for(; size > 0; --size) {
+		sst << (char) (((unsigned char) value) & 0xFF);
+		value >>= 8;
+	}
+}
+
 AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
 	size_t offset = 0;
 	size_t new_offset = 0;
@@ -91,35 +168,32 @@ AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
 	AST::Cons* consNode = Evaluators::evaluateToCons(data);
 	position = 0;
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
-		if(*format == '<' || *format == '>' || *format == '=')
+		char formatC = *format;
+		if(formatC == '<' || formatC == '>' || formatC == '=')
 			continue;
 		if(consNode == NULL)
 			throw Evaluators::EvaluationException("Record_pack: not enough data for format.");
 		AST::Node* headNode = Evaluators::reduce(consNode->head);
 		consNode = Evaluators::evaluateToCons(consNode->tail);
-		size_t size = getSize(*format);
-		size_t align = getAlignment(*format);
-		unsigned long value = (unsigned long) Evaluators::get_native_long(headNode); // FIXME the others
+
+		if(formatC == '[') {
+		} else {
+			size_t align = getAlignment(formatC); 
+			size_t size = pack_atom_value(formatC, headNode, sst);
+			offset += size;
+			new_offset = (offset + align - 1) & ~(align - 1);
+			for(; offset < new_offset; ++offset)
+				sst << '\0';
 /*
-int get_native_int(AST::Node* root);
 long long get_native_long_long(AST::Node* root);
-short get_native_short(AST::Node* root);
 void* get_native_pointer(AST::Node* root);
 bool get_native_boolean(AST::Node* root);
 char* get_native_string(AST::Node* root);
 float get_native_float(AST::Node* root);
 long double get_native_long_double(AST::Node* root);
 double get_native_double(AST::Node* root);
-
 */
-		for(; size > 0; --size) {
-			sst << (char) (((unsigned char) value) & 0xFF);
-			value >>= 8;
 		}
-		offset += size;
-		new_offset = (offset + align - 1) & ~(align - 1);
-		for(; offset < new_offset; ++offset)
-			sst << '\0';
 	}
 	std::string v = sst.str();
 	return(AST::makeStrCXX(v));
@@ -133,6 +207,7 @@ static inline AST::Node* decode(char format, const unsigned char* codedData, siz
 	return(Numbers::internNative(value));
 }
 // TODO record packer "[p]"
+// TODO float etc.
 AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("Record_unpack needs format string.");
@@ -145,13 +220,13 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 	AST::Cons* result = NULL;
 	AST::Cons* tail = NULL;
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
-		if(*format == '<' || *format == '>' || *format == '=')
+		char formatC = *format;
+		if(formatC == '<' || formatC == '>' || formatC == '=')
 			continue;
 		size_t size = getSize(*format);
 		size_t align = getAlignment(*format);
 		if(remainderLen < size)
 			throw Evaluators::EvaluationException("Record_unpack: not enough coded data for format.");
-		char formatC = *format;
 		AST::Cons* n = AST::makeCons(decode(formatC, codedData, size), NULL);
 		if(!tail)
 			result = n;

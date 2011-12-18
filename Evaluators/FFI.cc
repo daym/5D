@@ -35,12 +35,16 @@ typ get_native_##typ(AST::Node* root) { \
 }
 
 float get_native_float(AST::Node* root) {
-	bool B_ok; \
-	float result = Numbers::toNativeFloat(root, B_ok); \
-	if(!B_ok) \
-		result = 0; /* FIXME FALLBACK */ \
-	return(result); \
-	/* FIXME support bigger than NativeInt */ \
+	bool B_ok;
+	float result = Numbers::toNativeFloat(root, B_ok);
+	if(!B_ok) {
+		std::stringstream sst;
+		sst << "cannot get native float for " << str(root);
+		std::string v = sst.str();
+		throw Evaluators::EvaluationException(v.c_str());
+	}
+	return(result);
+	/* FIXME support bigger than NativeInt */
 }
 long double get_native_long_double(AST::Node* root) {
 	// FIXME more precision.
@@ -60,8 +64,12 @@ void* get_native_pointer(AST::Node* root) {
 	Box* rootBox = dynamic_cast<Box*>(root);
 	if(rootBox)
 		return(rootBox->native);
-	else
-		return(NULL);
+	else {
+		std::stringstream sst;
+		sst << "cannot get native pointer for " << str(root);
+		std::string v = sst.str();
+		throw Evaluators::EvaluationException(v.c_str());
+	}
 }
 bool get_native_boolean(AST::Node* root) {
 	/* FIXME */

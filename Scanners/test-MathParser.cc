@@ -41,8 +41,26 @@ void test_expression(const char* source, const char* expected_tree) {
 		throw;
 	}
 }
+void test_error_expression(const char* source, const char* expected_text) {
+	const char* buf = source;
+	using namespace Scanners;
+	MathParser parser;
+	//printf("==== %s\n", source);
+	//printf("E====\n");
+	//std::cout << source << std::endl;
+	parser.push(fmemopen((void*) buf, strlen(buf), "r"), 0);
+	try {
+		parser.parse(new OperatorPrecedenceList(), Symbols::SlessEOFgreater);
+		abort();
+	} catch(Scanners::ParseException e) {
+		if(strstr(e.what(), expected_text) == 0)
+			std::cerr << "error: error was " << e.what() << "; expected " << expected_text << std::endl;
+		throw;
+	}
+}
 
 int main() {
+	test_error_expression("()", "empty application");
 	test_expression("-2", "((- 0) 2)");
 	test_expression("'a", "(' a)");
 	test_expression("'=", "(' =)");
