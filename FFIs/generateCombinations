@@ -7,7 +7,7 @@ if len(sys.argv) > 1:
 else:
    ccs = ["C"]
    
-# 32768 alphabet = ["*", "i", "h", "c", "f", "d", "L", "l"]
+# 32768 alphabet = ["*", "i", "h", "c", "f", "d", "q", "l"]
 alphabet = ["p", "P", "i", "l"]
 
 result = []

@@ -6,6 +6,7 @@
   * fix parsing of unary minus.
   * fix listFromStr and strFromList.
   * add substr.
+  * add strUntilZero.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Fri, 17 Dec 2011 15:04:00 +0100
 

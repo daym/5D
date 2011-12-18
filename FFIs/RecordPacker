@@ -17,6 +17,7 @@ DECLARE_SIMPLE_OPERATION(RecordDuplicator)
 DECLARE_BINARY_OPERATION(ListFromStrGetter)
 DECLARE_BINARY_OPERATION(StrFromListGetter)
 DECLARE_SIMPLE_OPERATION(SubstrGetter)
+DECLARE_SIMPLE_OPERATION(StrUntilZeroGetter)
 
 }; /* end namespace FFIs */
 

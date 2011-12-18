@@ -73,8 +73,8 @@ char* get_native_string(AST::Node* root) {
 		// TODO maybe check terminating zero? Maybe not.
 		return((char*) rootString->native);
 	} else {
-		std::string value = str(root); /* FIXME */
-		return(strdup(value.c_str()));
+		AST::Str* v = AST::makeStrCXX(str(root));
+		return((char*) v->native);
 	}
 }
 
@@ -154,7 +154,6 @@ static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
 	return(AST::makeStrCXX(sst.str()));
 }
 DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(reduce(argument))))
-
 REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write"))
 REGISTER_BUILTIN(Flusher, 2, 0, AST::symbolFromStr("flush"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline"))

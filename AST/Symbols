@@ -106,6 +106,7 @@ extern AST::Symbol* Sprefix;
 extern AST::Symbol* Sdot;
 extern AST::Symbol* Sunarydash;
 extern AST::Symbol* Ssubstr;
+extern AST::Symbol* SstrUntilZero;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

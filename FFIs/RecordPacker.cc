@@ -63,6 +63,7 @@ static size_t getAlignment(char c) {
 	}
 }
 // TODO sub-records, arrays, endianness. pointers to other stuff.
+// at least: execv "ls" ["ls"]  with record packer "[p]"
 AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
 	size_t offset = 0;
 	size_t new_offset = 0;
@@ -115,6 +116,7 @@ static inline AST::Node* decode(char format, const unsigned char* codedData, siz
 	}
 	return(Numbers::internNative(value));
 }
+// TODO record packer "[p]"
 AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("Record_unpack needs format string.");
@@ -150,6 +152,7 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 	}
 	return(result);
 }
+// this doesn't work with record packers like "[p]" which have dynamic length.
 size_t Record_get_size(AST::Str* formatStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("Record_size needs format string.");
@@ -280,12 +283,21 @@ static AST::Node* substr(AST::Node* options, AST::Node* argument) {
 	p += beginning;
 	return(AST::makeStrRaw(p, len)); // TODO maybe copy.
 }
+static AST::Str* str_until_zero(AST::Str* value) {
+	AST::Str* result;
+	if(value == NULL)
+		return(NULL);
+	result = AST::makeStrRaw((char*) value->native, strlen((char*) value->native)); // TODO copy?
+	return(result);
+}
 
 DEFINE_SIMPLE_OPERATION(ListFromStrGetter, (argument = reduce(argument), str_P(argument) ? listFromStr(dynamic_cast<AST::Str*>(argument)) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(StrFromListGetter, (argument = reduce(argument), (cons_P(argument) || nil_P(argument)) ? strFromList(dynamic_cast<AST::Cons*>(argument)) : FALLBACK))
 DEFINE_FULL_OPERATION(SubstrGetter, return(substr(fn, argument));)
+DEFINE_SIMPLE_OPERATION(StrUntilZeroGetter, str_until_zero(dynamic_cast<AST::Str*>(reduce(argument))))
 REGISTER_BUILTIN(ListFromStrGetter, 1, 0, AST::symbolFromStr("listFromStr"))
 REGISTER_BUILTIN(StrFromListGetter, 1, 0, AST::symbolFromStr("strFromList"))
 REGISTER_BUILTIN(SubstrGetter, 3, 0, AST::symbolFromStr("substr"))
+REGISTER_BUILTIN(StrUntilZeroGetter, 1, 0, AST::symbolFromStr("strUntilZero"))
 
 }; /* end namespace FFIs */

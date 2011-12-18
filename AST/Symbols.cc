@@ -102,5 +102,6 @@ AST::Symbol* Sprefix = AST::symbolFromStr("prefix");
 AST::Symbol* Sdot = AST::symbolFromStr(".");
 AST::Symbol* Sunarydash = AST::symbolFromStr("unary-");
 AST::Symbol* Ssubstr = AST::symbolFromStr("substr");
+AST::Symbol* SstrUntilZero = AST::symbolFromStr("strUntilZero");
 
 };

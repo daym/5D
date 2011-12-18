@@ -82,7 +82,7 @@ AST::Node* call_builtin(AST::Node* fn, AST::Node* argument) {
 	if(argumentCount != proc2->fArgumentCount && argumentCount != -proc2->fArgumentCount) {
 		return Evaluators::makeCurriedOperation(fn, argument);
 	}
-	printf("call %p\n", proc2->native);
+	//printf("call %p\n", proc2->native);
 	if(proc2->fSignature == NULL) { // probably wants the arguments unevaluated, so stop messing with them.
 		AST::Node* (*proc3)(AST::Node*, AST::Node*) = (AST::Node* (*)(AST::Node*, AST::Node*)) proc2->native;
 		return((*proc3)(fn, argument));

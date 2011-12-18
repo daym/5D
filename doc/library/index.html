@@ -506,6 +506,24 @@ runWorld (puts "Hello world")
 <hr/>
 <h3>packRecord \format \list</h3>
 <p>Packs the given list using the given format, resulting in a Box (or Str). Note that the result can be reused later. If you want to detach it, use <span class="pre">duplicateRecord</span> on the result.</p>
+<p>Possible format specifiers in the Format Str:</p>
+<table border="1">
+<tr><th>Character</th><th>Meaning</th></tr>
+<tr><td>b</td><td>signed byte</td></tr>
+<tr><td>B</td><td>unsigned byte</td></tr>
+<tr><td>h</td><td>short</td></tr>
+<tr><td>H</td><td>unsigned short</td></tr>
+<tr><td>i</td><td>int</td></tr>
+<tr><td>I</td><td>unsigned int</td></tr>
+<tr><td>l</td><td>long</td></tr>
+<tr><td>L</td><td>unsigned long</td></tr>
+<tr><td>f</td><td>float</td></tr>
+<tr><td>d</td><td>double</td></tr>
+<tr><td>D</td><td>long double</td></tr>
+<tr><td>p</td><td>pointer</td></tr>
+<tr><td>P</td><td>pointer or nil</td></tr>
+<tr><td>[</td><td>array of the following</td></tr>
+</table>
 <p>Example:</p>
 <pre>
 packRecord "ii" [1 2] =&gt; "\x01\x00\x00\x00\x02\x00\x00\x00"
@@ -536,6 +554,7 @@ return r
 <hr/>
 <h3>recordSize \format</h3>
 <p>Results in the size (in bytes) a record with the given format would have.</p>
+<p>Note that this doesn't work with record formats like <span class="pre">[p]</span> which have dynamic size. Just use <span class="pre">packRecord</span> for them.</p>
 <p>Example:</p>
 <pre>
 recordSize "i" =&gt; 4
