@@ -96,7 +96,7 @@ double get_native_double(AST::Node* root);
 
 */
 		for(; size > 0; --size) {
-			sst << (char) (value & 0xFF);
+			sst << (char) (((unsigned char) value) & 0xFF);
 			value >>= 8;
 		}
 		offset += size;
@@ -105,7 +105,7 @@ double get_native_double(AST::Node* root);
 			sst << '\0';
 	}
 	std::string v = sst.str();
-	return(AST::makeStrRaw(strdup(v.c_str()), v.length()));
+	return(AST::makeStrCXX(v));
 }
 static inline AST::Node* decode(char format, const unsigned char* codedData, size_t size) {
 	Numbers::NativeInt value = 0; // TODO bigger ones
@@ -169,9 +169,9 @@ size_t Record_get_size(AST::Str* formatStr) {
 	return(offset);
 }
 AST::Str* Record_allocate(size_t size) {
-	char* buffer = (char*) calloc(1, size);
 	if(size < 1) // TODO
 		throw Evaluators::EvaluationException("cannot allocate record with unknown size");
+	char* buffer = new char[size];
 	AST::Str* result = AST::makeStrRaw(buffer, size);
 	return(result);
 }
