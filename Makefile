@@ -44,16 +44,16 @@ Linear_Algebra/test-Tensor: Linear_Algebra/test-Tensor.o
 	g++ -o Linear_Algebra/test-Tensor Linear_Algebra/test-Tensor.o
 
 Scanners/test-Scanner: Scanners/test-Scanner.o Scanners/Scanner.o AST/Symbol.o AST/Symbols.o AST/AST.o AST/Keyword.o $(FFIS)
-	g++ -o $@ $^ $(CXXFLAGS)
+	g++ -o $@ $^ $(LDFLAGS)
 
 Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/MathParser.o Scanners/Scanner.o AST/Symbol.o AST/Symbols.o AST/AST.o Scanners/OperatorPrecedenceList.o AST/Keyword.o Evaluators/Builtins.o Evaluators/Evaluators.o Numbers/Integer.o Numbers/BigUnsigned.o Numbers/Real.o Evaluators/Operation.o Evaluators/FFI.o $(FFIS) Scanners/ShuntingYardParser.o
-	g++ -o $@ $^ $(CXXFLAGS)
+	g++ -o $@ $^ $(LDFLAGS)
 	
 AST/test-AST: AST/test-AST.o
-	g++ -o AST/test-AST AST/test-AST.o
+	g++ -o AST/test-AST AST/test-AST.o $(LDFLAGS)
 
 AST/test-Symbol: AST/test-Symbol.o AST/Symbol.o AST/Symbols.o AST/AST.o $(AST_UNCLEAN)
-	g++ -o AST/test-Symbol AST/test-Symbol.o AST/Symbol.o AST/Symbols.o AST/AST.o $(AST_UNCLEAN)
+	g++ -o AST/test-Symbol AST/test-Symbol.o AST/Symbol.o AST/Symbols.o AST/AST.o $(AST_UNCLEAN) $(LDFLAGS)
 
 test-AST: test-AST.o
 	g++ -o test-AST test-AST.o
