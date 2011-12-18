@@ -158,18 +158,16 @@ static inline size_t pack_atom_value(char formatC, AST::Node* headNode, std::str
 	return(size);
 }
 
-void Record_pack(size_t formatOffset, AST::Str* formatStr, AST::Node* data, std::stringstream& sst) {
+void Record_pack(size_t& position /* in format Str */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst) {
 	size_t offset = 0;
 	size_t new_offset = 0;
 	bool bBigEndian = false;
 	if(formatStr == NULL)
 		return;
-	size_t position = 0; // in format
 	AST::Cons* consNode = Evaluators::evaluateToCons(data);
-	position = 0;
-	if(formatOffset > formatStr->size)
-		formatOffset = formatStr->size;
-	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
+	if(position > formatStr->size)
+		position = formatStr->size;
+	for(const char* format = ((const char*) formatStr->native) + position; position < formatStr->size; ++format, ++position) {
 		char formatC = *format;
 		if(formatC == ']')
 			break;
@@ -180,13 +178,29 @@ void Record_pack(size_t formatOffset, AST::Str* formatStr, AST::Node* data, std:
 		AST::Node* headNode = Evaluators::reduce(consNode->head);
 		consNode = Evaluators::evaluateToCons(consNode->tail);
 		if(formatC == '[') {
-		} else {
-			size_t align = getAlignment(formatC); 
-			size_t size = pack_atom_value(formatC, headNode, sst);
-			offset += size;
+			++position;
+			++format;
+			formatC = *format;
+			size_t align = getAlignment(formatC);  // TODO what if that's a list, too?
 			new_offset = (offset + align - 1) & ~(align - 1);
 			for(; offset < new_offset; ++offset)
 				sst << '\0';
+			size_t subPosition;
+			subPosition = position;
+			for(AST::Cons* consNode = Evaluators::evaluateToCons(headNode); consNode; consNode = Evaluators::evaluateToCons(Evaluators::reduce(consNode->tail))) {
+				subPosition = position;
+				AST::Node* headNode = Evaluators::reduce(consNode->head);
+				Record_pack(subPosition, formatStr, headNode, sst);
+			}
+			position = subPosition;
+			format = ((const char*) formatStr->native) + position;
+		} else {
+			size_t align = getAlignment(formatC); 
+			new_offset = (offset + align - 1) & ~(align - 1);
+			for(; offset < new_offset; ++offset)
+				sst << '\0';
+			size_t size = pack_atom_value(formatC, headNode, sst);
+			offset += size;
 /*
 long long get_native_long_long(AST::Node* root);
 void* get_native_pointer(AST::Node* root);
@@ -378,7 +392,8 @@ static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	std::stringstream sst;
-	Record_pack(0, dynamic_cast<AST::Str*>(a), b, sst);
+	size_t position = 0;
+	Record_pack(position, dynamic_cast<AST::Str*>(a), b, sst);
 	std::string v = sst.str();
 	return(AST::makeStrCXX(v));
 }
