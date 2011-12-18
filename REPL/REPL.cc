@@ -128,8 +128,6 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 				char* text;
 				text = Evaluators::get_native_string(value);
 				REPL_append_to_output_buffer(self, text);
-				if(text)
-					free(text);
 			} else if(keywordName == Symbols::Senvironment) {
 				if(value && value != Symbols::Snil)
 					assert(application_P(value));
