@@ -151,15 +151,14 @@ static inline size_t pack_atom_value(char formatC, AST::Node* headNode, std::str
 		std::string v = sst.str();
 		throw Evaluators::EvaluationException(v.c_str());
 	}
-	for(size_t c; c > 0; --c) {
+	for(size_t c = size; c > 0; --c) {
 		sst << (char) (((unsigned char) value) & 0xFF);
 		value >>= 8;
 	}
 	return(size);
 }
 
-void Record_pack(size_t& position /* in format Str */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst) {
-	size_t offset = 0;
+void Record_pack(size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst) {
 	size_t new_offset = 0;
 	bool bBigEndian = false;
 	if(formatStr == NULL)
@@ -179,18 +178,12 @@ void Record_pack(size_t& position /* in format Str */, AST::Str* formatStr, AST:
 		consNode = Evaluators::evaluateToCons(consNode->tail);
 		if(formatC == '[') {
 			++position;
-			++format;
-			formatC = *format;
-			size_t align = getAlignment(formatC);  // TODO what if that's a list, too?
-			new_offset = (offset + align - 1) & ~(align - 1);
-			for(; offset < new_offset; ++offset)
-				sst << '\0';
 			size_t subPosition;
 			subPosition = position;
 			for(AST::Cons* consNode = Evaluators::evaluateToCons(headNode); consNode; consNode = Evaluators::evaluateToCons(Evaluators::reduce(consNode->tail))) {
 				subPosition = position;
 				AST::Node* headNode = Evaluators::reduce(consNode->head);
-				Record_pack(subPosition, formatStr, headNode, sst);
+				Record_pack(subPosition, offset, formatStr, headNode, sst);
 			}
 			position = subPosition;
 			format = ((const char*) formatStr->native) + position;
@@ -393,7 +386,8 @@ static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	b = reduce(b);
 	std::stringstream sst;
 	size_t position = 0;
-	Record_pack(position, dynamic_cast<AST::Str*>(a), b, sst);
+	size_t offset = 0;
+	Record_pack(position, offset, dynamic_cast<AST::Str*>(a), b, sst);
 	std::string v = sst.str();
 	return(AST::makeStrCXX(v));
 }
