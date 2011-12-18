@@ -29,6 +29,8 @@ static size_t getSize(char c) {
 	case 'L': return(sizeof(unsigned long));
 	case 'p': return(sizeof(void*));
 	case 'P': return(sizeof(void*));
+	case 'q': return(sizeof(long long));
+	case 'Q': return(sizeof(unsigned long long));
 	default: return(0); /* FIXME */
 	}
 }
@@ -59,6 +61,20 @@ static size_t getAlignment(char c) {
 	case 'H': return(2);
 	case 'I': return(4);
 	case 'L': return(sizeof(long));
+	case 'q': return(
+#ifdef WIN32
+8
+#else
+4
+#endif
+);
+	case 'Q': return(
+#ifdef WIN32
+8
+#else
+4
+#endif
+);
 	default: return(0); /* FIXME */
 	}
 }
