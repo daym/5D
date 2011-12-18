@@ -1,3 +1,9 @@
+5d (0.1.2) unstable; urgency=low
+
+  * introduce garbage collector.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 18 Dec 2011 18:31:00 +0100
+
 5d (0.1.1) unstable; urgency=low
 
   * make "dot" do the same as "quote".
