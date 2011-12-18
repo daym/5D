@@ -38,6 +38,8 @@ Str* makeStr(const char* text) {
 		return(makeStrRaw(strdup(text), strlen(text)));
 }
 Str* makeStrCXX(const std::string& text) {
+	if(text.length() == 0)
+		return(NULL);
 	char* result = new char[text.length() + 1];
 	memcpy(result, text.c_str(), text.length() + 1);
 	return(makeStrRaw(result, text.length()));
