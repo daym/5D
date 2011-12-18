@@ -158,7 +158,7 @@ static inline size_t pack_atom_value(char formatC, AST::Node* headNode, std::str
 	return(size);
 }
 
-AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
+AST::Str* Record_pack(size_t formatOffset, AST::Str* formatStr, AST::Node* data) {
 	size_t offset = 0;
 	size_t new_offset = 0;
 	bool bBigEndian = false;
@@ -168,15 +168,18 @@ AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data) {
 	size_t position = 0; // in format
 	AST::Cons* consNode = Evaluators::evaluateToCons(data);
 	position = 0;
+	if(formatOffset > formatStr->size)
+		formatOffset = formatStr->size;
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		char formatC = *format;
+		if(formatC == ']')
+			break;
 		if(formatC == '<' || formatC == '>' || formatC == '=')
 			continue;
 		if(consNode == NULL)
 			throw Evaluators::EvaluationException("packRecord: not enough data for format.");
 		AST::Node* headNode = Evaluators::reduce(consNode->head);
 		consNode = Evaluators::evaluateToCons(consNode->tail);
-
 		if(formatC == '[') {
 		} else {
 			size_t align = getAlignment(formatC); 
@@ -377,7 +380,7 @@ using namespace Evaluators;
 static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
-	return(Record_pack(dynamic_cast<AST::Str*>(a), b));
+	return(Record_pack(0, dynamic_cast<AST::Str*>(a), b));
 }
 DEFINE_BINARY_OPERATION(RecordPacker, pack)
 REGISTER_BUILTIN(RecordPacker, 2, 0, AST::symbolFromStr("packRecord"))
