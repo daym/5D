@@ -158,13 +158,12 @@ static inline size_t pack_atom_value(char formatC, AST::Node* headNode, std::str
 	return(size);
 }
 
-AST::Str* Record_pack(size_t formatOffset, AST::Str* formatStr, AST::Node* data) {
+void Record_pack(size_t formatOffset, AST::Str* formatStr, AST::Node* data, std::stringstream& sst) {
 	size_t offset = 0;
 	size_t new_offset = 0;
 	bool bBigEndian = false;
-	std::stringstream sst;
 	if(formatStr == NULL)
-		return(NULL);
+		return;
 	size_t position = 0; // in format
 	AST::Cons* consNode = Evaluators::evaluateToCons(data);
 	position = 0;
@@ -199,8 +198,6 @@ double get_native_double(AST::Node* root);
 */
 		}
 	}
-	std::string v = sst.str();
-	return(AST::makeStrCXX(v));
 }
 #define DECODE_BUF(destination) \
 	unsigned char* d = (unsigned char*) &destination; \
@@ -380,7 +377,10 @@ using namespace Evaluators;
 static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
-	return(Record_pack(0, dynamic_cast<AST::Str*>(a), b));
+	std::stringstream sst;
+	Record_pack(0, dynamic_cast<AST::Str*>(a), b, sst);
+	std::string v = sst.str();
+	return(AST::makeStrCXX(v));
 }
 DEFINE_BINARY_OPERATION(RecordPacker, pack)
 REGISTER_BUILTIN(RecordPacker, 2, 0, AST::symbolFromStr("packRecord"))
