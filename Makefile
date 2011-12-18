@@ -14,7 +14,7 @@ DISTDIR = $(PACKAGE)-$(VERSION)
 #-fwrapv
 #-Werror=strict-overflow
 
-LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a -ldl
+LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a -ldl -lgc
 GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
 GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
 FFIS = FFIs/TrampolineSymbols.o

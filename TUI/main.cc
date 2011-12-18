@@ -163,7 +163,7 @@ char* REPL_get_output_buffer_text(struct REPL* self) {
 		count += 2 + HISTENT_BYTES(history[i]);
 	}
 	++count;
-	pos = buffer = (char*) malloc(count);
+	pos = buffer = new char[count];
 	for(int i = 0; i < history_length; ++i) {
 		strcpy(pos, history[i]->line);
 		pos += strlen(history[i]->line);
