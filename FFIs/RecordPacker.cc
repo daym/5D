@@ -373,11 +373,30 @@ size_t Record_get_size(AST::Str* formatStr) {
 	}
 	return(offset);
 }
-AST::Str* Record_allocate(size_t size) {
+// this doesn't work with record packers like "[p]" which have dynamic length.
+bool Record_has_pointers(AST::Str* formatStr) {
+	if(formatStr == NULL)
+		throw Evaluators::EvaluationException("recordSize needs format string.");
+	const char* format = (const char*) formatStr->native;
+	size_t position = 0; // in format
+	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
+		if(*format == '<' || *format == '>' || *format == '=')
+			continue;
+		switch(*format) {
+		case 'p':
+		case 'P':
+		case 's':
+		case 'S':
+			return(true);
+		}
+	}
+	return(false);
+}
+AST::Str* Record_allocate(size_t size, bool bAtomicity) {
 	if(size < 1) // TODO
 		throw Evaluators::EvaluationException("cannot allocate record with unknown size");
 	char* buffer = new (UseGC) char[size];
-	AST::Str* result = AST::makeStrRaw(buffer, size);
+	AST::Str* result = AST::makeStrRaw(buffer, size, bAtomicity);
 	return(result);
 }
 using namespace Evaluators;
@@ -411,7 +430,7 @@ static AST::Node* wrapAllocateRecord(AST::Node* options, AST::Node* argument) {
 	AST::Str* format = dynamic_cast<AST::Str*>(iter->second);
 	++iter;
 	AST::Node* world = iter->second;
-	AST::Node* result = Record_allocate(Record_get_size(format));
+	AST::Node* result = Record_allocate(Record_get_size(format), !Record_has_pointers(format));
 	return(Evaluators::makeIOMonad(result, world));
 }
 DEFINE_FULL_OPERATION(RecordAllocator, {
@@ -428,7 +447,7 @@ static AST::Node* wrapDuplicateRecord(AST::Node* options, AST::Node* argument) {
 	if(record == NULL)
 		result = NULL;
 	else {
-		result = Record_allocate(record->size);
+		result = Record_allocate(record->size, false); // since this is monadic, nothing stops the C runtime from putting pointers in there.
 		memcpy(result->native, record->native, record->size);
 	}
 	return(Evaluators::makeIOMonad(result, world));
@@ -457,7 +476,7 @@ AST::Node* strFromList(AST::Cons* node) {
 		sst << (char) c;
 	}
 	std::string v = sst.str();
-	AST::Str* result = Record_allocate(v.length());
+	AST::Str* result = Record_allocate(v.length(), false/*chicken*/);
 	memcpy(result->native, v.c_str(), result->size);
 	return(result);
 }
@@ -488,13 +507,13 @@ static AST::Node* substr(AST::Node* options, AST::Node* argument) {
 	if(len == 0)
 		return(NULL);
 	p += beginning;
-	return(AST::makeStrRaw(p, len)); // TODO maybe copy.
+	return(AST::makeStrRaw(p, len, mBox->bAtomicity)); // TODO maybe copy.
 }
 static AST::Str* str_until_zero(AST::Str* value) {
 	AST::Str* result;
 	if(value == NULL)
 		return(NULL);
-	result = AST::makeStrRaw((char*) value->native, strlen((char*) value->native)); // TODO copy?
+	result = AST::makeStrRaw((char*) value->native, strlen((char*) value->native), value->bAtomicity); // TODO copy?
 	return(result);
 }
 

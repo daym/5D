@@ -24,10 +24,11 @@ Cons* makeCons(Node* head, Node* tail) {
 	result->tail = tail;
 	return(result);
 }
-Str* makeStrRaw(char* mutableText, size_t size) {
+Str* makeStrRaw(char* mutableText, size_t size, bool bAtomicity) {
 	if(size < 1)
 		return(NULL);
 	AST::Str* result = new AST::Str((void*) mutableText);
+	result->bAtomicity = bAtomicity;
 	result->size = size;
 	return(result);
 }
@@ -43,7 +44,7 @@ Str* makeStrCXX(const std::string& text, bool bAtomic) {
 		return(NULL);
 	char* result = bAtomic ? (char*) GC_malloc_atomic(text.length() + 1) : new (UseGC) char[text.length() + 1];
 	memcpy(result, text.c_str(), text.length() + 1);
-	return(makeStrRaw(result, text.length()));
+	return(makeStrRaw(result, text.length(), bAtomic));
 }
 bool str_P(AST::Node* node) {
 	return(dynamic_cast<AST::Str*>(node) != NULL);

@@ -42,10 +42,12 @@ struct Box : Node {
 	//virtual std::string str(void) const;
 };
 struct Str : Box {
+	bool bAtomicity;
 	size_t size;
 	Str(void* native) :
 		Box(native)
 	{
+		bAtomicity = false;
 	}
 	//virtual std::string str(void) const;
 };
@@ -53,7 +55,7 @@ struct Str : Box {
 Cons* makeCons(Node* head, Node* tail);
 Str* makeStr(const char* text); // this can contain no pointers
 Str* makeStrCXX(const std::string& text, bool bAtomic = false); // this can contain pointers
-Str* makeStrRaw(char* mutableText, size_t size);
+Str* makeStrRaw(char* mutableText, size_t size, bool bAtomic);
 static inline Box* makeBox(void* native) {
 	return new Box(native);
 }
