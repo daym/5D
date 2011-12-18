@@ -190,7 +190,7 @@ void REPL_append_to_output_buffer(struct REPL* self, char const* text) {
 
 struct REPL* REPL_new(void) {
 	struct REPL* result;
-	result = new REPL; // (struct REPL*) calloc(1, sizeof(struct REPL));
+	result = new REPL;
 	REPL_init(result);
 	return(result);
 }

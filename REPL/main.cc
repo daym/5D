@@ -100,7 +100,7 @@ bool REPL_execute(struct REPL* self, AST::Node* input) {
 }
 struct REPL* REPL_new(void) {
 	struct REPL* result;
-	result = (struct REPL*) calloc(1, sizeof(struct REPL));
+	result = new REPL;
 	REPL_init(result);
 	return(result);
 }
