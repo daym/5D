@@ -185,7 +185,7 @@ static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::N
 	HashTable::const_iterator iterMarshaller = fMarshallers.find(signature->name);
 	if(iterMarshaller == fMarshallers.end()) {
 	    fprintf(stderr, "warning: could not find marshaller for %s\\n", signature->name);
-	    return Evaluators::makeIOMonad(NULL, Evaluators::reduce(world));
+	    return Evaluators::makeIOMonad(NULL, endIter->second);
         } else
             return (*iterMarshaller->second)(proc->native, iter, endIter);
 }
