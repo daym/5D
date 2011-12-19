@@ -1,0 +1,33 @@
+#ifndef __AST_HASH_TABLE_H
+#define __AST_HASH_TABLE_H
+#include <ext/hash_map>
+#include <string.h>
+#include "AST/AST"
+#include "AST/Symbol"
+
+namespace AST {
+
+/* and the table: */
+struct eqstr {
+	bool operator()(const char* s1, const char* s2) const {
+		return strcmp(s1, s2) == 0;
+	}
+};
+
+typedef __gnu_cxx::hash_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr> RawHashTable;
+/*
+static AST::Node* listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
+	if(iter == endIter)
+		return(NULL);
+	else {
+		++iter;
+		return(AST::makeCons(AST::symbolFromStr(iter->first), listFromHashTable(iter, endIter)));
+	}
+}
+*/
+class HashTable : public AST::Node, public RawHashTable { /* makes sure dynamic_cast works! */
+	virtual ~HashTable(void) {}
+};
+
+};
+#endif /* ndef __AST_HASH_TABLE_H */

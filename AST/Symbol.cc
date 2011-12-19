@@ -9,24 +9,24 @@ You should have received a copy of the GNU General Public License along with thi
 #include <string>
 #include <string.h>
 #include "AST/Symbol"
+#include "AST/HashTable"
 
 namespace AST {
 
-static std::map<std::string, Symbol*>* symbols;
+static AST::HashTable* symbols;
 
 /* TODO we can also just skip the whole map business for single-character names if we just return the character code instead of fumbling around (would have to make sure actual addresses are >255 then). 
    of course, str would then have to be global and we can't use the VMT anymore. Not sure whether it would be worth it. */
 Symbol* symbolFromStr(const char* name) {
 	if(symbols == NULL)
-		symbols = new std::map<std::string, Symbol*>();
-	std::string xname = name;
-	std::map<std::string, Symbol*>::const_iterator iter = symbols->find(xname);
+		symbols = new AST::HashTable();
+	AST::HashTable::const_iterator iter = symbols->find(name);
 	if(iter != symbols->end()) {
-		return(iter->second);
+		return((Symbol*) iter->second);
 	} else {
 		Symbol* result = new Symbol;
-		result->name = strdup(name);
-		(*symbols)[name] = result;
+		result->name = GC_strdup(name);
+		(*symbols)[result->name] = result;
 		return(result);
 	}
 }
