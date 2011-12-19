@@ -43,17 +43,17 @@ Linear_Algebra/test-Matrix: Linear_Algebra/test-Matrix.o
 Linear_Algebra/test-Tensor: Linear_Algebra/test-Tensor.o
 	g++ -o Linear_Algebra/test-Tensor Linear_Algebra/test-Tensor.o
 
-Scanners/test-Scanner: Scanners/test-Scanner.o Scanners/Scanner.o AST/Symbol.o AST/Symbols.o AST/AST.o AST/Keyword.o $(FFIS)
+Scanners/test-Scanner: Scanners/test-Scanner.o Scanners/Scanner.o AST/Symbol.o AST/HashTable.o AST/Symbols.o AST/AST.o AST/Keyword.o $(FFIS)
 	g++ -o $@ $^ $(LDFLAGS)
 
-Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/MathParser.o Scanners/Scanner.o AST/Symbol.o AST/Symbols.o AST/AST.o Scanners/OperatorPrecedenceList.o AST/Keyword.o Evaluators/Builtins.o Evaluators/Evaluators.o Numbers/Integer.o Numbers/BigUnsigned.o Numbers/Real.o Evaluators/Operation.o Evaluators/FFI.o $(FFIS) Scanners/ShuntingYardParser.o
+Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/MathParser.o Scanners/Scanner.o AST/Symbol.o AST/HashTable.o AST/Symbols.o AST/AST.o Scanners/OperatorPrecedenceList.o AST/Keyword.o Evaluators/Builtins.o Evaluators/Evaluators.o Numbers/Integer.o Numbers/BigUnsigned.o Numbers/Real.o Evaluators/Operation.o Evaluators/FFI.o $(FFIS) Scanners/ShuntingYardParser.o
 	g++ -o $@ $^ $(LDFLAGS)
 	
 AST/test-AST: AST/test-AST.o
 	g++ -o AST/test-AST AST/test-AST.o $(LDFLAGS)
 
-AST/test-Symbol: AST/test-Symbol.o AST/Symbol.o AST/Symbols.o AST/AST.o $(AST_UNCLEAN)
-	g++ -o AST/test-Symbol AST/test-Symbol.o AST/Symbol.o AST/Symbols.o AST/AST.o $(AST_UNCLEAN) $(LDFLAGS)
+AST/test-Symbol: AST/test-Symbol.o AST/Symbol.o AST/HashTable.o AST/Symbols.o AST/AST.o $(AST_UNCLEAN)
+	g++ -o AST/test-Symbol AST/test-Symbol.o AST/HashTable.o AST/Symbol.o AST/Symbols.o AST/AST.o $(AST_UNCLEAN) $(LDFLAGS)
 
 test-AST: test-AST.o
 	g++ -o test-AST test-AST.o
@@ -69,7 +69,7 @@ Formatters/UTF-8_to_LATEX_result.h: Formatters/UTF-8_to_LATEX.table Formatters/g
 	Formatters/generate-state-machine Formatters/UTF-8_to_LATEX.table >tmp4711 && mv tmp4711 Formatters/UTF-8_to_LATEX_result.h
 AST/AST.o: AST/AST.cc AST/AST AST/Symbol
 AST/test-AST.o: AST/test-AST.cc AST/AST
-AST/test-Symbol.o: AST/test-Symbol.cc AST/Symbol AST/AST
+AST/test-Symbol.o: AST/test-Symbol.cc AST/Symbol AST/AST AST/HashTable
 AST/Symbol.o: AST/Symbol.cc AST/Symbol AST/AST AST/HashTable
 AST/Symbols.o: AST/Symbols.cc AST/Symbols AST/Symbol AST/AST
 AST/Keyword.o: AST/Keyword.cc AST/Keyword AST/AST
@@ -101,13 +101,13 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 	./Scanners/test-Scanner
 	./Scanners/test-MathParser
 
-REPL/5DREPL: REPL/main.o REPL/REPL.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/TUI.o FFIs/RecordPacker.o $(FFIS)
+REPL/5DREPL: REPL/main.o REPL/REPL.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/TUI.o FFIs/RecordPacker.o $(FFIS)
 	g++ -o $@ $^ $(LDFLAGS)
 
-TUI/TUI: TUI/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/TUI.o FFIs/RecordPacker.o $(FFIS)
+TUI/TUI: TUI/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/TUI.o FFIs/RecordPacker.o $(FFIS)
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
-TUI2/5DTUI: TUI2/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o $(NUMBER_OBJECTS) Evaluators/Operation.o $(FFIS)
+TUI2/5DTUI: TUI2/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o $(NUMBER_OBJECTS) Evaluators/Operation.o $(FFIS)
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 REPL/main.o: REPL/main.cc REPL/REPL Version REPL/REPLEnvironment Evaluators/Modules FFIs/FFIs AST/AST AST/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators Scanners/MathParser Scanners/SExpressionParser Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Scanners/MathParser Scanners/Scanner Evaluators/Evaluators Numbers/Small Evaluators/Operation Numbers/Integer Numbers/Real
@@ -164,7 +164,7 @@ GUI/GTKLATEXGenerator.o: GUI/GTKLATEXGenerator.cc GUI/GTKLATEXGenerator
 GUI/GTKView.o: GUI/GTKView.cc
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/5D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o AST/Symbols.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Formatters/SExpression.o REPL/REPL.o GUI/GTKCompleter.o Evaluators/Backtracker.o AST/Keyword.o GUI/GTKTerminalEmulator.o Scanners/OperatorPrecedenceList.o Formatters/Math.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/GTKUI.o FFIs/RecordPacker.o $(FFIS)
+GUI/5D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Formatters/SExpression.o REPL/REPL.o GUI/GTKCompleter.o Evaluators/Backtracker.o AST/Keyword.o GUI/GTKTerminalEmulator.o Scanners/OperatorPrecedenceList.o Formatters/Math.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/GTKUI.o FFIs/RecordPacker.o $(FFIS)
 	g++ -o $@ $^ $(GUI_LDFLAGS) -lutil
 
 GUI/GTKTerminalEmulator.o: GUI/GTKTerminalEmulator.cc GUI/TerminalEmulator
