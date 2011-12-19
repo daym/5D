@@ -9,6 +9,7 @@
 #include "GUI/WIN32REPL"
 #include "Evaluators/FFI"
 #include "REPL/REPL"
+#include "AST/AST"
 
 #define MAX_LOADSTRING 100
 
@@ -31,6 +32,8 @@ static BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
    }
+   GC_INIT();
+   GC_disable();
    LoadLibrary(_T("RICHED32.DLL"));
    REPL1 = GUI::REPL_new(NULL);
    ShowWindow(REPL_get_window(REPL1), nCmdShow);
