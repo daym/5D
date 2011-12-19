@@ -309,8 +309,7 @@ int main(int argc, char* argv[]) {
 	}
 	printf("5D Version %s - Copyright (C) 2011 Danny Milosavljevic et al.\n", VERSION);
 	printf("This program comes with ABSOLUTELY NO WARRANTY.\n");
-	printf("This is free software, and you are welcome to redistribute it under certain conditions.\n");
-	printf("See /usr/share/doc/5d/copyright for details.\n");
+	printf("This is free software, and you are welcome to redistribute it under certain conditions. See /usr/share/doc/5d/copyright for details.\n");
 	install_SIGQUIT_handler();
 	install_SIGINT_handler();
 	initialize_readline();
