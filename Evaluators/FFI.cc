@@ -10,7 +10,9 @@ You should have received a copy of the GNU General Public License along with thi
 #endif
 #include <stdio.h>
 #include <string.h>
+#ifndef WIN32
 #include <sys/utsname.h>
+#endif
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
 #include "AST/AST"
@@ -147,6 +149,11 @@ DEFINE_FULL_OPERATION(Flusher, {
 DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 	return(wrapGetAbsolutePath(fn, argument));
 })
+#ifdef WIN32
+static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
+	return(nameNode);
+}
+#else
 static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
 	// keep that result constant and invariant.
 	std::stringstream sst;
@@ -161,6 +168,7 @@ static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
 	sst << name;
 	return(AST::makeStrCXX(sst.str()));
 }
+#endif
 DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(reduce(argument))))
 REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write"))
 REGISTER_BUILTIN(Flusher, 2, 0, AST::symbolFromStr("flush"))

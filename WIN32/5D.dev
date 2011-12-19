@@ -5,14 +5,14 @@ UnitCount=74
 Type=0
 Ver=1
 ObjFiles=
-Includes=..;.
-Libs=
+Includes=..;.;..\gc\libgc6.5bin\include
+Libs=..\gc\libgc6.5bin\lib
 PrivateResource=5D_private.rc
 ResourceIncludes=
 MakeIncludes=
 Compiler=-D_UNICODE -DUNICODE_@@_
 CppCompiler=-D_UNICODE -DUNICODE_@@_
-Linker=-lcomctl32_@@_
+Linker=-lcomctl32 -lgc_@@_
 IsCpp=1
 Icon=
 ExeOutput=
@@ -747,7 +747,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit73]
-FileName=..\FFIs\Record.cc
+FileName=..\FFIs\RecordPacker.cc
 CompileCpp=1
 Folder=5D
 Compile=1
@@ -757,7 +757,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit74]
-FileName=..\FFIs\Record
+FileName=..\FFIs\RecordPacker
 Folder=5D
 Compile=0
 Link=0
