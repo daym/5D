@@ -12,7 +12,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	std::wstring cText;
 	std::wstring cCaption;
 	int cType = 0;
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	AST::Node* parent = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("parent:"));
 	if(parent && dynamic_cast<AST::Box*>(parent) != NULL) {
 		cParentWindow = (HWND) dynamic_cast<AST::Box*>(parent)->native;
@@ -40,7 +40,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 		(icon == AST::symbolFromStr("warning")) ? MB_ICONWARNING : 
 		(icon == AST::symbolFromStr("error")) ? MB_ICONERROR : 
 		0; // TODO more
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	cText = FromUTF8(Evaluators::get_native_string(iter->second));
 	++iter;
 	AST::Node* world = iter->second;
