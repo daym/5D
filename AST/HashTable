@@ -2,6 +2,7 @@
 #define __AST_HASH_TABLE_H
 #include <ext/hash_map>
 #include <string.h>
+#include <gc/gc_allocator.h>
 #include "AST/AST"
 #include "AST/Symbol"
 
@@ -14,7 +15,7 @@ struct eqstr {
 	}
 };
 
-typedef __gnu_cxx::hash_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr> RawHashTable;
+typedef __gnu_cxx::hash_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
 /*
 static AST::Node* listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
 	if(iter == endIter)

@@ -509,6 +509,7 @@ REGISTER_BUILTIN(WorldRunner, 1, 0, AST::symbolFromStr("runWorld"))
 REGISTER_BUILTIN(ModuleDispatcher, 2, 1, AST::symbolFromStr("dispatchModule"))
 REGISTER_BUILTIN(ModuleBoxMaker, 1, 0, AST::symbolFromStr("makeModuleBox"))
 
+// FIXME make this GCable.
 std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* options, AST::Node* argument) {
 	std::list<std::pair<AST::Keyword*, AST::Node*> > result;
 	AST::Node* v;
