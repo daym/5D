@@ -18,7 +18,7 @@ namespace Evaluators {
 using namespace AST;
 
 EvaluationException::EvaluationException(const char* s) throw() {
-	message = strdup(s);
+	message = GCx_strdup(s);
 }
 const char* EvaluationException::what() const throw() {
 	return message; //message.c_str();

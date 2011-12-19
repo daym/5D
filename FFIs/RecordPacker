@@ -18,6 +18,7 @@ DECLARE_BINARY_OPERATION(ListFromStrGetter)
 DECLARE_BINARY_OPERATION(StrFromListGetter)
 DECLARE_SIMPLE_OPERATION(SubstrGetter)
 DECLARE_SIMPLE_OPERATION(StrUntilZeroGetter)
+AST::Str* str_until_zero(AST::Box* value);
 
 }; /* end namespace FFIs */
 

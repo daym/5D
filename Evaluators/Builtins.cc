@@ -415,7 +415,7 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 	AST::HashTable* m;
 	if(dynamic_cast<AST::HashTable*>((AST::Node*) mBox->native) == NULL) {
 		//cons_P((AST::Node*) mBox->native)) {
-		m = new AST::HashTable;
+		m = new (UseGC) AST::HashTable;
 		for(AST::Cons* table = (AST::Cons*) mBox->native; table; table = Evaluators::evaluateToCons(table->tail)) {
 			AST::Cons* entry = evaluateToCons(reduce(table->head));
 			//std::string v = str(entry);
@@ -452,7 +452,7 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 			std::stringstream sst;
 			sst << "unknown symbol '" << s->name;
 			std::string v = sst.str();
-			throw Evaluators::EvaluationException(strdup(v.c_str()));
+			throw Evaluators::EvaluationException(GCx_strdup(v.c_str()));
 		}
 	} else
 		throw Evaluators::EvaluationException("not a symbol");

@@ -509,11 +509,11 @@ static AST::Node* substr(AST::Node* options, AST::Node* argument) {
 	p += beginning;
 	return(AST::makeStrRaw(p, len, mBox->bAtomicity)); // TODO maybe copy.
 }
-static AST::Str* str_until_zero(AST::Str* value) {
+AST::Str* str_until_zero(AST::Box* value) {
 	AST::Str* result;
 	if(value == NULL)
 		return(NULL);
-	result = AST::makeStrRaw((char*) value->native, strlen((char*) value->native), value->bAtomicity); // TODO copy?
+	result = AST::makeStrRaw((char*) value->native, strlen((char*) value->native), true); // TODO copy?
 	return(result);
 }
 

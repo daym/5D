@@ -134,7 +134,7 @@ static char* REPL_ensure_default_environment_name(struct REPL* self) {
 		if(snprintf(config_dir_name, NAME_MAX, "%s/.config/5D/TUI_environment", HOME) == -1)
 			abort();
 	}
-	result = strdup(config_dir_name);
+	result = GCx_strdup(config_dir_name);
 	self->fEnvironmentName = result;
 	return(result);
 }
@@ -177,7 +177,7 @@ void REPL_append_to_output_buffer(struct REPL* self, char const* text) {
 	char* buffer;
 	char* pos;
 	char* newline;
-	for(pos = buffer = strdup(text); *pos; ) {
+	for(pos = buffer = GCx_strdup(text); *pos; ) {
 		newline = strchr(pos, '\n');
 		if(newline == NULL)
 			newline = pos + strlen(pos);
@@ -214,7 +214,7 @@ static char* command_generator(const char* text, int state) {
 		name = (*iter)->name;
 		if(strncmp(name, text, len) == 0) {
 			++iter;
-			return(strdup(name));
+			return(GCx_strdup(name));
 		} else
 			++iter;
 	}
@@ -251,7 +251,7 @@ void run(struct REPL* REPL, const char* text) {
 	}
 }
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name) {
-	self->fEnvironmentName = strdup(absolute_name);
+	self->fEnvironmentName = GCx_strdup(absolute_name);
 }
 bool REPL_load_contents_by_name(struct REPL* self, const char* file_name) {
 	if(!REPL_load_contents_from(self, file_name))

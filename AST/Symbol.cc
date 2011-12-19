@@ -25,7 +25,7 @@ Symbol* symbolFromStr(const char* name) {
 		return((Symbol*) iter->second);
 	} else {
 		Symbol* result = new Symbol;
-		result->name = GC_strdup(name);
+		result->name = GCx_strdup(name);
 		(*symbols)[result->name] = result;
 		return(result);
 	}

@@ -72,7 +72,7 @@ AST/test-AST.o: AST/test-AST.cc AST/AST
 AST/test-Symbol.o: AST/test-Symbol.cc AST/Symbol AST/AST AST/HashTable
 AST/Symbol.o: AST/Symbol.cc AST/Symbol AST/AST AST/HashTable
 AST/Symbols.o: AST/Symbols.cc AST/Symbols AST/Symbol AST/AST
-AST/Keyword.o: AST/Keyword.cc AST/Keyword AST/AST
+AST/Keyword.o: AST/Keyword.cc AST/Keyword AST/HashTable AST/AST
 AST/HashTable.o: AST/HashTable.cc AST/HashTable AST/AST AST/Symbol
 Scanners/Scanner.o: Scanners/Scanner.cc Scanners/Scanner AST/Symbol AST/AST AST/Keyword Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Evaluators AST/AST
 Scanners/test-Scanner.o: Scanners/test-Scanner.cc Scanners/Scanner AST/Symbol AST/AST

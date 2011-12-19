@@ -57,7 +57,7 @@ static void Completer_complete_internal(struct Completer* self, const char* entr
 		entry_needle = entry_text;
 	else
 		++entry_needle;
-	self->fEntryNeedle = strdup(entry_needle);
+	self->fEntryNeedle = GCx_strdup(entry_needle);
 	self->fEntryNeedle[pos - (entry_needle - entry_text)] = 0; // cut afterwards! zB pos==108, fEntryNeedle="small"
 	self->fEntryNeedlePos = entry_needle - entry_text;
 #ifdef _WIN32

@@ -210,10 +210,10 @@ char* get_absolute_path(const char* filename) {
 	if(GetFullPathNameW(filenameW.c_str(), 2048, buffer, NULL) != 0) {
 		return(ToUTF8(buffer));
 	} else
-		return(strdup(filename));
+		return(GCx_strdup(filename));
 #else
 	if(filename[0] == '/')
-		return(strdup(filename));
+		return(GCx_strdup(filename));
 	else {
 		char buffer[2049];
 		std::stringstream sst;
@@ -225,7 +225,7 @@ char* get_absolute_path(const char* filename) {
 		if(filename)
 			sst << filename;
 		std::string v = sst.str();
-		return(strdup(v.c_str()));
+		return(GCx_strdup(v.c_str()));
 	}
 #endif
 }

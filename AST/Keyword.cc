@@ -9,23 +9,24 @@ You should have received a copy of the GNU General Public License along with thi
 #include <string>
 #include <string.h>
 #include "AST/Keyword"
+#include "AST/HashTable"
+#include "AST/AST"
 
 namespace AST {
 
-static std::map<std::string, Keyword*>* keywords;
+static AST::HashTable* keywords;
 
 /* TODO we can also just skip the whole map business for single-character names if we just return the character code instead of fumbling around (would have to make sure actual addresses are >255 then). 
    of course, str would then have to be global and we can't use the VMT anymore. Not sure whether it would be worth it. */
 Keyword* keywordFromStr(const char* name) {
 	if(keywords == NULL)
-		keywords = new std::map<std::string, Keyword*>();
-	std::string xname = name;
-	std::map<std::string, Keyword*>::const_iterator iter = keywords->find(xname);
+		keywords = new AST::HashTable;
+	AST::HashTable::const_iterator iter = keywords->find(name);
 	if(iter != keywords->end()) {
-		return(iter->second);
+		return((Keyword*) iter->second);
 	} else {
 		Keyword* result = new Keyword;
-		result->name = strdup(name);
+		result->name = GCx_strdup(name);
 		(*keywords)[name] = result;
 		return(result);
 	}

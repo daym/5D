@@ -64,9 +64,6 @@ static inline void* getSomethingUsefulOrNull(AST::Node* n) {
   else
      return(getSomethingUseful(n));
 }
-static inline char* strdupOrNull(const char* s) {
-  return(s ? strdup(s) : NULL);
-}
 static inline AST::Node* makeStrOrNil(const char* s) {
   return(s ? AST::makeStr(s) : NULL);
 }
@@ -80,8 +77,8 @@ static inline AST::Node* makeBoxOrNil(void* s) {
 #define unl iter == end ? 0 : Evaluators::get_native_long(extr(iter++))
 #define unh iter == end ? 0 : Evaluators::get_native_short(extr(iter++))
 #define unL iter == end ? 0 : Evaluators::get_native_long_long(extr(iter++))
-#define uns iter == end ? NULL : strdup(Evaluators::get_native_string(extr(iter++)))
-#define unS iter == end ? NULL : strdupOrNull(Evaluators::get_native_string(extr(iter++)))
+#define uns iter == end ? NULL : Evaluators::get_native_string(extr(iter++))
+#define unS iter == end ? NULL : Evaluators::get_native_string(extr(iter++))
 #define unf iter == end ? 0 : Evaluators::get_native_float(extr(iter++))
 #define unD iter == end ? 0.0L : Evaluators::get_native_long_double(extr(iter++))
 #define und iter == end ? 0.0 : Evaluators::get_native_double(extr(iter++))

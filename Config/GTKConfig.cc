@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Config/Config"
+#include "AST/AST"
 
 #define CONFIG_NAME "5D/config.INI"
 
@@ -49,7 +50,7 @@ struct Config* load_Config(void) {
 	g_free((gchar**) config_dirs);
 	g_free(full_name);
 	environment_name = g_key_file_get_string(config->key_file, "Global", "Environment", &error);
-	config->environment_name = environment_name && environment_name[0] ? strdup(environment_name) : NULL;
+	config->environment_name = environment_name && environment_name[0] ? GCx_strdup(environment_name) : NULL;
 	config->main_window_width = g_key_file_get_integer(config->key_file, "MainWindow", "Width", NULL);
 	config->main_window_height = g_key_file_get_integer(config->key_file, "MainWindow", "Height", NULL);
 	{
@@ -96,10 +97,10 @@ bool Config_save(struct Config* config) {
 	return(true);
 }
 char* Config_get_environment_name(struct Config* config) {
-	return(config->environment_name ? strdup(config->environment_name) : NULL);
+	return(config->environment_name ? GCx_strdup(config->environment_name) : NULL);
 }
 void Config_set_environment_name(struct Config* config, const char* value) {
-	config->environment_name = value ? strdup(value) : NULL;
+	config->environment_name = value ? GCx_strdup(value) : NULL;
 }
 int Config_get_main_window_width(struct Config* config) {
 	return(config->main_window_width);

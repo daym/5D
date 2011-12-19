@@ -23,7 +23,7 @@ using namespace AST;
 using namespace Evaluators;
 
 ParseException::ParseException(const char* s) throw() {
-	message = strdup(s);
+	message = GCx_strdup(s);
 }
 const char* ParseException::what() const throw() {
 	return message; //message.c_str();

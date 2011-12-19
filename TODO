@@ -111,3 +111,7 @@ support reloading of modules (in that case, need to use monads)
 Multithreading: per-thread mutable boxes (monadic).
 Messagebox custom buttons
 -D_FILE_OFFSET_BITS=64
+
+= GC =
+
+by default, make allocators use GC_uncollectable_malloc

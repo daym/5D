@@ -107,26 +107,6 @@ AST::Node* REPL_get_definition(struct REPL* self, size_t offset) {
 bool exit_P(const char* text) {
 	return(strncmp(text, "#exit", strlen("#exit")) == 0);
 }
-AST::Node* REPL_eval_info(struct REPL* self, const char* text) {
-	char* arg = strdup(text + strlen("#info"));
-	size_t backOffset;
-	while(*arg && isspace(*arg))
-		++arg;
-	char* x_space = strchr(arg, ' ');
-	if(x_space) {
-		*x_space = 0;
-		++x_space;
-		backOffset = (size_t) atoi(x_space);
-	} else {
-		backOffset = 0;
-	}
-	if(arg[0] == '(')
-		++arg;
-	if(strlen(arg) > 0 && arg[strlen(arg) - 1] == ')')
-		arg[strlen(arg) - 1] = 0;
-	AST::Node* body = REPL_get_definition_backwards(self, AST::symbolFromStr(arg), backOffset);
-	return(body);
-}
 AST::Node* REPL_prepare(struct REPL* self, AST::Node* input);
 static AST::Node* REPL_access_module(AST::Node* fn, AST::Node* argument) {
 	Evaluators::CurriedOperation* o = dynamic_cast<Evaluators::CurriedOperation*>(fn);
