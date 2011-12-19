@@ -153,6 +153,21 @@ DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
 	return(nameNode);
 }
+bool absolute_path_P(AST::Str* name) {
+	if(name == NULL) // an empty path is not an absolute path.
+		return(false);
+	if(name->size < 2)
+		return(false);
+	char* c = (char*) name->native;
+	if(*c != '\\' && *c != '/' && *(c + 1) != ':')
+		return(false);
+	if(*c == '\\' || *c == '/')
+		return(true);
+	++c;
+	if(*c == ':')
+		return(true);
+	return(false);
+}
 #else
 static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
 	// keep that result constant and invariant.
@@ -168,13 +183,23 @@ static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
 	sst << name;
 	return(AST::makeStrCXX(sst.str()));
 }
+bool absolute_path_P(AST::Str* name) {
+	if(name == NULL) // an empty path is not an absolute path.
+		return(false);
+	if(name->size < 1)
+		return(false);
+	char* c = (char*) name->native;
+	return(*c == '/');
+}
 #endif
 DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(dynamic_cast<AST::Str*>(reduce(argument))))
 REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write"))
 REGISTER_BUILTIN(Flusher, 2, 0, AST::symbolFromStr("flush"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline"))
 REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath"))
 REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"))
+REGISTER_BUILTIN(AbsolutePathP, 1, 0, AST::symbolFromStr("absolutePath?"))
 
 char* get_absolute_path(const char* filename) {
 #ifdef WIN32

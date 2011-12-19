@@ -25,11 +25,13 @@ float get_native_float(AST::Node* root);
 long double get_native_long_double(AST::Node* root);
 double get_native_double(AST::Node* root);
 char* get_absolute_path(const char* filename);
+bool absolute_path_P(AST::Str* name);
 
 DECLARE_FULL_OPERATION(Writer)
 DECLARE_FULL_OPERATION(Flusher)
 DECLARE_FULL_OPERATION(LineReader)
 DECLARE_FULL_OPERATION(AbsolutePathGetter)
+DECLARE_SIMPLE_OPERATION(AbsolutePathP)
 DECLARE_SIMPLE_OPERATION(ArchDepLibNameGetter)
 
 }; // end namespace

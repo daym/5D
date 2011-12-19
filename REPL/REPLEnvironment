@@ -261,7 +261,10 @@ static AST::Node* REPL_import_module(AST::Node* options, AST::Node* fileNameNode
 	std::string filename = "";
 	std::string realFilename = "";
 	std::string moduleKey = "";
-	for(std::vector<std::string>::const_iterator iterSearchPaths = searchPaths.begin(); iterSearchPaths != endSearchPaths; ++iterSearchPaths) {
+	if(Evaluators::absolute_path_P(dynamic_cast<AST::Str*>(fileNameNode))) {
+		filename = Evaluators::get_native_string(fileNameNode);
+		moduleKey = getModuleFileKey(filename, realFilename);
+	} else for(std::vector<std::string>::const_iterator iterSearchPaths = searchPaths.begin(); iterSearchPaths != endSearchPaths; ++iterSearchPaths) {
 		std::stringstream filenameStream;
 		filenameStream << *iterSearchPaths;
 		filenameStream << Evaluators::get_native_string(fileNameNode);
@@ -426,6 +429,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("messageBox"), &FFIs::MessageBoxDisplayer);
 	REPL_add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
 	REPL_add_builtin_method(self, AST::symbolFromStr("absolutePath"), &Evaluators::AbsolutePathGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("absolutePath?"), &Evaluators::AbsolutePathP);
 	REPL_add_builtin_method(self, AST::symbolFromStr("packRecord"), &FFIs::RecordPacker);
 	REPL_add_builtin_method(self, AST::symbolFromStr("unpackRecord"), &FFIs::RecordUnpacker);
 	REPL_add_builtin_method(self, AST::symbolFromStr("recordSize"), &FFIs::RecordSizeCalculator);
