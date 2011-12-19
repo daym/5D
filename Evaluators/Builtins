@@ -53,9 +53,10 @@ DECLARE_SIMPLE_OPERATION(ModuleDispatcher)
 
 DECLARE_SIMPLE_OPERATION(ModuleBoxMaker)
 
+typedef std::list<std::pair<AST::Keyword*, AST::Node*>, gc_allocator<std::pair<AST::Keyword*, AST::Node*> > > CXXArguments;
 /* WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
-std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* options, AST::Node* argument); /* non-keyword arguments will be at the FRONT */
-AST::Node* CXXgetKeywordArgumentValue(const std::list<std::pair<AST::Keyword*, AST::Node*> >& list, AST::Keyword* key);
+CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument); /* non-keyword arguments will be at the FRONT */
+AST::Node* CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* key);
 
 };
 

@@ -13,7 +13,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	char* cCaption;
 	GtkButtonsType cButtons = GTK_BUTTONS_CLOSE;
 	GtkMessageType cType = GTK_MESSAGE_INFO;
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	AST::Node* parent = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("parent:"));
 	if(parent && dynamic_cast<AST::Box*>(parent) != NULL) {
 		cParentWindow = (GtkWindow*) dynamic_cast<AST::Box*>(parent)->native;
@@ -38,7 +38,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	        (icon == AST::symbolFromStr("warning")) ? GTK_MESSAGE_WARNING :
 	        (icon == AST::symbolFromStr("error")) ? GTK_MESSAGE_ERROR :
 	        GTK_MESSAGE_INFO; // TODO more
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	cText = Evaluators::get_native_string(iter->second);
 	++iter;
 	AST::Node* world = iter->second;

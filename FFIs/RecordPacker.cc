@@ -425,8 +425,8 @@ DEFINE_SIMPLE_OPERATION(RecordSizeCalculator, Numbers::internNative((Numbers::Na
 REGISTER_BUILTIN(RecordSizeCalculator, 1, 0, AST::symbolFromStr("recordSize"))
 
 static AST::Node* wrapAllocateRecord(AST::Node* options, AST::Node* argument) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	AST::Str* format = dynamic_cast<AST::Str*>(iter->second);
 	++iter;
 	AST::Node* world = iter->second;
@@ -438,8 +438,8 @@ DEFINE_FULL_OPERATION(RecordAllocator, {
 })
 REGISTER_BUILTIN(RecordAllocator, 2, 0, AST::symbolFromStr("allocateRecord"))
 static AST::Node* wrapDuplicateRecord(AST::Node* options, AST::Node* argument) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	AST::Str* record = dynamic_cast<AST::Str*>(iter->second);
 	++iter;
 	AST::Node* world = iter->second;
@@ -481,8 +481,8 @@ AST::Node* strFromList(AST::Cons* node) {
 	return(result);
 }
 static AST::Node* substr(AST::Node* options, AST::Node* argument) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	AST::Str* mBox = dynamic_cast<AST::Str*>(iter->second);
 	if(iter->second == NULL)
 		return(NULL);

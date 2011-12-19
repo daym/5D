@@ -12,7 +12,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	char* cText;
 	char* cCaption;
 	const char* buttons;
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	AST::Node* parent = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("parent:"));
 	AST::Node* type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("type:"));
 	AST::Node* modality = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("modality:"));
@@ -35,7 +35,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 		(icon == AST::symbolFromStr("warning")) ? "(W)" :
 		(icon == AST::symbolFromStr("error")) ? "(E) " :
 		""; // TODO more
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	cText = Evaluators::get_native_string(iter->second);
 	++iter;
 	AST::Node* world = iter->second;

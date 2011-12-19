@@ -90,8 +90,8 @@ char* get_native_string(AST::Node* root) {
 
 // FIXME move these to their own module:
 static AST::Node* wrapWrite(AST::Node* options, AST::Node* argument) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
 	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
 	++iter;
 	char* text = get_native_string(iter->second);
@@ -102,8 +102,8 @@ static AST::Node* wrapWrite(AST::Node* options, AST::Node* argument) {
 }
 // FIXME move these to their own module:
 static AST::Node* wrapFlush(AST::Node* options, AST::Node* argument) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
 	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
 	++iter;
 	AST::Node* world = iter->second;
@@ -112,8 +112,8 @@ static AST::Node* wrapFlush(AST::Node* options, AST::Node* argument) {
 }
 // FIXME unlimited length
 static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
 	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
 	++iter;
 	AST::Node* world = iter->second;
@@ -128,8 +128,8 @@ static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
 }
 
 static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
 	char* text = iter->second ? get_native_string(iter->second) : NULL;
 	++iter;
 	AST::Node* world = iter->second;

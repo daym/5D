@@ -407,8 +407,8 @@ static AST::Node* mapGetFst(AST::Cons* c) {
 // <http://forums.devshed.com/c-programming-42/tip-about-stl-hash-map-and-string-55093.html>
 //typedef std::unordered_map<const char* , AST:Node*, std::hash<AST::Node*> > HashTable;
 static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
 	AST::Box* mBox = dynamic_cast<AST::Box*>(iter->second);
 	++iter;
 	AST::Node* key = iter->second;
@@ -510,8 +510,8 @@ REGISTER_BUILTIN(ModuleDispatcher, 2, 1, AST::symbolFromStr("dispatchModule"))
 REGISTER_BUILTIN(ModuleBoxMaker, 1, 0, AST::symbolFromStr("makeModuleBox"))
 
 // FIXME make this GCable.
-std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* options, AST::Node* argument) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > result;
+CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument) {
+	CXXArguments result;
 	AST::Node* v;
 	AST::Node* p;
 	bool B_pending_value = false;
@@ -543,7 +543,7 @@ std::list<std::pair<AST::Keyword*, AST::Node*> > CXXfromArguments(AST::Node* opt
 	}
 	return(result);
 }
-AST::Node* CXXgetKeywordArgumentValue(const std::list<std::pair<AST::Keyword*, AST::Node*> >& list, AST::Keyword* key) {
+AST::Node* CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* key) {
 	for(std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = list.begin(); iter != list.end(); ++iter)
 		if(iter->first == key)
 			return(iter->second);
