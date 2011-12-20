@@ -413,9 +413,9 @@ extras = [ # do not start with 'p or 's (only with 'P or 'S)
 	'iiisipi', 
 	'ippplpp', 
 	'Piplpl',
-	'RR',
-	'RRR',
-	'RRRR',
+	#'RR',
+	#'RRR',
+	#'RRRR',
 ]
 def retType(r): #  be forgiving in what you accept
   if r == "p":
