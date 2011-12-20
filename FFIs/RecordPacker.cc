@@ -520,7 +520,7 @@ AST::Str* str_until_zero(AST::Box* value) {
 DEFINE_SIMPLE_OPERATION(ListFromStrGetter, (argument = reduce(argument), str_P(argument) ? listFromStr(dynamic_cast<AST::Str*>(argument)) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(StrFromListGetter, (argument = reduce(argument), (cons_P(argument) || nil_P(argument)) ? strFromList(dynamic_cast<AST::Cons*>(argument)) : FALLBACK))
 DEFINE_FULL_OPERATION(SubstrGetter, return(substr(fn, argument));)
-DEFINE_SIMPLE_OPERATION(StrUntilZeroGetter, str_until_zero(dynamic_cast<AST::Str*>(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(StrUntilZeroGetter, str_until_zero(dynamic_cast<AST::Box*>(reduce(argument))))
 REGISTER_BUILTIN(ListFromStrGetter, 1, 0, AST::symbolFromStr("listFromStr"))
 REGISTER_BUILTIN(StrFromListGetter, 1, 0, AST::symbolFromStr("strFromList"))
 REGISTER_BUILTIN(SubstrGetter, 3, 0, AST::symbolFromStr("substr"))
