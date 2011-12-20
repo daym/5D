@@ -15,6 +15,7 @@ longNames = {
     "P": "void*", # or null
     "S": "char*", # or null
     "f": "float",
+    "R": "AST::Node*", # or null
 }
 
 def getLongName(c):
@@ -82,6 +83,7 @@ static inline AST::Node* makeBoxOrNil(void* s) {
 #define unf iter == end ? 0 : Evaluators::get_native_float(extr(iter++))
 #define unD iter == end ? 0.0L : Evaluators::get_native_long_double(extr(iter++))
 #define und iter == end ? 0.0 : Evaluators::get_native_double(extr(iter++))
+#define unR iter == end ? NULL : extr(iter++)
 #define inv
 #define inp AST::makeBox(
 #define inP makeBoxOrNil(
@@ -94,6 +96,7 @@ static inline AST::Node* makeBoxOrNil(void* s) {
 #define ind Numbers::internNative((double) 
 #define ins AST::makeStr(
 #define inS makeStrOrNil(
+#define inR (
 /* FIXME do inL properly */
 
 typedef AST::Node* (jumper_t)(void* p, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end);
@@ -158,6 +161,8 @@ print("""
 #undef inS
 #undef inf
 #undef unf
+#undef unR
+#undef inR
 
 static void initMarshallers(void) {
 """)
