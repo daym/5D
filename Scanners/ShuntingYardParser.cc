@@ -11,6 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <iostream>
 #include <stack>
 #include <string.h>
+#include <deque>
 #include "Scanners/ShuntingYardParser"
 #include "Scanners/OperatorPrecedenceList"
 #include "AST/Symbol"
@@ -248,8 +249,8 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 	try {
 		oldIndentationHonoring = scanner->setHonorIndentation(true);
 	// TODO curried operators (probably easiest to generate a symbol and put it in place instead of the second operand?)
-	std::stack<AST::Node*> fOperators;
-	std::stack<AST::Node*> fOperands;
+	std::stack<AST::Node*, std::deque<AST::Node*, gc_allocator<AST::Node*> > > fOperators;
+	std::stack<AST::Node*, std::deque<AST::Node*, gc_allocator<AST::Node*> >  > fOperands;
 	std::stack<unsigned int> fOperandCounts; // for paren operand counting
 	fOperandCounts.push(0U);
 	AST::Node* previousValue = Symbols::Sleftparen;
