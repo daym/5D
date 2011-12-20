@@ -14,6 +14,7 @@
 #include "WIN32REPL"
 #include "Scanners/MathParser"
 #include "AST/AST"
+#include "AST/HashTable"
 #include "Evaluators/Evaluators"
 #include "Config/Config"
 #include "FFIs/FFIs"
@@ -48,7 +49,7 @@ struct REPL : AST::Node {
 	struct Completer* fCompleter;
 	std::set<AST::Symbol*, gc_allocator<AST::Symbol*> >* fEnvironmentKeys;
 	HMENU fEnvironmentMenu;
-	std::map<std::string, AST::Node*>* fModules;
+	AST::HashTable* fModules;
 	int fCursorPosition;
 };
 }; /* end namespace REPLX */
