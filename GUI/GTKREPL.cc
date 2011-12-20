@@ -36,6 +36,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/GTKCompleter"
 #include "GUI/WindowIcon"
 #include "Scanners/OperatorPrecedenceList"
+#include "AST/HashTable"
 
 #define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(REPL_handle_##name), self)
@@ -81,7 +82,7 @@ struct REPL : AST::Node {
 	AST::Node* fTailEnvironment;
 	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
 	AST::Node* fTailUserEnvironmentFrontier;
-	std::map<std::string, AST::Node*>* fModules;
+	AST::HashTable* fModules;
 	GtkTextIter fCursorPosition;
 };
 };
@@ -1004,7 +1005,7 @@ bool REPL_confirm_close(struct REPL* self) {
 }
 struct REPL* REPL_new(GtkWindow* parent) {
 	struct REPL* result;
-	result = new REPL; // (struct REPL*) calloc(1, sizeof(struct REPL));
+	result = new (UseGC) REPL;
 	REPL_init(result, parent);
 	return(result);
 }

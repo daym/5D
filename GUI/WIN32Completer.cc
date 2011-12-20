@@ -49,7 +49,7 @@ void Completer_init(struct Completer* self, HWND entry, std::set<AST::Symbol*>* 
 }
 struct Completer* Completer_new(HWND entry, std::set<AST::Symbol*>* haystack) {
 	struct Completer* result;
-	result = (struct Completer*) calloc(1, sizeof(struct Completer));
+	result = (struct Completer*) calloc(1, sizeof(struct Completer)); // FIXME
 	Completer_init(result,  entry, haystack);
 	return(result);
 }

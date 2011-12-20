@@ -197,9 +197,11 @@ static AST::Node* REPL_force_import_module(struct REPL* self, const char* filena
 	return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 	// FIXME return(uncurried(&RModule, AST::makeStr(filename)));
 }
-static AST::Node* REPL_require_module(struct REPL* self, const char* filename, const std::string& moduleKey) {
+static AST::Node* REPL_require_module(struct REPL* self, const char* filename, const std::string& xmoduleKey) {
 	if(self->fModules == NULL)
-		self->fModules = new std::map<std::string, AST::Node*>;
+		self->fModules = new AST::HashTable;
+	const char* moduleKeyC = xmoduleKey.c_str();
+	char* moduleKey = GCx_strdup(moduleKeyC);
 	if((*self->fModules).find(moduleKey) == self->fModules->end()) {
 		(*self->fModules)[moduleKey] = AST::symbolFromStr("loading"); // protect against endless recusion.
 		(*self->fModules)[moduleKey] = REPL_force_import_module(self, filename);

@@ -22,6 +22,7 @@
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "Version"
+#include "AST/HashTable"
 //#include "Config/Config"
 
 namespace REPLX {
@@ -36,7 +37,7 @@ struct REPL : AST::Node {
 	//struct Config* fConfig;
 	std::list<AST::Symbol*> fEnvironmentNames;
 	std::set<AST::Symbol*> fEnvironmentNamesSet;
-	std::map<std::string, AST::Node*>* fModules;
+	AST::HashTable* fModules;
 	int fCursorPosition;
 };
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
@@ -164,7 +165,7 @@ char* REPL_get_output_buffer_text(struct REPL* self) {
 		count += 2 + HISTENT_BYTES(history[i]);
 	}
 	++count;
-	pos = buffer = new char[count];
+	pos = buffer = (char*) GC_malloc_atomic(count);
 	for(int i = 0; i < history_length; ++i) {
 		strcpy(pos, history[i]->line);
 		pos += strlen(history[i]->line);

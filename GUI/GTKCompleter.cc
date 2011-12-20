@@ -48,7 +48,7 @@ void Completer_init(struct Completer* self, GtkEntry* entry, GHashTable* haystac
 }
 struct Completer* Completer_new(GtkEntry* entry, GHashTable* haystack) {
 	struct Completer* result;
-	result = (struct Completer*) g_malloc0(sizeof(struct Completer));
+	result = (struct Completer*) g_malloc0(sizeof(struct Completer)); // FIXME
 	Completer_init(result, entry, haystack);
 	return(result);
 }

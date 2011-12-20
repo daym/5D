@@ -46,7 +46,7 @@ struct REPL : AST::Node {
 	AST::Node* fTailUserEnvironmentFrontier;
 	WNDPROC oldEditBoxProc;
 	struct Completer* fCompleter;
-	std::set<AST::Symbol*>* fEnvironmentKeys;
+	std::set<AST::Symbol*, gc_allocator<AST::Symbol*> >* fEnvironmentKeys;
 	HMENU fEnvironmentMenu;
 	std::map<std::string, AST::Node*>* fModules;
 	int fCursorPosition;
@@ -837,7 +837,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 }
 struct REPLX::REPL* REPL_new(HWND parent) {
 	struct REPL* result;
-	result = new REPL; // (struct REPL*) calloc(1, sizeof(struct REPL));
+	result = new (UseGC) REPL;
 	REPL_init(result, parent);
 	return(result);
 }

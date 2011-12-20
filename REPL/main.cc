@@ -15,6 +15,7 @@
 #include "Evaluators/Builtins"
 #include "REPL/REPL"
 #include "AST/Symbols"
+#include "AST/HashTable"
 
 namespace GUI {
 bool interrupted_P(void) {
@@ -31,7 +32,7 @@ struct REPL : AST::Node {
 	int fEnvironmentCount;
 	int fCursorPosition;
 	bool fBModified;
-	std::map<std::string, AST::Node*>* fModules;
+	AST::HashTable* fModules;
 };
 
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {

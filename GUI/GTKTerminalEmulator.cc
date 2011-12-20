@@ -294,7 +294,7 @@ void TerminalEmulator_init(struct TerminalEmulator* emulator, struct REPL* REPL)
 
 struct TerminalEmulator* TerminalEmulator_new(struct REPL* REPL) {
 	struct TerminalEmulator* result;
-	result = (struct TerminalEmulator*) calloc(1, sizeof(struct TerminalEmulator));
+	result = (struct TerminalEmulator*) calloc(1, sizeof(struct TerminalEmulator)); // FIXME
 	TerminalEmulator_init(result, REPL);
 	return result;
 }

@@ -14,7 +14,7 @@ static void Completer_accept_match(struct Completer* self, const char* match, bo
 	entry_text = self->fEntryText;
 	if(!self->fEntryNeedle || !entry_text || !match) /* huh */
 		return;
-	new_text = (char*) calloc(1, strlen(entry_text) + strlen(match) + 2); /* too much */
+	new_text = (char*) calloc(1, strlen(entry_text) + strlen(match) + 2); /* too much */ // FIXME
 	for(i = 0; i < self->fEntryNeedlePos; ++i)
 		new_text[i] = entry_text[i];
 	/* i = self->fEntryNeedlePos */

@@ -115,3 +115,7 @@ Messagebox custom buttons
 = GC =
 
 by default, make allocators use GC_uncollectable_malloc
+integer, float: allocate low-level detail so the GC knows?
+./Numbers/BigUnsigned.cc:	Blk *subtractBuf = new Blk[size()];
+./GUI/GTKCompleter.cc:	self->fMatches = new std::set<AST::Symbol*>;
+./GUI/WIN32Completer.cc:	self->fMatches = new std::set<AST::Symbol*>;

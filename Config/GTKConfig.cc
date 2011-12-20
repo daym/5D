@@ -35,7 +35,7 @@ struct Config* load_Config(void) {
 	config->key_file = g_key_file_new();
 	g_key_file_set_list_separator(config->key_file, ':');
 	system_config_dir_count = g_strv_length((gchar**) system_config_dirs);
-	config_dirs = (const char**) calloc(system_config_dir_count + 2, sizeof(char*));
+	config_dirs = (const char**) calloc(system_config_dir_count + 2, sizeof(char*)); // FIXME
 	for(int i = 0; i < system_config_dir_count; ++i)
 		config_dirs[i] = system_config_dirs[i];
 	config_dirs[system_config_dir_count] = config_dir_name;

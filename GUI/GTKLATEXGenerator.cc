@@ -104,7 +104,7 @@ static void g_LATEX_child_died(GPid pid, int status, struct LATEXChildData* data
 }
 struct GTKLATEXGenerator* GTKLATEXGenerator_new(void) {
 	struct GTKLATEXGenerator* result;
-	result = (struct GTKLATEXGenerator*) calloc(1, sizeof(struct GTKLATEXGenerator));
+	result = (struct GTKLATEXGenerator*) calloc(1, sizeof(struct GTKLATEXGenerator)); // FIXME
 	GTKLATEXGenerator_init(result);
 	return(result);
 }
@@ -137,7 +137,7 @@ void GTKLATEXGenerator_enqueue(struct GTKLATEXGenerator* self, const char* docum
 	GPid pid;
 	if(g_spawn_async(NULL, (char**) argv, NULL, (GSpawnFlags)(G_SPAWN_DO_NOT_REAP_CHILD|G_SPAWN_SEARCH_PATH|G_SPAWN_STDOUT_TO_DEV_NULL), NULL, self/*user_data*/, &pid, &error)) {
 		struct LATEXChildData* data;
-		data = (struct LATEXChildData*) calloc(1, sizeof(struct LATEXChildData));
+		data = (struct LATEXChildData*) calloc(1, sizeof(struct LATEXChildData)); // FIXME
 		data->generator = self;
 		data->alt_text = alt_text;
 		data->document = document;
