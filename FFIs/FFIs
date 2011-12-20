@@ -19,6 +19,7 @@ namespace FFIs {
 
 DECLARE_FULL_OPERATION(SharedLibraryLoader)
 DECLARE_FULL_OPERATION(SharedLibrary)
+bool sharedLibraryFileP(const char* name);
 
 };
 #endif /* ndef __5D_FFIs_FFIs_H */

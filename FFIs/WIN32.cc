@@ -74,5 +74,18 @@ DEFINE_FULL_OPERATION(SharedLibrary, {
 })
 REGISTER_BUILTIN(SharedLibraryLoader, 1, 0, AST::symbolFromStr("requireSharedLibrary"));
 REGISTER_BUILTIN(SharedLibrary, 4, 1, AST::symbolFromStr("requireSharedLibrary"));
-
+bool sharedLibraryFileP(const char* name) {
+	FILE* input_file;
+	char buf[3];
+	input_file = fopen(name, "rb");
+	if(!input_file)
+		return(false);
+	if(fread(buf, 3, 1, input_file) != 1) {
+		fclose(input_file);
+		return(false);
+	}
+	fclose(input_file);
+	return(strncmp(buf, "MZ\220", 3) == 0);
+}
+        
 };
