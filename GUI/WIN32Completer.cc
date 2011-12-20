@@ -4,15 +4,16 @@
 #include "GUI/WIN32Completer"
 #include "Scanners/Scanner"
 #include "Scanners/MathParser"
+#include "AST/AST"
 
 namespace REPLX {
-struct Completer {
+struct Completer : AST::Node {
 	HWND fEntry;
-	std::set<AST::Symbol*>* fHaystack;
+	AST::HashTable* fHaystack;
 	int fEntryNeedlePos;
 	char* fEntryNeedle;
 	char* fEntryText;
-	std::set<AST::Symbol*>* fMatches;
+	AST::HashTable* fMatches;
 };
 
 };
@@ -42,12 +43,12 @@ static std::wstring GetTextCXX(HWND item) {
 }
 
 /* note that haystack's values are unused. Only the keys are used and assumed to be AST::Symbol* */
-void Completer_init(struct Completer* self, HWND entry, std::set<AST::Symbol*>* haystack) {
-	self->fMatches = new std::set<AST::Symbol*>;
+void Completer_init(struct Completer* self, HWND entry, AST::HashTable* haystack) {
+	self->fMatches = new AST::HashTable;
 	self->fEntry = entry;
 	self->fHaystack = haystack;
 }
-struct Completer* Completer_new(HWND entry, std::set<AST::Symbol*>* haystack) {
+struct Completer* Completer_new(HWND entry, AST::HashTable* haystack) {
 	struct Completer* result;
 	result = (struct Completer*) calloc(1, sizeof(struct Completer)); // FIXME
 	Completer_init(result,  entry, haystack);

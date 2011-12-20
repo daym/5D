@@ -5,14 +5,15 @@
 #include <set>
 #include "AST/AST"
 #include "AST/Symbol"
+#include "AST/HashTable"
 
 namespace REPLX {
 struct Completer;
 };
 namespace GUI {
 using namespace REPLX;
-void Completer_init(struct Completer* self, HWND entry, std::set<AST::Symbol*>* haystack);
-struct Completer* Completer_new(HWND entry, std::set<AST::Symbol*>* haystack);
+void Completer_init(struct Completer* self, HWND entry, AST::HashTable* haystack);
+struct Completer* Completer_new(HWND entry, AST::HashTable* haystack);
 void Completer_complete(struct Completer* self);
 };
 #endif /* ndef __5D_GUI_WIN32COMPLETER_H */

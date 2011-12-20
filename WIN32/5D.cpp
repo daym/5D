@@ -33,7 +33,7 @@ static BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 	InitCommonControlsEx(&InitCtrls);
    }
    GC_INIT();
-   GC_disable();
+   //GC_disable();
    LoadLibrary(_T("RICHED32.DLL"));
    REPL1 = GUI::REPL_new(NULL);
    ShowWindow(REPL_get_window(REPL1), nCmdShow);

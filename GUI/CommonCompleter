@@ -1,10 +1,10 @@
 namespace GUI {
 
-static void match_entry(AST::Symbol* key, void* value, struct Completer* self) {
+static void match_entry(const char* key, void* value, struct Completer* self) {
 	const char* possible_text;
-	possible_text = key->name;
+	possible_text = key;
 	if(!self->fEntryNeedle || strncmp(possible_text, self->fEntryNeedle, strlen(self->fEntryNeedle)) == 0) /* match */
-		self->fMatches->insert(key);
+		(*self->fMatches)[key] = NULL;
 }
 static void Completer_accept_match(struct Completer* self, const char* match, bool B_automatic_space) {
 	const char* entry_text;
@@ -28,11 +28,11 @@ static void Completer_accept_match(struct Completer* self, const char* match, bo
 	strcat(new_text, &entry_text[i]);
 	Completer_accept_match_GUI(self, new_text, pos);
 }
-static bool in_all_keys_P(std::set<AST::Symbol*>& keys, int i, char c) {
-	std::set<AST::Symbol*>::const_iterator end_iter = keys.end();
-	for(std::set<AST::Symbol*>::const_iterator iter = keys.begin(); iter != end_iter; ++iter) {
-		AST::Symbol* key = *iter;
-		if(key->name[i] != c)
+static bool in_all_keys_P(AST::HashTable& keys, int i, char c) {
+	AST::HashTable::const_iterator end_iter = keys.end();
+	for(AST::HashTable::const_iterator iter = keys.begin(); iter != end_iter; ++iter) {
+		const char* key = iter->first;
+		if(key[i] != c)
 			return(false);
 	}
 	return(true);
@@ -62,22 +62,21 @@ static void Completer_complete_internal(struct Completer* self, const char* entr
 	self->fEntryNeedlePos = entry_needle - entry_text;
 #ifdef _WIN32
 	{
-		std::set<AST::Symbol*>::const_iterator end_iter = self->fHaystack->end();
-		for(std::set<AST::Symbol*>::const_iterator iter = self->fHaystack->begin(); iter != end_iter; ++iter)
-			match_entry(*iter, NULL, self);
+		AST::HashTable::const_iterator end_iter = self->fHaystack->end();
+		for(AST::HashTable::const_iterator iter = self->fHaystack->begin(); iter != end_iter; ++iter)
+			match_entry(iter->first, NULL, self);
 	}
 #else
 	g_hash_table_foreach(self->fHaystack, (GHFunc) match_entry, self);
 #endif
 	if(self->fMatches->size() <= 1) { /* unambiguous match or non-match */
-		AST::Symbol* key = !self->fMatches->empty() ? *self->fMatches->begin() : NULL;
+		const char* key = !self->fMatches->empty() ? self->fMatches->begin()->first : NULL;
 		if(key)
-			Completer_accept_match(self, key->name, TRUE);
+			Completer_accept_match(self, key, TRUE);
 	} else { /* ambiguous */
 		/*assert(g_hash_table_size(self->fMatches) >= 2);*/
 		char common_prefix[100];
-		AST::Symbol* firstKey = !self->fMatches->empty() ? *self->fMatches->begin() : NULL;
-		const char* firstKeyName = firstKey->name;
+		const char* firstKeyName = !self->fMatches->empty() ? self->fMatches->begin()->first : NULL;
 		int i;
 		/* TODO show combo box, if that's actually needed... */
 		for(i = 0; i < 100 - 1 && firstKeyName[i]; ++i) {

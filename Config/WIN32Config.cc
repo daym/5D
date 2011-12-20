@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string>
 #include "Config/Config"
+#include "AST/AST"
 
 struct Config {
 	char* fEnvironment;
@@ -74,7 +75,7 @@ char* Config_get_environment_name(struct Config* config) {
 	return(config->fEnvironment);
 }
 void Config_set_environment_name(struct Config* config, const char* value) {
-	config->fEnvironment = GC_strdup(value);
+	config->fEnvironment = GCx_strdup(value);
 }
 int Config_get_main_window_width(struct Config* config) {
 	return(config->fMainWindowWidth);

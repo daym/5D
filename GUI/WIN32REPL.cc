@@ -47,7 +47,7 @@ struct REPL : AST::Node {
 	AST::Node* fTailUserEnvironmentFrontier;
 	WNDPROC oldEditBoxProc;
 	struct Completer* fCompleter;
-	std::set<AST::Symbol*, gc_allocator<AST::Symbol*> >* fEnvironmentKeys;
+	AST::HashTable* fEnvironmentKeys;
 	HMENU fEnvironmentMenu;
 	AST::HashTable* fModules;
 	int fCursorPosition;
@@ -904,7 +904,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 	self->fCursorPosition = 0;
 
 	self->fEnvironmentMenu = GetSubMenu(LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDM_ENVIRONMENT)), 0); /* FIXME global? */ /* TODO DestroyMenu */
-	self->fEnvironmentKeys = new std::set<AST::Symbol*>;
+	self->fEnvironmentKeys = new AST::HashTable;
 	self->fBSearchUpwards = true;
 	self->fBSearchCaseSensitive = true;
 	hinstance = GetModuleHandle(NULL);
@@ -952,9 +952,9 @@ bool REPL_get_file_modified(struct REPL* self) {
 }
 int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::Node* value) {
 	//std::string bodyString = body->str();
-	if(self->fEnvironmentKeys->find(parameter) == self->fEnvironmentKeys->end()) {
+	if(self->fEnvironmentKeys->find(parameter->name) == self->fEnvironmentKeys->end()) {
 		/* index is the index of the item that is "just not as important as the new one" */
-		self->fEnvironmentKeys->insert(parameter);
+		(*self->fEnvironmentKeys)[parameter->name] = NULL;
 	}
 	int index = EnsureInEnvironment(self->dialog, FromUTF8(parameter->name));
 	REPL_set_file_modified(self, true);

@@ -22,9 +22,9 @@ namespace FFIs {
 using namespace Evaluators;
 
 AST::Node* wrapAccessLibrary(AST::Node* options, AST::Node* argument) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, argument);
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = arguments.begin();
-	std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator endIter = arguments.end();
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
+	Evaluators::CXXArguments::const_iterator endIter = arguments.end();
 	assert(iter != endIter);
 	assert(iter->first == NULL);
 	void* body = Evaluators::get_native_pointer(iter->second);
@@ -58,7 +58,8 @@ AST::Node* wrapLoadLibraryC(const char* name) {
 	//return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 }
 static AST::Node* wrapLoadLibrary(AST::Node* options, AST::Node* filename) {
-	std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, filename);
+	filename = reduce(filename);
+	//std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, filename);
 	// struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
 	//assert(self);
 	AST::Node* body = wrapLoadLibraryC(Evaluators::get_native_string(filename));
