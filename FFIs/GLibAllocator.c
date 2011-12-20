@@ -1,4 +1,5 @@
 #include <glib.h>
+#include <string.h>
 #include <libxml/xmlmemory.h>
 #include <gc/gc.h>
 #include "FFIs/GLibAllocator"
@@ -25,5 +26,6 @@ void GLibAllocator_init(void) {
 	.try_realloc = NULL,
 	};
 	g_mem_set_vtable(&vtable);
+	// TODO move this into 5DLibs or even into FFIs/POSIX.cc , maybe
 	xmlGcMemSetup(GCx_free, GC_malloc, GC_malloc_atomic, GC_realloc, GCx_strdup);
 }
