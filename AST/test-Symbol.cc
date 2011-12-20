@@ -6,12 +6,25 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+#include "AST/AST"
 #include "AST/Symbol"
 
+static void gc_test(void) {
+	int i;
+	for(i = 0; i < 1000; ++i)
+		GC_malloc(1000);
+}
 int main() {
 	using namespace AST;
 	Symbol* hello = symbolFromStr("hello");
 	Symbol* hello2 = symbolFromStr("hello");
+	gc_test();
+	GC_gcollect();
+	assert(dynamic_cast<Symbol*>(hello) != NULL);
+	assert(dynamic_cast<Symbol*>(hello2) != NULL);
+	assert(strcmp(hello->name, hello2->name) == 0);
 	if(hello != hello2)
 		abort();
 	return(0);

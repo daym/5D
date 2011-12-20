@@ -27,6 +27,7 @@ static AST::Node* listFromHashTable(HashTable::const_iterator iter, HashTable::c
 }
 */
 class HashTable : public AST::Node, public RawHashTable { /* makes sure dynamic_cast works! */
+public:
 	virtual ~HashTable(void) {}
 };
 

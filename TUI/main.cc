@@ -23,6 +23,7 @@
 #include "Evaluators/Builtins"
 #include "Version"
 #include "AST/HashTable"
+#include "AST/AST"
 //#include "Config/Config"
 
 namespace REPLX {
@@ -35,14 +36,14 @@ struct REPL : AST::Node {
 	bool fFileModified;
 	char* fEnvironmentName;
 	//struct Config* fConfig;
-	std::list<AST::Symbol*> fEnvironmentNames;
-	std::set<AST::Symbol*> fEnvironmentNamesSet;
+	AST::HashTable fEnvironmentTable;
+	std::list<AST::Symbol*, gc_allocator<AST::Symbol*> > fEnvironmentNames;
 	AST::HashTable* fModules;
 	int fCursorPosition;
 };
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
-	if(self->fEnvironmentNamesSet.find(name) == self->fEnvironmentNamesSet.end()) {
-		self->fEnvironmentNamesSet.insert(name);
+	if(self->fEnvironmentTable.find(name->name) == self->fEnvironmentTable.end()) {
+		self->fEnvironmentTable[name->name] = value;
 		self->fEnvironmentNames.push_back(name);
 	}
 	return(self->fEnvironmentCount++); // FIXME
@@ -215,7 +216,7 @@ static char* command_generator(const char* text, int state) {
 		name = (*iter)->name;
 		if(strncmp(name, text, len) == 0) {
 			++iter;
-			return(GCx_strdup(name));
+			return(strdup(name)); // XXX
 		} else
 			++iter;
 	}
