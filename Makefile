@@ -129,7 +129,7 @@ FFIs/GTKUI.o: FFIs/GTKUI.cc FFIs/UI FFIs/FFIs AST/AST AST/Symbol Evaluators/Eval
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 FFIs/GLibAllocator.o: FFIs/GLibAllocator.c FFIs/GLibAllocator AST/AST
-	$(CC) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 	
 FFIs/TrampolineSymbols.o: FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols AST/Symbol
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
