@@ -6,7 +6,7 @@ GENERATEDS = FFIs/Trampolines FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols F
 
 # -O3 is for tail-call optimization
 
-CXXFLAGS += -Wall -I. -g3 -fno-strict-overflow -Wno-deprecated `pkg-config --cflags glib-2.0`
+CXXFLAGS += -Wall -I. -g3 -fno-strict-overflow -Wno-deprecated `pkg-config --cflags glib-2.0 libxml-2.0`
 PACKAGE = 5D
 VERSION = $(shell head -1 debian/changelog |cut -d"(" -f2 |cut -d")" -f1)
 DISTDIR = $(PACKAGE)-$(VERSION)
@@ -14,7 +14,7 @@ DISTDIR = $(PACKAGE)-$(VERSION)
 #-fwrapv
 #-Werror=strict-overflow
 
-LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a -ldl -lgc -lpthread `pkg-config --libs glib-2.0`
+LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a -ldl -lgc -lpthread `pkg-config --libs glib-2.0 libxml-2.0`
 GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
 GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
 FFIS = FFIs/TrampolineSymbols.o FFIs/GLibAllocator.o
