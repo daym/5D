@@ -26,6 +26,7 @@ extern int fGeneration;
 static inline bool application_result_P(AST::Node* app) {
 	return(((AST::Application*) app)->resultGeneration == fGeneration);
 }
+bool quote_P(AST::Node* root);
 AST::Node* reduce1(AST::Node* term);
 static inline AST::Node* reduce(AST::Node* term) {
 	AST::Application* a;

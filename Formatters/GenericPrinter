@@ -26,7 +26,12 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 			print_CXX(OPL, output, position, get_application_operand(envelope), precedence, operatorAssociativity != Symbols::Sleft);
 			print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
 			////print_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
-			print_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != Symbols::Sright);
+			AST::Node* operand = get_application_operand(node);
+			if(operatorSymbol == Symbols::Sdot && application_P(operand) && Evaluators::quote_P(get_application_operator(operand))) {
+				/* MathParser (Shunting Yard Parser) special cases the dot operator to auto-quote. So auto-unquote here. */
+				operand = get_application_operand(operand);
+			}
+			print_CXX(OPL, output, position, operand, precedence, operatorAssociativity != Symbols::Sright);
 			//print_text(output, position, operator_);
 			//print_CXX(OPL, output, position, get_application_operand(node), precedence);
 			maybe_print_closing_paren(output, position, B_parend);
