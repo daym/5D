@@ -82,7 +82,7 @@ static void GTKLATEXGenerator_handle_LATEX_image(struct GTKLATEXGenerator* self,
 	if(document)
 		get_cached_file_name(self, document, name, PATH_MAX);
 	pixbuf = document ? gdk_pixbuf_new_from_file(name, NULL) : NULL;
-	if(pixbuf) {
+	if(pixbuf && gdk_pixbuf_get_width(pixbuf) < 3000 /* FIXME */) {
 		gdk_pixbuf_set_option(pixbuf, "alt_text", alt_text);
 		gtk_text_buffer_insert_pixbuf(gtk_text_iter_get_buffer(iter), iter, pixbuf);
 		g_object_unref(G_OBJECT(pixbuf));
