@@ -7,13 +7,14 @@
 #include "AST/Symbol"
 #include "GUI/GTKCompleter"
 #include "Scanners/MathParser"
+#include "AST/HashTable"
 
 namespace REPLX {
 struct Completer {
 	GtkEntry* fEntry;
 	GHashTable* fHaystack; /* hash table's entry's value is unused */
 	char* fEntryNeedle;
-	std::set<AST::Symbol*>* fMatches;
+	AST::HashTable* fMatches;
 	int fEntryNeedlePos;
 	const char* fEntryText;
 };
@@ -44,7 +45,7 @@ void Completer_init(struct Completer* self, GtkEntry* entry, GHashTable* haystac
 	self->fEntryNeedle = NULL;
 	self->fMatches = NULL;
 	self->fEntryNeedlePos = 0;
-	self->fMatches = new std::set<AST::Symbol*>;
+	self->fMatches = new AST::HashTable;
 }
 struct Completer* Completer_new(GtkEntry* entry, GHashTable* haystack) {
 	struct Completer* result;
