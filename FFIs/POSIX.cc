@@ -85,7 +85,7 @@ bool sharedLibraryFileP(const char* name) {
 		return(false);
 	}
 	fclose(input_file);
-	return(strncmp(buf, "ELF\106", 4));
+	return(strncmp(buf, "ELF\106", 4) == 0);
 }
 
 };
