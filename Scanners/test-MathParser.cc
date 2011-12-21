@@ -61,6 +61,7 @@ void test_error_expression(const char* source, const char* expected_text) {
 }
 
 int main() {
+	test_expression("'f + 2", "(' f) + 2");
 	test_error_expression("()", "got <nothing>");
 	test_error_expression("id ()", "got <nothing>");
 	test_expression("[(map (\\i i) [])]", "((: ((map (\\i i)) [])) [])");
@@ -101,6 +102,7 @@ int main() {
 	test_expression("(\\f \\x (f x) + (f x)) (\\y y + 2) 1", "(((\\f (\\x ((+ (f x)) (f x)))) (\\y ((+ y) 2))) 1)");
 	test_expression("let x = 2 in let y = 3 in x + y", "((\\x ((\\y ((+ x) y)) 3)) 2)");
 	test_expression("a;b;c", "((; ((; a) b)) c)");
+	test_expression("\\f \\list foldr (compose (:) f) nil list", "(\\f (\\list (((foldr ((compose :) f)) nil) list)))");
 
 	//test_expression("2⋅f(x)", "((* 2) (f x))"); // doesn't work.
 	return(0);
