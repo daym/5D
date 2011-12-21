@@ -810,7 +810,15 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 	//std::cout << resultString << " X" << std::endl;
 	{
 		char* alt_text;
-		alt_text = g_strdup(str(node).c_str());
+		try {
+			int position;
+			result.str("");
+			Formatters::Math::print_CXX(REPL_ensure_operator_precedence_list(self), result, position, node, 0, false);
+			resultString = result.str();
+			alt_text = g_strdup(resultString.c_str());
+		} catch(...) {
+			alt_text = g_strdup(str(node).c_str());
+		}
 		if(alt_text && strchr(alt_text, '"')) /* contains string */
 			nodeText = NULL;
 		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? g_strdup(nodeText) : NULL, alt_text, destination);
