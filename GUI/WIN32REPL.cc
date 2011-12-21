@@ -277,8 +277,8 @@ HWND REPL_get_window(struct REPL* self) {
 HWND REPL_get_search_window(struct REPL* self) {
 	return(self->fSearchDialog);
 }
-std::wstring REPL_get_absolute_pathw(const std::wstring& file_name) {
-	return(file_name);
+char* REPL_get_absolute_pathw(const std::wstring& file_name) {
+	return Evaluators::get_absolute_path(ToUTF8(file_name));
 }
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name) {
 	std::wstring text = FromUTF8(absolute_name);
@@ -303,7 +303,7 @@ bool REPL_save(struct REPL* self, bool B_force_save_dialog) {
 		FILE* output_file = _wfopen(file_name.c_str(), _T("w"));
 		if(REPL_save_contents_to(self, output_file)) {
 			fclose(output_file);
-			char* absolute_name = ToUTF8(REPL_get_absolute_pathw(file_name));
+			char* absolute_name = REPL_get_absolute_pathw(file_name);
 			B_OK = true;
 			REPL_set_current_environment_name(self, absolute_name);
 			REPL_set_file_modified(self, false);
@@ -317,7 +317,7 @@ bool REPL_load_contents_by_name(struct REPL* self, const char* name) {
 	if(!REPL_load_contents_from(self, name))
 		return(false);
 	else {
-		char* absolute_name = ToUTF8(REPL_get_absolute_pathw(FromUTF8(name)));
+		char* absolute_name = REPL_get_absolute_pathw(FromUTF8(name));
 		REPL_set_file_modified(self, false);
 		REPL_set_current_environment_name(self, absolute_name);
 		return(true);
