@@ -216,7 +216,7 @@ static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 	if(!gtk_text_buffer_get_selection_bounds(self->fOutputBuffer, &beginning, &end)) {
 		gtk_text_buffer_get_start_iter(self->fOutputBuffer, &beginning);
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-		text = strdup(gtk_entry_get_text(self->fCommandEntry));
+		text = g_strdup(gtk_entry_get_text(self->fCommandEntry));
 		/*std::string v = text;*/
 		B_from_entry = true;
 	} else {
@@ -437,7 +437,7 @@ static void REPL_handle_find(struct REPL* self, GtkAction* action) {
 		g_free(self->fSearchTerm);
 		self->fSearchTerm = NULL;
 	}
-	self->fSearchTerm = strdup(text);
+	self->fSearchTerm = g_strdup(text);
 	REPL_find_text(self, text, self->fBSearchUpwards, self->fBSearchCaseSensitive);
 }
 static void REPL_handle_find_next(struct REPL* self, GtkAction* action) {
@@ -810,10 +810,10 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* 
 	//std::cout << resultString << " X" << std::endl;
 	{
 		char* alt_text;
-		alt_text = strdup(str(node).c_str());
+		alt_text = g_strdup(str(node).c_str());
 		if(alt_text && strchr(alt_text, '"')) /* contains string */
 			nodeText = NULL;
-		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? strdup(nodeText) : NULL, alt_text, destination);
+		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? g_strdup(nodeText) : NULL, alt_text, destination);
 	}
 }
 void REPL_clear(struct REPL* self) {
@@ -826,12 +826,6 @@ void REPL_clear(struct REPL* self) {
 	g_hash_table_remove_all(self->fEnvironmentKeys);
 	self->fTailEnvironment = self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier = NULL;
 	REPL_init_builtins(self);
-}
-char* REPL_get_absolute_path(const char* name) {
-	if(g_path_is_absolute(name))
-		return(strdup(name));
-	else
-		return(g_build_filename(g_get_current_dir(), name, NULL));
 }
 void REPL_append_to_output_buffer(struct REPL* self, const char* o_text) {
 	/* will detect \xef\xbf\xbc and automatically call LATEX */
@@ -889,7 +883,7 @@ bool REPL_load_contents_by_name(struct REPL* self, const char* file_name) {
 	if(!REPL_load_contents_from(self, file_name))
 		return(false);
 	else {
-		char* absolute_name = REPL_get_absolute_path(file_name);
+		char* absolute_name = Evaluators::get_absolute_path(file_name);
 		REPL_set_file_modified(self, false);
 		REPL_set_current_environment_name(self, absolute_name);
 		return(true);
@@ -942,7 +936,7 @@ bool REPL_save(struct REPL* self, bool B_force_dialog) {
 			fclose(output_file);
 			close(FD);
 			if(rename(temp_name, file_name) != -1) {
-				char* absolute_name = REPL_get_absolute_path(file_name);
+				char* absolute_name = Evaluators::get_absolute_path(file_name);
 				B_OK = true;
 				REPL_set_current_environment_name(self, absolute_name);
 				REPL_set_file_modified(self, false);
