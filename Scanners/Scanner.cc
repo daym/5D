@@ -169,7 +169,7 @@ void Scanner::parse_token(void) {
 void Scanner::parse_optional_whitespace(void) {
 	int input;
 	// skip whitespace...
-	while(input = increment_position(fgetc(input_file)), input == ' ' || input == '\t' || input == '\n' || input == '\r') {
+	while(input = increment_position(fgetc(input_file)), input == ' ' || input == '\t' || input == '\n' || input == '\r' || input == '\f') {
 	}
 	ungetc(decrement_position(input), input_file);
 }
