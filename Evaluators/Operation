@@ -39,7 +39,6 @@ static StrRegistration##typ fStrRegistration##typ;
 /* END str() */
 
 struct CProcedure : AST::Box {
-        AST::Node* fRepr;
 	int fArgumentCount; // sigh. <0: can also do keyword arguments.
 	int fReservedArgumentCount; // how many not to repr.
 	AST::Symbol* fSignature;

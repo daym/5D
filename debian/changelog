@@ -1,6 +1,9 @@
 5d (0.1.2) unstable; urgency=low
 
   * introduce garbage collector.
+  * disallow '=
+  * make the Box remember how it came to be.
+  * make FFI Boxes remember how they came to be.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 18 Dec 2011 18:31:00 +0100
 

@@ -131,6 +131,9 @@ AST::Node* ShuntingYardParser::parse_quote_macro(void) {
 	AST::Node* body = parse_value();
 	return(AST::makeApplication(Symbols::Squote, body));
 }
+inline bool simple_macro_P(AST::Node* value) {
+	return(value == Symbols::Sleftbracket || value == Symbols::Squote || value == Symbols::Sdefine || value == Symbols::Sdefrec || value == Symbols::Sdef);
+}
 AST::Node* ShuntingYardParser::expand_simple_macro(AST::Node* value) {
 	return (value == Symbols::Sleftbracket) ? parse_list_macro() :
 	       (value == Symbols::Squote) ? parse_quote_macro() :
@@ -161,6 +164,7 @@ AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
 	//    (define and similar)
 	return(operator_);
 }
+/*
 static AST::Node* macro_standin_operator(AST::Node* op1) {
 	AST::Cons* consOp1 = dynamic_cast<AST::Cons*>(op1);
 	if(consOp1 == NULL)
@@ -168,6 +172,7 @@ static AST::Node* macro_standin_operator(AST::Node* op1) {
 	AST::Node* operator_ = consOp1->head; 
 	return(operator_);
 }
+*/
 AST::Node* ShuntingYardParser::expand_macro(AST::Node* op1, AST::Node* suffix) {
 	AST::Cons* consOp1 = dynamic_cast<AST::Cons*>(op1);
 	if(consOp1 == NULL)
@@ -277,7 +282,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			//// we could do special handling here (i.e. rename "-" to "unary-" or whatever)
 			scanner->consume();
 		}
-		if(value == Symbols::Srightparen || value == Symbols::Sautorightparen) {
+		if(value == Symbols::Srightparen || value == Symbols::Sautorightparen) { // handle grouping, part 2
 			SCOPERANDS while(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen && fOperators.top() != Symbols::Sautoleftparen)
 				CONSUME_OPERATION
 			fOperandCounts.pop();
@@ -288,7 +293,7 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			else if(value == Symbols::Sautorightparen && fOperators.top() != Symbols::Sautoleftparen)
 				scanner->raise_error(std::string("close-") + str(fOperators.top()), str(value));
 			fOperators.pop(); // "("
-		} else if(prefix_operator_P(value) && any_operator_P(previousValue) && previousValue != Symbols::Srightparen && previousValue != Symbols::Sautorightparen) { // assumed to all be right-associative.
+		} else if(prefix_operator_P(value) && any_operator_P(previousValue) && previousValue != Symbols::Srightparen && previousValue != Symbols::Sautorightparen) { // unary prefix operator, assumed to all be right-associative.
 			if(value == Symbols::Sdash)
 				value = Symbols::Sunarydash;
 			int currentPrecedence = get_operator_precedence(value);
@@ -296,19 +301,18 @@ AST::Node* ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 				CONSUME_OPERATION
 			//printf("prefix pushop %s\n", str(value).c_str());
 			fOperators.push(handle_unary_operator(value));
-		} else if(value == Symbols::Sleftparen || value == Symbols::Sautoleftparen) {
+		} else if(value == Symbols::Sleftparen || value == Symbols::Sautoleftparen) { // handle grouping, part 1
 			//printf("pushop %s\n", str(value).c_str());
 			fOperators.push(value);
 			fOperandCounts.push(fOperands.size());
-		} else if(any_operator_P(value) && (fOperators.empty() || macro_standin_operator(fOperators.top()) != Symbols::Squote || value == Symbols::Sspace)) { /* operator */ // FIXME
-			AST::Symbol* currentAssociativity = Symbols::Sright; // FIXME
+		} else if(any_operator_P(value) && (fOperators.empty() || 1 /*|| macro_standin_operator(fOperators.top()) != Symbols::Squote */ || value == Symbols::Sspace)) { /* operator */
+			AST::Symbol* currentAssociativity = Symbols::Sright; // TODO
 			// note that prefix associativity is right associativity.
 			int currentPrecedence = get_operator_precedence_and_associativity(value, currentAssociativity);
 			SCOPERANDS while(!fOperators.empty() && currentPrecedence <= get_operator_precedence(fOperators.top())) {
 				if(currentAssociativity != Symbols::Sleft && currentPrecedence == get_operator_precedence(fOperators.top()))
 					break;
 				// FIXME non-associative operators.
-				// TODO for unary operators (if there are any), only do this for other unary operators.
 				// TODO for prefix or postfix operators, check the previous value, if it was an operand, then binary and postfix.
 				//      otherwise (if there was an operator or none) then prefix.
 				CONSUME_OPERATION

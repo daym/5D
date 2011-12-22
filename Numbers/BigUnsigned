@@ -21,7 +21,7 @@ typedef unsigned int NativeUInt; /* register type */
  * The number is stored as a NumberlikeArray of unsigned longs as if it were
  * written in base 256^sizeof(unsigned long).  The least significant block is
  * first, and the length is such that the most significant block is nonzero. */
-class BigUnsigned : protected std::vector<NativeUInt> {
+class BigUnsigned : protected std::vector<NativeUInt, gc_allocator<NativeUInt> > {
 public:
 	// Enumeration for the result of a comparison.
 	enum CmpRes { less = -1, equal = 0, greater = 1 };
@@ -31,14 +31,14 @@ public:
 
 	static const unsigned int N = 8 * sizeof(Blk);
 
-	typedef std::vector<Blk>::size_type Index;
+	typedef std::vector<Blk, gc_allocator<Blk> >::size_type Index;
 
 private:
-	void allocate(std::vector<Blk>::size_type sz);
+	void allocate(std::vector<Blk, gc_allocator<Blk> >::size_type sz);
 protected:
 	// Creates a BigUnsigned with a capacity; for internal use.
-	BigUnsigned(int, Index c) : std::vector<Blk>(c) {
-		for(std::vector<Blk>::size_type i = 0; i < c; ++i)
+	BigUnsigned(int, Index c) : std::vector<Blk, gc_allocator<Blk> >(c) {
+		for(std::vector<Blk, gc_allocator<Blk> >::size_type i = 0; i < c; ++i)
 			push_back(0);
 	}
 
@@ -50,18 +50,18 @@ protected:
 
 public:
 	// Constructs zero.
-	BigUnsigned() : std::vector<Blk>() {}
+	BigUnsigned() : std::vector<Blk, gc_allocator<Blk> >() {}
 
 	// Copy constructor
-	BigUnsigned(const BigUnsigned &x) : std::vector<Blk>(x) /* TODO copy capacity? */ {}
+	BigUnsigned(const BigUnsigned &x) : std::vector<Blk, gc_allocator<Blk> >(x) /* TODO copy capacity? */ {}
 
 	// Assignment operator
 	void operator=(const BigUnsigned &x) {
-		std::vector<Blk>::operator =(x);
+		std::vector<Blk, gc_allocator<Blk> >::operator =(x);
 	}
 
 	// Constructor that copies from a given array of blocks.
-	/*BigUnsigned(const Blk *b, Index blen) : NumberlikeArray<Blk>(b, blen) {
+	/*BigUnsigned(const Blk *b, Index blen) : NumberlikeArray<Blk, gc_allocator<Blk> >(b, blen) {
 		// Eliminate any leading zeros we may have been passed.
 		zapLeadingZeros();
 	}*/
@@ -100,8 +100,8 @@ public:
 	// BIT/BLOCK ACCESSORS
 
 	// Expose these from NumberlikeArray directly.
-	std::vector<Blk>::capacity;
-	std::vector<Blk>::size;
+	std::vector<Blk, gc_allocator<Blk> >::capacity;
+	std::vector<Blk, gc_allocator<Blk> >::size;
 
 	/* Returns the requested block, or 0 if it is beyond the length (as if
 	 * the number had 0s infinitely to the left). */
@@ -110,7 +110,7 @@ public:
 	void setBlock(Index i, Blk newBlock);
 
 	// The number is zero if and only if the canonical length is zero.
-	bool isZero() const { return std::vector<Blk>::empty(); }
+	bool isZero() const { return std::vector<Blk, gc_allocator<Blk> >::empty(); }
 
 	/* Returns the length of the number in bits, i.e., zero if the number
 	 * is zero and otherwise one more than the largest value of bi for
@@ -132,10 +132,10 @@ public:
 
 	// Ordinary comparison operators
 	bool operator ==(const BigUnsigned &x) const {
-		return (*(std::vector<Blk>*)this) == x; // std::vector<Blk>::operator ==(x);
+		return (*(std::vector<Blk, gc_allocator<Blk> >*)this) == x; // std::vector<Blk, gc_allocator<Blk> >::operator ==(x);
 	}
 	bool operator !=(const BigUnsigned &x) const {
-		return (*(std::vector<Blk>*)this) != x;
+		return (*(std::vector<Blk, gc_allocator<Blk> >*)this) != x;
 	}
 	bool operator < (const BigUnsigned &x) const { return compareTo(x) == less   ; }
 	bool operator <=(const BigUnsigned &x) const { return compareTo(x) != greater; }

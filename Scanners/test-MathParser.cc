@@ -61,13 +61,14 @@ void test_error_expression(const char* source, const char* expected_text) {
 }
 
 int main() {
-	test_expression("'f + 2", "(' f) + 2");
+	test_expression("'f + 2", "((+ (' f)) 2)");
 	test_error_expression("()", "got <nothing>");
 	test_error_expression("id ()", "got <nothing>");
 	test_expression("[(map (\\i i) [])]", "((: ((map (\\i i)) [])) [])");
 	test_expression("-2", "((- 0) 2)");
 	test_expression("'a", "(' a)");
-	test_expression("'=", "(' =)");
+	//test_expression("'=", "(' =)"); // this conflicts with 'f + 2
+	test_expression("'(=)", "(' =)");
 	test_expression("(=)", "=");
 	test_expression("b'a", "(b (' a))");
 	test_expression("f g h", "((f g) h)");

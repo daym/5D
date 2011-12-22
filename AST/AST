@@ -44,8 +44,10 @@ struct Abstraction : Node {
 };
 struct Box : Node {
 	void* native;
-	Box(void* native) {
+	AST::Node* fRepr;
+	Box(void* native, AST::Node* repr) {
 		this->native = native;
+		this->fRepr = repr;
 	}
 	//virtual std::string str(void) const;
 };
@@ -53,7 +55,7 @@ struct Str : Box {
 	bool bAtomicity;
 	size_t size;
 	Str(void* native) :
-		Box(native)
+		Box(native, NULL)
 	{
 		bAtomicity = false;
 	}
@@ -64,8 +66,8 @@ Cons* makeCons(Node* head, Node* tail);
 Str* makeStr(const char* text); // this can contain no pointers
 Str* makeStrCXX(const std::string& text, bool bAtomic = false); // this can contain pointers
 Str* makeStrRaw(char* mutableText, size_t size, bool bAtomic);
-static inline Box* makeBox(void* native) {
-	return new Box(native);
+static inline Box* makeBox(void* native, AST::Node* fRepr) {
+	return new Box(native, fRepr);
 }
 bool str_P(AST::Node* node);
 static inline bool abstraction_P(Node* root) {

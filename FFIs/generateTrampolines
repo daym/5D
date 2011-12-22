@@ -68,8 +68,13 @@ static inline void* getSomethingUsefulOrNull(AST::Node* n) {
 static inline AST::Node* makeStrOrNil(const char* s) {
   return(s ? AST::makeStr(s) : NULL);
 }
-static inline AST::Node* makeBoxOrNil(void* s) {
-  return(s ? AST::makeBox(s) : NULL);
+static inline AST::Node* makeBox(AST::Node* repr, void* s) {
+  if(s == NULL)
+    throw Evaluators::EvaluationException("argument is required but empty");
+  return(AST::makeBox(s, repr));
+}
+static inline AST::Node* makeBoxOrNil(AST::Node* repr, void* s) {
+  return(s ? makeBox(repr, s) : NULL);
 }
 #define unproc iter == end ? NULL : dynamic_cast<Evaluators::CProcedure*>(extr(iter++))
 #define unp iter == end ? NULL : getSomethingUseful(extr(iter++))
@@ -85,8 +90,9 @@ static inline AST::Node* makeBoxOrNil(void* s) {
 #define und iter == end ? 0.0 : Evaluators::get_native_double(extr(iter++))
 #define unR iter == end ? NULL : extr(iter++)
 #define inv
-#define inp AST::makeBox(
-#define inP makeBoxOrNil(
+#define REPRME AST::makeApplication(options, world)
+#define inp makeBox(REPRME, 
+#define inP makeBoxOrNil(REPRME, 
 #define ini Numbers::internNative((Numbers::NativeInt) 
 #define inl Numbers::internNative((Numbers::NativeInt) 
 #define inh Numbers::internNative((Numbers::NativeInt) 
@@ -99,7 +105,7 @@ static inline AST::Node* makeBoxOrNil(void* s) {
 #define inR (
 /* FIXME do inL properly */
 
-typedef AST::Node* (jumper_t)(void* p, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end);
+//typedef AST::Node* (jumper_t)(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end, AST::Node* options, AST::Node* world);
 
 static HashTable fMarshallers;
 
@@ -127,8 +133,8 @@ for combination in sys.stdin.readlines():
        return("")
     content = combination[1 : ]
     print("typedef %s %s (*proc_%s_t)(%s);" % (getLongName(content[0]), getCallingConvention(combination[0]), combination, ", ".join(map(getLongName, content[1:]))))
-    print("""static %(inliner)s AST::Node* jump%(combination)s(void* p, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end) {
-        proc_%(combination)s_t proc = (proc_%(combination)s_t) p;
+    print("""static %(inliner)s AST::Node* jump%(combination)s(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, AST::Node* options, AST::Node* world) {
+        proc_%(combination)s_t proc = (proc_%(combination)s_t) p2->native;
         %(tempvariables)s
         AST::Node* result = NULL;
         %(returner)s((*proc)(%(marshallers)s))%(fallback)s;
@@ -189,7 +195,7 @@ static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::N
 	    fprintf(stderr, "warning: could not find marshaller for %s\\n", signature->name);
 	    return Evaluators::makeIOMonad(NULL, endIter->second);
         } else
-            return (*iterMarshaller->second)(proc->native, iter, endIter);
+            return (*iterMarshaller->second)(proc, iter, endIter, options, world);
 }
        
     

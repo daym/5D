@@ -20,7 +20,7 @@ struct eqstr {
 	}
 };
 
-typedef AST::Node* (jumper_t)(void* p, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end);
+typedef AST::Node* (jumper_t)(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end, AST::Node* options, AST::Node* world);
 typedef __gnu_cxx::hash_map<const char*, jumper_t*, __gnu_cxx::hash<const char*>, eqstr> HashTable;
 };
 #include "FFIs/Trampolines"
@@ -28,8 +28,7 @@ typedef __gnu_cxx::hash_map<const char*, jumper_t*, __gnu_cxx::hash<const char*>
 namespace Evaluators {
 
 CProcedure::CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int aReservedArgumentCount, AST::Symbol* aSignature) : 
-	AST::Box(native),
-	fRepr(aRepr),
+	AST::Box(native, aRepr),
 	fArgumentCount(aArgumentCount),
 	fReservedArgumentCount(aReservedArgumentCount),
 	fSignature(aSignature)
@@ -40,7 +39,6 @@ CProcedure::CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int a
 	if(v == "<node>")
 		abort();
 }
-REGISTER_STR(CProcedure, return(str(node->fRepr));)
 REGISTER_STR(CurriedOperation, {
 	std::stringstream sst;
 	sst << "(" << str(node->fOperation) << " " << str(node->fArgument) << " " << ")";

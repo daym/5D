@@ -32,6 +32,8 @@ static size_t getSize(char c) {
 	case 'Q': return(sizeof(unsigned long long));
 	case 'p': return(sizeof(void*));
 	case 'P': return(sizeof(void*));
+	case 'z': return(sizeof(char*));
+	case 'Z': return(sizeof(char*));
 	default: return(0); /* FIXME */
 	}
 }
@@ -59,6 +61,8 @@ static size_t getAlignment(char c) {
 	case 'l': return(sizeof(long));
 	case 'p': return(sizeof(long) == 8 ? 8 : 4);
 	case 'P': return(sizeof(long) == 8 ? 8 : 4);
+	case 'z': return(sizeof(long) == 8 ? 8 : 4);
+	case 'Z': return(sizeof(long) == 8 ? 8 : 4);
 	case 'B': return(1);
 	case 'H': return(2);
 	case 'I': return(4);
@@ -125,6 +129,7 @@ static inline size_t pack_atom_value(char formatC, AST::Node* headNode, std::str
 			PACK_BUF(result)
 			return(size);
 		}
+		case 'z':
 		case 'p': {
 			if(headNode == NULL)
 				throw Evaluators::EvaluationException("packRecord: that field cannot be nil");
@@ -132,6 +137,7 @@ static inline size_t pack_atom_value(char formatC, AST::Node* headNode, std::str
 			PACK_BUF(result)
 			return(size);
 		}
+		case 'Z':
 		case 'P': {
 			void* result = headNode ? Evaluators::get_native_pointer(headNode) : NULL;
 			PACK_BUF(result)
@@ -211,7 +217,17 @@ double get_native_double(AST::Node* root);
 	for(; size > 0; --size, ++codedData, ++d) \
 		*d = *codedData;
 
-static inline AST::Node* decode(char formatC, const unsigned char* codedData, size_t size) {
+static AST::Node* skipApplications(AST::Node* app, size_t count) {
+	for(; count > 0; --count) {
+		if(application_P(app))
+			app = get_application_operand(app);
+		else {
+			throw Evaluators::EvaluationException("skipApplications cannot handle non-applications");
+		}
+	}
+	return(app);
+}
+static inline AST::Node* decode(AST::Node* repr, size_t reprOffset, char formatC, const unsigned char* codedData, size_t size) {
 	switch(formatC) {
 	case 'b':
 		{
@@ -235,7 +251,7 @@ static inline AST::Node* decode(char formatC, const unsigned char* codedData, si
 		{
 			long value;
 			DECODE_BUF(value)
-			return(Numbers::internNative((Numbers::NativeInt) value));
+			return(Numbers::internNative((Numbers::NativeInt) value)); // FIXME size
 		}
 	case 'B':
 		{
@@ -297,7 +313,8 @@ static inline AST::Node* decode(char formatC, const unsigned char* codedData, si
 			DECODE_BUF(value)
 			if(value == NULL)
 				throw Evaluators::EvaluationException("unpack: cannot decode NULL pointer (maybe use \"P\" ?)");
-			return(AST::makeBox(value)); // this could also be made to reuse existing wrappers.
+			AST::Node* r = AST::makeApplication(AST::symbolFromStr("head"), skipApplications(repr, reprOffset));
+			return(AST::makeBox(value, r)); // this could also be made to reuse existing wrappers.
 		}
 	case 'P':
 		{
@@ -305,8 +322,28 @@ static inline AST::Node* decode(char formatC, const unsigned char* codedData, si
 			DECODE_BUF(value)
 			if(value == NULL)
 				return(NULL);
-			else
-				return(AST::makeBox(value));
+			else {
+				AST::Node* r = AST::makeApplication(AST::symbolFromStr("head"), skipApplications(repr, reprOffset));
+				return(AST::makeBox(value, r));
+			}
+		}
+	case 'z':
+		{
+			char* value;
+			DECODE_BUF(value)
+			if(value == NULL)
+				throw Evaluators::EvaluationException("unpack: cannot decode NULL pointer (maybe use \"P\" ?)");
+			return(AST::makeStr(value));
+		}
+	case 'Z':
+		{
+			char* value;
+			DECODE_BUF(value)
+			if(value == NULL)
+				return(NULL);
+			else {
+				return(AST::makeStr(value));
+			}
 		}
 	default:
 		{
@@ -317,40 +354,66 @@ static inline AST::Node* decode(char formatC, const unsigned char* codedData, si
 		}
 	}
 }
-// TODO record packer "[p]"
-// TODO float etc.
+/* builds (tail (tail (tail ... (tail suffix))))) with a total of #count tails. */
+static AST::Node* tailtailtail(AST::Node* suffix, size_t count) {
+	if(count == 0)
+		return(suffix);
+	else
+		return(AST::makeApplication(AST::symbolFromStr("tail"), tailtailtail(suffix, count - 1)));
+}
+
+// TODO record unpacker for "[p]"
 AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("unpackRecord needs format string.");
+	AST::Node* repr = AST::makeApplication(AST::makeApplication(&RecordUnpacker, formatStr), dataStr);
+	size_t resultOffset = 0;
+	size_t resultCount = 0;
+	size_t position = 0; // in format
+	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
+		char formatC = *format;
+		if(formatC == '<' || formatC == '>' || formatC == '=')
+			continue;
+		++resultCount;
+	}
+	position = 0;
+	if(dataStr == NULL) { // TODO check formatstr etc.
+		if(resultCount == 0) // fine.
+			return(NULL);
+		throw Evaluators::EvaluationException("unpackRecord needs data string.");
+	}
 	const unsigned char* codedData = (const unsigned char*) dataStr->native;
 	size_t remainderLen = dynamic_cast<AST::Str*>(dataStr) ? ((AST::Str*) dataStr)->size : 9999999; // FIXME
 	bool bBigEndian = false;
 	size_t offset = 0;
 	size_t new_offset = 0;
-	size_t position = 0; // in format
 	AST::Cons* result = NULL;
 	AST::Cons* tail = NULL;
+	repr = tailtailtail(repr, resultCount);
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		char formatC = *format;
 		if(formatC == '<' || formatC == '>' || formatC == '=')
 			continue;
-		size_t size = getSize(*format);
-		size_t align = getAlignment(*format);
+		size_t size = getSize(formatC);
+		size_t align = getAlignment(formatC);
+		new_offset = (offset + align - 1) & ~(align - 1);
+		if(remainderLen < new_offset - offset)
+			throw Evaluators::EvaluationException("unpackRecord: not enough coded data for format padding.");
+		remainderLen -= new_offset - offset;
+		codedData += new_offset - offset;
+		offset = new_offset;
 		if(remainderLen < size)
 			throw Evaluators::EvaluationException("unpackRecord: not enough coded data for format.");
-		AST::Cons* n = AST::makeCons(decode(formatC, codedData, size), NULL);
+		AST::Cons* n = AST::makeCons(decode(repr, resultCount - resultOffset, formatC, codedData, size), NULL);
 		if(!tail)
 			result = n;
 		else
 			tail->tail = n;
+		++resultOffset;
 		tail = n;
 		codedData += size;
 		remainderLen -= size;
 		offset += size;
-		new_offset = (offset + align - 1) & ~(align - 1);
-		if(remainderLen < new_offset - offset)
-			throw Evaluators::EvaluationException("unpackRecord: not enough coded data for format padding.");
-		offset = new_offset;
 	}
 	return(result);
 }
@@ -387,6 +450,8 @@ bool Record_has_pointers(AST::Str* formatStr) {
 		case 'P':
 		case 's':
 		case 'S':
+		case 'z':
+		case 'Z':
 			return(true);
 		}
 	}

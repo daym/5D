@@ -10,6 +10,7 @@ You should have received a copy of the GNU General Public License along with thi
 #endif
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #ifndef WIN32
 #include <sys/utsname.h>
 #endif
@@ -83,8 +84,12 @@ char* get_native_string(AST::Node* root) {
 		// TODO maybe check terminating zero? Maybe not.
 		return((char*) rootString->native);
 	} else {
-		AST::Str* v = AST::makeStrCXX(str(root));
-		return((char*) v->native);
+		std::stringstream sst;
+		sst << "cannot get native string for " << str(root);
+		std::string v = sst.str();
+		throw Evaluators::EvaluationException(v.c_str());
+		//AST::Str* v = AST::makeStrCXX(str(root));
+		//return((char*) v->native);
 	}
 }
 
@@ -94,10 +99,12 @@ static AST::Node* wrapWrite(AST::Node* options, AST::Node* argument) {
 	CXXArguments::const_iterator iter = arguments.begin();
 	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
 	++iter;
-	char* text = get_native_string(iter->second);
+	char* text = iter->second ? get_native_string(iter->second) : NULL;
 	++iter;
+	if(!f)
+		throw Evaluators::EvaluationException("need file, but is missing");
 	AST::Node* world = iter->second;
-	size_t result = fwrite(text, 1, strlen(text), (FILE*) f->native);
+	size_t result = fwrite(text ? text : "", 1, text ? strlen(text) : 0, (FILE*) f->native);
 	return(Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) result), world));
 }
 // FIXME move these to their own module:
@@ -107,6 +114,8 @@ static AST::Node* wrapFlush(AST::Node* options, AST::Node* argument) {
 	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
 	++iter;
 	AST::Node* world = iter->second;
+	if(!f)
+		throw Evaluators::EvaluationException("need file, but is missing");
 	size_t result = fflush((FILE*) Evaluators::get_native_pointer(f));
 	return(Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) result), world));
 }
@@ -119,6 +128,8 @@ static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
 	AST::Node* world = iter->second;
 	char text[2049];
 	AST::Node* result = NULL;
+	if(!f)
+		throw Evaluators::EvaluationException("need file, but is missing");
 	if(fgets(text, 2048, (FILE*) f->native)) {
 		result = Evaluators::internNative(text);
 	} else
@@ -194,12 +205,14 @@ bool absolute_path_P(AST::Str* name) {
 #endif
 DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(reduce(argument))))
 DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(dynamic_cast<AST::Str*>(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(ErrnoGetter, Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) errno), reduce(argument)))
 REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write"))
 REGISTER_BUILTIN(Flusher, 2, 0, AST::symbolFromStr("flush"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline"))
 REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath"))
 REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"))
 REGISTER_BUILTIN(AbsolutePathP, 1, 0, AST::symbolFromStr("absolutePath?"))
+REGISTER_BUILTIN(ErrnoGetter, 1, 0, AST::symbolFromStr("errno"))
 
 char* get_absolute_path(const char* filename) {
 #ifdef WIN32
@@ -212,7 +225,7 @@ char* get_absolute_path(const char* filename) {
 	} else
 		return(GCx_strdup(filename));
 #else
-	if(filename[0] == '/')
+	if(filename && filename[0] == '/')
 		return(GCx_strdup(filename));
 	else {
 		char buffer[2049];

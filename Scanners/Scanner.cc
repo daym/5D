@@ -374,7 +374,7 @@ void Scanner::parse_string(int input) {
 	if(input != '"')
 		raise_error("<quote>", input);
 	std::string value = matchtext.str();
-	input_value = AST::makeStr(value.c_str());
+	input_value = AST::makeStrCXX(value);
 }
 static bool symbol1_char_P(int input) {
 	return (input >= 'A' && input <= 'Z')

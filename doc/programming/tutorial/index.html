@@ -114,9 +114,11 @@ define f \x x⋅x
 <h3>Reflection</h3>
 <p>Sometimes you want to know how a function was originally defined (as opposed to how it was actually implemented).</p>
 <p>Therefore, the REPL has a command to retrieve the original definition:</p>
+<p>Note that you need to put parenthesis around operators (in order to prevent them from asserting their own precedence).</p>
 <pre>
 define f \x x*x
 describe 'f =&gt; \x x*x
+describe '(;) =&gt; \m \ber \world (\r ber (monadValue r) (monadWorld r)) (m world)
 </pre>
 <h3>Conditionals</h3>
 <pre>

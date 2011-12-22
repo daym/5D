@@ -47,12 +47,13 @@ AST::Node* wrapAccessLibrary(AST::Node* options, AST::Node* argument) {
 	//return(Evaluators::reduce(AST::makeApplication(body, argument)));
 	return(new CProcedure(nativeProc, AST::makeApplication(AST::makeApplication(AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), libName), quote(signature)), fnName), strlen(signature->name) - 2 + 1/*monad*/, 0, signature));
 }
-AST::Node* wrapLoadLibraryC(const char* name) {
+AST::Node* wrapLoadLibraryC(AST::Node* nameS) {
+	const char* name = Evaluators::get_native_string(nameS);
 	void* clib = dlopen(name, RTLD_LAZY);
 	if(!clib) {
 		fprintf(stderr, "(dlopen \"%s\") failed because: %s\n", name, dlerror());
 	}
-	return(AST::makeBox(clib));
+	return(AST::makeBox(clib, AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), nameS)));
 	//return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 }
 static AST::Node* wrapLoadLibrary(AST::Node* options, AST::Node* filename) {
@@ -60,9 +61,7 @@ static AST::Node* wrapLoadLibrary(AST::Node* options, AST::Node* filename) {
 	//Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, filename);
 	//Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	//Evaluators::CXXArguments::const_iterator endIter = arguments.end();
-	// struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
-	//assert(self);
-	AST::Node* body = wrapLoadLibraryC(Evaluators::get_native_string(filename));
+	AST::Node* body = wrapLoadLibraryC(filename);
 	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&SharedLibrary, body)), filename)));
 }
 

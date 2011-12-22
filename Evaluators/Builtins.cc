@@ -240,7 +240,8 @@ static std::string strStr(AST::Str* node) {
 	sst << "\"";
 	return(sst.str());
 }
-REGISTER_STR(Box, return("box");)
+REGISTER_STR(Box, return(str(node->fRepr));)
+
 REGISTER_STR(Str, {
 	return(strStr(node));
 })
@@ -484,7 +485,7 @@ DEFINE_BINARY_OPERATION(LEComparer, leqA)
 DEFINE_BINARY_OPERATION(AddrLEComparer, compareAddrsLEA)
 DEFINE_BINARY_OPERATION(SymbolEqualityChecker, addrsEqualA)
 DEFINE_FULL_OPERATION(ModuleDispatcher, return(dispatchModule(fn, argument));)
-DEFINE_SIMPLE_OPERATION(ModuleBoxMaker, AST::makeBox(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(ModuleBoxMaker, AST::makeBox(reduce(argument), AST::makeApplication(&ModuleBoxMaker, reduce(argument))))
 
 REGISTER_BUILTIN(Conser, 2, 0, AST::symbolFromStr(":"))
 REGISTER_BUILTIN(ConsP, 1, 0, AST::symbolFromStr("cons?"))

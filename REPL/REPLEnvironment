@@ -405,9 +405,9 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, Symbols::Shasht, Evaluators::churchTrue);
 	REPL_add_static_builtin_binding(self, Symbols::Shashf, Evaluators::churchFalse);
 	// TODO move I/O into its own module?
-	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stdin"), AST::makeBox(stdin));
-	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stdout"), AST::makeBox(stdout));
-	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stderr"), AST::makeBox(stderr));
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stdin"), AST::makeBox(stdin, AST::symbolFromStr("stdin")));
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stdout"), AST::makeBox(stdout, AST::symbolFromStr("stdout")));
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stderr"), AST::makeBox(stderr, AST::symbolFromStr("stderr")));
 	REPL_add_builtin_method(self, AST::symbolFromStr("write"), &Evaluators::Writer);
 	REPL_add_builtin_method(self, AST::symbolFromStr("flush"), &Evaluators::Flusher);
 	REPL_add_builtin_method(self, AST::symbolFromStr("readline"), &Evaluators::LineReader);
@@ -421,6 +421,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("allocateRecord"), &FFIs::RecordAllocator);
 	REPL_add_builtin_method(self, AST::symbolFromStr("duplicateRecord"), &FFIs::RecordDuplicator);
 	REPL_add_builtin_method(self, AST::symbolFromStr("archDepLibName"), &Evaluators::ArchDepLibNameGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("errno"), &Evaluators::ErrnoGetter);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }

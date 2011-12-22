@@ -60,8 +60,6 @@ Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).
 nested lists: line-break only for the second list if the first list is short enough.
 pattern-match env entry back to the let macro.
-Allow querying a list of exported symbols of a shared library.
-Auto-load libc (or at least determine the file name?)
 setlocale(LC_ALL, "") without string conversion functions being idiots
 Indentation:
 	[(]    note how the auto) shouldn't close down yet - but it should close if we are back at the same paren level than we were before.
@@ -75,8 +73,8 @@ degrade from Integer to Int when possible.
 $! strict applicator
 make AST::Symbol const everywhere (best to introduce a Symbol_t or something)
 maybe delay and force
-optimize module system and FFI system: if there are 4 or more "if"s in a row and all only check for equality, replace them by a hash table automatically.
 tail recursion elimination.
+cache numbers for some time?
 
 = Parser =
 
