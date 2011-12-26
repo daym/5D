@@ -1,6 +1,7 @@
 5d (0.2.1) unstable; urgency=low
 
   * rename IO monad functions to have IO in their name.
+  * allow messageBox with empty caption.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Mon, 26 Dec 2011 19:28:00 +0100
 

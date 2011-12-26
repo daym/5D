@@ -45,7 +45,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	++iter;
 	AST::Node* world = iter->second;
 	AST::Node* caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
-	cCaption = FromUTF8(Evaluators::get_native_string(caption));
+	cCaption = caption ? FromUTF8(Evaluators::get_native_string(caption)) : _T("");
 	int cResult = MessageBoxW(cParentWindow, cText.c_str(), cCaption.c_str(), cType);
 	AST::Symbol* result;
 	result = (cResult == IDOK) ? AST::symbolFromStr("ok") : 

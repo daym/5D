@@ -40,7 +40,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	++iter;
 	AST::Node* world = iter->second;
 	AST::Node* caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
-	cCaption = Evaluators::get_native_string(caption);
+	cCaption = caption ? Evaluators::get_native_string(caption) : NULL;
 	char buffer[21];
 	AST::Symbol* result = AST::symbolFromStr("close");
 	while(true) {

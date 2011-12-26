@@ -43,7 +43,7 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	++iter;
 	AST::Node* world = iter->second;
 	AST::Node* caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
-	cCaption = Evaluators::get_native_string(caption);
+	cCaption = caption ? Evaluators::get_native_string(caption) : NULL;
 	GtkWidget* dialog = gtk_message_dialog_new(cParentWindow, (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), cType, cButtons, "%s", cText);
 	if(cCaption)
 		gtk_window_set_title(GTK_WINDOW(dialog), cCaption);
