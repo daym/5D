@@ -401,7 +401,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, Symbols::SstrFromList, &FFIs::StrFromListGetter);
 	REPL_add_builtin_method(self, Symbols::Ssubstr, &FFIs::SubstrGetter);
 	REPL_add_builtin_method(self, Symbols::SstrUntilZero, &FFIs::StrUntilZeroGetter);
-	REPL_add_builtin_method(self, Symbols::SrunWorld, &Evaluators::WorldRunner);
+	REPL_add_builtin_method(self, Symbols::SrunIO, &Evaluators::IORunner);
 	REPL_add_static_builtin_binding(self, Symbols::Shasht, Evaluators::churchTrue);
 	REPL_add_static_builtin_binding(self, Symbols::Shashf, Evaluators::churchFalse);
 	// TODO move I/O into its own module?

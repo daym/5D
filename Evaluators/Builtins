@@ -46,7 +46,7 @@ DECLARE_BINARY_OPERATION(KeywordP)
 DECLARE_BINARY_OPERATION(SymbolFromStrGetter)
 DECLARE_BINARY_OPERATION(KeywordFromStrGetter)
 DECLARE_BINARY_OPERATION(KeywordStr)
-DECLARE_SIMPLE_OPERATION(WorldRunner)
+DECLARE_SIMPLE_OPERATION(IORunner)
 
 /* first arg is a Box with a list of [key value] */
 DECLARE_SIMPLE_OPERATION(ModuleDispatcher)

@@ -96,6 +96,7 @@ Just representing Str as a Integer would be a lot less weird and automatically a
 quote operator printing?
 add atomic? flag to allocateRecord and duplicateRecord.
 struct packer: support big endian.
+use libffi (but: hello, Windows... sigh)
 
 = Debugging Macros =
 

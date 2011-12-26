@@ -56,12 +56,11 @@ The following things can be extras:
 
 = Monads =
 
-monadWorld
-lift
-monadLift
+ioWorld
+liftIO
 ;
-monadValue
-runWorld
+ioValue
+runIO
 until
 andLazy
 orLazy

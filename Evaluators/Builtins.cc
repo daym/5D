@@ -298,7 +298,7 @@ static AST::Node* fetchValueAndWorld(AST::Node* n) {
 	return(cons->head);
 }
 #define WORLD Numbers::internNative((Numbers::NativeInt) 42)
-DEFINE_SIMPLE_OPERATION(WorldRunner, fetchValueAndWorld(makeApplication(argument, WORLD)))
+DEFINE_SIMPLE_OPERATION(IORunner, fetchValueAndWorld(makeApplication(argument, WORLD)))
 
 AST::Node* operator/(const Integer& a, const Integer& b) {
 	if (b.isZero()) throw Evaluators::EvaluationException("Integer::operator /: division by zero");
@@ -506,7 +506,7 @@ REGISTER_BUILTIN(KeywordP, 1, 0, AST::symbolFromStr("keyword?"))
 REGISTER_BUILTIN(SymbolFromStrGetter, 1, 0, AST::symbolFromStr("symbolFromStr"))
 REGISTER_BUILTIN(KeywordFromStrGetter, 1, 0, AST::symbolFromStr("keywordFromStr"))
 REGISTER_BUILTIN(KeywordStr, 1, 0, AST::symbolFromStr("keywordStr"))
-REGISTER_BUILTIN(WorldRunner, 1, 0, AST::symbolFromStr("runWorld"))
+REGISTER_BUILTIN(IORunner, 1, 0, AST::symbolFromStr("runIO"))
 REGISTER_BUILTIN(ModuleDispatcher, 2, 1, AST::symbolFromStr("dispatchModule"))
 REGISTER_BUILTIN(ModuleBoxMaker, 1, 0, AST::symbolFromStr("makeModuleBox"))
 

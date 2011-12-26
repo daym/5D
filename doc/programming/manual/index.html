@@ -109,7 +109,7 @@ foo'cos 2
 <p>Example:</p>
 <pre>
 define puts requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cip "puts"
-runWorld (puts "Hello world")
+runIO (puts "Hello world")
 </pre>
 <p>What this does is:</p>
 <p>- load the library with the given file name.</p>

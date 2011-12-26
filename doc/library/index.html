@@ -398,24 +398,24 @@ foldl (-) 0 [1 2 3] =&gt; (((0-1)-2)-3)) =&gt; (-6)
 </a>
 
 <a name="state"><h2>State</h2>
-<h3>runWorld \m</h3>
+<h3>runIO \m</h3>
 <p>Can only be there once in the entire program. Will cause the state machine to run, giving the initial World State to the function <span class="pre">m</span>. m eventually returns and its result will be decomposed, the monad value extracted and it will become the result.</p>
 <hr/>
 <h3>(;) \m \handler</h3>
 <p>The sequencing operator.</p>
-<p>Chains together <span class="pre">m</span> and <span class="pre">handler</span> in such a way that, once <span class="pre">runWorld</span> reaches <span class="pre">m</span>, <span class="pre">m</span> will run first, deliver its result to <span class="pre">handler</span>, which will run next.</p>
+<p>Chains together <span class="pre">m</span> and <span class="pre">handler</span> in such a way that, once <span class="pre">runIO</span> reaches <span class="pre">m</span>, <span class="pre">m</span> will run first, deliver its result to <span class="pre">handler</span>, which will run next.</p>
 <p>Example:</p>
 <pre>
 define readFile fopen @mode:"r" "/etc/passwd" ;\f fgets f
-runWorld readFile
+runIO readFile
 </pre>
 <p>This results in the first line of the file named "/etc/passwd".</p>
 <hr/>
-<h3><del>monadValue \m</del></h3>
-<p>Given a monad, results in the value of the monad.</p>
+<h3><del>ioValue \m</del></h3>
+<p>Given an IO monad, results in the value of the monad.</p>
 <hr/>
-<h3><del>monadWorld \m</del></h3>
-<p>Given a monad, results in the World State of the monad.</p>
+<h3><del>ioWorld \m</del></h3>
+<p>Given an IO monad, results in the World State of the monad.</p>
 <hr/>
 <h3>until \predicate \m</h3>
 <p>Given a monad, results in a monad which will repeat its action until result fulfills <span class="pre">predicate</span>.</p>
@@ -501,7 +501,7 @@ keywordStr @mode: =&gt; "mode:"
 <p>Example:</p>
 <pre>
 define puts requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cis "puts"
-runWorld (puts "Hello world")
+runIO (puts "Hello world")
 </pre>
 <p>See the <a href="../programming/manual/index.html">5D Programming Manual</a> for more details.</p>
 <hr/>

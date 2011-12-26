@@ -56,7 +56,7 @@ extern AST::Symbol* Sbackslash;
 extern AST::Symbol* StextBufferText;
 extern AST::Symbol* SsymbolsEqualP;
 extern AST::Symbol* Shashf;
-extern AST::Symbol* SrunWorld;
+extern AST::Symbol* SrunIO;
 extern AST::Symbol* Spercentedx;
 extern AST::Symbol* SintegerSucc;
 extern AST::Symbol* Slet;
