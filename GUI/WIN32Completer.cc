@@ -50,7 +50,7 @@ void Completer_init(struct Completer* self, HWND entry, AST::HashTable* haystack
 }
 struct Completer* Completer_new(HWND entry, AST::HashTable* haystack) {
 	struct Completer* result;
-	result = (struct Completer*) calloc(1, sizeof(struct Completer)); // FIXME
+	result = new (UseGC) Completer;
 	Completer_init(result,  entry, haystack);
 	return(result);
 }
