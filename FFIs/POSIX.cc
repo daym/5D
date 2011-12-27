@@ -53,7 +53,7 @@ AST::Node* wrapLoadLibraryC(AST::Node* nameS) {
 	if(!clib) {
 		fprintf(stderr, "(dlopen \"%s\") failed because: %s\n", name, dlerror());
 	}
-	return(AST::makeBox(clib, AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), nameS)));
+	return(AST::makeBox(clib, AST::makeApplication(&SharedLibraryLoader, nameS)));
 	//return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 }
 static AST::Node* wrapLoadLibrary(AST::Node* options, AST::Node* filename) {

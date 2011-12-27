@@ -47,14 +47,15 @@ AST::Node* wrapAccessLibrary(AST::Node* options, AST::Node* argument) {
 	//return(Evaluators::reduce(AST::makeApplication(body, argument)));
 	return(new CProcedure(nativeProc, AST::makeApplication(AST::makeApplication(AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), libName), quote(signature)), fnName), strlen(signature->name) - 2 + 1/*monad*/, 0, signature));
 }
-AST::Node* wrapLoadLibraryC(const char* name) {
+AST::Node* wrapLoadLibraryC(AST::Node* nameS) {
+	const char* name = Evaluators::get_native_string(nameS);
 	std::wstring nameW = FromUTF8(name);
 	void* clib = LoadLibraryW(nameW.c_str());
 	if(!clib) {
 		std::wstring err = GetWIN32Diagnostics();
 		fprintf(stderr, "(dlopen \"%s\") failed because: %s\n", name, err.c_str());
 	}
-	return(AST::makeBox(clib));
+	return(AST::makeBox(clib, AST::makeApplication(&SharedLibraryLoader, nameS)));
 	//return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 }
 static AST::Node* wrapLoadLibrary(AST::Node* options, AST::Node* filename) {
@@ -62,7 +63,7 @@ static AST::Node* wrapLoadLibrary(AST::Node* options, AST::Node* filename) {
 	//std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, filename);
 	// struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
 	//assert(self);
-	AST::Node* body = wrapLoadLibraryC(Evaluators::get_native_string(filename));
+	AST::Node* body = wrapLoadLibraryC(filename);
 	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&SharedLibrary, body)), filename)));
 }
 
