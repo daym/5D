@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include <tchar.h>
 #include <string.h>
+#include <sstream>
 #include "resource.h"
 #include <stdio.h>
 #include <shellapi.h>
@@ -47,6 +48,8 @@ static BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 
 using namespace GUI;
 
+//typedef std::basic_stringstream<wchar_t> wstringstream;
+
 static void handleCommandLine(void) {
 	int argc = 0;
 	LPWSTR commandLine = GetCommandLineW();
@@ -67,7 +70,12 @@ static void handleCommandLine(void) {
 		return;
 	if(argc > 1) {
 		//MessageBox(NULL, argv[1], NULL, MB_OK);
-		REPL_load_contents_from(REPL1, ToUTF8(argv[1]));
+		if(!REPL_load_contents_by_name(REPL1, ToUTF8(argv[1]))) {
+			std::wstring s = _T("could not load \"");
+			s += argv[1];
+			s += std::wstring(_T("\""));
+			MessageBox(NULL, s.c_str(), NULL, MB_OK);
+		}
 	}
 	LocalFree(argv);
 }
