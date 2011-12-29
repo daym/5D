@@ -49,7 +49,20 @@ using namespace GUI;
 
 static void handleCommandLine(void) {
 	int argc = 0;
-	LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	LPWSTR commandLine = GetCommandLineW();
+#if 0
+	/* I don't feel like working around shell bugs. */
+	int rc;
+	WCHAR moduleFileName[2049];
+	rc = GetModuleFileNameW(NULL, moduleFileName, 2048);
+	if(!(rc >= 2048 || rc == 0)) { /* worked */
+		if(_wstrcmp(moduleFileName, commandLine) == 0) { /* Vista passes the command line without quotes sometimes. Don't ask. */
+			/* no arguments there. */
+			return;
+		}
+	}
+#endif
+	LPWSTR* argv = CommandLineToArgvW(commandLine, &argc);
 	if(argv == NULL) // ???
 		return;
 	if(argc > 1) {
