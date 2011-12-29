@@ -5,6 +5,7 @@
 #include <string.h>
 #include "resource.h"
 #include <stdio.h>
+#include <shellapi.h>
 #include "Commctrl.h"
 #include "GUI/WIN32REPL"
 #include "Evaluators/FFI"
@@ -46,6 +47,17 @@ static BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 
 using namespace GUI;
 
+static void handleCommandLine(void) {
+	int argc = 0;
+	LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	if(argv == NULL) // ???
+		return;
+	if(argc > 1) {
+		//MessageBox(NULL, argv[1], NULL, MB_OK);
+		REPL_load_contents_from(REPL1, ToUTF8(argv[1]));
+	}
+	LocalFree(argv);
+}
 #ifdef _MSC_VER
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) {
 #else
@@ -76,6 +88,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	//LoadString(hInstance, IDC_MY5D, szWindowClass, MAX_LOADSTRING);
 	if (!InitInstance(hInstance, nCmdShow))
 		return(FALSE);
+	handleCommandLine();
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MY5D));
 	DWORD reason = WAIT_TIMEOUT;
 	while(1) {

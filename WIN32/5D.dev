@@ -1,7 +1,7 @@
 [Project]
 FileName=5D.dev
 Name=5D
-UnitCount=76
+UnitCount=77
 Type=0
 Ver=1
 ObjFiles=
@@ -777,6 +777,15 @@ BuildCmd=
 
 [Unit76]
 FileName=..\AST\HashTable
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit77]
+FileName=..\Config\Config
 Folder=5D
 Compile=0
 Link=0
