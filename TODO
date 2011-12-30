@@ -120,3 +120,15 @@ integer, float: allocate low-level detail so the GC knows?
 ./Numbers/BigUnsigned.cc:	Blk *subtractBuf = new Blk[size()];
 ./GUI/GTKCompleter.cc:	self->fMatches = new std::set<AST::Symbol*>;
 ./GUI/WIN32Completer.cc:	self->fMatches = new std::set<AST::Symbol*>;
+
+= Modules =
+
+String.make 10 'x'
+String.length "xxx"
+String.lowercase "MARY"
+String.join "/" ["" "usr" "local" "bin"]
+List.reverse [1 2 3]
+List.head [1 2 3]
+fst
+snd
+let open POSIX in puts ...
