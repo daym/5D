@@ -6,7 +6,7 @@
 #include "Config/Config"
 #include "AST/AST"
 
-struct Config {
+struct Config : AST::Node {
 	char* fEnvironment;
 	int fMainWindowWidth;
 	int fMainWindowHeight;

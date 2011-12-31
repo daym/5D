@@ -4,10 +4,11 @@
 #include <string.h>
 #include "Config/Config"
 #include "FFIs/Allocators"
+#include "AST/AST"
 
 #define CONFIG_NAME "5D/config.INI"
 
-struct Config {
+struct Config : AST::Node {
 	GKeyFile* key_file;
 	char* environment_name;
 	int main_window_width;
