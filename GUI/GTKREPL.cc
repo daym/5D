@@ -453,7 +453,9 @@ static int current_tip_index = -1;
 static AST::Cons* current_tip = NULL;
 void REPL_load_tips(struct REPL* self) {
 	FILE* input_file;
-	input_file = fopen("doc/tips", "r"); /* FIXME full path */
+	std::string d = REPL_get_shared_dir();
+	d += "tips";
+	input_file = fopen(d.c_str(), "r");
 	if(input_file) {
 		Scanners::SExpressionParser parser;
 		AST::Node* contents;
@@ -996,7 +998,8 @@ bool REPL_confirm_close(struct REPL* self) {
 			int result;
 			result = gtk_dialog_run(dialog);
 			gtk_widget_destroy(GTK_WIDGET(dialog));
-			if(result == GTK_RESPONSE_CLOSE)
+			printf("LA RES %d\n", result);
+			if(result == GTK_RESPONSE_CLOSE || result == GTK_RESPONSE_DELETE_EVENT/*Maemo doesn't show the close button.*/)
 				return(true);
 			else if(result == GTK_RESPONSE_CANCEL)
 				return(false);
