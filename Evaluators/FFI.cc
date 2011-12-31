@@ -181,6 +181,8 @@ bool absolute_path_P(AST::Str* name) {
 }
 #else
 static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
+	if(nameNode == NULL)
+		return(NULL);
 	// keep that result constant and invariant.
 	std::stringstream sst;
 	std::string name((char*) nameNode->native, nameNode->size);
