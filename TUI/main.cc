@@ -38,14 +38,14 @@ struct REPL : AST::Node {
 	char* fEnvironmentName;
 	//struct Config* fConfig;
 	AST::HashTable fEnvironmentTable;
-	std::list<AST::Symbol*, gc_allocator<AST::Symbol*> > fEnvironmentNames;
+	AST::Cons* fEnvironmentNames;
 	AST::HashTable* fModules;
 	int fCursorPosition;
 };
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
 	if(self->fEnvironmentTable.find(name->name) == self->fEnvironmentTable.end()) {
 		self->fEnvironmentTable[name->name] = value;
-		self->fEnvironmentNames.push_back(name);
+		self->fEnvironmentNames = AST::makeCons(name, self->fEnvironmentNames);
 	}
 	return(self->fEnvironmentCount++); // FIXME
 }
@@ -84,7 +84,7 @@ using namespace Evaluators;
 void REPL_clear(struct REPL* self) {
 	self->fTailEnvironment = self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier = NULL;
 	self->fEnvironmentCount = 0;
-	self->fEnvironmentNames.clear();
+	self->fEnvironmentNames = NULL;
 	self->fEnvironmentTable.clear();
 	// TODO modules
 	REPL_init_builtins(self);
@@ -211,19 +211,19 @@ static char** completion_matches(const char* text, rl_compentry_func_t* callback
 static struct REPL* REPL1; // for completion. eew.
 static char* command_generator(const char* text, int state) {
 	static int len;
-	static std::list<AST::Symbol*>::const_iterator iter;
+	static AST::Cons* iter;
 	if(state == 0) {
-		iter = REPL1->fEnvironmentNames.begin();
+		iter = REPL1->fEnvironmentNames;
 		len = strlen(text);
 	}
-	while(iter != REPL1->fEnvironmentNames.end()) {
+	while(iter) {
 		const char* name;
-		name = (*iter)->name;
+		name = ((AST::Symbol*)iter->head)->name;
 		if(strncmp(name, text, len) == 0) {
-			++iter;
+			iter = Evaluators::evaluateToCons(iter->tail);
 			return(strdup(name)); // XXX
 		} else
-			++iter;
+			iter = Evaluators::evaluateToCons(iter->tail);
 	}
 	return(NULL);
 }
