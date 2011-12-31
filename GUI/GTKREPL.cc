@@ -498,7 +498,7 @@ static void handle_tips_response(GtkDialog* dialog, gint response_id, struct REP
 	}
 	{
 		char* text;
-		text = Evaluators::get_native_string(current_tip->head);
+		text = current_tip ? Evaluators::get_native_string(current_tip->head) : NULL;
 		if(!text)
 			text = g_strdup("You can complete text by pressing the Tabulator (Tab) key on your keyboard");
 		gtk_text_buffer_set_text(buffer, text, -1);
@@ -966,7 +966,7 @@ bool REPL_save(struct REPL* self, bool B_force_dialog) {
 	return(B_OK);
 }
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name) {
-	gtk_window_set_title(self->fWidget, g_strdup_printf("%s%s", absolute_name ? absolute_name : "(5D)", self->fFileModified ? " *" : ""));
+	gtk_window_set_title(self->fWidget, g_strdup_printf("%s%s", absolute_name ? g_strdup(absolute_name) : "(5D)", self->fFileModified ? " *" : ""));
 	Config_set_environment_name(self->fConfig, absolute_name);
 	Config_save(self->fConfig);
 }
@@ -980,7 +980,7 @@ void REPL_set_file_modified(struct REPL* self, bool value) {
 	{
 		const char* absolute_name;
 		absolute_name = Config_get_environment_name(self->fConfig);
-		gtk_window_set_title(self->fWidget, g_strdup_printf("%s%s", absolute_name ? absolute_name : "(5D)", self->fFileModified ? " *" : ""));
+		gtk_window_set_title(self->fWidget, g_strdup_printf("%s%s", absolute_name ? g_strdup(absolute_name) : "(5D)", self->fFileModified ? " *" : ""));
 	}
 }
 bool REPL_confirm_close(struct REPL* self) {
