@@ -998,7 +998,6 @@ bool REPL_confirm_close(struct REPL* self) {
 			int result;
 			result = gtk_dialog_run(dialog);
 			gtk_widget_destroy(GTK_WIDGET(dialog));
-			printf("LA RES %d\n", result);
 			if(result == GTK_RESPONSE_CLOSE || result == GTK_RESPONSE_DELETE_EVENT/*Maemo doesn't show the close button.*/)
 				return(true);
 			else if(result == GTK_RESPONSE_CANCEL)
