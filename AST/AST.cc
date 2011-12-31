@@ -42,7 +42,7 @@ Str* makeStr(const char* text) {
 Str* makeStrCXX(const std::string& text, bool bAtomic) {
 	if(text.length() == 0)
 		return(NULL);
-	char* result = bAtomic ? (char*) GC_malloc_atomic(text.length() + 1) : new (UseGC) char[text.length() + 1];
+	char* result = bAtomic ? (char*) GC_MALLOC_ATOMIC(text.length() + 1) : new (UseGC) char[text.length() + 1];
 	memcpy(result, text.c_str(), text.length() + 1);
 	return(makeStrRaw(result, text.length(), bAtomic));
 }
