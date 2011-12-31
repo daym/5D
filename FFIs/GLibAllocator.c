@@ -1,15 +1,15 @@
+#include <gc/gc.h>
 #include <glib.h>
 #include <string.h>
 #include <libxml/xmlmemory.h>
-#include <gc/gc.h>
 #include "FFIs/GLibAllocator"
 
 static void* GCx_malloc(size_t size) {
-	return GC_malloc(size);
+	return GC_MALLOC(size);
 }
 static void* GCx_realloc(void* p, size_t size) {
 	GC_gcollect();
-	return GC_realloc(p, size);
+	return GC_REALLOC(p, size);
 }
 static void* GCx_calloc(size_t nmemb, size_t size) {
 	size_t sz = nmemb * size; // FIXME handle overflow here.
@@ -21,7 +21,7 @@ static void GCx_free(void* p) {
 }
 static inline char* GCx_strdup(const char* value) {
 	char* result;
-	result = (char*) GC_malloc_atomic(strlen(value) + 1);
+	result = (char*) GC_MALLOC_ATOMIC(strlen(value) + 1);
 	memcpy(result, value, strlen(value) + 1);
 	return(result);
 }
