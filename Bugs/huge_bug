@@ -1,0 +1,1 @@
+cp Bugs/y/a ~/.config/5D/TUI_environment ; echo 42 | ./TUI/TUI ; echo 5 | ./TUI/TUI  

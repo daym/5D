@@ -1,0 +1,702 @@
+--- a	2011-12-30 21:16:17.609147836 +0100
++++ b	2011-12-30 21:16:18.829147841 +0100
+@@ -1877,6 +1877,8 @@
+ define repeat \\f rec \\repeat \\a a:(repeat (f a))
+ define sqrt \\a0 \\eps \\N within eps (repeat (next N) a0)
+ sqrt 1 0.001 9
++sqrt 1 0.001 9
++sqrt 1 0.001 9
+ ") environment) ((\if 
+ ((\id 
+ ((\else 
+@@ -2197,6 +2199,687 @@
+ (\f 
+ ((a ((b t) f)) f))))))) (\a 
+ (\b 
++(a b))))) id)) id)) (\#t 
++((\#f 
++((\stdin 
++((\stdout 
++((\stderr 
++((\write 
++((\flush 
++((\readline 
++((\messageBox 
++((\requireSharedLibrary 
++((\absolutePath 
++((\absolutePath? 
++((\packRecord 
++((\unpackRecord 
++((\recordSize 
++((\allocateRecord 
++((\duplicateRecord 
++((\archDepLibName 
++((\errno 
++((\if 
++((\id 
++((\else 
++((\otherwise 
++((\$ 
++((\&& 
++((\|| 
++((\not 
++((\< 
++((\flip 
++((\> 
++((\Y 
++((\rec 
++((\foldr 
++((\foldl 
++((\compose 
++((\map 
++((\++ 
++((\= 
++((\δ 
++((\reverse 
++((\foldl 
++((\reverse 
++((\| 
++((\/= 
++((\>= 
++((\≤ 
++((\≥ 
++((\div 
++((\mod 
++((\% 
++((\ioWorld 
++((\ioValue 
++((\liftIO 
++((\lift 
++((\runIOxx 
++((\; 
++((\implies? 
++((\equivalent? 
++((\take 
++((\drop 
++((\rangeLL 
++((\rangeLL 
++((\range 
++((\range1 
++((\zipBy 
++((\zip 
++((\length 
++((\filter 
++((\toBool 
++((\mergeBy 
++((\mergeBy 
++((\mergeBy 
++((\mergeBy 
++((\mergeBy 
++((\mergeBy 
++((\mergeSortBy 
++((\mergeSortBy 
++((\mergeSort 
++((\factorial 
++((\merge 
++((\assq 
++((\assq 
++((\assq 
++((\assq 
++((\dispatchModulexxx 
++((\POSIX 
++((\return 
++((\. 
++((\. 
++((\run 
++((\OS 
++((\POSIX 
++((\OS 
++((\f 
++((\sin 
++((\sin 
++((\sin 
++((\pi 
++((\cos 
++((\cos 
++((\π 
++((\tan 
++((\tan 
++((\sin 
++((\cos 
++((\tan 
++((\sin 
++((\sin 
++((\sin 
++((\sin 
++((\cos 
++((\cos 
++((\cos 
++((\cos 
++((\cos 
++((\tan 
++((\enumerate 
++((\repeat 
++((\abs 
++((\within 
++((\next 
++((\sqrt 
++((\repeat 
++((\sqrt 
++(((sqrt 1) 0.001) 9)) (\a0 
++(\eps 
++(\N 
++((within eps) ((repeat (next N)) a0))))))) (\f 
++(rec (\repeat 
++(\a 
++((: a) (repeat (f a))))))))) (\a0 
++(\eps 
++(\N 
++((within eps) ((repeat (next N)) a0))))))) (\N 
++(\x 
++((/ ((+ x) ((/ N) x))) 2))))) (\eps 
++(rec (\within 
++(\list 
++((\a 
++((\b 
++(((if ((<= (abs ((- a) b))) eps)) b) (within ((: b) (tail (tail list)))))) (head (tail list)))) (head list)))))))) (\x 
++(((if ((<= x) 0)) ((- 0) x)) x)))) (\f 
++(rec (\repeat 
++(\a 
++(((: a) (repeat (f a))) (\f 
++(rec (\repeat 
++(\a 
++((: a) (repeat (f a)))))))))))))) (\list 
++((zip (((range 0) (length list)) 1)) list)))) (\x 
++((/ (sin x)) (cos x))))) (\xx 
++((\x 
++((\cos 
++(((if ((>= x) pi)) ((- 0) (cos ((% x) pi)))) (cos x))) (\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))))) ((% xx) ((* 2) pi)))))) (\xx 
++((\x 
++((\cos 
++(((if ((>= x) pi)) ((- 0) (cos ((% x) pi)))) (cos x))) (\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))))) ((% xx) pi))))) (\xx 
++((\x 
++((\cos 
++(((if ((>= x) pi)) (cos ((% x) pi))) (cos x))) (\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))))) ((% xx) pi))))) (\xx 
++((\x 
++((\cos 
++(((if ((>= x) pi)) ((- 0) (cos ((% x) pi)))) (cos x))) (\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))))) ((% xx) pi))))) (\xx 
++((\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))) ((% xx) pi))))) (\xx 
++((\sin 
++((\x 
++(((if ((>= x) pi)) ((- 0) (sin ((% x) pi)))) (sin x))) ((% xx) ((* 2) pi)))) (\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))))))) (\xx 
++((\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))) ((% xx) ((* 2.0) pi)))))) (\xx 
++((\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))) ((% xx) pi))))) (\xx 
++((\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))) xx)))) (\x 
++((/ (sin x)) (cos x))))) (\xx 
++((\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))) ((% xx) ((* 2) pi)))))) (\xx 
++((\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))) ((% xx) ((* 2) pi)))))) (\x 
++(tan ((% x) ((* 2) pi)))))) (\x 
++((/ (sin x)) (cos x))))) 3.141593)) (\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))))) (\x 
++((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))))) 3.141593)) (\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))))) (\x 
++((+ ((+ ((+ x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))))) (\x 
++((+ ((+ x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))))) (\x 
++((* x) x)))) (requireModule "/usr/share/5D/OS/init.5D"))) (requireModule "/usr/share/5D/POSIX/init.5D"))) (requireModule "/usr/share/5D/OS/init.5D"))) runIO)) (\a 
++(\b 
++(a b))))) ')) (\v 
++(\world 
++((: v) ((: world) nil)))))) (requireModule "/usr/share/5D/POSIX/POSIX.5D"))) (\list 
++(\key 
++((| ((| ((assq key) list)) tail)) head))))) (\key 
++(rec (\assq 
++(\alist 
++(($ ((if (nil? alist)) nil)) (($ (((else if) ((symbolsEqual? (head (head alist))) key)) (head alist))) (else (assq (tail alist))))))))))) (\key 
++(rec (\assq 
++(\alist 
++(($ ((if (nil? alist)) nil)) (($ (((else if) ((symbolsEqual? (head alist)) key)) (head alist))) (else (assq (tail alist))))))))))) (\key 
++(rec (\assq 
++(\alist 
++(($ ((if (nil? alist)) nil)) (($ (((else if) ((symbolsEqual? (head alist)) key)) (head alist))) ((else assq) (tail alist)))))))))) (\key 
++(rec (\assq 
++(\alist 
++(($ ((if (nil? alist)) nil)) (($ ((if ((symbolsEqual? (head assq)) key)) (head assq))) (assq (tail alist)))))))))) (mergeBy <=))) (rec (\fac 
++(\v 
++(((if ((= v) 0)) 1) ((* v) (fac ((- v) 1))))))))) (mergeSortBy <=))) (\lessEqualComparator 
++(rec (\mergeSortBy 
++(\list 
++(($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeBy) lessEqualComparator) (mergeSortBy ((take ((div (length list)) 2)) list))) (mergeSortBy ((drop ((div (length list)) 2)) list)))))))))) (\lessEqualComparator 
++(rec (\mergeSortBy 
++(\list 
++(($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeBy) lessEqualComparator) ((take ((div (length list)) 2)) list)) ((drop ((div (length list)) 2)) list))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (($ (((else if) ((&& (not (nil? l1))) ((lessEqualComparator (head l1)) (head l2)))) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (else ((: (head l2)) ((mergeBy l1) (tail l2)))))))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (($ (((else if) ((|| (nil? l1)) ((lessEqualComparator (head l1)) (head l2)))) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (else ((: (head l2)) ((mergeBy l1) (tail l2)))))))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (($ (((else if) ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (else ((: (head l2)) ((mergeBy l1) (tail l2)))))))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(((if ((&& (nil? l1)) (nil? l2))) nil) (((if (nil? l2)) ((: (head l1)) ((mergeBy (tail l1)) l2))) (((if ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((mergeBy (tail l1)) l2))) ((: (head l2)) ((mergeBy l1) (tail l2))))))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (($ (((else if) ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (else ((: (head l2)) ((mergeBy l1) (tail l2)))))))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) ((|| (nil? l2)) ((lessEqualComparator (head l1)) (head l2)))) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (else ((: (head l2)) ((mergeBy l1) (tail l2))))))))))))) (\v 
++(((if v) (' t)) (' f))))) (\f 
++(rec (\filter 
++(\list 
++(($ ((if (nil? list)) nil)) ((((else if) (f (head list))) ((: (head list)) (filter (tail list)))) (filter (tail list)))))))))) (rec (\length 
++(\list 
++(((if (nil? list)) 0) ((+ 1) (length (tail list))))))))) (zipBy (\x 
++(\y 
++((: x) ((: y) nil))))))) (\zipper 
++(rec (\zipBy 
++(\l1 
++(\l2 
++(($ ((if ((|| (nil? l1)) (nil? l2))) nil)) (else ((: ((zipper (head l1)) (head l2))) ((zipBy (tail l1)) (tail l2)))))))))))) (\beginning 
++(\end 
++(((rangeLL 1) end) beginning))))) (\beginning 
++(\end 
++(\step 
++(((rangeLL step) end) beginning)))))) (\step 
++(\end 
++(rec (\rangeLL 
++(\beginning 
++(((if ((<= step) ((- 0) 1))) (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step))))) (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))))))) (\step 
++(\end 
++(rec (\rangeLL 
++(\beginning 
++(((if ((<= step) ((- 0) 1))) (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step))))) (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))))))) (rec (\drop 
++(\count 
++(\list 
++(((if ((|| ((<= count) 0)) (nil? list))) list) ((drop ((- count) 1)) (tail list))))))))) (rec (\take 
++(\count 
++(\list 
++(((if ((|| ((<= count) 0)) (nil? list))) nil) ((: (head list)) ((take ((- count) 1)) (tail list)))))))))) (\a 
++(\b 
++((|| ((&& a) b)) ((&& (not a)) (not b))))))) (\a 
++(\b 
++((|| (not a)) b))))) (\m 
++(\ber 
++(\world 
++((\r 
++((ber (ioValue r)) (ioWorld r))) (m world))))))) (\m 
++(ioValue (id m))))) liftIO)) (\v 
++(\world 
++((: v) ((: world) nil)))))) (\m 
++(head m)))) (\m 
++(head (tail m))))) mod)) (\a 
++(\b 
++(head (tail ((divmod a) b))))))) (\a 
++(\b 
++(head ((divmod a) b)))))) >=)) <=)) (\a 
++(\b 
++((<= b) a))))) (\a 
++(\b 
++(not ((= a) b)))))) (\a 
++(\b 
++(b a))))) (\list 
++(((foldl (flip :)) nil) list)))) (\f 
++(rec (\foldl 
++(\v 
++(\list 
++(($ ((if (nil? list)) v)) (((else foldl) ((f v) (head list))) (tail list)))))))))) (\list 
++(((foldl (flip :)) nil) list)))) (\x 
++(((if ((= x) 0)) 1) 0)))) (\a 
++(\b 
++((&& ((<= a) b)) ((<= b) a)))))) (\a 
++(\b 
++(((foldr :) b) a))))) (\f 
++(\list 
++(((foldr ((compose :) f)) nil) list))))) (\f 
++(\g 
++(\x 
++(f (g x))))))) (\f 
++(rec (\foldl 
++(\v 
++(\list 
++(($ ((if (nil? list)) v)) (((else foldl) ((f (head list)) v)) (tail list)))))))))) (\f 
++(\v 
++(rec (\foldr 
++(\list 
++(($ ((if (nil? list)) v)) (((else f) (head list)) (foldr (tail list))))))))))) Y)) (\f 
++((\x 
++(f (x x))) (\x 
++(f (x x))))))) (flip <))) (\f 
++(\a 
++(\b 
++((f b) a)))))) (\a 
++(\b 
++((&& ((<= a) b)) (not ((<= b) a))))))) (\a 
++(\t 
++(\f 
++((a f) t)))))) (\a 
++(\b 
++(\t 
++(\f 
++((a t) ((b t) f)))))))) (\a 
++(\b 
++(\t 
++(\f 
++((a ((b t) f)) f))))))) (\a 
++(\b 
++(a b))))) id)) id)) (\f 
++f))) (\f 
++f))) errno)) archDepLibName)) duplicateRecord)) allocateRecord)) recordSize)) unpackRecord)) packRecord)) absolutePath?)) absolutePath)) requireSharedLibrary)) messageBox)) readline)) flush)) write)) stderr)) stdout)) stdin)) (\t 
++(\f 
++f)))))) (\#f 
++((\stdin 
++((\stdout 
++((\stderr 
++((\write 
++((\flush 
++((\readline 
++((\messageBox 
++((\requireSharedLibrary 
++((\absolutePath 
++((\absolutePath? 
++((\packRecord 
++((\unpackRecord 
++((\recordSize 
++((\allocateRecord 
++((\duplicateRecord 
++((\archDepLibName 
++((\errno 
++((\if 
++((\id 
++((\else 
++((\otherwise 
++((\$ 
++((\&& 
++((\|| 
++((\not 
++((\< 
++((\flip 
++((\> 
++((\Y 
++((\rec 
++((\foldr 
++((\foldl 
++((\compose 
++((\map 
++((\++ 
++((\= 
++((\δ 
++((\reverse 
++((\foldl 
++((\reverse 
++((\| 
++((\/= 
++((\>= 
++((\≤ 
++((\≥ 
++((\div 
++((\mod 
++((\% 
++((\ioWorld 
++((\ioValue 
++((\liftIO 
++((\lift 
++((\runIOxx 
++((\; 
++((\implies? 
++((\equivalent? 
++((\take 
++((\drop 
++((\rangeLL 
++((\rangeLL 
++((\range 
++((\range1 
++((\zipBy 
++((\zip 
++((\length 
++((\filter 
++((\toBool 
++((\mergeBy 
++((\mergeBy 
++((\mergeBy 
++((\mergeBy 
++((\mergeBy 
++((\mergeBy 
++((\mergeSortBy 
++((\mergeSortBy 
++((\mergeSort 
++((\factorial 
++((\merge 
++((\assq 
++((\assq 
++((\assq 
++((\assq 
++((\dispatchModulexxx 
++((\POSIX 
++((\return 
++((\. 
++((\. 
++((\run 
++((\OS 
++((\POSIX 
++((\OS 
++((\f 
++((\sin 
++((\sin 
++((\sin 
++((\pi 
++((\cos 
++((\cos 
++((\π 
++((\tan 
++((\tan 
++((\sin 
++((\cos 
++((\tan 
++((\sin 
++((\sin 
++((\sin 
++((\sin 
++((\cos 
++((\cos 
++((\cos 
++((\cos 
++((\cos 
++((\tan 
++((\enumerate 
++((\repeat 
++((\abs 
++((\within 
++((\next 
++((\sqrt 
++((\repeat 
++((\sqrt 
++(((sqrt 1) 0.001) 9)) (\a0 
++(\eps 
++(\N 
++((within eps) ((repeat (next N)) a0))))))) (\f 
++(rec (\repeat 
++(\a 
++((: a) (repeat (f a))))))))) (\a0 
++(\eps 
++(\N 
++((within eps) ((repeat (next N)) a0))))))) (\N 
++(\x 
++((/ ((+ x) ((/ N) x))) 2))))) (\eps 
++(rec (\within 
++(\list 
++((\a 
++((\b 
++(((if ((<= (abs ((- a) b))) eps)) b) (within ((: b) (tail (tail list)))))) (head (tail list)))) (head list)))))))) (\x 
++(((if ((<= x) 0)) ((- 0) x)) x)))) (\f 
++(rec (\repeat 
++(\a 
++(((: a) (repeat (f a))) (\f 
++(rec (\repeat 
++(\a 
++((: a) (repeat (f a)))))))))))))) (\list 
++((zip (((range 0) (length list)) 1)) list)))) (\x 
++((/ (sin x)) (cos x))))) (\xx 
++((\x 
++((\cos 
++(((if ((>= x) pi)) ((- 0) (cos ((% x) pi)))) (cos x))) (\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))))) ((% xx) ((* 2) pi)))))) (\xx 
++((\x 
++((\cos 
++(((if ((>= x) pi)) ((- 0) (cos ((% x) pi)))) (cos x))) (\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))))) ((% xx) pi))))) (\xx 
++((\x 
++((\cos 
++(((if ((>= x) pi)) (cos ((% x) pi))) (cos x))) (\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))))) ((% xx) pi))))) (\xx 
++((\x 
++((\cos 
++(((if ((>= x) pi)) ((- 0) (cos ((% x) pi)))) (cos x))) (\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))))) ((% xx) pi))))) (\xx 
++((\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))) ((% xx) pi))))) (\xx 
++((\sin 
++((\x 
++(((if ((>= x) pi)) ((- 0) (sin ((% x) pi)))) (sin x))) ((% xx) ((* 2) pi)))) (\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))))))) (\xx 
++((\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))) ((% xx) ((* 2.0) pi)))))) (\xx 
++((\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))) ((% xx) pi))))) (\xx 
++((\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))) xx)))) (\x 
++((/ (sin x)) (cos x))))) (\xx 
++((\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))) ((% xx) ((* 2) pi)))))) (\xx 
++((\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))) ((% xx) ((* 2) pi)))))) (\x 
++(tan ((% x) ((* 2) pi)))))) (\x 
++((/ (sin x)) (cos x))))) 3.141593)) (\x 
++((- ((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))) ((/ ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) 720))))) (\x 
++((+ ((- 1) ((/ ((* x) x)) 2))) ((/ ((* ((* ((* x) x)) x)) x)) 24))))) 3.141593)) (\x 
++((- ((+ ((- x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))))) (\x 
++((+ ((+ ((+ x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))) ((/ ((* ((* ((* ((* ((* ((* x) x)) x)) x)) x)) x)) x)) ((* ((* 120) 6)) 7)))))) (\x 
++((+ ((+ x) ((/ ((* ((* x) x)) x)) 6))) ((/ ((* ((* ((* ((* x) x)) x)) x)) x)) 120))))) (\x 
++((* x) x)))) (requireModule "/usr/share/5D/OS/init.5D"))) (requireModule "/usr/share/5D/POSIX/init.5D"))) (requireModule "/usr/share/5D/OS/init.5D"))) runIO)) (\a 
++(\b 
++(a b))))) ')) (\v 
++(\world 
++((: v) ((: world) nil)))))) (requireModule "/usr/share/5D/POSIX/POSIX.5D"))) (\list 
++(\key 
++((| ((| ((assq key) list)) tail)) head))))) (\key 
++(rec (\assq 
++(\alist 
++(($ ((if (nil? alist)) nil)) (($ (((else if) ((symbolsEqual? (head (head alist))) key)) (head alist))) (else (assq (tail alist))))))))))) (\key 
++(rec (\assq 
++(\alist 
++(($ ((if (nil? alist)) nil)) (($ (((else if) ((symbolsEqual? (head alist)) key)) (head alist))) (else (assq (tail alist))))))))))) (\key 
++(rec (\assq 
++(\alist 
++(($ ((if (nil? alist)) nil)) (($ (((else if) ((symbolsEqual? (head alist)) key)) (head alist))) ((else assq) (tail alist)))))))))) (\key 
++(rec (\assq 
++(\alist 
++(($ ((if (nil? alist)) nil)) (($ ((if ((symbolsEqual? (head assq)) key)) (head assq))) (assq (tail alist)))))))))) (mergeBy <=))) (rec (\fac 
++(\v 
++(((if ((= v) 0)) 1) ((* v) (fac ((- v) 1))))))))) (mergeSortBy <=))) (\lessEqualComparator 
++(rec (\mergeSortBy 
++(\list 
++(($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeBy) lessEqualComparator) (mergeSortBy ((take ((div (length list)) 2)) list))) (mergeSortBy ((drop ((div (length list)) 2)) list)))))))))) (\lessEqualComparator 
++(rec (\mergeSortBy 
++(\list 
++(($ ((if ((|| (nil? list)) (nil? (tail list)))) list)) ((((else mergeBy) lessEqualComparator) ((take ((div (length list)) 2)) list)) ((drop ((div (length list)) 2)) list))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (($ (((else if) ((&& (not (nil? l1))) ((lessEqualComparator (head l1)) (head l2)))) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (else ((: (head l2)) ((mergeBy l1) (tail l2)))))))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (($ (((else if) ((|| (nil? l1)) ((lessEqualComparator (head l1)) (head l2)))) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (else ((: (head l2)) ((mergeBy l1) (tail l2)))))))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (($ (((else if) ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (else ((: (head l2)) ((mergeBy l1) (tail l2)))))))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(((if ((&& (nil? l1)) (nil? l2))) nil) (((if (nil? l2)) ((: (head l1)) ((mergeBy (tail l1)) l2))) (((if ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((mergeBy (tail l1)) l2))) ((: (head l2)) ((mergeBy l1) (tail l2))))))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) (nil? l2)) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (($ (((else if) ((lessEqualComparator (head l1)) (head l2))) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (else ((: (head l2)) ((mergeBy l1) (tail l2)))))))))))))) (\lessEqualComparator 
++(rec (\mergeBy 
++(\l1 
++(\l2 
++(($ ((if ((&& (nil? l1)) (nil? l2))) nil)) (($ (((else if) ((|| (nil? l2)) ((lessEqualComparator (head l1)) (head l2)))) ((: (head l1)) ((mergeBy (tail l1)) l2)))) (else ((: (head l2)) ((mergeBy l1) (tail l2))))))))))))) (\v 
++(((if v) (' t)) (' f))))) (\f 
++(rec (\filter 
++(\list 
++(($ ((if (nil? list)) nil)) ((((else if) (f (head list))) ((: (head list)) (filter (tail list)))) (filter (tail list)))))))))) (rec (\length 
++(\list 
++(((if (nil? list)) 0) ((+ 1) (length (tail list))))))))) (zipBy (\x 
++(\y 
++((: x) ((: y) nil))))))) (\zipper 
++(rec (\zipBy 
++(\l1 
++(\l2 
++(($ ((if ((|| (nil? l1)) (nil? l2))) nil)) (else ((: ((zipper (head l1)) (head l2))) ((zipBy (tail l1)) (tail l2)))))))))))) (\beginning 
++(\end 
++(((rangeLL 1) end) beginning))))) (\beginning 
++(\end 
++(\step 
++(((rangeLL step) end) beginning)))))) (\step 
++(\end 
++(rec (\rangeLL 
++(\beginning 
++(((if ((<= step) ((- 0) 1))) (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step))))) (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))))))) (\step 
++(\end 
++(rec (\rangeLL 
++(\beginning 
++(((if ((<= step) ((- 0) 1))) (((if ((<= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step))))) (((if ((>= beginning) end)) nil) ((: beginning) (rangeLL ((+ beginning) step)))))))))))) (rec (\drop 
++(\count 
++(\list 
++(((if ((|| ((<= count) 0)) (nil? list))) list) ((drop ((- count) 1)) (tail list))))))))) (rec (\take 
++(\count 
++(\list 
++(((if ((|| ((<= count) 0)) (nil? list))) nil) ((: (head list)) ((take ((- count) 1)) (tail list)))))))))) (\a 
++(\b 
++((|| ((&& a) b)) ((&& (not a)) (not b))))))) (\a 
++(\b 
++((|| (not a)) b))))) (\m 
++(\ber 
++(\world 
++((\r 
++((ber (ioValue r)) (ioWorld r))) (m world))))))) (\m 
++(ioValue (id m))))) liftIO)) (\v 
++(\world 
++((: v) ((: world) nil)))))) (\m 
++(head m)))) (\m 
++(head (tail m))))) mod)) (\a 
++(\b 
++(head (tail ((divmod a) b))))))) (\a 
++(\b 
++(head ((divmod a) b)))))) >=)) <=)) (\a 
++(\b 
++((<= b) a))))) (\a 
++(\b 
++(not ((= a) b)))))) (\a 
++(\b 
++(b a))))) (\list 
++(((foldl (flip :)) nil) list)))) (\f 
++(rec (\foldl 
++(\v 
++(\list 
++(($ ((if (nil? list)) v)) (((else foldl) ((f v) (head list))) (tail list)))))))))) (\list 
++(((foldl (flip :)) nil) list)))) (\x 
++(((if ((= x) 0)) 1) 0)))) (\a 
++(\b 
++((&& ((<= a) b)) ((<= b) a)))))) (\a 
++(\b 
++(((foldr :) b) a))))) (\f 
++(\list 
++(((foldr ((compose :) f)) nil) list))))) (\f 
++(\g 
++(\x 
++(f (g x))))))) (\f 
++(rec (\foldl 
++(\v 
++(\list 
++(($ ((if (nil? list)) v)) (((else foldl) ((f (head list)) v)) (tail list)))))))))) (\f 
++(\v 
++(rec (\foldr 
++(\list 
++(($ ((if (nil? list)) v)) (((else f) (head list)) (foldr (tail list))))))))))) Y)) (\f 
++((\x 
++(f (x x))) (\x 
++(f (x x))))))) (flip <))) (\f 
++(\a 
++(\b 
++((f b) a)))))) (\a 
++(\b 
++((&& ((<= a) b)) (not ((<= b) a))))))) (\a 
++(\t 
++(\f 
++((a f) t)))))) (\a 
++(\b 
++(\t 
++(\f 
++((a t) ((b t) f)))))))) (\a 
++(\b 
++(\t 
++(\f 
++((a ((b t) f)) f))))))) (\a 
++(\b 
+ (a b))))) id)) id)) (\f 
+ f))) (\f 
+-f))) nil)
+\ No newline at end of file
++f))) errno)) archDepLibName)) duplicateRecord)) allocateRecord)) recordSize)) unpackRecord)) packRecord)) absolutePath?)) absolutePath)) requireSharedLibrary)) messageBox)) readline)) flush)) write)) stderr)) stdout)) stdin)))) nil)
+\ No newline at end of file
