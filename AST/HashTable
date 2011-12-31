@@ -23,9 +23,9 @@ struct ltstr {
 };
 
 //typedef std::unordered_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
-
 //typedef __gnu_cxx::hash_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
 typedef std::map<const char*, AST::Node*, ltstr, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
+// has no allocator: typedef khmap_t<const char*, AST::Node*, khashf_t, khasheq_t, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
 /*
 static AST::Node* listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
 	if(iter == endIter)
