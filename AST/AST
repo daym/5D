@@ -13,15 +13,17 @@ You should have received a copy of the GNU General Public License along with thi
 #include <gc/gc_allocator.h>
 #include <string.h>
 static inline char* GCx_strdup(const char* value) {
-//	char* result;
-//	result = (char*) GC_MALLOC_ATOMIC(strlen(value) + 1);
-//	memcpy(result, value, strlen(value) + 1);
-//	return(result);
-//	return(strdup(value));
 #ifdef USE_LD_WRAP
 	return(strdup(value));
 #else
+#ifdef GC_STRDUP
 	return(GC_STRDUP(value));
+#else
+	char* result;
+	result = (char*) GC_MALLOC_ATOMIC(strlen(value) + 1);
+	memcpy(result, value, strlen(value) + 1);
+	return(result);
+#endif
 #endif
 }
 
