@@ -91,7 +91,7 @@ Evaluators/Backtracker.o: Evaluators/Backtracker.cc Evaluators/Backtracker
 Evaluators/FFI.o: Evaluators/FFI.cc FFIs/Allocators Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation
 Evaluators/Modules.o: Evaluators/Modules.cc Evaluators/Modules Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation
 FFIs/POSIX.o: FFIs/POSIX.cc Evaluators/Builtins FFIs/FFIs Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Numbers/Integer Numbers/Real Evaluators/Operation
-Config/GTKConfig.o: Config/GTKConfig.cc Config/Config FFIs/Allocators
+Config/GTKConfig.o: Config/GTKConfig.cc Config/Config FFIs/Allocators AST/AST
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol Scanners/test-Scanner Scanners/test-MathParser
@@ -214,6 +214,10 @@ installgui:
 	install -m 755 -d $(DESTDIR)/usr
 	install -m 755 -d $(DESTDIR)/usr/bin
 	install -m 755 GUI/5D $(DESTDIR)/usr/bin/5D
+	install -m 755 -d $(DESTDIR)/usr/share
+	install -m 755 -d $(DESTDIR)/usr/share/doc
+	install -m 755 -d $(DESTDIR)/usr/share/doc/5D
+	install -m 644 doc/tips $(DESTDIR)/usr/share/doc/tips
 
 install: $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  && echo installgui )
 	install -m 755 -d $(DESTDIR)/usr
