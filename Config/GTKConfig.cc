@@ -97,7 +97,7 @@ bool Config_save(struct Config* config) {
 	return(true);
 }
 char* Config_get_environment_name(struct Config* config) {
-	return(config->environment_name ? GCx_strdup(config->environment_name) : NULL);
+	return(config->environment_name ? config->environment_name : NULL);
 }
 void Config_set_environment_name(struct Config* config, const char* value) {
 	config->environment_name = value ? GCx_strdup(value) : NULL;
