@@ -115,6 +115,7 @@ Messagebox custom buttons
 
 = GC =
 
+fix Shunting Yard deque?
 by default, make allocators use GC_uncollectable_malloc
 integer, float: allocate low-level detail so the GC knows?
 ./Numbers/BigUnsigned.cc:	Blk *subtractBuf = new Blk[size()];
