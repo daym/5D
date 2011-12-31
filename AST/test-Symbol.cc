@@ -14,7 +14,7 @@ You should have received a copy of the GNU General Public License along with thi
 static void gc_test(void) {
 	int i;
 	for(i = 0; i < 1000; ++i)
-		GC_malloc(1000);
+		GC_MALLOC(1000);
 }
 int main() {
 	using namespace AST;
