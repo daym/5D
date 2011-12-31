@@ -83,6 +83,10 @@ using namespace Evaluators;
 
 void REPL_clear(struct REPL* self) {
 	self->fTailEnvironment = self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier = NULL;
+	self->fEnvironmentCount = 0;
+	self->fEnvironmentNames.clear();
+	self->fEnvironmentTable.clear();
+	// TODO modules
 	REPL_init_builtins(self);
 }
 bool REPL_get_file_modified(struct REPL* self) {
@@ -167,7 +171,7 @@ char* REPL_get_output_buffer_text(struct REPL* self) {
 		count += 2 + HISTENT_BYTES(history[i]);
 	}
 	++count;
-	pos = buffer = (char*) GC_malloc_atomic(count);
+	pos = buffer = (char*) GC_MALLOC_ATOMIC(count);
 	for(int i = 0; i < history_length; ++i) {
 		strcpy(pos, history[i]->line);
 		pos += strlen(history[i]->line);
@@ -300,6 +304,7 @@ int main(int argc, char* argv[]) {
 	using namespace GUI;
 	const char* line;
 	GLibAllocator_init();
+	//GC_disable();
 	if(argc >= 1)
 		REPL_set_shared_dir_by_executable(argv[0]);
 	REPL = REPL_new();
