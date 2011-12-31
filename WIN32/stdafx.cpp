@@ -38,7 +38,7 @@ FILE* fmemopen(void* contents, size_t contents_length, const char* mode) {
 
 char* ToUTF8(const std::wstring& source) {
 	int count = WideCharToMultiByte(CP_UTF8, 0, source.c_str(), -1, NULL, 0, NULL, NULL);
-	char* result = (char*) GC_malloc_atomic(count);
+	char* result = (char*) GC_MALLOC_ATOMIC(count);
 	if(WideCharToMultiByte(CP_UTF8, 0, source.c_str(), -1, result, count, NULL, NULL) != count)
 		abort();
 	return(result);
@@ -46,7 +46,7 @@ char* ToUTF8(const std::wstring& source) {
 
 std::wstring FromUTF8(const char* source) {
 	int count = MultiByteToWideChar(CP_UTF8, 0, source, -1, NULL, 0);
-	WCHAR* result = (WCHAR*) GC_malloc_atomic(count * sizeof(WCHAR));
+	WCHAR* result = (WCHAR*) GC_MALLOC_ATOMIC(count * sizeof(WCHAR));
 	if(MultiByteToWideChar(CP_UTF8, 0, source, -1, result, count) != count)
 		abort();
 	return(result);
