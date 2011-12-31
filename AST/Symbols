@@ -107,6 +107,8 @@ extern AST::Symbol* Sdot;
 extern AST::Symbol* Sunarydash;
 extern AST::Symbol* Ssubstr;
 extern AST::Symbol* SstrUntilZero;
+extern AST::Symbol* Sintegral;
+extern AST::Symbol* Sroot;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

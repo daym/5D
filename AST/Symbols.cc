@@ -103,5 +103,7 @@ AST::Symbol* Sdot = AST::symbolFromStr(".");
 AST::Symbol* Sunarydash = AST::symbolFromStr("unary-");
 AST::Symbol* Ssubstr = AST::symbolFromStr("substr");
 AST::Symbol* SstrUntilZero = AST::symbolFromStr("strUntilZero");
+AST::Symbol* Sintegral = AST::symbolFromStr("∫");
+AST::Symbol* Sroot = AST::symbolFromStr("√");
 
 };
