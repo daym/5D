@@ -7,17 +7,20 @@
 static void* GCx_malloc(size_t size) {
 	return GC_MALLOC(size);
 }
+static void* GCx_malloc_atomic(size_t size) {
+	return GC_MALLOC_ATOMIC(size);
+}
 static void* GCx_realloc(void* p, size_t size) {
-	GC_gcollect();
+	//GC_gcollect();
 	return GC_REALLOC(p, size);
 }
 static void* GCx_calloc(size_t nmemb, size_t size) {
 	size_t sz = nmemb * size; // FIXME handle overflow here.
-	return(GCx_malloc(sz));
+	return(GC_MALLOC(sz));
 }
 static void GCx_free(void* p) {
-	memset(p, 0, GC_size(p));
-	//GC_free(p);
+	//memset(p, 0, GC_size(p));
+	GC_FREE(p);
 }
 static inline char* GCx_strdup(const char* value) {
 	char* result;
@@ -47,5 +50,5 @@ void GLibAllocator_init(void) {
 	g_mem_set_vtable(&vtable);
 */
 	// TODO move this into 5DLibs or even into FFIs/POSIX.cc , maybe
-	xmlGcMemSetup(GCx_free, GC_malloc, GC_malloc_atomic, GC_realloc, GCx_strdup);
+	xmlGcMemSetup(GCx_free, GCx_malloc, GCx_malloc_atomic, GCx_realloc, GCx_strdup);
 }
