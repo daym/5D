@@ -77,6 +77,8 @@ bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
 	AST::Node* tbtV = AST::makeApplication(tbtK, makeStr(buffer_text));
 	AST::Node* envK = AST::makeApplication(tbtV, Symbols::Senvironment);
 	AST::Node* envV = AST::makeApplication(envK, REPL_filter_environment(self, REPL_get_user_environment(self)));
+	std::string v = Evaluators::str(envV);
+	assert(strstr(v.c_str(), "\\divmod") == NULL);
 	AST::Node* sentinel = AST::makeApplication(envV, NULL);
 	Formatters::print_S_Expression(output_file, 0, 0, sentinel);
 	return(true);
@@ -132,6 +134,10 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 				if(value && value != Symbols::Snil)
 					assert(application_P(value));
 				REPL_set_environment(self, value);
+// GC_gcollect here and it works.
+	AST::Node* envV = AST::makeApplication(NULL, REPL_filter_environment(self, REPL_get_user_environment(self)));
+	std::string v = Evaluators::str(envV);
+	assert(strstr(v.c_str(), "\\divmod") == NULL);
 			}
 		}
 		fclose(input_file);
