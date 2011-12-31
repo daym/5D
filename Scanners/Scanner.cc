@@ -251,7 +251,17 @@ void Scanner::parse_unicode(int input) {
 				input_value = Symbols::Srightangle;
 				return;
 			}
-		} else { // E2 88 AB integral.
+		} else if(input == 0x88) {
+			input = increment_position(fgetc(input_file));
+			switch(input) {
+			case 0xAB: /* ∫ */
+				input_value = Symbols::Sintegral;
+				return;
+			case 0x9A: /* √ */
+				input_value = Symbols::Sroot;
+				return;
+			}
+		} else {
 			parse_symbol(input, 0xE2);
 			//raise_error("<expression>", input);
 			return;
