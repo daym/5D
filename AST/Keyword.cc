@@ -19,8 +19,10 @@ static AST::HashTable* keywords;
 /* TODO we can also just skip the whole map business for single-character names if we just return the character code instead of fumbling around (would have to make sure actual addresses are >255 then). 
    of course, str would then have to be global and we can't use the VMT anymore. Not sure whether it would be worth it. */
 Keyword* keywordFromStr(const char* name) {
-	if(keywords == NULL)
+	if(keywords == NULL) {
+		GC_INIT();
 		keywords = new AST::HashTable;
+	}
 	AST::HashTable::const_iterator iter = keywords->find(name);
 	if(iter != keywords->end()) {
 		return((Keyword*) iter->second);

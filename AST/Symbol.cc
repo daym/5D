@@ -18,8 +18,10 @@ static AST::HashTable* symbols;
 /* TODO we can also just skip the whole map business for single-character names if we just return the character code instead of fumbling around (would have to make sure actual addresses are >255 then). 
    of course, str would then have to be global and we can't use the VMT anymore. Not sure whether it would be worth it. */
 Symbol* symbolFromStr(const char* name) {
-	if(symbols == NULL)
+	if(symbols == NULL) {
+		GC_INIT();
 		symbols = new AST::HashTable();
+	}
 	AST::HashTable::const_iterator iter = symbols->find(name);
 	if(iter != symbols->end()) {
 		return((Symbol*) iter->second);
