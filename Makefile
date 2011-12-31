@@ -217,7 +217,7 @@ installgui:
 	install -m 755 -d $(DESTDIR)/usr/share
 	install -m 755 -d $(DESTDIR)/usr/share/doc
 	install -m 755 -d $(DESTDIR)/usr/share/doc/5D
-	install -m 644 doc/tips $(DESTDIR)/usr/share/doc/tips
+	install -m 644 doc/tips $(DESTDIR)/usr/share/doc/5D/tips
 
 install: $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  && echo installgui )
 	install -m 755 -d $(DESTDIR)/usr
