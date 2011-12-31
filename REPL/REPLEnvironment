@@ -494,6 +494,7 @@ void REPL_set_environment(struct REPL* self, EnvEntry* environment) {
 	self->fTailUserEnvironmentFrontier = NULL;
 	envEntrySetTail(self->fTailUserEnvironment, environment);
 	REPL_unfilter_environment(self, environment);
+	assert(self->fTailUserEnvironmentFrontier != NULL);
 }
 AST::Node* REPL_get_user_environment(struct REPL* self) {
 	if(self->fTailUserEnvironmentFrontier)
