@@ -164,7 +164,6 @@ AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
 	//    (define and similar)
 	return(operator_);
 }
-/*
 static AST::Node* macro_standin_operator(AST::Node* op1) {
 	AST::Cons* consOp1 = dynamic_cast<AST::Cons*>(op1);
 	if(consOp1 == NULL)
@@ -172,7 +171,6 @@ static AST::Node* macro_standin_operator(AST::Node* op1) {
 	AST::Node* operator_ = consOp1->head; 
 	return(operator_);
 }
-*/
 AST::Node* ShuntingYardParser::expand_macro(AST::Node* op1, AST::Node* suffix) {
 	AST::Cons* consOp1 = dynamic_cast<AST::Cons*>(op1);
 	if(consOp1 == NULL)
@@ -244,8 +242,13 @@ int ShuntingYardParser::get_operator_precedence(AST::Node* node) {
 }
 #define SCOPERANDS \
 	unsigned int prevOperandCount = fOperandCounts.top(); \
-	if(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen && fOperators.top() != Symbols::Sautoleftparen && !macro_standin_P(fOperators.top()) && fOperands.size() <= prevOperandCount) { /* well, there has been nothing interesting in the parentesized expression yet. */ \
-		fOperands.push(fOperators.top()); \
+	if(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen && fOperators.top() != Symbols::Sautoleftparen && (!macro_standin_P(fOperators.top()) || macro_standin_operator(fOperators.top()) == Symbols::Sunarydash) && fOperands.size() <= prevOperandCount) { /* well, there has been nothing interesting in the parentesized expression yet. */ \
+		AST::Node* operand = fOperators.top(); \
+		if(macro_standin_P(operand)) \
+			operand = macro_standin_operator(operand); \
+		if(operand == Symbols::Sunarydash) /* long standing tradition */ \
+			operand = Symbols::Sdash; \
+		fOperands.push(operand); \
 		fOperators.pop(); \
 	} else \
 
