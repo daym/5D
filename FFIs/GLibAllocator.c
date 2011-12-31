@@ -50,5 +50,5 @@ void GLibAllocator_init(void) {
 	g_mem_set_vtable(&vtable);
 */
 	// TODO move this into 5DLibs or even into FFIs/POSIX.cc , maybe
-	xmlGcMemSetup(GCx_free, GCx_malloc, GCx_malloc_atomic, GCx_realloc, GCx_strdup);
+	//xmlGcMemSetup(GCx_free, GCx_malloc, GCx_malloc_atomic, GCx_realloc, GCx_strdup);
 }
