@@ -1,6 +1,7 @@
 #ifndef __AST_HASH_TABLE_H
 #define __AST_HASH_TABLE_H
 #include <ext/hash_map>
+#include <map>
 #include <string.h>
 #include <gc/gc_allocator.h>
 #include "AST/AST"
@@ -15,7 +16,16 @@ struct eqstr {
 	}
 };
 
-typedef __gnu_cxx::hash_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
+struct ltstr {
+	bool operator()(const char* s1, const char* s2) const {
+		return strcmp(s1, s2) < 0;
+	}
+};
+
+//typedef std::unordered_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
+
+//typedef __gnu_cxx::hash_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
+typedef std::map<const char*, AST::Node*, ltstr, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
 /*
 static AST::Node* listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
 	if(iter == endIter)
