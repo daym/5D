@@ -21,6 +21,7 @@ struct eqstr {
 };
 
 typedef AST::Node* (jumper_t)(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end, AST::Node* options, AST::Node* world);
+// do NOT gc_allocate the following since it seems to have a bug:
 typedef __gnu_cxx::hash_map<const char*, jumper_t*, __gnu_cxx::hash<const char*>, eqstr> HashTable;
 };
 #include "FFIs/Trampolines"
