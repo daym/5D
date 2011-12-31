@@ -9,6 +9,7 @@
 #include "Scanners/MathParser"
 #include "AST/Symbols"
 #include "Evaluators/Operation"
+#include "FFIs/Allocators"
 
 namespace GUI {
 bool interrupted_P(void);

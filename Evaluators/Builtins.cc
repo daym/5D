@@ -17,6 +17,7 @@
 #include "FFIs/FFIs"
 #include "Numbers/Integer"
 #include "Evaluators/Operation"
+#include "FFIs/Allocators"
 
 namespace Evaluators {
 

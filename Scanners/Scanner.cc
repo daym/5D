@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/Keyword"
 #include "AST/Symbols"
 #include "Evaluators/Builtins"
+#include "FFIs/Allocators"
 
 /* parse_token() is the main function */
 

@@ -20,6 +20,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Numbers/Integer"
 #include "Numbers/Real"
 #include "Evaluators/Operation"
+#include "FFIs/Allocators"
 
 namespace Evaluators {
 using namespace AST;

@@ -37,6 +37,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/WindowIcon"
 #include "Scanners/OperatorPrecedenceList"
 #include "AST/HashTable"
+#include "FFIs/Allocators"
 
 #define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(REPL_handle_##name), self)
@@ -788,10 +789,10 @@ GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));
 }
 static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* destination) {
-	Formatters::Math::print(REPL_ensure_operator_precedence_list(self), stdout, 0, 0, node);
+	//Formatters::Math::print(REPL_ensure_operator_precedence_list(self), stdout, 0, 0, node);
 	//Formatters::print_S_Expression(stdout, 0, 0, node);
-	fprintf(stdout, "\n");
-	fflush(stdout);
+	//fprintf(stdout, "\n");
+	//fflush(stdout);
 
 	std::stringstream result;
 	result << "$ ";

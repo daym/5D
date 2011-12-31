@@ -16,7 +16,7 @@
 #include "REPL/REPL"
 #include "AST/Symbols"
 #include "AST/HashTable"
-#include "FFIs/GLibAllocator"
+#include "FFIs/Allocators"
 
 namespace GUI {
 bool interrupted_P(void) {
@@ -109,7 +109,7 @@ struct REPL* REPL_new(void) {
 
 }; /* end namespace */
 int main(int argc, char* argv[]) {
-	GLibAllocator_init();
+	Allocator_init();
 	if(argc >= 1)
 		REPL_set_shared_dir_by_executable(argv[0]);
 	Scanners::SExpressionParser parser;

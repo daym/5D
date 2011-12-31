@@ -8,6 +8,7 @@
 #include "GUI/GTKCompleter"
 #include "Scanners/MathParser"
 #include "AST/HashTable"
+#include "FFIs/Allocators"
 
 namespace REPLX {
 struct Completer {

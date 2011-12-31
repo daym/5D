@@ -25,7 +25,7 @@
 #include "AST/HashTable"
 #include "AST/AST"
 //#include "Config/Config"
-#include "FFIs/GLibAllocator"
+#include "FFIs/Allocators"
 
 namespace REPLX {
 
@@ -303,7 +303,7 @@ int main(int argc, char* argv[]) {
 	struct REPL* REPL;
 	using namespace GUI;
 	const char* line;
-	GLibAllocator_init();
+	Allocator_init();
 	//GC_disable();
 	if(argc >= 1)
 		REPL_set_shared_dir_by_executable(argv[0]);

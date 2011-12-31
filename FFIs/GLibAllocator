@@ -1,8 +1,0 @@
-#ifndef __GLIB_ALLOCATOR_H
-#define __GLIB_ALLOCATOR_H
-
-#ifdef __cplusplus
-extern "C" 
-#endif
-void GLibAllocator_init(void);
-#endif /* ndef __GLIB_ALLOCATOR_H */

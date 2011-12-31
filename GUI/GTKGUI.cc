@@ -9,7 +9,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/GTKREPL"
 #include "GUI/GTKView"
 #include "REPL/REPL"
-#include "FFIs/GLibAllocator"
+#include "FFIs/Allocators"
 
 using namespace GUI;
 
@@ -67,7 +67,7 @@ static GtkWindow* make_REPL_window(GtkWindow* parent, const char* source_file_na
 	return(GTK_WINDOW(REPL_get_widget(REPL)));
 }
 int main(int argc, char* argv[]) {
-	GLibAllocator_init();
+	Allocator_init();
 	if(argc >= 1)
 		REPL_set_shared_dir_by_executable(argv[0]);
 	/*GtkWindow* view;*/

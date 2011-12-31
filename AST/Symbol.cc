@@ -10,6 +10,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <string.h>
 #include "AST/Symbol"
 #include "AST/HashTable"
+#include "FFIs/Allocators"
 
 namespace AST {
 

@@ -11,6 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/Keyword"
 #include "AST/HashTable"
 #include "AST/AST"
+#include "FFIs/Allocators"
 
 namespace AST {
 
