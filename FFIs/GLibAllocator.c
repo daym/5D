@@ -3,6 +3,7 @@
 #include <string.h>
 #include <libxml/xmlmemory.h>
 #include "FFIs/GLibAllocator"
+#include "AST/AST"
 
 static void* GCx_malloc(size_t size) {
 	return GC_MALLOC(size);
@@ -21,12 +22,6 @@ static void* GCx_calloc(size_t nmemb, size_t size) {
 static void GCx_free(void* p) {
 	//memset(p, 0, GC_size(p));
 	GC_FREE(p);
-}
-static inline char* GCx_strdup(const char* value) {
-	char* result;
-	result = (char*) GC_MALLOC_ATOMIC(strlen(value) + 1);
-	memcpy(result, value, strlen(value) + 1);
-	return(result);
 }
 void GLibAllocator_init(void) {
 	g_thread_init(NULL);
