@@ -18,6 +18,9 @@ You should have received a copy of the GNU General Public License along with thi
 #include "FFIs/FFIs"
 #include "AST/Symbols"
 
+/* forgotten prototype in gc_pthread_redirects.h */
+extern "C" void * GC_dlopen(const char *path, int mode);
+
 namespace FFIs {
 using namespace Evaluators;
 
