@@ -427,7 +427,8 @@ void Scanner::parse_number_with_base(int input, int base) {
 		            (input >= 'a' && input <= 'z') ? 10 + (input - 'a') :
 		            -1;
 		if(digit == -1) {
-			ungetc(decrement_position(input), input_file);
+			if(input != ' ' && input != '\t')
+				ungetc(decrement_position(input), input_file);
 			break;
 		}
 		if(digit < 0 || digit >= base)

@@ -61,6 +61,7 @@ void test_error_expression(const char* source, const char* expected_text) {
 }
 
 int main() {
+	test_expression("#xFF + #x80", "((+ 255) 128)");
 	test_expression("(-)", "-");
 	test_expression("'f + 2", "((+ (' f)) 2)");
 	test_error_expression("()", "got <nothing>");
