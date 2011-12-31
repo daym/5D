@@ -989,7 +989,6 @@ bool REPL_confirm_close(struct REPL* self) {
 		file_name = Config_get_environment_name(self->fConfig);
 		dialog = (GtkDialog*) gtk_message_dialog_new(GTK_WINDOW(REPL_get_widget(self)), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, (GtkButtonsType) 0, "Environment has been modified. Save?\n%s", file_name ? file_name : "");
 		gtk_window_set_title(GTK_WINDOW(dialog), gtk_window_get_title(GTK_WINDOW(REPL_get_widget(self)))); /* yes, believe it or not, in some Window Managers, dialogs have their own title, defaulting to "Unnamed" */
-		g_free(file_name);
 		gtk_dialog_add_buttons(dialog, GTK_STOCK_GO_BACK, GTK_RESPONSE_CANCEL, gettext("Exit without Saving"), GTK_RESPONSE_CLOSE, GTK_STOCK_SAVE, GTK_RESPONSE_OK, NULL);
 		gtk_dialog_set_default_response(dialog, GTK_RESPONSE_OK);
 		{
