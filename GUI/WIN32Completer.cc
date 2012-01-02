@@ -5,6 +5,7 @@
 #include "Scanners/Scanner"
 #include "Scanners/MathParser"
 #include "AST/AST"
+#include "FFIs/Allocators"
 
 namespace REPLX {
 struct Completer : AST::Node {

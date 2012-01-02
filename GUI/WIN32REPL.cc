@@ -22,6 +22,7 @@
 #include "GUI/WIN32Completer"
 #include "Formatters/Math"
 #include <shellapi.h>
+#include "FFIs/Allocators"
 
 namespace GUI {
 bool interrupted_P(void) {
