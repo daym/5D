@@ -488,6 +488,35 @@ DEFINE_BINARY_OPERATION(SymbolEqualityChecker, addrsEqualA)
 DEFINE_FULL_OPERATION(ModuleDispatcher, return(dispatchModule(fn, argument));)
 DEFINE_SIMPLE_OPERATION(ModuleBoxMaker, AST::makeBox(reduce(argument), AST::makeApplication(&ModuleBoxMaker, reduce(argument))))
 
+static AST::Node* makeApplicationB(AST::Node* options, AST::Node* argument) {
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
+	AST::Node* operator_ = iter->second;
+	++iter;
+	AST::Node* operand = iter->second;
+	//++iter;
+	return(AST::makeApplication(operator_, operand));
+}
+static AST::Node* makeAbstractionB(AST::Node* options, AST::Node* argument) {
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
+	AST::Node* parameter = iter->second;
+	++iter;
+	AST::Node* body = iter->second;
+	//++iter;
+	return(AST::makeAbstraction(parameter, body));
+}
+
+DEFINE_FULL_OPERATION(ApplicationMaker, return(makeApplicationB(fn, argument)))
+DEFINE_SIMPLE_OPERATION(ApplicationP, AST::application_P(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(ApplicationOperatorGetter, AST::get_application_operator(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(ApplicationOperandGetter, AST::get_application_operand(reduce(argument)))
+
+DEFINE_FULL_OPERATION(AbstractionMaker, return(makeAbstractionB(fn, argument)))
+DEFINE_SIMPLE_OPERATION(AbstractionP, AST::abstraction_P(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(AbstractionParameterGetter, AST::get_abstraction_parameter(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(AbstractionBodyGetter, AST::get_abstraction_body(reduce(argument)))
+
 REGISTER_BUILTIN(Conser, 2, 0, AST::symbolFromStr(":"))
 REGISTER_BUILTIN(ConsP, 1, 0, AST::symbolFromStr("cons?"))
 REGISTER_BUILTIN(NilP, 1, 0, AST::symbolFromStr("nil?"))
@@ -510,6 +539,14 @@ REGISTER_BUILTIN(KeywordStr, 1, 0, AST::symbolFromStr("keywordStr"))
 REGISTER_BUILTIN(IORunner, 1, 0, AST::symbolFromStr("runIO"))
 REGISTER_BUILTIN(ModuleDispatcher, 2, 1, AST::symbolFromStr("dispatchModule"))
 REGISTER_BUILTIN(ModuleBoxMaker, 1, 0, AST::symbolFromStr("makeModuleBox"))
+REGISTER_BUILTIN(ApplicationMaker, (-2), 0, AST::symbolFromStr("makeApp"))
+REGISTER_BUILTIN(ApplicationP, 1, 0, AST::symbolFromStr("app?"))
+REGISTER_BUILTIN(ApplicationOperatorGetter, 1, 0, AST::symbolFromStr("appOperator"))
+REGISTER_BUILTIN(ApplicationOperandGetter, 1, 0, AST::symbolFromStr("appOperand"))
+REGISTER_BUILTIN(AbstractionMaker, (-1), 0, AST::symbolFromStr("makeAbst"))
+REGISTER_BUILTIN(AbstractionP, 1, 0, AST::symbolFromStr("abst?"))
+REGISTER_BUILTIN(AbstractionParameterGetter, 1, 0, AST::symbolFromStr("abstParam"))
+REGISTER_BUILTIN(AbstractionBodyGetter, 1, 0, AST::symbolFromStr("abstBody"))
 
 // FIXME make this GCable.
 CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument) {

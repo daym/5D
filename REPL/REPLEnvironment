@@ -422,6 +422,14 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("duplicateRecord"), &FFIs::RecordDuplicator);
 	REPL_add_builtin_method(self, AST::symbolFromStr("archDepLibName"), &Evaluators::ArchDepLibNameGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("errno"), &Evaluators::ErrnoGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("makeApp"), &Evaluators::ApplicationMaker);
+	REPL_add_builtin_method(self, AST::symbolFromStr("app?"), &Evaluators::ApplicationP);
+	REPL_add_builtin_method(self, AST::symbolFromStr("appOperator"), &Evaluators::ApplicationOperatorGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("appOperand"), &Evaluators::ApplicationOperandGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("makeAbst"), &Evaluators::AbstractionMaker);
+	REPL_add_builtin_method(self, AST::symbolFromStr("abst?"), &Evaluators::AbstractionP);
+	REPL_add_builtin_method(self, AST::symbolFromStr("abstParam"), &Evaluators::AbstractionParameterGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("abstBody"), &Evaluators::AbstractionBodyGetter);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }

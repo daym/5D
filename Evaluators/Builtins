@@ -53,6 +53,16 @@ DECLARE_SIMPLE_OPERATION(ModuleDispatcher)
 
 DECLARE_SIMPLE_OPERATION(ModuleBoxMaker)
 
+DECLARE_SIMPLE_OPERATION(ApplicationMaker)
+DECLARE_SIMPLE_OPERATION(ApplicationP)
+DECLARE_SIMPLE_OPERATION(ApplicationOperatorGetter)
+DECLARE_SIMPLE_OPERATION(ApplicationOperandGetter)
+
+DECLARE_SIMPLE_OPERATION(AbstractionMaker)
+DECLARE_SIMPLE_OPERATION(AbstractionP)
+DECLARE_SIMPLE_OPERATION(AbstractionParameterGetter)
+DECLARE_SIMPLE_OPERATION(AbstractionBodyGetter)
+
 typedef std::list<std::pair<AST::Keyword*, AST::Node*>, gc_allocator<std::pair<AST::Keyword*, AST::Node*> > > CXXArguments;
 /* WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
 CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument); /* non-keyword arguments will be at the FRONT */
