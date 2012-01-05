@@ -1,3 +1,9 @@
+5d (0.2.2) unstable; urgency=low
+
+  * add abstraction and application selectors.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Thu, 05 Jan 2012 12:13:00 +0100
+
 5d (0.2.1) unstable; urgency=low
 
   * rename IO monad functions to have IO in their name.
