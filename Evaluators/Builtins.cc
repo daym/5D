@@ -543,10 +543,10 @@ REGISTER_BUILTIN(ApplicationMaker, (-2), 0, AST::symbolFromStr("makeApp"))
 REGISTER_BUILTIN(ApplicationP, 1, 0, AST::symbolFromStr("app?"))
 REGISTER_BUILTIN(ApplicationOperatorGetter, 1, 0, AST::symbolFromStr("appOperator"))
 REGISTER_BUILTIN(ApplicationOperandGetter, 1, 0, AST::symbolFromStr("appOperand"))
-REGISTER_BUILTIN(AbstractionMaker, (-1), 0, AST::symbolFromStr("makeAbst"))
-REGISTER_BUILTIN(AbstractionP, 1, 0, AST::symbolFromStr("abst?"))
-REGISTER_BUILTIN(AbstractionParameterGetter, 1, 0, AST::symbolFromStr("abstParam"))
-REGISTER_BUILTIN(AbstractionBodyGetter, 1, 0, AST::symbolFromStr("abstBody"))
+REGISTER_BUILTIN(AbstractionMaker, (-1), 0, AST::symbolFromStr("makeFn"))
+REGISTER_BUILTIN(AbstractionP, 1, 0, AST::symbolFromStr("fn?"))
+REGISTER_BUILTIN(AbstractionParameterGetter, 1, 0, AST::symbolFromStr("fnParam"))
+REGISTER_BUILTIN(AbstractionBodyGetter, 1, 0, AST::symbolFromStr("fnBody"))
 
 // FIXME make this GCable.
 CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument) {

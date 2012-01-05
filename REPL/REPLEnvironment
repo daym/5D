@@ -426,10 +426,10 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("app?"), &Evaluators::ApplicationP);
 	REPL_add_builtin_method(self, AST::symbolFromStr("appOperator"), &Evaluators::ApplicationOperatorGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("appOperand"), &Evaluators::ApplicationOperandGetter);
-	REPL_add_builtin_method(self, AST::symbolFromStr("makeAbst"), &Evaluators::AbstractionMaker);
-	REPL_add_builtin_method(self, AST::symbolFromStr("abst?"), &Evaluators::AbstractionP);
-	REPL_add_builtin_method(self, AST::symbolFromStr("abstParam"), &Evaluators::AbstractionParameterGetter);
-	REPL_add_builtin_method(self, AST::symbolFromStr("abstBody"), &Evaluators::AbstractionBodyGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("makeFn"), &Evaluators::AbstractionMaker);
+	REPL_add_builtin_method(self, AST::symbolFromStr("fn?"), &Evaluators::AbstractionP);
+	REPL_add_builtin_method(self, AST::symbolFromStr("fnParam"), &Evaluators::AbstractionParameterGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("fnBody"), &Evaluators::AbstractionBodyGetter);
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }
