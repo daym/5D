@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sstream>
 #include <assert.h>
+#include <endian.h>
 #ifdef WIN32
 //typedef short uint16_t;
 #else
@@ -87,13 +88,46 @@ static size_t getAlignment(char c) {
 // TODO sub-records, arrays, endianness. pointers to other stuff.
 // at least: execv "ls" ["ls"]  with record packer "[p]"
 
-#define PACK_BUF(buffer) \
-	assert(sizeof(buffer) == size); \
-	char* b = (char*) &buffer; \
-	for(; size > 0; --size, ++b) \
-		sst << *b;
+static inline bool machineIntegerBigEndianP(void) /* TODO pure */ {
+#if __BYTE_ORDER  != __LITTLE_ENDIAN
+	return(true);
+#else
+	return(false);
+#endif
+}
+static inline bool machineFloatingPointBigEndianP(void) /* TODO pure */ {
+#if __BYTE_ORDER  != __LITTLE_ENDIAN
+	return(true);
+#else
+	return(false); /* FIXME actually default to float machine endianness */
+#endif
+}
+static inline bool machineNoneBigEndianP(void) /* TODO pure */{
+	return(false);
+}
 
-static inline size_t pack_atom_value(bool bBigEndian, char formatC, AST::Node* headNode, std::stringstream& sst) {
+enum ByteOrder {
+	MACHINE_BYTE_ORDER,
+	LITTLE_ENDIAN_BYTE_ORDER,
+	BIG_ENDIAN_BYTE_ORDER,
+};
+#define BIG_ENDIAN_BYTE_ORDER_P(type) (byteOrder == BIG_ENDIAN_BYTE_ORDER || (byteOrder == MACHINE_BYTE_ORDER && machine ## type ## BigEndianP()))
+
+#define PACK_BUF(type, buffer) \
+	assert(sizeof(buffer) == size); \
+	if(BIG_ENDIAN_BYTE_ORDER_P(type) != machine ## type ## BigEndianP()) { \
+		char* b = (char*) &buffer; \
+		b += size; \
+		for(--b; size > 0; --size, --b) \
+			sst << *b; \
+	} else { \
+		char* b = (char*) &buffer; \
+		for(; size > 0; --size, ++b) \
+			sst << *b; \
+	}
+
+
+static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST::Node* headNode, std::stringstream& sst) {
 	size_t size = getSize(formatC); 
 	uint64_t mask = ~0; 
 	uint64_t limit;
@@ -116,17 +150,17 @@ static inline size_t pack_atom_value(bool bBigEndian, char formatC, AST::Node* h
 		switch(formatC) {
 		case 'f': {
 			float result = Evaluators::get_native_float(headNode);
-			PACK_BUF(result)
+			PACK_BUF(FloatingPoint, result)
 			return(size);
 		}
 		case 'd': {
 			double result = Evaluators::get_native_double(headNode);
-			PACK_BUF(result)
+			PACK_BUF(FloatingPoint, result)
 			return(size);
 		}
 		case 'D': {
 			long double result = Evaluators::get_native_long_double(headNode);
-			PACK_BUF(result)
+			PACK_BUF(FloatingPoint, result)
 			return(size);
 		}
 		case 'z':
@@ -134,13 +168,13 @@ static inline size_t pack_atom_value(bool bBigEndian, char formatC, AST::Node* h
 			if(headNode == NULL)
 				throw Evaluators::EvaluationException("packRecord: that field cannot be nil");
 			void* result = Evaluators::get_native_pointer(headNode);
-			PACK_BUF(result)
+			PACK_BUF(None, result)
 			return(size);
 		}
 		case 'Z':
 		case 'P': {
 			void* result = headNode ? Evaluators::get_native_pointer(headNode) : NULL;
-			PACK_BUF(result)
+			PACK_BUF(None, result)
 			return(size);
 		}
 		default: {
@@ -157,7 +191,7 @@ static inline size_t pack_atom_value(bool bBigEndian, char formatC, AST::Node* h
 		std::string v = sst.str();
 		throw Evaluators::EvaluationException(v.c_str());
 	}
-	if(bBigEndian) {
+	if(BIG_ENDIAN_BYTE_ORDER_P(Integer)) {
 		int shift = 8 * size - 8;
 		for(size_t c = size; c > 0; --c, shift -= 8)
 			sst << (char) (((unsigned char) (value >> shift)) & 0xFF);
@@ -169,10 +203,8 @@ static inline size_t pack_atom_value(bool bBigEndian, char formatC, AST::Node* h
 	}
 	return(size);
 }
-static inline bool machineBigEndianP(void) /* TODO pure */ {
-	return(false); /* FIXME actually default to machine endianness */
-}
-void Record_pack(bool bBigEndian, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst) {
+
+void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst) {
 	size_t new_offset = 0;
 	if(formatStr == NULL)
 		return;
@@ -185,11 +217,11 @@ void Record_pack(bool bBigEndian, size_t& position /* in format Str */, size_t& 
 			break;
 		if(formatC == '<' || formatC == '>' || formatC == '=') {
 			if(formatC == '<')
-				bBigEndian = false;
+				byteOrder = LITTLE_ENDIAN_BYTE_ORDER;
 			else if(formatC == '>')
-				bBigEndian = true;
+				byteOrder = BIG_ENDIAN_BYTE_ORDER;
 			else
-				bBigEndian = machineBigEndianP();
+				byteOrder = MACHINE_BYTE_ORDER;
 			continue;
 		}
 		if(consNode == NULL)
@@ -203,7 +235,7 @@ void Record_pack(bool bBigEndian, size_t& position /* in format Str */, size_t& 
 			for(AST::Cons* consNode = Evaluators::evaluateToCons(headNode); consNode; consNode = Evaluators::evaluateToCons(Evaluators::reduce(consNode->tail))) {
 				subPosition = position;
 				AST::Node* headNode = Evaluators::reduce(consNode->head);
-				Record_pack(bBigEndian, subPosition, offset, formatStr, headNode, sst);
+				Record_pack(byteOrder, subPosition, offset, formatStr, headNode, sst);
 			}
 			position = subPosition;
 			format = ((const char*) formatStr->native) + position;
@@ -212,7 +244,7 @@ void Record_pack(bool bBigEndian, size_t& position /* in format Str */, size_t& 
 			new_offset = (offset + align - 1) & ~(align - 1);
 			for(; offset < new_offset; ++offset)
 				sst << '\0';
-			size_t size = pack_atom_value(bBigEndian, formatC, headNode, sst);
+			size_t size = pack_atom_value(byteOrder, formatC, headNode, sst);
 			offset += size;
 /*
 long long get_native_long_long(AST::Node* root);
@@ -226,9 +258,9 @@ double get_native_double(AST::Node* root);
 		}
 	}
 }
-#define DECODE_BUF(destination) \
+#define DECODE_BUF(type, destination) \
 	unsigned char* d = (unsigned char*) &destination; \
-	if(bBigEndian != machineBigEndianP()) { \
+	if(BIG_ENDIAN_BYTE_ORDER_P(type) != machine ## type ## BigEndianP()) { \
 		d += size; \
 		for(--d; size > 0; --size, ++codedData, --d) \
 			*d = *codedData; \
@@ -246,90 +278,90 @@ static AST::Node* skipApplications(AST::Node* app, size_t count) {
 	}
 	return(app);
 }
-static inline AST::Node* decode(bool bBigEndian, AST::Node* repr, size_t reprOffset, char formatC, const unsigned char* codedData, size_t size) {
+static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_t reprOffset, char formatC, const unsigned char* codedData, size_t size) {
 	switch(formatC) {
 	case 'b':
 		{
 			char value;
-			DECODE_BUF(value)
+			DECODE_BUF(Integer, value)
 			return(Numbers::internNative((Numbers::NativeInt) value));
 		}
 	case 'h':
 		{
 			short value;
-			DECODE_BUF(value)
+			DECODE_BUF(Integer, value)
 			return(Numbers::internNative((Numbers::NativeInt) value));
 		}
 	case 'i':
 		{
 			int value;
-			DECODE_BUF(value)
+			DECODE_BUF(Integer, value)
 			return(Numbers::internNative((Numbers::NativeInt) value));
 		}
 	case 'l':
 		{
 			long value;
-			DECODE_BUF(value)
+			DECODE_BUF(Integer, value)
 			return(Numbers::internNative((Numbers::NativeInt) value)); // FIXME size
 		}
 	case 'B':
 		{
 			unsigned char value;
-			DECODE_BUF(value)
+			DECODE_BUF(Integer, value)
 			return(Numbers::internNative((Numbers::NativeInt) value));
 		}
 	case 'H':
 		{
 			unsigned short value;
-			DECODE_BUF(value)
+			DECODE_BUF(Integer, value)
 			return(Numbers::internNative((Numbers::NativeInt) value));
 		}
 	case 'I':
 		{
 			unsigned int value;
-			DECODE_BUF(value)
+			DECODE_BUF(Integer, value)
 			return(Numbers::internNative((Numbers::NativeInt) value));
 		}
 	case 'L':
 		{
 			unsigned long value;
-			DECODE_BUF(value)
+			DECODE_BUF(Integer, value)
 			return(Numbers::internNative((Numbers::NativeInt) value));
 		}
 	case 'q':
 		{
 			long long value;
-			DECODE_BUF(value)
+			DECODE_BUF(Integer, value)
 			return(Numbers::internNative((Numbers::NativeInt) value)); // FIXME larger
 		}
 	case 'Q':
 		{
 			unsigned long long value;
-			DECODE_BUF(value)
+			DECODE_BUF(Integer, value)
 			return(Numbers::internNative((Numbers::NativeInt) value)); // FIXME larger
 		}
 	case 'f':
 		{
 			float value;
-			DECODE_BUF(value)
+			DECODE_BUF(FloatingPoint, value)
 			return(Numbers::internNative((Numbers::NativeFloat) value));
 		}
 	case 'd':
 		{
 			double value;
-			DECODE_BUF(value)
+			DECODE_BUF(FloatingPoint, value)
 			return(Numbers::internNative((Numbers::NativeFloat) value)); // FIXME larger
 		}
 	case 'D':
 		{
 			long double value;
-			DECODE_BUF(value)
+			DECODE_BUF(FloatingPoint, value)
 			return(Numbers::internNative((Numbers::NativeFloat) value)); // FIXME larger
 		}
 	case 'p':
 		{
 			void* value;
-			DECODE_BUF(value)
+			DECODE_BUF(None, value)
 			if(value == NULL)
 				throw Evaluators::EvaluationException("unpack: cannot decode NULL pointer (maybe use \"P\" ?)");
 			AST::Node* r = AST::makeApplication(AST::symbolFromStr("head"), skipApplications(repr, reprOffset));
@@ -338,7 +370,7 @@ static inline AST::Node* decode(bool bBigEndian, AST::Node* repr, size_t reprOff
 	case 'P':
 		{
 			void* value;
-			DECODE_BUF(value)
+			DECODE_BUF(None, value)
 			if(value == NULL)
 				return(NULL);
 			else {
@@ -349,7 +381,7 @@ static inline AST::Node* decode(bool bBigEndian, AST::Node* repr, size_t reprOff
 	case 'z':
 		{
 			char* value;
-			DECODE_BUF(value)
+			DECODE_BUF(None, value)
 			if(value == NULL)
 				throw Evaluators::EvaluationException("unpack: cannot decode NULL pointer (maybe use \"P\" ?)");
 			return(AST::makeStr(value));
@@ -357,7 +389,7 @@ static inline AST::Node* decode(bool bBigEndian, AST::Node* repr, size_t reprOff
 	case 'Z':
 		{
 			char* value;
-			DECODE_BUF(value)
+			DECODE_BUF(None, value)
 			if(value == NULL)
 				return(NULL);
 			else {
@@ -382,7 +414,7 @@ static AST::Node* tailtailtail(AST::Node* suffix, size_t count) {
 }
 
 // TODO record unpacker for "[p]"
-AST::Node* Record_unpack(bool bBigEndian, AST::Str* formatStr, AST::Box* dataStr) {
+AST::Node* Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box* dataStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("unpackRecord needs format string.");
 	AST::Node* repr = AST::makeApplication(AST::makeApplication(&RecordUnpacker, formatStr), dataStr);
@@ -412,11 +444,11 @@ AST::Node* Record_unpack(bool bBigEndian, AST::Str* formatStr, AST::Box* dataStr
 		char formatC = *format;
 		if(formatC == '<' || formatC == '>' || formatC == '=') {
 			if(formatC == '<')
-				bBigEndian = false;
+				byteOrder = LITTLE_ENDIAN_BYTE_ORDER;
 			else if(formatC == '>')
-				bBigEndian = true;
+				byteOrder = BIG_ENDIAN_BYTE_ORDER;
 			else
-				bBigEndian = machineBigEndianP();
+				byteOrder = MACHINE_BYTE_ORDER;
 			continue;
 		}
 		size_t size = getSize(formatC);
@@ -429,7 +461,7 @@ AST::Node* Record_unpack(bool bBigEndian, AST::Str* formatStr, AST::Box* dataStr
 		offset = new_offset;
 		if(remainderLen < size)
 			throw Evaluators::EvaluationException("unpackRecord: not enough coded data for format.");
-		AST::Cons* n = AST::makeCons(decode(bBigEndian, repr, resultCount - resultOffset, formatC, codedData, size), NULL);
+		AST::Cons* n = AST::makeCons(decode(byteOrder, repr, resultCount - resultOffset, formatC, codedData, size), NULL);
 		if(!tail)
 			result = n;
 		else
@@ -496,7 +528,7 @@ static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	std::stringstream sst;
 	size_t position = 0;
 	size_t offset = 0;
-	Record_pack(machineBigEndianP(), position, offset, dynamic_cast<AST::Str*>(a), b, sst);
+	Record_pack(MACHINE_BYTE_ORDER, position, offset, dynamic_cast<AST::Str*>(a), b, sst);
 	std::string v = sst.str();
 	return(AST::makeStrCXX(v));
 }
@@ -506,7 +538,7 @@ static AST::Node* unpack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	// TODO size
-	return(Record_unpack(machineBigEndianP(), dynamic_cast<AST::Str*>(a), dynamic_cast<AST::Box*>(b)));
+	return(Record_unpack(MACHINE_BYTE_ORDER, dynamic_cast<AST::Str*>(a), dynamic_cast<AST::Box*>(b)));
 }
 DEFINE_BINARY_OPERATION(RecordUnpacker, unpack)
 REGISTER_BUILTIN(RecordUnpacker, 2, 0, AST::symbolFromStr("unpackRecord"))
