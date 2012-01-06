@@ -93,7 +93,7 @@ static size_t getAlignment(char c) {
 	for(; size > 0; --size, ++b) \
 		sst << *b;
 
-static inline size_t pack_atom_value(char formatC, AST::Node* headNode, std::stringstream& sst) {
+static inline size_t pack_atom_value(bool bBigEndian, char formatC, AST::Node* headNode, std::stringstream& sst) {
 	size_t size = getSize(formatC); 
 	uint64_t mask = ~0; 
 	uint64_t limit;
@@ -157,16 +157,23 @@ static inline size_t pack_atom_value(char formatC, AST::Node* headNode, std::str
 		std::string v = sst.str();
 		throw Evaluators::EvaluationException(v.c_str());
 	}
-	for(size_t c = size; c > 0; --c) {
-		sst << (char) (((unsigned char) value) & 0xFF);
-		value >>= 8;
+	if(bBigEndian) {
+		int shift = 8 * size - 8;
+		for(size_t c = size; c > 0; --c, shift -= 8)
+			sst << (char) (((unsigned char) (value >> shift)) & 0xFF);
+	} else {
+		for(size_t c = size; c > 0; --c) {
+			sst << (char) (((unsigned char) value) & 0xFF);
+			value >>= 8;
+		}
 	}
 	return(size);
 }
-
-void Record_pack(size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst) {
+static inline bool machineBigEndianP(void) /* TODO pure */ {
+	return(false); /* FIXME actually default to machine endianness */
+}
+void Record_pack(bool bBigEndian, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst) {
 	size_t new_offset = 0;
-	bool bBigEndian = false;
 	if(formatStr == NULL)
 		return;
 	AST::Cons* consNode = Evaluators::evaluateToCons(data);
@@ -176,8 +183,15 @@ void Record_pack(size_t& position /* in format Str */, size_t& offset /* in outp
 		char formatC = *format;
 		if(formatC == ']')
 			break;
-		if(formatC == '<' || formatC == '>' || formatC == '=')
+		if(formatC == '<' || formatC == '>' || formatC == '=') {
+			if(formatC == '<')
+				bBigEndian = false;
+			else if(formatC == '>')
+				bBigEndian = true;
+			else
+				bBigEndian = machineBigEndianP();
 			continue;
+		}
 		if(consNode == NULL)
 			throw Evaluators::EvaluationException("packRecord: not enough data for format.");
 		AST::Node* headNode = Evaluators::reduce(consNode->head);
@@ -189,7 +203,7 @@ void Record_pack(size_t& position /* in format Str */, size_t& offset /* in outp
 			for(AST::Cons* consNode = Evaluators::evaluateToCons(headNode); consNode; consNode = Evaluators::evaluateToCons(Evaluators::reduce(consNode->tail))) {
 				subPosition = position;
 				AST::Node* headNode = Evaluators::reduce(consNode->head);
-				Record_pack(subPosition, offset, formatStr, headNode, sst);
+				Record_pack(bBigEndian, subPosition, offset, formatStr, headNode, sst);
 			}
 			position = subPosition;
 			format = ((const char*) formatStr->native) + position;
@@ -198,7 +212,7 @@ void Record_pack(size_t& position /* in format Str */, size_t& offset /* in outp
 			new_offset = (offset + align - 1) & ~(align - 1);
 			for(; offset < new_offset; ++offset)
 				sst << '\0';
-			size_t size = pack_atom_value(formatC, headNode, sst);
+			size_t size = pack_atom_value(bBigEndian, formatC, headNode, sst);
 			offset += size;
 /*
 long long get_native_long_long(AST::Node* root);
@@ -214,8 +228,13 @@ double get_native_double(AST::Node* root);
 }
 #define DECODE_BUF(destination) \
 	unsigned char* d = (unsigned char*) &destination; \
-	for(; size > 0; --size, ++codedData, ++d) \
-		*d = *codedData;
+	if(bBigEndian != machineBigEndianP()) { \
+		d += size; \
+		for(--d; size > 0; --size, ++codedData, --d) \
+			*d = *codedData; \
+	} else \
+		for(; size > 0; --size, ++codedData, ++d) \
+			*d = *codedData;
 
 static AST::Node* skipApplications(AST::Node* app, size_t count) {
 	for(; count > 0; --count) {
@@ -227,7 +246,7 @@ static AST::Node* skipApplications(AST::Node* app, size_t count) {
 	}
 	return(app);
 }
-static inline AST::Node* decode(AST::Node* repr, size_t reprOffset, char formatC, const unsigned char* codedData, size_t size) {
+static inline AST::Node* decode(bool bBigEndian, AST::Node* repr, size_t reprOffset, char formatC, const unsigned char* codedData, size_t size) {
 	switch(formatC) {
 	case 'b':
 		{
@@ -363,7 +382,7 @@ static AST::Node* tailtailtail(AST::Node* suffix, size_t count) {
 }
 
 // TODO record unpacker for "[p]"
-AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
+AST::Node* Record_unpack(bool bBigEndian, AST::Str* formatStr, AST::Box* dataStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("unpackRecord needs format string.");
 	AST::Node* repr = AST::makeApplication(AST::makeApplication(&RecordUnpacker, formatStr), dataStr);
@@ -384,7 +403,6 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 	}
 	const unsigned char* codedData = (const unsigned char*) dataStr->native;
 	size_t remainderLen = dynamic_cast<AST::Str*>(dataStr) ? ((AST::Str*) dataStr)->size : 9999999; // FIXME
-	bool bBigEndian = false;
 	size_t offset = 0;
 	size_t new_offset = 0;
 	AST::Cons* result = NULL;
@@ -392,8 +410,15 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 	repr = tailtailtail(repr, resultCount);
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		char formatC = *format;
-		if(formatC == '<' || formatC == '>' || formatC == '=')
+		if(formatC == '<' || formatC == '>' || formatC == '=') {
+			if(formatC == '<')
+				bBigEndian = false;
+			else if(formatC == '>')
+				bBigEndian = true;
+			else
+				bBigEndian = machineBigEndianP();
 			continue;
+		}
 		size_t size = getSize(formatC);
 		size_t align = getAlignment(formatC);
 		new_offset = (offset + align - 1) & ~(align - 1);
@@ -404,7 +429,7 @@ AST::Node* Record_unpack(AST::Str* formatStr, AST::Box* dataStr) {
 		offset = new_offset;
 		if(remainderLen < size)
 			throw Evaluators::EvaluationException("unpackRecord: not enough coded data for format.");
-		AST::Cons* n = AST::makeCons(decode(repr, resultCount - resultOffset, formatC, codedData, size), NULL);
+		AST::Cons* n = AST::makeCons(decode(bBigEndian, repr, resultCount - resultOffset, formatC, codedData, size), NULL);
 		if(!tail)
 			result = n;
 		else
@@ -471,7 +496,7 @@ static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	std::stringstream sst;
 	size_t position = 0;
 	size_t offset = 0;
-	Record_pack(position, offset, dynamic_cast<AST::Str*>(a), b, sst);
+	Record_pack(machineBigEndianP(), position, offset, dynamic_cast<AST::Str*>(a), b, sst);
 	std::string v = sst.str();
 	return(AST::makeStrCXX(v));
 }
@@ -481,7 +506,7 @@ static AST::Node* unpack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	// TODO size
-	return(Record_unpack(dynamic_cast<AST::Str*>(a), dynamic_cast<AST::Box*>(b)));
+	return(Record_unpack(machineBigEndianP(), dynamic_cast<AST::Str*>(a), dynamic_cast<AST::Box*>(b)));
 }
 DEFINE_BINARY_OPERATION(RecordUnpacker, unpack)
 REGISTER_BUILTIN(RecordUnpacker, 2, 0, AST::symbolFromStr("unpackRecord"))
