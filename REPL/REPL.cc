@@ -135,9 +135,9 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 					assert(application_P(value));
 				REPL_set_environment(self, value);
 // GC_gcollect here and it works.
-	AST::Node* envV = AST::makeApplication(NULL, REPL_filter_environment(self, REPL_get_user_environment(self)));
-	std::string v = Evaluators::str(envV);
-	assert(strstr(v.c_str(), "\\divmod") == NULL);
+	//AST::Node* envV = AST::makeApplication(NULL, REPL_filter_environment(self, REPL_get_user_environment(self)));
+	//std::string v = Evaluators::str(envV);
+	//assert(strstr(v.c_str(), "\\divmod") == NULL);
 			}
 		}
 		fclose(input_file);
