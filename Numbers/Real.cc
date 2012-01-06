@@ -73,9 +73,15 @@ NativeFloat toNativeFloat(AST::Node* node, bool& B_ok) {
 	} else if((realNode = dynamic_cast<Real*>(node)) != NULL) {
 		//NativeFloat result = realNode->toNativeFloat();
 		//B_ok = true;
-		return(0.0f);
-	} else
-		return(0.0f);
+		return(0.0f); // FIXME
+	} else {
+		// only coerce integers to float if there is no information loss
+		NativeInt value = toNativeInt(node, B_ok);
+		NativeFloat result = (NativeFloat) value;
+		if((NativeInt) result != value)
+			B_ok = false;
+		return(result);
+	}
 }
 
 }; /* end namespace Numbers */
