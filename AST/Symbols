@@ -17,7 +17,7 @@ extern AST::Symbol* Snot;
 extern AST::Symbol* Scircumflex;
 extern AST::Symbol* SfloatP;
 extern AST::Symbol* SsymbolFromStr;
-extern AST::Symbol* Sdivmod;
+extern AST::Symbol* Sdivrem;
 extern AST::Symbol* Sin;
 extern AST::Symbol* Sapply;
 extern AST::Symbol* Sgreater;

@@ -385,7 +385,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, Symbols::Sdash, &Evaluators::Subtractor);
 	REPL_add_builtin_method(self, Symbols::Sasterisk, &Evaluators::Multiplicator);
 	REPL_add_builtin_method(self, Symbols::Sslash, &Evaluators::Divider);
-	REPL_add_builtin_method(self, Symbols::Sdivmod, &Evaluators::QModulator);
+	REPL_add_builtin_method(self, Symbols::Sdivrem, &Evaluators::QModulator2);
 	REPL_add_builtin_method(self, Symbols::Slessequal, &Evaluators::LEComparer);
 	REPL_add_builtin_method(self, Symbols::SfloatP, &Numbers::FloatP);
 	REPL_add_builtin_method(self, Symbols::SstrP, &Evaluators::StrP);
