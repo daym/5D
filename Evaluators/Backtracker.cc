@@ -69,7 +69,7 @@ int Backtracker_save_context(void) {
 }
 
 void restore_stack(cont *c,int once_more) {
-  long padding[12];
+	volatile long padding[12];
 	long tos;
 	int i,n;
 	/*
