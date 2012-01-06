@@ -177,19 +177,19 @@ static AST::Node* divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
 	Numbers::Integer q;
 	if((b.getSign() != Numbers::Integer::negative) ^ (a.getSign() != Numbers::Integer::negative)) {
 		b = -b;
-		r.divideWithRemainder(b, q);
-	} else {
-		r.divideWithRemainder(b, q);
 	}
 	/* TODO just use bit shifts for positive powers of two, if that's faster. */
 	r.divideWithRemainder(b, q);
 	return(AST::makeCons(toHeap(q), AST::makeCons(toHeap(r), NULL)));
 }
 static AST::Node* divremFloat(const Numbers::Float& a, const Numbers::Float& b) {
-	if(b.value == 0.0)
+	NativeFloat bvalue = b.value;
+	if((bvalue >= 0) ^ (a.value >= 0))
+		bvalue = -bvalue;
+	if(bvalue == 0.0)
 		throw EvaluationException("division by zero");
-	NativeFloat q = floorf(a.value / b.value);
-	NativeFloat r = a.value - q * b.value; // FIXME semantics for negative numbers.
+	NativeFloat q = floorf(a.value / bvalue);
+	NativeFloat r = a.value - q * bvalue;
 	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
 	//return(makeOperation(Symbols::Sdivrem, toHeap(a), toHeap(b)));
 }
