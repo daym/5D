@@ -88,18 +88,24 @@ static size_t getAlignment(char c) {
 // TODO sub-records, arrays, endianness. pointers to other stuff.
 // at least: execv "ls" ["ls"]  with record packer "[p]"
 
+#define FALLBACK_IS_BIG_ENDIAN (*(uint16_t *)"\0\xff" < 0x100)
+
 static inline bool machineIntegerBigEndianP(void) /* TODO pure */ {
-#if __BYTE_ORDER  != __LITTLE_ENDIAN
+#if __BYTE_ORDER  == __BIG_ENDIAN
 	return(true);
-#else
+#elif __BYTE_ORDER__ == __LITTLE_ENDIAN
 	return(false);
+#else
+	return(FALLBACK_IS_BIG_ENDIAN);
 #endif
 }
 static inline bool machineFloatingPointBigEndianP(void) /* TODO pure */ {
-#if __BYTE_ORDER  != __LITTLE_ENDIAN
+#if __BYTE_ORDER  == __BIG_ENDIAN
 	return(true);
+#elif __BYTE_ORDER__ == __LITTLE_ENDIAN
+	return(false);
 #else
-	return(false); /* FIXME actually default to float machine endianness */
+	return(FALLBACK_IS_BIG_ENDIAN);
 #endif
 }
 static inline bool machineNoneBigEndianP(void) /* TODO pure */{
