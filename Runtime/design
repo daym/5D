@@ -45,8 +45,8 @@ Note that some things can be = and /= compared, but NOT the others. Example: Com
 -
 /
 div
-divmod
-mod
+divrem
+rem
 
 The following things can be extras:
 - fractions.
