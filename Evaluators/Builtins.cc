@@ -160,15 +160,27 @@ static AST::Node* divremInt(const Numbers::Int& a, const Numbers::Int& b) {
 	if(b.value == 0)
 		throw EvaluationException("division by zero");
 	NativeInt q = a.value / b.value;
-	NativeInt r = a.value % b.value; // FIXME semantics for negative numbers.
+	NativeInt r = a.value % b.value;
+	// semantics for negative a or b are undefined, but in practise OK (gcc).
+	// Nevertheless, be a little bit paranoid:
+	if(r < 0)
+		r = -r;
+	if(a.value < 0)
+		r = -r;
 	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
 }
 static Integer integer00(0);
-static AST::Node* divremInteger(const Numbers::Integer& a, const Numbers::Integer& b) {
+static AST::Node* divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
 	if(b == integer00)
 		throw EvaluationException("division by zero");
 	Numbers::Integer r(a);
 	Numbers::Integer q;
+	if((b.getSign() != Numbers::Integer::negative) ^ (a.getSign() != Numbers::Integer::negative)) {
+		b = -b;
+		r.divideWithRemainder(b, q);
+	} else {
+		r.divideWithRemainder(b, q);
+	}
 	/* TODO just use bit shifts for positive powers of two, if that's faster. */
 	r.divideWithRemainder(b, q);
 	return(AST::makeCons(toHeap(q), AST::makeCons(toHeap(r), NULL)));
