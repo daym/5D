@@ -484,7 +484,6 @@ AST::Node* Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box
 size_t Record_get_size(AST::Str* formatStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("recordSize needs format string.");
-	const char* format = (const char*) formatStr->native;
 	size_t offset = 0;
 	size_t new_offset = 0;
 	size_t position = 0; // in format
@@ -503,7 +502,6 @@ size_t Record_get_size(AST::Str* formatStr) {
 bool Record_has_pointers(AST::Str* formatStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("recordSize needs format string.");
-	const char* format = (const char*) formatStr->native;
 	size_t position = 0; // in format
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=')
