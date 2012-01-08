@@ -1,10 +1,10 @@
-let Combinations = requireModule "Combinations" in 
+let Composition = requireModule "Composition" in 
 let Logic = requireModule "Logic" in 
-let ($) = Combinations.($) in 
-let compose = Combinations.compose in 
+let ($) = Composition.($) in 
+let compose = Composition.compose in 
 let if = Logic.if in 
 let else = Logic.else in 
-let rec = Combinations.rec in 
+let rec = Composition.rec in 
 let nil = [] in 
 let nil? = Builtins.nil? in 
 let head = Builtins.head in 
@@ -32,8 +32,8 @@ let zip = (zipBy (\x \y [x y])) in
 dispatchModule $
 [['nil nil]
 ['nil? nil?]
-[': :]
-['++ ++]
+['(:) (:)]
+['(++) (++)]
 ['map map]
 ['merge merge]
 ['mergeBy mergeBy]
@@ -52,5 +52,4 @@ dispatchModule $
 ['range1 range1]
 ['take take]
 ['zip zip]
-['zipBy zipBy]
-]
+['zipBy zipBy]]

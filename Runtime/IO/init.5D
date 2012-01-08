@@ -23,5 +23,4 @@ dispatchModule $
 ['runIO runIO]
 ['readline readline]
 ['write write]
-['errno errno]
-]
+['errno errno]]

@@ -105,5 +105,8 @@ AST::Symbol* Ssubstr = AST::symbolFromStr("substr");
 AST::Symbol* SstrUntilZero = AST::symbolFromStr("strUntilZero");
 AST::Symbol* Sintegral = AST::symbolFromStr("∫");
 AST::Symbol* Sroot = AST::symbolFromStr("√");
+AST::Symbol* Sa = AST::symbolFromStr("a");
+AST::Symbol* Sb = AST::symbolFromStr("b");
+AST::Symbol* SBuiltins = AST::symbolFromStr("Builtins");
 
 };

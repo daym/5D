@@ -12,5 +12,4 @@ dispatchModule $
 ['recordSize recordSize]
 ['unpackRecord unpackRecord]
 ['archDepLibName archDepLibName]
-['strUntilZero strUntilZero]
-]
+['strUntilZero strUntilZero]]

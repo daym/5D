@@ -98,6 +98,7 @@ use libffi (but: hello, Windows... sigh)
 Either don't throw C++ exceptions or actually represent them somehow when one is thrown while reducing.
 exception handling? ftp://ftp.cs.indiana.edu/pub/scheme-repository/doc/prop/exceptions.ss
 NaN handling (ugh...)
+put "describe" into module dispatcher.
 
 = Debugging Macros =
 

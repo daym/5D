@@ -18,5 +18,4 @@ dispatchModule $
 ['if if]
 ['not not]
 ['otherwise otherwise]
-['equivalent? equivalent?]
-]
+['equivalent? equivalent?]]

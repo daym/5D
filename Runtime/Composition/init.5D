@@ -13,5 +13,4 @@ dispatchModule $
 ['compose compose]
 ['flip flip]
 ['id id]
-['rec rec]
-]
+['rec rec]]

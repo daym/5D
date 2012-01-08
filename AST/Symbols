@@ -109,6 +109,9 @@ extern AST::Symbol* Ssubstr;
 extern AST::Symbol* SstrUntilZero;
 extern AST::Symbol* Sintegral;
 extern AST::Symbol* Sroot;
+extern AST::Symbol* Sa;
+extern AST::Symbol* Sb;
+extern AST::Symbol* SBuiltins;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

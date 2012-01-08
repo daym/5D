@@ -10,6 +10,7 @@
 #include "FFIs/UI"
 #include "FFIs/RecordPacker"
 #include "Evaluators/Modules"
+#include "REPL/BuiltinSelector"
 
 namespace GUI {
 };
@@ -283,7 +284,8 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	++iter;
 	assert(iter != arguments.end());
 	AST::Node* name = iter->second;
-	assert(symbol_P(name));
+	if(!symbol_P(name))
+		throw Evaluators::EvaluationException("import: expected symbol");
 	// TODO more options
 	AST::Node* fileNameNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("fileName:"));
 	AST::Node* body = REPL_import_module(options/*FIXME*/, fileNameNode ? fileNameNode : makeStr2(Evaluators::str(name)));
@@ -360,16 +362,21 @@ static void REPL_init_builtins(struct REPL* self) {
 		self->fTailUserEnvironment = self->fTailEnvironment;
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
 	}
+	REPLB::BuiltinSelector_init();
 	REPL_add_static_builtin_binding(self, Symbols::Squote, &Evaluators::Quoter); /* keep at the beginning */
+	REPL_add_static_builtin_binding(self, Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb)))); // TODO close
+	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
+	REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::Reducer);
+
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("REPL"), self);
 	REPL_add_static_builtin_binding(self, Symbols::Sdefine, uncurried(&RDefiner, self));
 	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &Evaluators::Quoter); // dummy
-	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
-	REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::Reducer);
 	REPL_add_static_builtin_binding(self, Symbols::Simport, uncurried(&RImporter, self));
 	REPL_add_static_builtin_binding(self, Symbols::SrequireModule, uncurried(&RModuleLoader, self));
 	REPL_add_builtin_method(self, Symbols::Sdescribe, uncurried(&RInformant, self));
-	// FIXME REPL_add_builtin_method(self, Symbols::SfromLibrary, FFIs::LibraryLoader);
+
+	REPL_add_builtin_method(self, Symbols::SBuiltins, AST::makeAbstraction(Symbols::Sa, AST::makeApplication(&REPLB::BuiltinGetter, Symbols::Sa))); // indirection in order to make cacheable.
+
 	REPL_add_static_builtin_binding(self, Symbols::Snil, NULL);
 	REPL_add_builtin_method(self, Symbols::Scolon, &Evaluators::Conser);
 	REPL_add_builtin_method(self, Symbols::SconsP, &Evaluators::ConsP);
@@ -393,7 +400,6 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_builtin_method(self, Symbols::SaddrsLEP, &Evaluators::AddrLEComparer);
 	REPL_add_builtin_method(self, Symbols::SsymbolsEqualP, &Evaluators::SymbolEqualityChecker);
 	REPL_add_builtin_method(self, Symbols::SkeywordP, &Evaluators::KeywordP);
-	//REPL_add_builtin_method(self, Symbols::StranslateFFI, &FFIs::ResultMarshaller);
 	REPL_add_builtin_method(self, Symbols::SsymbolFromStr, &Evaluators::SymbolFromStrGetter);
 	REPL_add_builtin_method(self, Symbols::SkeywordFromStr, &Evaluators::KeywordFromStrGetter);
 	REPL_add_builtin_method(self, Symbols::SstrFromKeyword, &Evaluators::KeywordStr);
