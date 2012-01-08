@@ -93,10 +93,11 @@ Reintroduce FALLBACK, i.e. tail [] shouldn't reduce.
 If there are open parens, ignore indentation (note that this is the LEXER and so it technically can't distinguish between quoted or macro braces and actual braces).
 sort exports
 Just representing Str as a Integer would be a lot less weird and automatically allow comparisons to work as one would expect. However, it's unconventional. However, this would only be fast for little-endian architectures (as BigUnsigned Blks are ordered LSB first). Moreover, I don't think that Strings are manipulated that often.
-quote operator printing?
 add atomic? flag to allocateRecord and duplicateRecord.
-struct packer: support big endian.
 use libffi (but: hello, Windows... sigh)
+Either don't throw C++ exceptions or actually represent them somehow when one is thrown while reducing.
+exception handling? ftp://ftp.cs.indiana.edu/pub/scheme-repository/doc/prop/exceptions.ss
+NaN handling (ugh...)
 
 = Debugging Macros =
 
