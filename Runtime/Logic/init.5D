@@ -2,14 +2,14 @@ let #t = Builtins.#t in
 let #f = Builtins.#f in 
 let (||) = (\a \b \t \f a t (b t f)) in 
 let (&&) = (\a \b \t \f a (b t f) f) in 
+let ($) = (\a \b a b) in 
+let not = (\a \t \f a f t) in 
 let implies? = (\a \b not a || b) in 
 let else = (\f f) in 
 let if = (\f f) in 
-let not = (\a \t \f a f t) in 
 let otherwise = (\f f) in 
 let equivalent? = (\a \b a && b || not a && not b) in 
-dispatchModule $
-[['#t #t]
+dispatchModule [['#t #t]
 ['#f #f]
 ['(||) (||)]
 ['(&&) (&&)]
