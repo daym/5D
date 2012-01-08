@@ -99,6 +99,7 @@ Either don't throw C++ exceptions or actually represent them somehow when one is
 exception handling? ftp://ftp.cs.indiana.edu/pub/scheme-repository/doc/prop/exceptions.ss
 NaN handling (ugh...)
 put "describe" into module dispatcher.
+make it possible to disable the searching for modules in the current directory!
 
 = Debugging Macros =
 
