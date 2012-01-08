@@ -1,3 +1,9 @@
+5d (0.3.1) unstable; urgency=low
+
+  * remove most globals from REPL
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 08 Jan 2012 20:18:00 +0100
+
 5d (0.3.0) unstable; urgency=low
 
   * extract standard library and add "Builtins" function.
