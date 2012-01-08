@@ -518,16 +518,25 @@ static AST::Node* makeAbstractionB(AST::Node* options, AST::Node* argument) {
 	//++iter;
 	return(AST::makeAbstraction(parameter, body));
 }
-
+static inline AST::Node* ensureApplication(AST::Node* node) {
+	if(!application_P(node))
+		throw EvaluationException("argument is not an application");
+	return(node);
+}
+static inline AST::Node* ensureAbstraction(AST::Node* node) {
+	if(!abstraction_P(node))
+		throw EvaluationException("argument is not an abstraction");
+	return(node);
+}
 DEFINE_FULL_OPERATION(ApplicationMaker, return(makeApplicationB(fn, argument)))
 DEFINE_SIMPLE_OPERATION(ApplicationP, AST::application_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(ApplicationOperatorGetter, AST::get_application_operator(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(ApplicationOperandGetter, AST::get_application_operand(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(ApplicationOperatorGetter, AST::get_application_operator(ensureApplication(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(ApplicationOperandGetter, AST::get_application_operand(ensureApplication(reduce(argument))))
 
 DEFINE_FULL_OPERATION(AbstractionMaker, return(makeAbstractionB(fn, argument)))
 DEFINE_SIMPLE_OPERATION(AbstractionP, AST::abstraction_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(AbstractionParameterGetter, AST::get_abstraction_parameter(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(AbstractionBodyGetter, AST::get_abstraction_body(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(AbstractionParameterGetter, AST::get_abstraction_parameter(ensureAbstraction(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(AbstractionBodyGetter, AST::get_abstraction_body(ensureAbstraction(reduce(argument))))
 
 REGISTER_BUILTIN(Conser, 2, 0, AST::symbolFromStr(":"))
 REGISTER_BUILTIN(ConsP, 1, 0, AST::symbolFromStr("cons?"))
