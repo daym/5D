@@ -505,6 +505,7 @@ runIO (puts "Hello world")
 </pre>
 <p>See the <a href="../programming/manual/index.html">5D Programming Manual</a> for more details.</p>
 <hr/>
+<a name="packRecord">
 <h3>packRecord \format \list</h3>
 <p>Packs the given list using the given format, resulting in a Box (or Str). Note that the result can be reused later. If you want to detach it, use <span class="pre">duplicateRecord</span> on the result.</p>
 <p>Possible format specifiers in the Format Str:</p>
@@ -525,13 +526,22 @@ runIO (puts "Hello world")
 <tr><td>P</td><td>pointer or nil</td></tr>
 <tr><td>[</td><td>array of the following</td></tr>
 </table>
+<p>The format string can contain endian control characters. The tail of the format string starting at the endian control character will be encoded using the given endianness.</p>
+<p>These are:</p>
+<table border="1">
+<tr><th>Character</th><th>Meaning</th></tr>
+<tr><td>=</td><td>use machine native endian</td></tr>
+<tr><td>&gt;</td><td>use big endian</td></tr>
+<tr><td>&lt;</td><td>use little endian</td></tr>
+</table>
 <p>Example:</p>
 <pre>
 packRecord "ii" [1 2] =&gt; "\x01\x00\x00\x00\x02\x00\x00\x00"
 </pre>
+</a>
 <hr/>
 <h3>unpackRecord \format \box</h3>
-<p>Unpacks the given box using the given format, resulting in a List.</p>
+<p>Unpacks the given box using the given format, resulting in a List. See <a href="#packRecord">packRecord</a> for details.</p>
 <p>Example:</p>
 <pre>
 unpackRecord "ii" "\x01\x00\x00\x00\x02\x00\x00\x00" =&gt; [1 2]
