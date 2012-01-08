@@ -17,5 +17,5 @@ def getNames(n):
 	return(sets.Set(result))
 
 l = ["['%s %s]" % (n, n) for n in getNames(sys.argv[1])]
-print "dispatchModule $"		
+print "dispatchModule ",
 print "[" + ("\n".join(l)) + "]"
