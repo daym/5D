@@ -275,7 +275,21 @@ DEFINE_REPL_OPERATION(RImporter, {
 static inline AST::Str* makeStr2(std::string v) {
 	return(AST::makeStr(v.c_str()));
 }
+static AST::HashTable setFromList(AST::Node* listNode) {
+	AST::HashTable result;
+	std::cout << "listNode" << (listNode ? "not nil" : "nil") << std::endl;
+	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
+		AST::Symbol* name = dynamic_cast<AST::Symbol*>(node->head);
+		std::cout << Evaluators::str(name) << std::endl;
+		// TODO error handling
+		if(name)
+			result[GC_strdup(name->name)] = NULL;
+	}
+	return(result);
+}
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
+	std::string vop = Evaluators::str(options);
+	std::cout << vop << std::endl;
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
 	assert(self);
@@ -286,24 +300,44 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	AST::Node* name = iter->second;
 	if(!symbol_P(name))
 		throw Evaluators::EvaluationException("import: expected symbol");
-	// TODO more options
+	for(Evaluators::CXXArguments::const_iterator iter = arguments.begin(), end = arguments.end(); iter != end; ++iter) {
+		std::cout << Evaluators::str(iter->first) << " " << Evaluators::str(iter->second) << std::endl;
+		std::cout << (iter->first == AST::keywordFromStr("fileName:") ? 'Y' : 'N') << std::endl;
+	}
 	AST::Node* fileNameNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("fileName:"));
+	std::cout << "filenamenode" << Evaluators::str(fileNameNode) << std::endl;
 	AST::Node* body = REPL_import_module(options/*FIXME*/, fileNameNode ? fileNameNode : makeStr2(Evaluators::str(name)));
 	//body = Evaluators::annotate(body);
 	REPL_prepare(self, body);
 	//REPL_add_to_environment(self, name, body);
 
-	// TODO make it possible to limit imports (whitelist and blacklist)
+	// TODO make it possible to limit imports (use whitelist and blacklist)
+	AST::Node* whitelistN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("whitelist:"));
+	std::cout << Evaluators::str(whitelistN) << std::endl;
+	AST::HashTable whitelist = setFromList(whitelistN);
+	AST::Node* blacklistN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("blacklist:"));
+	AST::HashTable blacklist = setFromList(blacklistN);
+	AST::Node* prefixN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("prefix:"));
+	char* prefix = prefixN ? Evaluators::get_native_string(prefixN) : NULL;
+
 	AST::Node* exports = Evaluators::reduce(AST::makeApplication(body, Symbols::Sexports));
+	AST::Cons* usedExports = NULL;
 	for(AST::Cons* node = Evaluators::evaluateToCons(exports); node; node = Evaluators::evaluateToCons(node->tail)) {
 		AST::Symbol* xname = dynamic_cast<AST::Symbol*>(node->head);
-		if(xname) {
+		if(xname && (whitelist.empty() || whitelist.find(xname->name) != whitelist.end()) && blacklist.find(xname->name) == blacklist.end()) {
 			AST::Node* xbody = AST::makeApplication(body, Evaluators::quote(xname));
 			//REPL_prepare(self, xbody);
+			if(prefix && prefix[0]) {
+				std::stringstream sst;
+				sst << prefix << xname->name;
+				std::string v = sst.str();
+				xname = AST::symbolFromStr(v.c_str());
+			}
 			REPL_add_to_environment(self, xname, xbody);
+			usedExports = AST::makeCons(xname, usedExports);
 		}
 	}
-	return(exports); // body can be too large
+	return(usedExports);
 }
 static AST::Node* REPL_define(AST::Node* options, AST::Node* argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
