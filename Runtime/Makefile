@@ -1,8 +1,8 @@
 
 SUBDIRS2 = Arithmetic Logic Composition List OS IO UI FFI String Reflection
-PACKAGE = 5D
-VERSION = $(shell head -1 debian/changelog |cut -d"(" -f2 |cut -d")" -f1)
-DISTDIR = $(PACKAGE)-$(VERSION)
+#PACKAGE = 5D
+#VERSION = $(shell head -1 debian/changelog |cut -d"(" -f2 |cut -d")" -f1)
+#DISTDIR = $(PACKAGE)-$(VERSION)
 
 all:
 	$(MAKE) -C Arithmetic all
@@ -52,13 +52,4 @@ install:
 	$(MAKE) -C String install
 	$(MAKE) -C Reflection install
 
-dist: all
-	rm -rf "$(DISTDIR)"
-	mkdir "$(DISTDIR)"
-	cp Makefile "$(DISTDIR)"/Makefile
-	cp settings.mk "$(DISTDIR)"/settings.mk
-	cp TODO "$(DISTDIR)"/TODO
-	#cp dummy.5D "$(DISTDIR)"/dummy.5D
-	for s in $(SUBDIRS2) ; do mkdir "$(DISTDIR)"/"$$s" && cp "$$s"/* "$(DISTDIR)"/"$$s"/ ; rm -f "$(DISTDIR)"/"$$s"/*.o ; done
-	tar zcf "$(DISTDIR).tar.gz" "$(DISTDIR)/"* 
-	rm -rf "$(DISTDIR)"
+dist:

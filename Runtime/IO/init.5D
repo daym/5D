@@ -1,0 +1,27 @@
+let List = requireModule "List" in 
+let head = List.head in 
+let tail = List.tail in 
+let ioValue = (\m head m) in 
+let ioWorld = (\m head (tail m)) in 
+let liftIO = (\v \world [v world]) in 
+let flush = Builtins.flush in 
+let stderr = Builtins.stderr in 
+let stdin = Builtins.stdin in 
+let stdout = Builtins.stdout in 
+let runIO = Builtins.runIO in 
+let readline = Builtins.readline in 
+let write = Builtins.write in 
+let errno = Builtins.errno in 
+dispatchModule $
+[['ioValue ioValue]
+['ioWorld ioWorld]
+['liftIO liftIO]
+['flush flush]
+['stderr stderr]
+['stdin stdin]
+['stdout stdout]
+['runIO runIO]
+['readline readline]
+['write write]
+['errno errno]
+]

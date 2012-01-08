@@ -1,0 +1,17 @@
+let (|) = (\a \b b a) in 
+let (;) = (\m \ber \world (\r ber (ioValue r) (ioWorld r)) (m world)) in
+let ($) = (\a \b a b) in 
+let compose = (\f \g \x f (g x)) in 
+let flip = (\f \a \b f b a) in 
+let id = (\f f) in 
+let Y = (\f (\x f (x x)) (\x f (x x))) in 
+let rec = Y in 
+dispatchModule $
+[['(|) (|)]
+['(;) (;)]
+['($) ($)]
+['compose compose]
+['flip flip]
+['id id]
+['rec rec]
+]
