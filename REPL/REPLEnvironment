@@ -283,7 +283,7 @@ static AST::HashTable setFromList(AST::Node* listNode) {
 		std::cout << Evaluators::str(name) << std::endl;
 		// TODO error handling
 		if(name)
-			result[GC_strdup(name->name)] = NULL;
+			result[GCx_strdup(name->name)] = NULL;
 	}
 	return(result);
 }
