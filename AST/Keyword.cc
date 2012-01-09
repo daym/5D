@@ -30,7 +30,7 @@ Keyword* keywordFromStr(const char* name) {
 	} else {
 		Keyword* result = new Keyword;
 		result->name = GCx_strdup(name);
-		(*keywords)[name] = result;
+		(*keywords)[result->name] = result;
 		return(result);
 	}
 }

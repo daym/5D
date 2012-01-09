@@ -1,5 +1,3 @@
-#ifndef __AST_KEYWORD_H
-#define __AST_KEYWORD_H
 /*
 5D programming language
 Copyright (C) 2011  Danny Milosavljevic
@@ -7,24 +5,28 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 #include "AST/AST"
-#ifdef __GNUC__
-#define G_5D_GNUC_PURE __attribute__ ((pure))
-#else
-#define G_5D_GNUC_PURE
-#endif
+#include "AST/Keyword"
 
-namespace AST {
-
-struct Keyword : Node {
-	const char* name;
-};
-
-Keyword* keywordFromStr(const char* name) G_5D_GNUC_PURE;
-static inline bool keyword_P(AST::Node* argument) {
-	return(dynamic_cast<Keyword*>(argument) != NULL);
+static void gc_test(void) {
+	int i;
+	for(i = 0; i < 1000; ++i)
+		GC_MALLOC(1000);
 }
-void debugKeywords(void);
-
-};
-#endif /* ndef __AST_KEYWORD_H */
+int main() {
+	using namespace AST;
+	Keyword* hello = keywordFromStr("whitelist:");
+	GC_gcollect();
+	Keyword* hello2 = keywordFromStr("whitelist:");
+	gc_test();
+	GC_gcollect();
+	assert(dynamic_cast<Keyword*>(hello) != NULL);
+	assert(dynamic_cast<Keyword*>(hello2) != NULL);
+	assert(strcmp(hello->name, hello2->name) == 0);
+	if(hello != hello2)
+		abort();
+	return(0);
+}
