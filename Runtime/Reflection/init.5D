@@ -1,0 +1,42 @@
+let app? = Builtins.app? in 
+let appOperand = Builtins.appOperand in 
+let appOperator = Builtins.appOperator in 
+let cons? = Builtins.cons? in 
+let fn? = Builtins.fn? in 
+let fnBody = Builtins.fnBody in 
+let fnParam = Builtins.fnParam in 
+let float? = Builtins.float? in 
+let int? = Builtins.int? in 
+let int0 = Builtins.int0 in 
+let integer? = Builtins.integer? in 
+let integerSucc = Builtins.integerSucc in 
+let intSucc = Builtins.intSucc in 
+let keyword? = Builtins.keyword? in 
+let keywordFromStr = Builtins.keywordFromStr in 
+let makeApp = Builtins.makeApp in 
+let makeFn = Builtins.makeFn in 
+let symbol? = Builtins.symbol? in 
+let symbolFromStr = Builtins.symbolFromStr in 
+let symbolsEqual? = Builtins.symbolsEqual? in 
+let addrsLE? = Builtins.addrsLE? in 
+dispatchModule [['app? app?]
+['appOperand appOperand]
+['appOperator appOperator]
+['cons? cons?]
+['fn? fn?]
+['fnBody fnBody]
+['fnParam fnParam]
+['float? float?]
+['int? int?]
+['int0 int0]
+['integer? integer?]
+['integerSucc integerSucc]
+['intSucc intSucc]
+['keyword? keyword?]
+['keywordFromStr keywordFromStr]
+['makeApp makeApp]
+['makeFn makeFn]
+['symbol? symbol?]
+['symbolFromStr symbolFromStr]
+['symbolsEqual? symbolsEqual?]
+['addrsLE? addrsLE?]]

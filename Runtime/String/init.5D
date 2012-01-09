@@ -1,0 +1,10 @@
+let listFromStr = Builtins.listFromStr in 
+let str? = Builtins.str? in 
+let strFromKeyword = Builtins.strFromKeyword in 
+let strFromList = Builtins.strFromList in 
+let substr = Builtins.substr in 
+dispatchModule [['listFromStr listFromStr]
+['str? str?]
+['strFromKeyword strFromKeyword]
+['strFromList strFromList]
+['substr substr]]
