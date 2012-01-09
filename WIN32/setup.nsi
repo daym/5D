@@ -64,6 +64,37 @@ Section -Main SEC0000
     File /x .svn /x *.zip /x ./externals/NSIS/ /x ./externals/nsisant/ 5D.ico
     SetOutPath $INSTDIR\doc
     File /r /x .svn ..\doc\*
+    SetOutPath $INSTDIR\share\UI
+    SetOverwrite on
+    File ..\Runtime\UI\init.5D
+    SetOutPath $INSTDIR\share\String
+    SetOverwrite on
+    File ..\Runtime\String\init.5D
+    SetOutPath $INSTDIR\share\Reflection
+    SetOverwrite on
+    File ..\Runtime\Reflection\init.5D
+    SetOutPath $INSTDIR\share\OS
+    SetOverwrite on
+    File ..\Runtime\OS\path.5D
+    SetOutPath $INSTDIR\share\Logic
+    SetOverwrite on
+    File ..\Runtime\Logic\init.5D
+    SetOutPath $INSTDIR\share\List
+    SetOverwrite on
+    File ..\Runtime\List\init.5D
+    SetOutPath $INSTDIR\share\IO
+    SetOverwrite on
+    File ..\Runtime\IO\init.5D
+    SetOutPath $INSTDIR\share\FFI
+    SetOverwrite on
+    File ..\Runtime\FFI\init.5D
+    SetOutPath $INSTDIR\share\Composition
+    SetOverwrite on
+    File ..\Runtime\Composition\init.5D
+    SetOutPath $INSTDIR\share\Arithmetic
+    SetOverwrite on
+    File ..\Runtime\Arithmetic\init.5D
+
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
     
     SetOutPath $SMPROGRAMS\$StartMenuGroup

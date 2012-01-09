@@ -1,7 +1,7 @@
 [Project]
 FileName=5D.dev
 Name=5D
-UnitCount=77
+UnitCount=79
 Type=0
 Ver=1
 ObjFiles=
@@ -786,6 +786,25 @@ BuildCmd=
 
 [Unit77]
 FileName=..\Config\Config
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit78]
+FileName=..\REPL\BuiltinSelector.cc
+CompileCpp=1
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit79]
+FileName=..\REPL\BuiltinSelector
 Folder=5D
 Compile=0
 Link=0
