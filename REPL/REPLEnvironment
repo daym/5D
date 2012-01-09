@@ -277,10 +277,8 @@ static inline AST::Str* makeStr2(std::string v) {
 }
 static AST::HashTable setFromList(AST::Node* listNode) {
 	AST::HashTable result;
-	std::cout << "listNode" << (listNode ? "not nil" : "nil") << std::endl;
 	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
 		AST::Symbol* name = dynamic_cast<AST::Symbol*>(node->head);
-		std::cout << Evaluators::str(name) << std::endl;
 		// TODO error handling
 		if(name)
 			result[GCx_strdup(name->name)] = NULL;
@@ -289,23 +287,16 @@ static AST::HashTable setFromList(AST::Node* listNode) {
 }
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	std::string vop = Evaluators::str(options);
-	std::cout << vop << std::endl;
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
-	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
-	assert(self);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	assert(iter != arguments.end());
+	struct REPL* self = dynamic_cast<struct REPL*>(iter->second);
+	assert(self);
 	++iter;
 	assert(iter != arguments.end());
 	AST::Node* name = iter->second;
 	if(!symbol_P(name))
 		throw Evaluators::EvaluationException("import: expected symbol");
-	for(Evaluators::CXXArguments::const_iterator iter = arguments.begin(), end = arguments.end(); iter != end; ++iter) {
-		std::cout << Evaluators::str(iter->first) << " " << Evaluators::str(iter->second) << std::endl;
-		std::cout << (iter->first == AST::keywordFromStr("fileName:") ? 'Y' : 'N') << std::endl;
-	}
 	AST::Node* fileNameNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("fileName:"));
-	std::cout << "filenamenode" << Evaluators::str(fileNameNode) << std::endl;
 	AST::Node* body = REPL_import_module(options/*FIXME*/, fileNameNode ? fileNameNode : makeStr2(Evaluators::str(name)));
 	//body = Evaluators::annotate(body);
 	REPL_prepare(self, body);
@@ -313,7 +304,6 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 
 	// TODO make it possible to limit imports (use whitelist and blacklist)
 	AST::Node* whitelistN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("whitelist:"));
-	std::cout << Evaluators::str(whitelistN) << std::endl;
 	AST::HashTable whitelist = setFromList(whitelistN);
 	AST::Node* blacklistN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("blacklist:"));
 	AST::HashTable blacklist = setFromList(blacklistN);
