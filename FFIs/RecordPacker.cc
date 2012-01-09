@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <sstream>
 #include <assert.h>
-#include <endian.h>
 #ifdef WIN32
 //typedef short uint16_t;
 #else
+#include <endian.h>
 #include <stdint.h>
 #endif
 #include <string.h>
