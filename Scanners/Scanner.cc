@@ -408,6 +408,8 @@ void Scanner::parse_keyword(int input) {
 		raise_error("<symbol>", input);
 		return;
 	}
+	matchtext << (char) input;
+	input = increment_position(fgetc(input_file));
 	while(symbol_char_P(input)) {
 		matchtext << (char) input;
 		input = increment_position(fgetc(input_file));
@@ -417,7 +419,8 @@ void Scanner::parse_keyword(int input) {
 		return;
 	}
 	matchtext << (char) input;
-	input_value = keywordFromStr(matchtext.str().c_str());
+	std::string v = matchtext.str();
+	input_value = keywordFromStr(v.c_str());
 }
 void Scanner::parse_number_with_base(int input, int base) {
 	int value = 0; /* TODO make this more general? */
@@ -529,7 +532,8 @@ void Scanner::parse_operator(int input) {
 	}
 	if(input != ' ' && input != '\t')
 		ungetc(decrement_position(input), input_file);
-	input_value = AST::symbolFromStr(sst.str().c_str());
+	std::string v = sst.str();
+	input_value = AST::symbolFromStr(v.c_str());
 }
 void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) {
 	std::stringstream matchtext;
@@ -559,7 +563,8 @@ void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) 
 		}
 	} else if(input != ' ' && input != '\t') /* ignore whitespace */
 		ungetc(decrement_position(input), input_file);
-	input_value = AST::symbolFromStr(matchtext.str().c_str());
+	std::string v = matchtext.str();
+	input_value = AST::symbolFromStr(v.c_str());
 }
 
 void Scanner::update_indentation() {
