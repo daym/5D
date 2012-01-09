@@ -57,6 +57,9 @@ AST/test-AST: AST/test-AST.o
 AST/test-Symbol: AST/test-Symbol.o AST/Symbol.o AST/HashTable.o AST/Symbols.o AST/AST.o $(AST_UNCLEAN)
 	g++ -o AST/test-Symbol AST/test-Symbol.o AST/HashTable.o AST/Symbol.o AST/Symbols.o AST/AST.o $(AST_UNCLEAN) $(LDFLAGS)
 
+AST/test-Keyword: AST/test-Keyword.o AST/Keyword.o AST/HashTable.o AST/Symbols.o AST/Symbol.o AST/AST.o $(AST_UNCLEAN)
+	g++ -o AST/test-Keyword AST/test-Keyword.o AST/HashTable.o AST/Keyword.o AST/Symbols.o AST/Symbol.o AST/AST.o $(AST_UNCLEAN) $(LDFLAGS)
+
 test-AST: test-AST.o
 	g++ -o test-AST test-AST.o
 	
@@ -72,6 +75,7 @@ Formatters/UTF-8_to_LATEX_result.h: Formatters/UTF-8_to_LATEX.table Formatters/g
 AST/AST.o: AST/AST.cc AST/AST AST/Symbol
 AST/test-AST.o: AST/test-AST.cc AST/AST
 AST/test-Symbol.o: AST/test-Symbol.cc FFIs/Allocators AST/Symbol AST/AST AST/HashTable
+AST/test-Keyword.o: AST/test-Keyword.cc FFIs/Allocators AST/Keyword AST/AST AST/HashTable
 AST/Symbol.o: AST/Symbol.cc AST/Symbol AST/AST AST/HashTable FFIs/Allocators
 AST/Symbols.o: AST/Symbols.cc AST/Symbols AST/Symbol AST/AST
 AST/Keyword.o: AST/Keyword.cc AST/Keyword AST/HashTable AST/AST FFIs/Allocators
@@ -94,11 +98,12 @@ FFIs/POSIX.o: FFIs/POSIX.cc Evaluators/Builtins FFIs/FFIs Evaluators/FFI AST/AST
 Config/GTKConfig.o: Config/GTKConfig.cc Config/Config FFIs/Allocators AST/AST
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol Scanners/test-Scanner Scanners/test-MathParser
+test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol AST/test-Keyword Scanners/test-Scanner Scanners/test-MathParser
 	./Linear_Algebra/test-Vector
 	./Linear_Algebra/test-Matrix
 	./Linear_Algebra/test-Tensor
 	./AST/test-Symbol
+	./AST/test-Keyword
 	./AST/test-AST
 	./Scanners/test-Scanner
 	./Scanners/test-MathParser
