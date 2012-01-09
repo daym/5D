@@ -23,7 +23,6 @@ let (>=) = flip (<=) in
 let (≥) = (>=) in 
 let (>) = flip (<) in 
 let (/=) = \a \b not (a = b) in 
-let √ = Builtins.√ in 
 let abs = (\x if (x <= 0) (0 - x) x) in 
 let divide = Builtins.divide in 
 let divrem = Builtins.divrem in 
@@ -38,6 +37,7 @@ let next = (\N \x (x + N/x)/2) in
 let within = (\eps rec (\within \list (\a (\b if (abs (a - b) <= eps) b (within b:(tail (tail list)))) (head (tail list))) (head list))) in 
 let repeat = (\f rec (\repeat \a a:(repeat (f a)))) in 
 let sqrt = (\a0 \eps \N within eps (repeat (next N) a0)) in 
+let √ = sqrt 1 0.001 in 
 let modulo = (\a \b remainder (b + remainder a b) b) in 
 let factorial = (rec (\fac \v if (v = 0) 1 v*(fac (v - 1)))) in 
 dispatchModule [['(-) (-)]
