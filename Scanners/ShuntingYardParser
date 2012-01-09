@@ -52,7 +52,7 @@ public:
 	inline bool EOFP(void) const {
 		return(scanner->EOFP());
 	}
-	void push(FILE* input_file, int line_number);
+	void push(FILE* input_file, int line_number, const char* input_name);
 	void pop(void);
 	int get_position(void) const;
 

@@ -360,9 +360,9 @@ void ShuntingYardParser::leave_abstraction(AST::Symbol* name) {
 	bound_symbols->tail = NULL;
 	bound_symbols = (AST::Cons*) n;
 }
-void ShuntingYardParser::push(FILE* input_file, int line_number) {
+void ShuntingYardParser::push(FILE* input_file, int line_number, const char* input_name) {
 	// TODO maybe just replace the entire scanner (making sure to copy input_value over).
-	scanner->push(input_file, line_number);
+	scanner->push(input_file, line_number, input_name);
 	scanner->consume();
 }
 void ShuntingYardParser::pop(void) {

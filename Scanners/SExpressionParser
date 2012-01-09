@@ -29,7 +29,7 @@ public:
 	void parse_closing_brace(void);
 	AST::Node* parse_S_Expression(void);
 public:
-	void push(FILE* input_file, int line_number);
+	void push(FILE* input_file, int line_number, const char* input_name);
 	void pop(void);
 	inline bool EOFP(void) const {
 		return(scanner->EOFP());

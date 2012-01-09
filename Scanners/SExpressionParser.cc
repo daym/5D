@@ -90,9 +90,9 @@ AST::Node* SExpressionParser::parse(AST::Symbol* terminator) {
 		scanner->raise_error(str(terminator), str(scanner->input_value));
 	return(result);
 }
-void SExpressionParser::push(FILE* input_file, int line_number) {
+void SExpressionParser::push(FILE* input_file, int line_number, const char* input_name) {
 	// TODO maybe just replace the entire scanner (making sure to copy input_value over).
-	scanner->push(input_file, line_number);
+	scanner->push(input_file, line_number, input_name);
 	scanner->consume();
 }
 void SExpressionParser::pop(void) {

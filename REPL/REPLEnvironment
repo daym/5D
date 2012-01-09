@@ -129,7 +129,7 @@ AST::Node* REPL_parse(struct REPL* self, const char* command, T destination/*for
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
 	if(input_file) {
 		try {
-			parser.push(input_file, 0);
+			parser.push(input_file, 0, "<stdin>");
 			AST::Node* result = NULL;
 			result = parser.parse(REPL_ensure_operator_precedence_list(self), Symbols::SlessEOFgreater);
 			fclose(input_file);
@@ -176,7 +176,7 @@ static AST::Node* REPL_force_import_module(struct REPL* self, const char* filena
 		if(!input_file)
 			return(FALLBACK);
 		try {
-			parser.push(input_file, 0);
+			parser.push(input_file, 0, filename);
 			AST::Node* result = NULL;
 			result = parser.parse(REPL_ensure_operator_precedence_list(self), Symbols::SlessEOFgreater);
 			result = Evaluators::close(Symbols::SdispatchModule, AST::makeAbstraction(Symbols::Sexports, AST::makeApplication(&Evaluators::ModuleDispatcher, AST::makeApplication(&Evaluators::ModuleBoxMaker, Symbols::Sexports))), result);
@@ -293,13 +293,12 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	assert(self);
 	++iter;
 	assert(iter != arguments.end());
-	AST::Node* name = iter->second;
-	if(!symbol_P(name))
-		throw Evaluators::EvaluationException("import: expected symbol");
-	AST::Node* fileNameNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("fileName:"));
-	AST::Node* body = REPL_import_module(options/*FIXME*/, fileNameNode ? fileNameNode : makeStr2(Evaluators::str(name)));
+	AST::Node* filename = iter->second;
+	if(!str_P(filename))
+		throw Evaluators::EvaluationException("import: expected Str filename");
+	AST::Node* body = REPL_import_module(options/*FIXME*/, filename);
 	//body = Evaluators::annotate(body);
-	REPL_prepare(self, body);
+	//REPL_prepare(self, body);
 	//REPL_add_to_environment(self, name, body);
 
 	// TODO make it possible to limit imports (use whitelist and blacklist)

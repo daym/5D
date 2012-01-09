@@ -42,6 +42,7 @@ protected:
 	int previous_position;
 	int line_number;
 	int column_number;
+	char* input_name;
 	int backtracking_column_numbers[5]; /* last is dummy */
 	bool backtracking_beginning_of_line[5]; /* last is dummy */
 	bool B_honor_indentation;
@@ -85,7 +86,7 @@ protected:
 	void inject(AST::Node* input_value);
 public:
 	AST::Node* input_value; // read-only
-	void push(FILE* input_file, int line_number);
+	void push(FILE* input_file, int line_number, const char* input_name);
 	void pop(void);
 	int get_position(void) const {
 		return(previous_position);

@@ -42,9 +42,10 @@ Scanner::Scanner(void) {
 	B_beginning_of_line = true;
 	brace_level = 0;
 }
-void Scanner::push(FILE* input_file, int line_number) {
+void Scanner::push(FILE* input_file, int line_number, const char* input_name) {
 	this->input_file = input_file;
 	this->line_number = line_number;
+	this->input_name = GCx_strdup(input_name);
 	this->position = 0;
 	this->previous_position = 0;
 	this->column_number = 0;
@@ -59,6 +60,8 @@ void Scanner::pop(void) {
 void Scanner::raise_error(const std::string& expected_text, std::string got_text) {
 	std::stringstream s;
 	s << "expected " << expected_text << " but got " << got_text << " near position " << position << " in line " << line_number + 1;
+	if(input_name)
+		s << " in file \"" << input_name << "\"";
 	//std::cerr << s.str() << std::endl;
 	throw ParseException(s.str().c_str());
 }
