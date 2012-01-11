@@ -24,9 +24,9 @@ let (≥) = (>=) in
 let (>) = flip (<) in 
 let (/=) = \a \b not (a = b) in 
 let abs = (\x if (x <= 0) (0 - x) x) in 
-let divide = Builtins.divide in 
 let divrem = Builtins.divrem in 
-let remainder = Builtins.remainder in 
+let divide = (\a \b head (divrem a b)) in 
+let remainder = (\a \b head (tail (divrem a b))) in 
 let (%) = remainder in 
 let pi = 3.141593 in 
 let π = pi in 

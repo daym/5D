@@ -1,7 +1,6 @@
 let app? = Builtins.app? in 
 let appOperand = Builtins.appOperand in 
 let appOperator = Builtins.appOperator in 
-let cons? = Builtins.cons? in 
 let fn? = Builtins.fn? in 
 let fnBody = Builtins.fnBody in 
 let fnParam = Builtins.fnParam in 
@@ -22,7 +21,6 @@ let addrsLE? = Builtins.addrsLE? in
 dispatchModule [['app? app?]
 ['appOperand appOperand]
 ['appOperator appOperator]
-['cons? cons?]
 ['fn? fn?]
 ['fnBody fnBody]
 ['fnParam fnParam]
