@@ -16,25 +16,25 @@ hr { color: #808080;
 <h1>5D Library Reference</h1>
 <nl>
 <li><a href="#macros">Macros</a></li>
-<li><a href="#composition">Function Composition</a></li>
-<li><a href="#logic">Logic Values and Functions</a></li>
-<li><a href="#conditionals">Conditionals</a></li>
-<li><a href="#numberAlgebra">Number Algebra Functions</a></li>
-<li><a href="#lists">Lists</a></li>
-<li><a href="#dpho">Higher-Order Data Processing Functions</a></li>
-<li><a href="#state">State</a></li>
-<li><a href="#builtins">Builtin Types Except Lists</a></li>
-<li><a href="#FFI">Foreign Function Interface</a></li>
-<li><a href="#math">Higher Mathematics</a></li>
-<li><a href="#adorning">Adorning Functions</a></li>
-<li><a href="#ui">User Interface Functions</a></li>
+<li><a href="#composition">Module "Composition": Function Composition</a></li>
+<li><a href="#logic">Module "Logic": Logic Values and Functions</a></li>
+<li><a href="#conditionals">Module "Logic": Conditionals</a></li>
+<li><a href="#numberAlgebra">Module "Arithmetic": Number Algebra Functions</a></li>
+<li><a href="#lists">Module "List": Lists</a></li>
+<li><a href="#dpho">Module "List": Higher-Order Data Processing Functions</a></li>
+<li><a href="#state">Module "IO": State</a></li>
+<li><a href="#builtins">Module "Reflection": Builtin Types Except Lists</a></li>
+<li><a href="#FFI">Module "FFI": Foreign Function Interface</a></li>
+<li><a href="#math">Module "Arithmetic": Higher Mathematics</a></li>
+<li><a href="#adorning">Module "Composition": Adorning Functions</a></li>
+<li><a href="#ui">Module "UI": User Interface Functions</a></li>
 </nl>
 <a name="macros"><h2>Macros</h2>
 <h3>' a</h3>
 <p>(Pronounce it "quote a").</p>
 <p>Sometimes you just want to have a symbolic stand-in for things you <em>don't</em> define. Even <em>if</em> there is a definition, sometimes you don't want to substitute it in.</p>
 <p>If so, use quote to protect the symbol (or "create" the symbol).</p>
-<p>Note that <span class="pre" title="quote">'</span> is a macro and does <em>not</em> evaluate a.</p>
+<p>Note that <span class="pre" title="quote">'</span> prevents the evaluator from evaluating a.</p>
 <p>Note also that if you quote operators, you still have to put parenthesis around the operator in order for it not to have its normal precedence.</p>
 <p>Example:</p>
 <pre>
@@ -42,9 +42,11 @@ define x 2
 x =&gt; 2
 'x =&gt; x
 '(i am not an application with function i) =&gt; (i am not an application with function i)
+
+'(+) =&gt; +
 </pre>
 </a>
-<a name="composition"><h2>Function Composition</h2>
+<a name="composition"><h2>Module "Composition": Function Composition</h2>
 <h3>id \f</h3>
 <p>Result is <span class="pre">f</span> .</p>
 <hr/>
@@ -79,7 +81,7 @@ factorial 20 =&gt; 2432902008176640000
 </pre>
 <hr/>
 </a>
-<a name="logic"><h2>Logic Values and Functions</h2>
+<a name="logic"><h2>Module "Logic": Logic Values and Functions</h2>
 <h3>#t</h3>
 <p>Represents the true value. See <span class="pre">toBool</span> for getting a readable representation or <span class="pre">if</span> for deciding something upon it.</p>
 <hr/>
@@ -110,7 +112,7 @@ if (2 &lt; 3 &amp;&amp; 1 &lt; 3) 5 7 =&gt; 5
 <hr/>
 </a>
 
-<a name="conditionals"><h2>Conditionals</h2>
+<a name="conditionals"><h2>Module "Logic": Conditionals</h2>
 <h3>if \c \T \F</h3>
 <p>Result is <span class="pre">T</span> if <span class="pre">c</span> is true, otherwise <span class="pre">F</span>.</p>
 <p>Example:</p>
@@ -120,7 +122,7 @@ if (nil? nil) 'yes 'no =&gt; yes
 <hr/>
 </a>
 
-<a name="numberAlgebra"><h2>Number Algebra Functions</h2>
+<a name="numberAlgebra"><h2>Module "Arithmetic": Number Algebra Functions</h2>
 <h3>(+) \a \b</h3>
 <p>Result is the sum of <span class="pre">a</span> and <span class="pre">b</span> .</p>
 <p>Example:</p>
@@ -235,7 +237,7 @@ if (negative? 0) 'yes 'no =&gt; no
 -->
 </a>
 
-<a name="lists"><h2>Lists</h2>
+<a name="lists"><h2>Module "List": Lists</h2>
 <h3>nil</h3>
 <p>Represents the empty list.</p>
 <p>Example:</p>
@@ -351,7 +353,7 @@ mergeSort [5 4 3 2 1] =&gt; [1 2 3 4 5]
 <pre>
 mergeSortBy (&lt;=) [5 4 3 2 1] =&gt; [1 2 3 4 5]
 </pre>
-<a name="dpho"><h2>Higher-Order Data Processing Functions</h2>
+<a name="dpho"><h2>(Higher-Order Data Processing Functions in module "List")</h2>
 <h3>map \mapper \list</h3>
 <p>Result is a list where each element is <span class="pre">mapper</span> applied to the element of the original list, in order.</p>
 <p>Example:</p>
@@ -397,7 +399,7 @@ foldl (-) 0 [1 2 3] =&gt; (((0-1)-2)-3)) =&gt; (-6)
 <hr/>
 </a>
 
-<a name="state"><h2>State</h2>
+<a name="state"><h2>Module "IO": State</h2>
 <h3>runIO \m</h3>
 <p>Can only be there once in the entire program. Will cause the state machine to run, giving the initial World State to the function <span class="pre">m</span>. m eventually returns and its result will be decomposed, the monad value extracted and it will become the result.</p>
 <hr/>
@@ -434,7 +436,7 @@ runIO readFile
 
 </a>
 
-<a name="builtins"><h2>Builtin Types Except Lists</h2>
+<a name="builtins"><h2>Module "Reflection": Builtin Types Except Lists</h2>
 <h3>toBool \v</h3>
 <p>Given a statement <span class="eq">v</span>, results in the symbol <span class="pre">t</span> if v is true, otherwise the symbol <span class="pre">f</span>.</p>
 <p>Definition:</p>
@@ -494,7 +496,7 @@ keywordStr @mode: =&gt; "mode:"
 <hr/>
 </a>
 
-<a name="FFI"><h2>Foreign Function Interface</h2>
+<a name="FFI"><h2>Module "FFI": Foreign Function Interface</h2>
 <h3>requireSharedLibrary \libraryName \procSignature \procName</h3>
 <p>Loads the library with the given name and looks up the procedure <span class="pre">procName</span> with signature <span class="pre">procSignature</span> in it and results in an <span class="pre" title="Foreign Function Interface">FFI</span> for it.</p>
 <p>Note that <span class="pre">procName</span> should be a Str and <span class="pre">procSignature</span> should be a Symbol.</p>
@@ -572,7 +574,7 @@ recordSize "i" =&gt; 4
 </pre>
 </a>
 
-<a name="math"><h2>Higher Mathematics</h2>
+<a name="math"><h2>Module "Arithmetic": Higher Mathematics</h2>
 <h3>π</h3>
 <p>3.141592653589793</p>
 <hr/>
@@ -633,7 +635,7 @@ recordSize "i" =&gt; 4
 <hr/>
 </a>
 
-<a name="adorning"><h2>Adorning Functions</h2>
+<a name="adorning"><h2>Module "Composition": Adorning Functions</h2>
 <h3>else</h3>
 <p>id</p>
 
@@ -642,7 +644,7 @@ recordSize "i" =&gt; 4
 </a>
 <hr/>
 
-<a name="ui"><h2>User Interface Functions</h2>
+<a name="ui"><h2>Module "UI": User Interface Functions</h2>
 <h3>messageBox @type:t @modality:m @icon:i @caption:c =&gt; r</h3>
 <p>Displays a modal message dialog box to the user.</p>
 <p>t is one of 
