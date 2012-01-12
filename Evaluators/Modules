@@ -5,6 +5,7 @@
 
 static inline std::string getModuleFileKey(const std::string& filename, std::string& outActualFilename) {
 	outActualFilename = "";
+	std::stringstream moduleKeyStream;
 #ifdef WIN32
 #ifndef S_IFDIR
 #define S_IFDIR _S_IFDIR
@@ -30,6 +31,7 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 		}
 	} else
 		outActualFilename = filename;
+	moduleKeyStream << filename << ":"; /* on Windows, st_ino is 0, so HACK HACK HACK */
 #else
 	struct stat buf;
 	if(stat(filename.c_str(), &buf) == -1) {
@@ -45,7 +47,6 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 	} else
 		outActualFilename = filename;
 #endif
-	std::stringstream moduleKeyStream;
 	moduleKeyStream << buf.st_dev << ":" << buf.st_ino;
 	std::string moduleKey = moduleKeyStream.str();
 	return(moduleKey);
