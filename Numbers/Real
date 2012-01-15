@@ -7,7 +7,13 @@
 
 namespace Numbers {
 
-typedef float NativeFloat; /* TODO use double for 64 bits? */
+#if defined(__VFP_FP__)
+/* ARM doesn't have extended-precision floating point */
+typedef double NativeFloat;
+#else
+typedef long double NativeFloat;
+#endif
+
 AST::Node* internNative(NativeFloat value);
 
 DECLARE_SMALL_VALUE(Float, NativeFloat)   
