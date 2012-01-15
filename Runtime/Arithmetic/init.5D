@@ -28,7 +28,7 @@ let divrem = Builtins.divrem in
 let divide = (\a \b head (divrem a b)) in 
 let remainder = (\a \b head (tail (divrem a b))) in 
 let (%) = remainder in 
-let pi = 3.141593 in 
+let pi = 3.141592653589793 in 
 let π = pi in 
 let cos = (\xx (\x (\cos if (x >= pi) (0 - cos (x % pi)) (cos x)) (\x 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720)) (xx % 2*pi)) in 
 let sin = (\xx (\sin (\x if (x >= pi) (0 - sin (x % pi)) (sin x)) (xx % 2*pi)) (\x x - x*x*x/6 + x*x*x*x*x/120 - x*x*x*x*x*x*x/(120*6*7))) in 
