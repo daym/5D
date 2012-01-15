@@ -10,8 +10,10 @@ namespace Numbers {
 #if defined(__VFP_FP__) || defined(__ARM_EABI__)
 /* ARM doesn't have extended-precision floating point */
 typedef double NativeFloat;
+//#define NATIVEFLOAT_PRECISION 15
 #else
 typedef long double NativeFloat;
+//#define NATIVEFLOAT_PRECISION 15
 #endif
 
 AST::Node* internNative(NativeFloat value);

@@ -1,3 +1,9 @@
+5d (0.3.2) unstable; urgency=low
+
+  * use machine native floating-point format in order to prevent surprises.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 15 Jan 2012 16:09:00 +0100
+
 5d (0.3.1) unstable; urgency=low
 
   * remove most globals from REPL

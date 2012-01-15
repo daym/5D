@@ -1,4 +1,5 @@
 #include <string.h>
+#include <limits>
 #include "Numbers/Real"
 #include "Evaluators/Builtins"
 
@@ -10,7 +11,7 @@ namespace Numbers {
 
 REGISTER_STR(Float, {
 	std::stringstream sst;
-	sst.precision(7); /* 17 for some */
+	sst.precision(std::numeric_limits<NativeFloat>::digits10 + 1);
 	sst << node->value;
 	std::string v = sst.str();
 	const char* vc = v.c_str();
