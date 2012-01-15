@@ -7,7 +7,7 @@
 
 namespace Numbers {
 
-#if defined(__VFP_FP__)
+#if defined(__VFP_FP__) || defined(__ARM_EABI__)
 /* ARM doesn't have extended-precision floating point */
 typedef double NativeFloat;
 #else
