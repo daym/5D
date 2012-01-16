@@ -9,6 +9,9 @@ GENERATEDS = FFIs/Trampolines FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols F
 #LIBGC_LD_WRAP_LDFLAGS = -Wl,--wrap -Wl,read -Wl,--wrap -Wl,dlopen -Wl,--wrap -Wl,pthread_create -Wl,--wrap -Wl,pthread_join -Wl,--wrap -Wl,pthread_detach -Wl,--wrap -Wl,pthread_sigmask -Wl,--wrap -Wl,sleep
 LIBGC_LD_WRAP_CFLAGS = -D_REENTRANT -DGC_THREADS -DUSE_LD_WRAP
 CXXFLAGS += -Wall -I. -g3 -fno-strict-overflow -Wno-deprecated `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0` $(LIBGC_LD_WRAP_CFLAGS)
+ifdef PREFIX
+CXXFLAGS +=  -DPREFIX=\"$(PREFIX)\"
+endif
 PACKAGE = 5D
 VERSION = $(shell head -1 debian/changelog |cut -d"(" -f2 |cut -d")" -f1)
 DISTDIR = $(PACKAGE)-$(VERSION)

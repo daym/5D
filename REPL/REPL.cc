@@ -153,7 +153,7 @@ void REPL_add_to_environment(struct REPL* self, AST::Node* name, AST::Node* body
 		REPL_add_to_environment_simple(self, nameSymbol, body);
 }
 
-static std::string sharedDir = "/usr/share/5D/"; // keep "/" suffix.
+static std::string sharedDir = PREFIX "/share/5D/"; // keep "/" suffix.
 std::string REPL_get_shared_dir(void) {
 	return(sharedDir);
 }
