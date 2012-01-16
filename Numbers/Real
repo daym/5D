@@ -13,7 +13,7 @@ typedef double NativeFloat;
 //#define NATIVEFLOAT_PRECISION 15
 #else
 typedef long double NativeFloat;
-//#define NATIVEFLOAT_PRECISION 15
+//#define NATIVEFLOAT_PRECISION 19
 #endif
 
 AST::Node* internNative(NativeFloat value);
