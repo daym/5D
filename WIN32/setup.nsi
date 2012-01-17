@@ -5,7 +5,7 @@ Name 5D
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.3.1
+!define VERSION 0.3.2
 !define COMPANY "X"
 !define URL ""
 
@@ -165,6 +165,7 @@ Section -post SEC0001
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\$(^Name).exe" "" '"$INSTDIR\bin\5D.exe"'
 SectionEnd
 
 # Macro for selecting uninstaller sections
