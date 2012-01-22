@@ -106,41 +106,48 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 			fclose(input_file);
 			return(false);
 		}
-		// (REPLV1 'textBufferText "abc" 'environment "xyz" nil)
-		// (((((REPLV1 'textBufferText) "abc") 'environment) "xyz") nil)
-		//     tbtK--------------------
-		//    --tbtV--------------------------
-		//   ----envK---------------------------------------
-		//  -------envV--------------------------------------------
-		// ---------sentinel--------------------------------------------
-		std::list<AST::Node*> arguments;
-		for(; application_P(content); content = get_application_operator(content)) {
-			arguments.push_front(get_application_operand(content));
-			if(get_application_operator(content) == Symbols::SREPLV1)
-				break;
-		}
-		std::list<AST::Node*>::const_iterator end_arguments = arguments.end();
-		for(std::list<AST::Node*>::const_iterator iter_arguments = arguments.begin(); iter_arguments != end_arguments; ++iter_arguments) {
-			AST::Node* keywordName = *iter_arguments;
-			++iter_arguments;
-			if(iter_arguments == end_arguments) // ???
-				break;
-			AST::Node* value = *iter_arguments;
-			if(keywordName == Symbols::StextBufferText) {
-				char* text;
-				text = Evaluators::get_native_string(value);
-				REPL_append_to_output_buffer(self, text);
-			} else if(keywordName == Symbols::Senvironment) {
-				if(value && value != Symbols::Snil)
-					assert(application_P(value));
-				REPL_set_environment(self, value);
-// GC_gcollect here and it works.
-	//AST::Node* envV = AST::makeApplication(NULL, REPL_filter_environment(self, REPL_get_user_environment(self)));
-	//std::string v = Evaluators::str(envV);
-	//assert(strstr(v.c_str(), "\\divmod") == NULL);
+		try {
+			// (REPLV1 'textBufferText "abc" 'environment "xyz" nil)
+			// (((((REPLV1 'textBufferText) "abc") 'environment) "xyz") nil)
+			//     tbtK--------------------
+			//    --tbtV--------------------------
+			//   ----envK---------------------------------------
+			//  -------envV--------------------------------------------
+			// ---------sentinel--------------------------------------------
+			std::list<AST::Node*> arguments;
+			for(; application_P(content); content = get_application_operator(content)) {
+				arguments.push_front(get_application_operand(content));
+				if(get_application_operator(content) == Symbols::SREPLV1)
+					break;
 			}
+			std::list<AST::Node*>::const_iterator end_arguments = arguments.end();
+			for(std::list<AST::Node*>::const_iterator iter_arguments = arguments.begin(); iter_arguments != end_arguments; ++iter_arguments) {
+				AST::Node* keywordName = *iter_arguments;
+				++iter_arguments;
+				if(iter_arguments == end_arguments) // ???
+					break;
+				AST::Node* value = *iter_arguments;
+				if(keywordName == Symbols::StextBufferText) {
+					const char* text;
+					text = (value == Symbols::Snil || value == NULL) ? "" : Evaluators::get_native_string(value);
+					REPL_append_to_output_buffer(self, text);
+				} else if(keywordName == Symbols::Senvironment) {
+					if(value && value != Symbols::Snil)
+						assert(application_P(value));
+					REPL_set_environment(self, value);
+	// GC_gcollect here and it works.
+		//AST::Node* envV = AST::makeApplication(NULL, REPL_filter_environment(self, REPL_get_user_environment(self)));
+		//std::string v = Evaluators::str(envV);
+		//assert(strstr(v.c_str(), "\\divmod") == NULL);
+				}
+			}
+			fclose(input_file);
+		} catch (Evaluators::EvaluationException& e) {
+			// TODO print message
+			fclose(input_file);
+			REPL_set_file_modified(self, false);
+			return(false);
 		}
-		fclose(input_file);
 	}
 	REPL_set_file_modified(self, false);
 	return(true);
