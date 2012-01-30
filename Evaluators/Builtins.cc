@@ -188,7 +188,7 @@ static AST::Node* divremFloat(const Numbers::Float& a, const Numbers::Float& b) 
 		bvalue = -bvalue;
 	if(bvalue == 0.0)
 		throw EvaluationException("division by zero");
-	NativeFloat q = floorf(a.value / bvalue);
+	NativeFloat q = floor(a.value / bvalue);
 	NativeFloat r = a.value - q * bvalue;
 	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
 	//return(makeOperation(Symbols::Sdivrem, toHeap(a), toHeap(b)));
