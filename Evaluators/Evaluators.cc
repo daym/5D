@@ -178,7 +178,8 @@ DEFINE_SIMPLE_OPERATION(Quoter, argument)
 static inline bool wants_its_argument_reduced_P(AST::Node* fn) {
 	return(false); /* FIXME check for reducer, quoter etc */
 }
-static int recursionLevel = 0; /* anti-endless-loop */
+/* FIXME static */
+int recursionLevel = 0; /* anti-endless-loop */
 
 // caching results.
 int fGeneration = 1;
