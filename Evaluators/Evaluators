@@ -1,6 +1,7 @@
 #ifndef __EVALUATORS_H
 #define __EVALUATORS_H
 #include <set>
+//#include <stdio.h>
 #include "AST/AST"
 #include "AST/Symbol"
 #include "Evaluators/Operation"
@@ -27,17 +28,24 @@ static inline bool application_result_P(AST::Node* app) {
 	return(((AST::Application*) app)->resultGeneration == fGeneration);
 }
 bool quote_P(AST::Node* root);
+extern int recursionLevel;
 AST::Node* reduce1(AST::Node* term);
 static inline AST::Node* reduce(AST::Node* term) {
 	AST::Application* a;
+	AST::Node* result;
+	std::string tv = Evaluators::str(term);
+	//fprintf(stderr, "DEBUG: (%d) reducing %s\n", recursionLevel, tv.c_str());
 	if((a = dynamic_cast<AST::Application*>(term)) == NULL)
-		return(term);
+		result = term;
 	else {
 		if(application_result_P(term))
-			return(((AST::Application*) term)->result);
+			result = (((AST::Application*) term)->result);
 		else
-			return(reduce1(term));
+			result = (reduce1(term));
 	}
+	std::string rv = Evaluators::str(result);
+	//fprintf(stderr, "=> result %s\n", rv.c_str());
+	return(result);
 }
 AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body);
 AST::Node* makeError(const char* reason);
