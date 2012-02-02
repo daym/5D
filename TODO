@@ -101,6 +101,8 @@ NaN handling (ugh...)
 put "describe" into module dispatcher.
 make it possible to disable the searching for modules in the current directory!
 ARM: support FPA10 floating-point accelerator (80 bit registers)
+import: once importing a name which is already in the environment, auto-add a generic function?
+module: once an unknown identifier is encountered, maybe auto-provide them to the importer so he can fill in what is needed.
 
 = Debugging Macros =
 
@@ -137,3 +139,7 @@ List.head [1 2 3]
 fst
 snd
 let open POSIX in puts ...
+
+= Interop =
+Windows COM strings
+Full Unicode strings
