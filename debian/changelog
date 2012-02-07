@@ -1,3 +1,9 @@
+5d (0.3.3) unstable; urgency=low
+
+  * provide builtin (:) when loading a module so it doesn't try to load the List module in order to get it.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Thu, 03 Feb 2012 01:03:00 +0100
+
 5d (0.3.2) unstable; urgency=low
 
   * use machine native floating-point format in order to prevent surprises.
