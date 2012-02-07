@@ -72,6 +72,7 @@ mayTheForceBeWithYou42
 <h2>Programming by example</h2>
 <h3>Hello world</h3>
 <pre>
+import "IO"
 runIO (write stdout "Hello world")
 </pre>
 <p>What this does is:</p>
@@ -81,16 +82,20 @@ runIO (write stdout "Hello world")
 <h3>Mathematics</h3>
 <p>The usual calculator mathematics work:</p>
 <pre>
+import "Arithmetic"
 5 + 2 =&gt; 7
 </pre>
 <pre>
+import "Arithmetic"
 5 + 2⋅3 =&gt; 11
 </pre>
 <p><a href="">Operator precedence</a> is as you would expect, with one strange quirk: 2⋅f x means (2⋅f) x</p>
 <pre>
+import "Arithmetic"
 5 + 2⋅3 =&gt; 11
 </pre>
 <pre>
+import "Arithmetic"
 define f \x x⋅x
 5 + 2⋅(f 3) =&gt; 23
 5 + 2⋅f 3 =&gt; ??????
@@ -98,16 +103,19 @@ define f \x x⋅x
 <p>Here, the function f is defined to be a function of x, giving the square of x.</p>
 <p>Then the function f is called with the argument 3. The following works, too (although it has more parens for no reason):</p>
 <pre>
+import "Arithmetic"
 define f\x x⋅x
 5+2⋅(f(3)) =&gt; 23
 </pre>
 <p>Or if it's the first operand of multiplication:</p>
 <pre>
+import "Arithmetic"
 define f \x x⋅x
 5 + (f 3)⋅2 =&gt; 23
 </pre>
 <p>Note that <span class="pre">*</span> works for multiplication as well (and is the same thing):</p>
 <pre>
+import "Arithmetic"
 define f \x x⋅x
 5 + (f 3)*2 =&gt; 23
 </pre>
@@ -116,21 +124,25 @@ define f \x x⋅x
 <p>Therefore, the REPL has a command to retrieve the original definition:</p>
 <p>Note that you need to put parenthesis around operators (in order to prevent them from asserting their own precedence).</p>
 <pre>
+import "Reflection"
 define f \x x*x
 describe 'f =&gt; \x x*x
 describe '(;) =&gt; \m \ber \world (\r ber (ioValue r) (ioWorld r)) (m world)
 </pre>
 <p>If there are multiple overrides for the definition, try using @backOffset: to reach back. The value is an integer starting at 0 (which is the default) stating how many definitions using <em>this</em> symbol back you want to reach.</p>
 <pre>
+import "Reflection"
 describe @backOffset:1 'g =&gt; \x x*x
 </pre>
 <h3>Conditionals</h3>
 <pre>
+import "Logic"
 define abs \x if (x ≥ 0)  (x)
                           (-x)
 </pre>
 <h3>Logical Operators and Logical Functions and Logical Values</h3>
 <pre>
+import "Logic"
 #t
 #f
 #f &amp;&amp; #f    =&gt; #f
@@ -151,20 +163,24 @@ define f \x (f 1)      -- makes no sense
 </pre>
 <p>If you want it to do recursion, do it like this:</p>
 <pre>
+import "Composition"
 define f rec \f \x (f 1)      -- endless recursion, but it works
 </pre>
 <p>Or like this, which is exactly the same:</p>
 <pre>
+import "Composition"
 define f rec \self \x (self 1)      -- endless recursion, but it works
 </pre>
 <p>There's a more traditional way, too:</p>
 <pre>
+import "Composition"
 defrec f \x (f 1)      -- endless recursion, but it works
 </pre>
 <p><span class="pre">defrec</span> is a macro which expands to the former. Note that <span class="pre">defrec</span> only works (usefully) for function definitions.</p>
 <p>Note that the reason that <span class="pre">define f</span> doesn't make f available within the body of f is that you can refer to previous definitions of f within the new definition of f.</p>
 <p>An example will make that clearer:</p>
 <pre>
+import "Logic"
 define f \x (x**x)
 define f \x if (x = 0)   1
                          (f x)    -- refers to the one above.
@@ -173,10 +189,13 @@ define f \x if (x = 0)   1
 <p>The simplest form of list is the linked list.</p>
 <p>Nodes of a linked list are created by <span class="pre" title="list constructor">:</span> like this:</p>
 <pre>
+import "List"
 42:24:12:nil
 </pre>
 <p>This is a list with 3 elements, linked together through the tail. The last element has <span class="pre">nil</span> tail.</p>
 <pre>
+import "List"
+import "Reflection"
 head (1:2:3:nil)            =&gt; 1
 tail (1:2:3:nil)            =&gt; (2:3:nil)
 head (tail (1:2:3:nil))     =&gt; 2
@@ -188,11 +207,13 @@ list? nil                   =&gt; #t
 </pre>
 <p>There's also a shorthand macro for creating lists used like this:</p>
 <pre>
+import "List"
 [42 24 12]
 </pre>
 <h3>Literal Names</h3>
 <p>Sometimes you want to <em>not</em> reduce a function or operator to their definition but rather leave the name. To do so, prefix their name by <span class="pre">quote</span> or <span class="pre" title="quote">'</span></p>
 <pre>
+import "Reflection"
 define x 2
 x            =&gt; 2
 quote x      =&gt; x       -- NOT 2
@@ -202,18 +223,21 @@ symbol? x    =&gt; #f
 </pre>
 <h3>Keyword Arguments</h3>
 <pre>
+import "IO"
 fopen @mode:"w" "foo.INI.temp"        -- Keyword Arguments need to be before normal arguments.
 </pre>
 <h3>Conditionals</h3>
 <p>Conditionals are used for flow control. Note that the result of a conditional is a Church functional.</p>
 <p>If you want to see a short result on screen, use toBool. toBool converts a Chruch Boolean to either the symbol <span class="pre">t</span> or the symbol <span class="pre">f</span> after figuring out which is appropriate.</p>
 <pre>
+import "Logic"
 #t&amp;&amp;#t =&gt; \t \f (\t \f t) ((\t \f t) t f) f
 toBool (#t&amp;&amp;#t) =&gt; t
 #t&amp;&amp;#t | toBool =&gt; t
 </pre>
 <h3>I/O</h3>
 <pre>
+import "IO"
 runIO
          write stdout "What's your name? " ;\_
          flush stdout ;\_
@@ -233,6 +257,8 @@ runIO
 <h3>Indentation</h3>
 <p>If you want to spread your programs over multiple lines, you can. However, then, indentation rules come into effect.</p>
 <pre>
+import "Logic"
+import "Composition"
 if (x = 0)
   1
 $elif (x = 1)
