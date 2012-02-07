@@ -131,7 +131,7 @@ void Scanner::parse_token(void) {
 	case '9':
 		parse_number(input);
 		break;
-	case 0xE2: /* part of "≠" */
+	case 0xE2: /* part of "≠", "∂" */
 	case 0xC2:
 		parse_unicode(input);
 		break;
@@ -215,7 +215,17 @@ void Scanner::parse_number(int input) {
 	input_value = AST::symbolFromStr(matchtext.str().c_str());
 	/* actual value will be provided by provide_dynamic_builtins */
 }
+/*
+static AST::Symbol* compose_unicode(int a, int b, int c) {
+	std::stringstream sst;
+	sst << (char) a << (char) b << (char) c;
+	std::string v = sst.str();
+	return AST::symbolFromStr(v.c_str());
+}
+*/
 void Scanner::parse_unicode(int input) {
+	/* What this does is identify several special unicode characters which are supposed to stand on their own, i.e. mathematical operators etc.
+	   All others will be handled as normal symbols. */
 	using namespace AST;
 	if(input == 0xC2) {
 		input = increment_position(fgetc(input_file));
@@ -226,50 +236,69 @@ void Scanner::parse_unicode(int input) {
 		return;
 	}
 	if(input != 0xE2) {
-		raise_error("<expression>", input);
+		raise_error("<expression>", "<junk>");
 		return;
 	}
 	input = increment_position(fgetc(input_file));
-	if(input != 0x89) {
-		if(input == 0x8B) {
-			input = increment_position(fgetc(input_file));
-			switch(input) {
-			case 0x85: /* dot */
-				input_value = Symbols::Sasterisk;
-				return;
-			}
-		} else if(input == 0xA8) {
-			input = increment_position(fgetc(input_file));
-			switch(input) {
-			case 0xAF: /* ⨯ */
-				input_value = Symbols::Scrossproduct;
-				return;
-			}
-		} else if(input == 0x9F) {
-			input = increment_position(fgetc(input_file));
-			switch(input) {
-			case 0xA8: /* ⟨ */
-				input_value = Symbols::Sleftangle;
-				return;
-			case 0xA9: /* ⟩ */
-				input_value = Symbols::Srightangle;
-				return;
-			}
-		} else if(input == 0x88) {
-			input = increment_position(fgetc(input_file));
-			switch(input) {
-			case 0xAB: /* ∫ */
-				input_value = Symbols::Sintegral;
-				return;
-			case 0x9A: /* √ */
-				input_value = Symbols::Sroot;
-				return;
-			}
-		} else {
-			parse_symbol(input, 0xE2);
-			//raise_error("<expression>", input);
+	//if(input != 0x89) {
+	// second byte.
+	if(input == 0x8B) {
+		input = increment_position(fgetc(input_file));
+		switch(input) {
+		case 0x85: /* dot */
+			input_value = Symbols::Sasterisk;
+			return;
+		default:
+			//input_value = compose_unicode(0xE2, 0x8B, input);
+			parse_symbol(input, 0xE2, 0x8B);
 			return;
 		}
+	} else if(input == 0xA8) {
+		input = increment_position(fgetc(input_file));
+		switch(input) {
+		case 0xAF: /* ⨯ */
+			input_value = Symbols::Scrossproduct;
+			return;
+		default:
+			parse_symbol(input, 0xE2, 0xA8);
+			//input_value = compose_unicode(0xE2, 0xA8, input);
+			return;
+		}
+	} else if(input == 0x9F) {
+		input = increment_position(fgetc(input_file));
+		switch(input) {
+		case 0xA8: /* ⟨ */
+			input_value = Symbols::Sleftangle;
+			return;
+		case 0xA9: /* ⟩ */
+			input_value = Symbols::Srightangle;
+			return;
+		default:
+			parse_symbol(input, 0xE2, 0xA9);
+			//input_value = compose_unicode(0xE2, 0x9F, input);
+			return;
+		}
+	} else if(input == 0x88) {
+		input = increment_position(fgetc(input_file));
+		switch(input) {
+		case 0xAB: /* ∫ */
+			input_value = Symbols::Sintegral;
+			return;
+		case 0x9A: /* √ */
+			input_value = Symbols::Sroot;
+			return;
+		case 0x82: /* ∂ */
+			input_value = AST::symbolFromStr("∂");
+			return;
+		default:
+			parse_symbol(input, 0xE2, 0x88);
+			//input_value = compose_unicode(0xE2, 0x88, input);
+			return;
+		}
+	} else if(input != 0x89) {
+		parse_symbol(input, 0xE2);
+		//raise_error("<expression>", input);
+		return;
 	} else
 		input = increment_position(fgetc(input_file));
 	switch(input) {
@@ -291,7 +320,6 @@ void Scanner::parse_unicode(int input) {
 	default:
 		return(parse_symbol(input, 0xE2, 0x89));
 		//raise_error("<operator>", input);
-		return;
 	}
 }
 static bool structural_P(int input) {
