@@ -72,6 +72,11 @@ Application* makeOperation(Node* operator_, Node* operand_1, Node* operand_2) {
 	else
 		return(makeApplication(makeApplication(operator_, operand_1), operand_2));
 }
+AST::Str* makeStrSlice(AST::Str* ss, int offset) {
+	assert(offset == 1);
+	assert(ss->size > 0);
+	return(AST::makeStrRaw(((char*) ss->native) + 1, ss->size - 1, ss->bAtomicity));
+}
 
 }; /* end namespace AST */
 
