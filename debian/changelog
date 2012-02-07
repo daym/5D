@@ -2,6 +2,8 @@
 
   * provide builtin (:) when loading a module so it doesn't try to load the List module in order to get it.
   * fix sign of divrem (Float) division result.
+  * add floor, ceil, round1.
+  * add some more math operators to the Scanner special-case.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Thu, 03 Feb 2012 01:03:00 +0100
 
