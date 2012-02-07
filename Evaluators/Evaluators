@@ -33,7 +33,7 @@ AST::Node* reduce1(AST::Node* term);
 static inline AST::Node* reduce(AST::Node* term) {
 	AST::Application* a;
 	AST::Node* result;
-	std::string tv = Evaluators::str(term);
+	//std::string tv = Evaluators::str(term);
 	//fprintf(stderr, "DEBUG: (%d) reducing %s\n", recursionLevel, tv.c_str());
 	if((a = dynamic_cast<AST::Application*>(term)) == NULL)
 		result = term;
@@ -43,7 +43,7 @@ static inline AST::Node* reduce(AST::Node* term) {
 		else
 			result = (reduce1(term));
 	}
-	std::string rv = Evaluators::str(result);
+	//std::string rv = Evaluators::str(result);
 	//fprintf(stderr, "=> result %s\n", rv.c_str());
 	return(result);
 }
