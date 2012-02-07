@@ -217,7 +217,7 @@ toBool (#t&amp;&amp;#t) =&gt; t
 runIO
          write stdout "What's your name? " ;\_
          flush stdout ;\_
-         readline stdIn ;\name
+         readline stdin ;\name
          write stdout "Hello " ;\_
          write stdout name ;\_
          flush stdout ;\_
