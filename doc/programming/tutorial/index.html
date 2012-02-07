@@ -125,6 +125,7 @@ define f \x x⋅x
 <p>Note that you need to put parenthesis around operators (in order to prevent them from asserting their own precedence).</p>
 <pre>
 import "Reflection"
+import "IO"
 define f \x x*x
 describe 'f =&gt; \x x*x
 describe '(;) =&gt; \m \ber \world (\r ber (ioValue r) (ioWorld r)) (m world)
@@ -137,6 +138,7 @@ describe @backOffset:1 'g =&gt; \x x*x
 <h3>Conditionals</h3>
 <pre>
 import "Logic"
+import "Composition"
 define abs \x if (x ≥ 0)  (x)
                           (-x)
 </pre>
@@ -181,6 +183,7 @@ defrec f \x (f 1)      -- endless recursion, but it works
 <p>An example will make that clearer:</p>
 <pre>
 import "Logic"
+import "Arithmetic"
 define f \x (x**x)
 define f \x if (x = 0)   1
                          (f x)    -- refers to the one above.
