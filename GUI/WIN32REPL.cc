@@ -294,7 +294,7 @@ bool REPL_save(struct REPL* self, bool B_force_save_dialog) {
 	const char* environmentName;
 	std::wstring file_name;
 	environmentName = Config_get_environment_name(self->fConfig);
-	if(!environmentName || B_force_save_dialog)
+	if(!environmentName || !environmentName[0] || B_force_save_dialog)
 		file_name = GetUsualSaveFileName(self->dialog);
 	else
 		file_name = FromUTF8(environmentName);
