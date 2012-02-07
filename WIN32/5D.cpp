@@ -77,6 +77,7 @@ static void handleCommandLine(void) {
 			MessageBox(NULL, s.c_str(), NULL, MB_OK);
 		}
 	}
+	//REPL_load_contents_by_name(REPL1, "C:\\Documents and Settings\\s5128\\Desktop\\ww.5D");
 	LocalFree(argv);
 }
 #ifdef _MSC_VER
