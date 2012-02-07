@@ -248,7 +248,7 @@ runIO
          write stdout "Hello " ;\_
          write stdout name ;\_
          flush stdout ;\_
-         return name
+         liftIO name
 </pre>
 <p>What this does is:</p>
 <p><span class="pre">runIO</span> wraps IO.</p>
