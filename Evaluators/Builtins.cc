@@ -184,11 +184,11 @@ static AST::Node* divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
 }
 static AST::Node* divremFloat(const Numbers::Float& a, const Numbers::Float& b) {
 	NativeFloat bvalue = b.value;
-	if((bvalue >= 0) ^ (a.value >= 0))
-		bvalue = -bvalue;
 	if(bvalue == 0.0)
 		throw EvaluationException("division by zero");
 	NativeFloat q = floor(a.value / bvalue);
+	if((bvalue >= 0) ^ (a.value >= 0))
+		bvalue = -bvalue;
 	NativeFloat r = a.value - q * bvalue;
 	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
 	//return(makeOperation(Symbols::Sdivrem, toHeap(a), toHeap(b)));
