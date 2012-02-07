@@ -1,6 +1,7 @@
 5d (0.3.3) unstable; urgency=low
 
   * provide builtin (:) when loading a module so it doesn't try to load the List module in order to get it.
+  * fix sign of divrem (Float) division result.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Thu, 03 Feb 2012 01:03:00 +0100
 
