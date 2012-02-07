@@ -43,7 +43,7 @@ provide callback used by the scanner for getting currently registered operators 
 #| commented out |#
 make it possible to define custom operators in the REPL
 function to join buffers (memoryview)
-merge Str and Integer into one (for integer, the str() is reversed, though).
+merge Str and Integer into one (for integer, the str() is reversed, though). (or merge Str and List into one)
 move str() to the actual language
 #'print or (function print) to get the value in the function slot.
 
@@ -141,5 +141,6 @@ snd
 let open POSIX in puts ...
 
 = Interop =
+
 Windows COM strings
 Full Unicode strings
