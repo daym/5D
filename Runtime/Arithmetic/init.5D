@@ -43,7 +43,7 @@ let sqrt = sqrtEps 1 0.001 in
 let √ = sqrt in 
 let modulo = (\a \b remainder (b + remainder a b) b) in 
 let factorial = (rec (\fac \v if (v = 0) 1 v*(fac (v - 1)))) in 
-let round1 = (\v floor (v + 0.5)) in 
+let round1 = (\v if (0 <= v) (floor (v + 1/2)) (ceil (v - 1/2))) in 
 dispatchModule [['(-) (-)]
 ['(*) (*)]
 ['(/) (/)]
