@@ -2,7 +2,7 @@
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "Evaluators/Operation"
-#include "Integer"
+#include "Numbers/Integer"
 
 namespace Evaluators {
 AST::Node* internNative(bool value);
