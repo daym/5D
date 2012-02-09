@@ -52,7 +52,7 @@ static void print_text_LATEX(std::ostream& output, const char* text) {
 	if(text[0] == '*' && text[1] == '*' && text[2] == 0)
 		B_mathrm = false;
 	else if(text[1] == 0) {
-		if(text[0] == '^' || text[0] == '_') 
+		if(text[0] == '^' || text[0] == '_' || text[0] == ' ') 
 			B_mathrm = false;
 	}
 	if(B_mathrm)

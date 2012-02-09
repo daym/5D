@@ -57,7 +57,7 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 		output << "[";
 		print_CXX(OPL, output, position, ((AST::Cons*)node)->head, 0, false);
 		for(AST::Cons* vnode = Evaluators::evaluateToCons(((AST::Cons*)node)->tail); vnode; vnode = Evaluators::evaluateToCons(vnode->tail)) {
-			output << " ";
+			print_text_raw(output, position, " ", false);
 			print_CXX(OPL, output, position, dynamic_cast<AST::Cons*>(vnode)->head, 0, false);
 		}
 		output << "]";
