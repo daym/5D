@@ -22,7 +22,7 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 		AST::Symbol* operatorAssociativity = NULL;
 		int precedence = operatorSymbol ? OPL->get_operator_precedence_and_associativity(operatorSymbol, operatorAssociativity) : -1;
 		if(precedence != -1 && application_P(envelope)) { // is a (binary) operator and the envelope is not a builtin (i.e. (+))
-			bool B_parend = maybe_print_opening_paren(output, position, precedence, precedence_limit, B_paren_equal_levels);
+			bool B_parend = maybe_print_opening_paren(output, position, operator_, precedence, precedence_limit, B_paren_equal_levels);
 			print_CXX(OPL, output, position, get_application_operand(envelope), precedence, operatorAssociativity != Symbols::Sleft);
 			print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
 			////print_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
@@ -34,11 +34,11 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 			print_CXX(OPL, output, position, operand, precedence, operatorAssociativity != Symbols::Sright);
 			//print_text(output, position, operator_);
 			//print_CXX(OPL, output, position, get_application_operand(node), precedence);
-			maybe_print_closing_paren(output, position, B_parend);
+			maybe_print_closing_paren(output, position, operator_, B_parend);
 		} else { // function application is fine and VERY greedy
 			operatorAssociativity = Symbols::Sleft;
 			precedence = OPL->apply_level;
-			bool B_parend = maybe_print_opening_paren(output, position, precedence, precedence_limit, B_paren_equal_levels);
+			bool B_parend = maybe_print_opening_paren(output, position, operator_, precedence, precedence_limit, B_paren_equal_levels);
 			operator_ = get_application_operator(node);
 			operatorSymbol = dynamic_cast<AST::Symbol*>(operator_);
 			AST::Symbol* xoperatorAssociativity = NULL;
@@ -51,7 +51,7 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 				print_CXX(OPL, output, position, operator_, precedence, operatorAssociativity != Symbols::Sleft);
 			print_text_raw(output, position, " ", false);
 			print_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != Symbols::Sright);
-			maybe_print_closing_paren(output, position, B_parend); // f.e. we now are at +, but came from *, i.e. 2*(3+5)
+			maybe_print_closing_paren(output, position, operator_, B_parend); // f.e. we now are at +, but came from *, i.e. 2*(3+5)
 		}
 	} else if(cons_P(node)) {
 		output << "[";

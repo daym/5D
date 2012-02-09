@@ -9,12 +9,17 @@
 #include "Scanners/OperatorPrecedenceList"
 #include "Evaluators/Builtins"
 #include "Formatters/UTFStateMachine"
+#include "AST/Symbols"
 
 namespace Formatters {
 namespace LATEX {
 using namespace Evaluators;
 
-static inline bool maybe_print_opening_paren(std::ostream& output, int& position, int precedence, int precedence_limit, bool B_brace_equal_levels) {
+static inline bool maybe_print_opening_paren(std::ostream& output, int& position, AST::Node* operator_, int precedence, int precedence_limit, bool B_brace_equal_levels) {
+	if(operator_ == Symbols::Sslash) {
+		output << "\\frac{";
+		return(true);
+	}
 	if(precedence < precedence_limit) {
 		output << "\\left(";
 		return(true);
@@ -32,7 +37,11 @@ static inline bool maybe_print_opening_paren(std::ostream& output, int& position
 	} else
 		return(false);
 }
-static inline void maybe_print_closing_paren(std::ostream& output, int& position, bool B_parend) {
+static inline void maybe_print_closing_paren(std::ostream& output, int& position, AST::Node* operator_, bool B_parend) {
+	if(operator_ == Symbols::Sslash) {
+		output << "}"; // of frac
+		return;
+	}
 	if(B_parend) {
 		++position, output << "\\right)";
 	}
@@ -107,6 +116,10 @@ static void print_text(std::ostream& output, int& visible_position, const char* 
 }
 static void print_text_raw(std::ostream& output, int& visible_position, const std::string& textStr, bool spaces) {
 	const char* text = textStr.c_str();
+	if(text[0] == '/' && text[1] == 0) {
+		output << "}{";
+		return;
+	}
 	if(spaces)
 		output << "\\:";
 	print_text_LATEX(output, text);
@@ -124,7 +137,7 @@ static void print_text_raw(std::ostream& output, int& visible_position, const st
 }
 static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::Node* node, int precedence_limit, bool B_paren_equal_levels) {
 	int precedence = 0;
-	bool B_parend = maybe_print_opening_paren(output, position, precedence, precedence_limit, B_paren_equal_levels);
+	bool B_parend = maybe_print_opening_paren(output, position, NULL, precedence, precedence_limit, B_paren_equal_levels);
 	output << "\\frac{";
 	while(abstraction_P(node)) {
 		AST::Node* parameter = get_abstraction_parameter(node);
@@ -138,7 +151,7 @@ static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, st
 	//print_CXX(OPL, output, position, parameter, precedence, false);
 	print_CXX(OPL, output, position, node, precedence, false);
 	output << "}";
-	maybe_print_closing_paren(output, position, B_parend);
+	maybe_print_closing_paren(output, position, NULL, B_parend);
 }
 
 #include "Formatters/GenericPrinter"
