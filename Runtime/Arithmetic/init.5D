@@ -28,8 +28,6 @@ let divrem = Builtins.divrem in
 let divide = (\a \b head (divrem a b)) in 
 let remainder = (\a \b head (tail (divrem a b))) in 
 let (%) = remainder in 
-let floor = (\v divide v 1) in 
-let ceil = (\v -(floor (-v))) in 
 let pi = 3.141592653589793 in 
 let π = pi in 
 let cos = (\xx (\x (\cos if (x >= pi) (0 - cos (x % pi)) (cos x)) (\x 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720)) (xx % 2*pi)) in 
@@ -43,7 +41,8 @@ let sqrt = sqrtEps 1 0.001 in
 let √ = sqrt in 
 let modulo = (\a \b remainder (b + remainder a b) b) in 
 let factorial = (rec (\fac \v if (v = 0) 1 v*(fac (v - 1)))) in 
-let round1 = (\v if (0 <= v) (floor (v + 1/2)) (ceil (v - 1/2))) in 
+let ground = (\v divide v 1) in 
+let round1 = (\v if (0 <= v) (ground (v + 1/2)) (ground (v - 1/2))) in 
 dispatchModule [['(-) (-)]
 ['(*) (*)]
 ['(/) (/)]
@@ -69,8 +68,7 @@ dispatchModule [['(-) (-)]
 ['modulo modulo]
 ['within within]
 ['factorial factorial]
-['floor floor]
-['ceil ceil]
+['ground ground]
 ['round1 round1]
 ['π π]
 ['pi pi]]
