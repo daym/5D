@@ -185,7 +185,7 @@ static AST::Node* divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
 static AST::Node* divremFloat(const Numbers::Float& a, const Numbers::Float& b) {
 	NativeFloat avalue = a.value;
 	NativeFloat bvalue = b.value;
-	bool sign = ((bvalue >= 0) ^ (avalue >= 0)) ? (-1) : 1;
+	NativeFloat sign = ((bvalue >= 0) ^ (avalue >= 0)) ? (-1.0) : 1.0;
 	if(avalue < 0.0)
 		avalue = -avalue;
 	if(bvalue < 0.0)
