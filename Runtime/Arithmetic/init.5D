@@ -30,7 +30,7 @@ let remainder = (\a \b head (tail (divrem a b))) in
 let (%) = remainder in 
 let pi = 3.141592653589793 in 
 let π = pi in 
-let cos = (\xx (\x (\cos if (x >= pi) (0 - cos (modulo x pi)) (cos x)) (\x 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720)) (xx % 2*pi)) in 
+let cos = (\xx (\x (\cos if (x >= pi) (0 - cos (modulo x pi)) (cos x)) (\x 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720)) (modulo xx 2*pi)) in 
 let sin = (\xx (\sin (\x if (x >= pi) (0 - sin (modulo x pi)) (sin x)) (modulo xx 2*pi)) (\x x - x*x*x/6 + x*x*x*x*x/120 - x*x*x*x*x*x*x/(120*6*7))) in 
 let tan = (\x (sin x)/(cos x)) in 
 let next = (\N \x (x + N/x)/2) in 
