@@ -2,6 +2,7 @@
 
   * add 'list?
   * make LATEX output nicer (still sometimes messes up on 1:[] ).
+  * fix divrem (again)
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Thu, 09 Feb 2012 10:14:00 +0100
 
