@@ -13,21 +13,22 @@ span.pre { font-family: monospace; color: blue; }
 <h2>Syntax Elements</h2>
 <p>Names can contain every printable character except space and <span class="pre">#</span> and <span class="pre">@</span>, although operator names consist of different characters than other names.</p>
 <p>Operator names consist of funny characters or math operator characters, not alphanumeric letters. Custom operators have to be registered, giving them a precedence level, before they can be used.</p>
-<p>Some are preregistered: <span class="pre"
-><span title="index">_</span> 
- <span title="index">.</span> 
+<p>Some are preregistered ("let" does not consist of funny characters because of tradition): 
+<span class="pre"
+><span title="index">.</span> 
+ <span title="index">_</span> 
  <span title="index">^</span> 
  <span title="power">**</span>
  <span title="cross product">⨯</span>
  <span title="multiplication">*</span>
  <span title="multiplication">⋅</span> 
  <span title="division">/</span> 
- <span title="modulation">%</span> 
  <span title="list element construction">:</span> 
+ <span title="quotation">'</span> 
  <span title="list concatenation">++</span> 
- <span title="function application">$</span>
  <span title="addition">+</span> 
  <span title="subtraction">-</span> 
+ <span title="modulation">%</span> 
  <span title="equality test">=</span> 
  <span title="non-equality test">/=</span> 
  <span title="less-than test">&lt;</span> 
@@ -39,9 +40,12 @@ span.pre { font-family: monospace; color: blue; }
  <span title="logical and">&amp;&amp;</span> 
  <span title="logical or">||</span> 
  <span title="pair constructor">,</span> 
- <span title="World time sequencer">;</span> 
+ <span title="function application">$</span>
  <span title="unix-like pipe">|</span> 
  <span title="either unit test expected result or comment">=&gt;</span>
+ <span title="World time sequencer">;</span> 
+ <span title="abstractor">\</span> 
+ <span title="let form">let</span> 
  </span></p>
 <p>Monoms after a name are function arguments, like everywhere in mathematics: sin k⋅x=sin(k⋅x) and not <del>(sin k)*x</del>.</p>
 <p>On the other hand, sin k⋅x+φ=(sin k⋅x)+φ</p>
