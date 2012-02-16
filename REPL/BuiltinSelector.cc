@@ -84,7 +84,7 @@ void BuiltinSelector_init(void) {
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stdin"), AST::makeBox(stdin, AST::symbolFromStr("stdin")));
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stdout"), AST::makeBox(stdout, AST::symbolFromStr("stdout")));
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stderr"), AST::makeBox(stderr, AST::symbolFromStr("stderr")));
-	REPL_add_static_builtin_binding(self, AST::symbolFromStr("PATHMAX"), Numbers::internNative((NativeInt) PATH_MAX));
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("PATHMAX"), Numbers::internNative((Numbers::NativeInt) PATH_MAX));
 	REPL_add_builtin_method(self, AST::symbolFromStr("write"), &Evaluators::Writer);
 	REPL_add_builtin_method(self, AST::symbolFromStr("flush"), &Evaluators::Flusher);
 	REPL_add_builtin_method(self, AST::symbolFromStr("readline"), &Evaluators::LineReader);
