@@ -1,4 +1,5 @@
 let allocateRecord = Builtins.allocateRecord in 
+let allocateMemory = Builtins.allocateMemory in 
 let duplicateRecord = Builtins.duplicateRecord in 
 let packRecord = Builtins.packRecord in 
 let recordSize = Builtins.recordSize in 
@@ -6,6 +7,7 @@ let unpackRecord = Builtins.unpackRecord in
 let archDepLibName = Builtins.archDepLibName in 
 let strUntilZero = Builtins.strUntilZero in 
 dispatchModule [['allocateRecord allocateRecord]
+['allocateMemory allocateMemory]
 ['duplicateRecord duplicateRecord]
 ['packRecord packRecord]
 ['recordSize recordSize]
