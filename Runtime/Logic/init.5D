@@ -7,6 +7,7 @@ let not = (\a \t \f a f t) in
 let implies? = (\a \b not a || b) in 
 let else = (\f f) in 
 let if = (\f f) in 
+let elif = (\f f) in 
 let otherwise = (\f f) in 
 let equivalent? = (\a \b a && b || not a && not b) in 
 dispatchModule [['#t #t]
@@ -16,6 +17,7 @@ dispatchModule [['#t #t]
 ['implies? implies?]
 ['else else]
 ['if if]
+['elif elif]
 ['not not]
 ['otherwise otherwise]
 ['equivalent? equivalent?]]
