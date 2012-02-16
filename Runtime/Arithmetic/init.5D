@@ -27,6 +27,7 @@ let abs = (\x if (x <= 0) (0 - x) x) in
 let divrem = Builtins.divrem in 
 let divide = (\a \b head (divrem a b)) in 
 let remainder = (\a \b head (tail (divrem a b))) in 
+let modulo = (\a \b remainder (b + remainder a b) b) in 
 let (%) = remainder in 
 let pi = 3.141592653589793 in 
 let π = pi in 
@@ -39,7 +40,6 @@ let repeat = (\f rec (\repeat \a a:(repeat (f a)))) in
 let sqrtEps = (\a0 \eps \N within eps (repeat (next N) a0)) in 
 let sqrt = sqrtEps 1 0.001 in 
 let √ = sqrt in 
-let modulo = (\a \b remainder (b + remainder a b) b) in 
 let factorial = (rec (\fac \v if (v = 0) 1 v*(fac (v - 1)))) in 
 let ground = (\v divide v 1) in 
 let round1 = (\v if (0 <= v) (ground (v + 1/2)) (ground (v - 1/2))) in 
