@@ -7,7 +7,10 @@ def getNames(n):
 	f = open(n, "r")
 	if True:
 		for line in f.readlines():
-			sys.stdout.write(line)
+			if line.startswith("export "):
+				sys.stdout.write(line)
+			else:
+				sys.stdout.write(line[len("export ") : ])
 			if line.find("=") == -1 or not line.startswith("export let "):
 				continue
 			rest = line[len("export let ") : ]
