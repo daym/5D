@@ -6,10 +6,12 @@ let id = (\f f) in
 let Y = (\f (\x f (x x)) (\x f (x x))) in 
 let rec = Y in 
 let rem = \a \b b in 
+let export = id in 
 dispatchModule [['(|) (|)]
 ['($) ($)]
 ['compose compose]
 ['flip flip]
 ['id id]
 ['rec rec]
-['rem rem]]
+['rem rem]
+['export export]]
