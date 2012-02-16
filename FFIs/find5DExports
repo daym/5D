@@ -8,9 +8,9 @@ def getNames(n):
 	if True:
 		for line in f.readlines():
 			sys.stdout.write(line)
-			if line.find("=") == -1 or not line.startswith("let "):
+			if line.find("=") == -1 or not line.startswith("export let "):
 				continue
-			rest = line[len("let ") : ]
+			rest = line[len("export let ") : ]
 			rest = rest[: rest.find("=")].strip()
 			name = rest
 			result.append(name)
