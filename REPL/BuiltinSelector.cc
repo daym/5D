@@ -95,7 +95,8 @@ void BuiltinSelector_init(void) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("packRecord"), &FFIs::RecordPacker);
 	REPL_add_builtin_method(self, AST::symbolFromStr("unpackRecord"), &FFIs::RecordUnpacker);
 	REPL_add_builtin_method(self, AST::symbolFromStr("recordSize"), &FFIs::RecordSizeCalculator);
-	REPL_add_builtin_method(self, AST::symbolFromStr("allocateRecord"), &FFIs::RecordAllocator);
+	REPL_add_builtin_method(self, AST::symbolFromStr("allocateMemory"), &FFIs::MemoryAllocator);
+	REPL_add_builtin_method(self, AST::symbolFromStr("allocateRecord"), &FFIs::RecordAllocator); // this is actually (compose allocateMemory recordSize)
 	REPL_add_builtin_method(self, AST::symbolFromStr("duplicateRecord"), &FFIs::RecordDuplicator);
 	REPL_add_builtin_method(self, AST::symbolFromStr("archDepLibName"), &Evaluators::ArchDepLibNameGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("errno"), &Evaluators::ErrnoGetter);

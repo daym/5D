@@ -559,10 +559,26 @@ static AST::Node* wrapAllocateRecord(AST::Node* options, AST::Node* argument) {
 	AST::Node* result = Record_allocate(Record_get_size(format), !Record_has_pointers(format));
 	return(Evaluators::makeIOMonad(result, world));
 }
+static AST::Node* wrapAllocateMemory(AST::Node* options, AST::Node* argument) {
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
+	bool B_ok = false;
+	Numbers::NativeInt size = Numbers::toNativeInt(iter->second, B_ok);
+	if(!B_ok)
+		throw Evaluators::EvaluationException("cannot allocate memory with unknown size");
+	++iter;
+	AST::Node* world = iter->second;
+	AST::Node* result = Record_allocate(size, false/*TODO atomic as an option*/);
+	return(Evaluators::makeIOMonad(result, world));
+}
 DEFINE_FULL_OPERATION(RecordAllocator, {
 	return(wrapAllocateRecord(fn, argument));
 })
+DEFINE_FULL_OPERATION(MemoryAllocator, {
+	return(wrapAllocateMemory(fn, argument));
+})
 REGISTER_BUILTIN(RecordAllocator, 2, 0, AST::symbolFromStr("allocateRecord"))
+REGISTER_BUILTIN(MemoryAllocator, (-2), 0, AST::symbolFromStr("allocateMemory"))
 static AST::Node* wrapDuplicateRecord(AST::Node* options, AST::Node* argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
