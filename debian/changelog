@@ -6,6 +6,7 @@
   * fix sin
   * add 'elif'
   * add 'export' keyword to mark for find5DExports
+  * add PATHMAX (for PATH_MAX).
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Thu, 09 Feb 2012 10:14:00 +0100
 
