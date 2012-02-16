@@ -8,9 +8,9 @@ def getNames(n):
 	if True:
 		for line in f.readlines():
 			if line.startswith("export "):
-				sys.stdout.write(line)
-			else:
 				sys.stdout.write(line[len("export ") : ])
+			else:
+				sys.stdout.write(line)
 			if line.find("=") == -1 or not line.startswith("export let "):
 				continue
 			rest = line[len("export let ") : ]
