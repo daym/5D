@@ -1,3 +1,9 @@
+5d (0.3.5) unstable; urgency=low
+
+  * add default trampoline (fallback)
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Sat, 18 Feb 2012 17:32:00 +0100
+
 5d (0.3.4) unstable; urgency=low
 
   * add 'list?
