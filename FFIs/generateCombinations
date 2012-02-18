@@ -142,6 +142,7 @@ extras = [ # do not start with 'p or 's (only with 'P or 'S)
 	'Si', 
 	'Sp', 
 	'SP',
+	'Spp',
 	'vppiipppiiiiiii', 
 	'Ppilpipp', 
 	'ipplpp', 

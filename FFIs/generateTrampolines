@@ -185,17 +185,16 @@ static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::N
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	Evaluators::CXXArguments::const_iterator endIter = arguments.end();
 	if(fMarshallers.empty())
-        	initMarshallers();
+		initMarshallers();
 	assert(iter != endIter);
-        assert(iter->first == NULL);
+	assert(iter->first == NULL);
 	AST::Symbol* signature = proc->fSignature;
 	--endIter; /* hide the world */
 	HashTable::const_iterator iterMarshaller = fMarshallers.find(signature->name);
 	if(iterMarshaller == fMarshallers.end()) {
-	    fprintf(stderr, "warning: could not find marshaller for %s\\n", signature->name);
-	    return Evaluators::makeIOMonad(NULL, endIter->second);
-        } else
-            return (*iterMarshaller->second)(proc, iter, endIter, options, world);
+		return jumpFFI(proc, iter, endIter, options, world);
+	} else
+		return (*iterMarshaller->second)(proc, iter, endIter, options, world);
 }
        
     
