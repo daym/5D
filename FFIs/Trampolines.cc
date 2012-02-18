@@ -20,8 +20,8 @@ static inline ffi_type* ffiTypeFromChar(char t) {
 	      t == 'B' ? &ffi_type_uint8 :
 	      t == 'h' ? &ffi_type_sshort :
 	      t == 'H' ? &ffi_type_ushort :
-	      t == 'q' ? &ffi_type_slonglong :
-	      t == 'Q' ? &ffi_type_ulonglong :
+	      t == 'q' ? &ffi_type_sint64 :
+	      t == 'Q' ? &ffi_type_uint64 /* TODO long long */ :
 	      t == 'f' ? &ffi_type_float :
 	      t == 'd' ? &ffi_type_double : 
 	      t == 'p' ? &ffi_type_pointer :

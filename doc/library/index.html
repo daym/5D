@@ -554,7 +554,7 @@ unpackRecord "ii" "\x01\x00\x00\x00\x02\x00\x00\x00" =&gt; [1 2]
 <p>Example:</p>
 <pre>
 allocateRecord "ii" ;\r
-return r
+liftIO r
 </pre>
 <hr/>
 <h3>duplicateRecord \box \world</h3>
@@ -562,7 +562,7 @@ return r
 <p>Example:</p>
 <pre>
 duplicateRecord (packRecord "ii" [1 2]) ;\r
-return r
+liftIO r
 </pre>
 <hr/>
 <h3>recordSize \format</h3>

@@ -35,6 +35,8 @@ static size_t getSize(char c) {
 	case 'P': return(sizeof(void*));
 	case 'z': return(sizeof(char*));
 	case 'Z': return(sizeof(char*));
+	case 's': return(sizeof(char*));
+	case 'S': return(sizeof(char*));
 	default: return(0); /* FIXME */
 	}
 }
