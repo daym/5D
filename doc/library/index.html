@@ -156,14 +156,14 @@ if (nil? nil) 'yes 'no =&gt; yes
 </pre>
 <hr/>
 <h3>divrem \a \b</h3>
-<p>Result is a list with the integer quotient of <span class="pre">a</span> and <span class="pre">b</span> and the remainder and nil.</p>
+<p>Result is a list with the integer quotient of <span class="pre">a</span> and <span class="pre">b</span> and the remainder.</p>
 <p>Example:</p>
 <pre>
 divrem 5 3 =&gt; (1:2:nil)
 </pre>
 <hr/>
 <h3>(&lt;) \a \b</h3>
-<p>Result is whether <span class="pre">a</span> is smaller than <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Result is whether <span class="pre">a</span> is smaller than <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
 if (5 &lt; 3) 'yes 'no =&gt; no
@@ -171,7 +171,7 @@ if (5 &lt; 3) 'yes 'no =&gt; no
 <hr/>
 <h3>(&lt;=) \a \b</h3>
 <p>Alternative Name: ≤</p>
-<p>Result is whether <span class="pre">a</span> is smaller than or equal to <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Result is whether <span class="pre">a</span> is smaller than or equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
 if (5 &lt;= 5) 'yes 'no =&gt; yes
@@ -179,21 +179,21 @@ if (5 ≤ 5) 'yes 'no =&gt; yes
 </pre>
 <hr/>
 <h3>(=) \a \b</h3>
-<p>Result is whether <span class="pre">a</span> is equal to <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Result is whether <span class="pre">a</span> is equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
 if (5 = 5) 'yes 'no =&gt; yes
 </pre>
 <hr/>
 <h3>(/=) \a \b</h3>
-<p>Result is whether <span class="pre">a</span> is not equal to <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Result is whether <span class="pre">a</span> is not equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
 if (5 /= 5) 'yes 'no =&gt; no
 </pre>
 <hr/>
 <h3>(&gt;) \a \b</h3>
-<p>Result is whether <span class="pre">a</span> is greater than <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Result is whether <span class="pre">a</span> is greater than <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
 if (5 &gt; 3) 'yes 'no =&gt; yes
@@ -201,7 +201,7 @@ if (5 &gt; 3) 'yes 'no =&gt; yes
 <hr/>
 <h3>(&gt;=) \a \b</h3>
 <p>Alternative Name: ≥</p>
-<p>Result is whether <span class="pre">a</span> is greater than or equal to <span class="pre">b</span>, if that is possible. If not, results in the original form.</p>
+<p>Result is whether <span class="pre">a</span> is greater than or equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
 if (5 &gt;= 5) 'yes 'no =&gt; yes
@@ -227,7 +227,7 @@ if (zero? 0) 'yes 'no =&gt; yes
 if (zero? (42)) 'yes 'no =&gt; no
 </pre>
 <h3>negative? \a</h3>
-<p>Result is whether <span class="pre">a</span> is less than 0, if that is possible. If not, results in the original form.</p>
+<p>Result is whether <span class="pre">a</span> is less than 0.</p>
 <p>Example:</p>
 <pre>
 if (negative? (-1)) 'yes 'no =&gt; yes

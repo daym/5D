@@ -83,6 +83,9 @@ static inline Node* get_abstraction_body(Node* abstraction) {
 static inline Node* get_abstraction_parameter(Node* abstraction) {
 	return(((Abstraction*)abstraction)->parameter);
 }
+static inline Node* get_cons_head(Node* cons) {
+	return(((Cons*) cons)->head);
+}
 Application* makeApplication(Node* fn, Node* argument);
 Abstraction* makeAbstraction(Node* parameter, Node* body);
 Application* makeOperation(Node* operator_, Node* operand_1, Node* operand_2);

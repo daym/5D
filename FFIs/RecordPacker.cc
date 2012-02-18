@@ -112,11 +112,6 @@ static inline bool machineNoneBigEndianP(void) /* TODO pure */{
 	return(false);
 }
 
-enum ByteOrder {
-	MACHINE_BYTE_ORDER,
-	LITTLE_ENDIAN_BYTE_ORDER,
-	BIG_ENDIAN_BYTE_ORDER,
-};
 #define BIG_ENDIAN_BYTE_ORDER_P(type) (byteOrder == BIG_ENDIAN_BYTE_ORDER || (byteOrder == MACHINE_BYTE_ORDER && machine ## type ## BigEndianP()))
 
 #define PACK_BUF(type, buffer) \
@@ -209,8 +204,7 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 	}
 	return(size);
 }
-
-void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst) {
+void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst, std::vector<size_t>& offsets) {
 	size_t new_offset = 0;
 	if(formatStr == NULL)
 		return;
@@ -241,7 +235,7 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 			for(AST::Cons* consNode = Evaluators::evaluateToCons(headNode); consNode; consNode = Evaluators::evaluateToCons(Evaluators::reduce(consNode->tail))) {
 				subPosition = position;
 				AST::Node* headNode = Evaluators::reduce(consNode->head);
-				Record_pack(byteOrder, subPosition, offset, formatStr, headNode, sst);
+				Record_pack(byteOrder, subPosition, offset, formatStr, headNode, sst, offsets);
 			}
 			position = subPosition;
 			format = ((const char*) formatStr->native) + position;
@@ -532,7 +526,8 @@ static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	std::stringstream sst;
 	size_t position = 0;
 	size_t offset = 0;
-	Record_pack(MACHINE_BYTE_ORDER, position, offset, dynamic_cast<AST::Str*>(a), b, sst);
+	std::vector<size_t> offsets;
+	Record_pack(MACHINE_BYTE_ORDER, position, offset, dynamic_cast<AST::Str*>(a), b, sst, offsets);
 	std::string v = sst.str();
 	return(AST::makeStrCXX(v));
 }

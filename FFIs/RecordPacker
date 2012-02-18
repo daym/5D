@@ -2,12 +2,21 @@
 #define __FFIS_RECORD_PACKER_H
 #include "Evaluators/Operation"
 #include "AST/AST"
+#include <vector>
 
 namespace FFIs {
 
+enum ByteOrder {
+	MACHINE_BYTE_ORDER,
+	LITTLE_ENDIAN_BYTE_ORDER,
+	BIG_ENDIAN_BYTE_ORDER,
+};
+
 /* uses C packing alignment */
-AST::Str* Record_pack(AST::Str* formatStr, AST::Node* data);
-AST::Node* Record_unpack(AST::Str* formatStr, AST::Str* dataStr);
+void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst, std::vector<size_t>& offsets);
+AST::Node* Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box* dataStr);
+AST::Str* Record_allocate(size_t size, bool bAtomicity);
+size_t Record_get_size(AST::Str* formatStr);
 
 DECLARE_SIMPLE_OPERATION(RecordPacker)
 DECLARE_SIMPLE_OPERATION(RecordUnpacker)

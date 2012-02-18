@@ -12,6 +12,7 @@
 #include "Evaluators/Operation"
 #include "Evaluators/Evaluators"
 #include <ext/hash_map>
+
 namespace Trampolines {
 //typedef std::unordered_map<const char* , AST:Node*, std::hash<AST::Node*> > HashTable;
 struct eqstr {
@@ -26,12 +27,12 @@ AST::Node* jumpFFI(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*
 // do NOT gc_allocate the following since it seems to have a bug:
 typedef __gnu_cxx::hash_map<const char*, jumper_t*, __gnu_cxx::hash<const char*>, eqstr> HashTable;
 
-/* note that the caller did --endIter so it now points to the World. */
+#ifdef WIN32
 AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& endIter, AST::Node* options, AST::Node* world) {
-	AST::Symbol* signature = proc->fSignature;
 	fprintf(stderr, "warning: could not find marshaller for %s\n", signature->name);
 	return Evaluators::makeIOMonad(NULL, endIter->second);
 }
+#endif
 
 };
 #include "FFIs/Trampolines"
