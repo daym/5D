@@ -20,12 +20,16 @@ static inline ffi_type* ffiTypeFromChar(char t) {
 	      t == 'B' ? &ffi_type_uint8 :
 	      t == 'h' ? &ffi_type_sshort :
 	      t == 'H' ? &ffi_type_ushort :
+	      t == 'q' ? &ffi_type_slonglong :
+	      t == 'Q' ? &ffi_type_ulonglong :
 	      t == 'f' ? &ffi_type_float :
 	      t == 'd' ? &ffi_type_double : 
 	      t == 'p' ? &ffi_type_pointer :
 	      t == 'P' ? &ffi_type_pointer :
 	      t == 's' ? &ffi_type_pointer :
 	      t == 'S' ? &ffi_type_pointer :
+	      t == 'z' ? &ffi_type_pointer :
+	      t == 'Z' ? &ffi_type_pointer :
 	      t == 'D' ? &ffi_type_longdouble : 
 	      &ffi_type_void;
 }
