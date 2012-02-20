@@ -1,7 +1,8 @@
 5d (0.3.5) unstable; urgency=low
 
-  * add default trampoline (fallback)
-  * change prompt
+  * add default trampoline (fallback).
+  * change prompt.
+  * fix packRecord to work with (string) pointers.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Sat, 18 Feb 2012 17:32:00 +0100
 
