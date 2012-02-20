@@ -8,7 +8,7 @@ GENERATEDS = FFIs/Trampolines FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols F
 
 #LIBGC_LD_WRAP_LDFLAGS = -Wl,--wrap -Wl,read -Wl,--wrap -Wl,dlopen -Wl,--wrap -Wl,pthread_create -Wl,--wrap -Wl,pthread_join -Wl,--wrap -Wl,pthread_detach -Wl,--wrap -Wl,pthread_sigmask -Wl,--wrap -Wl,sleep
 LIBGC_LD_WRAP_CFLAGS = -D_REENTRANT -DGC_THREADS -DUSE_LD_WRAP
-CXXFLAGS += -Wall -I. -g3 -fno-strict-overflow -Wno-deprecated `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0` $(LIBGC_LD_WRAP_CFLAGS) -pthread
+CXXFLAGS += -Wall -I. -g3 -fno-strict-overflow -Wno-deprecated `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -pthread
 ifdef PREFIX
 CXXFLAGS +=  -DPREFIX=\"$(PREFIX)\"
 endif
@@ -19,7 +19,7 @@ DISTDIR = $(PACKAGE)-$(VERSION)
 #-fwrapv
 #-Werror=strict-overflow
 
-LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a -ldl -lgc -lpthread `pkg-config --libs glib-2.0 gthread-2.0 libxml-2.0` $(LIBGC_LD_WRAP) -lffi
+LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a -ldl -lgc -lpthread `pkg-config --libs glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP) -lffi
 GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
 GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
 FFIS = FFIs/TrampolineSymbols.o FFIs/Allocators.o
@@ -91,7 +91,7 @@ Scanners/SExpressionParser.o: Scanners/SExpressionParser.cc Scanners/SExpression
 Scanners/OperatorPrecedenceList.o: Scanners/OperatorPrecedenceList.cc AST/AST AST/Symbol
 Scanners/test-MathParser.o: Scanners/test-MathParser.cc Scanners/MathParser Scanners/Scanner Scanners/OperatorPrecedenceList Evaluators/Builtins
 Evaluators/Evaluators.o: Evaluators/Evaluators.cc FFIs/Allocators Evaluators/Evaluators Evaluators/Operation AST/AST AST/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList
-FFIs/Trampolines.o: FFIs/Trampolines.cc FFIs/RecordPacker Evaluators/Evaluators
+FFIs/Trampolines.o: FFIs/Trampolines.cc FFIs/RecordPacker Evaluators/Evaluators Numbers/Integer Numbers/Small
 Evaluators/Operation.o: Evaluators/Operation.cc Evaluators/Operation Evaluators/Evaluators AST/AST AST/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList FFIs/Trampolines FFIs/RecordPacker
 	$(CC) -O2 -Wall -I. -fno-strict-overflow -c -o $@ $< 
 Evaluators/Builtins.o: Evaluators/Builtins.cc FFIs/Allocators AST/HashTable Scanners/MathParser Evaluators/Builtins Numbers/Integer Numbers/Real AST/AST AST/Symbol AST/Keyword FFIs/FFIs  Scanners/OperatorPrecedenceList Numbers/Small Evaluators/Operation

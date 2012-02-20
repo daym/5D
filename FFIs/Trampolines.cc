@@ -8,6 +8,7 @@
 #include <vector>
 #include "FFIs/RecordPacker"
 #include "Evaluators/Evaluators"
+#include "Numbers/Integer"
 
 namespace Trampolines {
 
@@ -37,8 +38,9 @@ static AST::Node* buildList(std::list<std::pair<AST::Keyword*, AST::Node*> >::co
 	if(iter == endIter)
 		return(NULL);
 	else {
+		AST::Node* v = iter->second;
 		++iter;
-		return(AST::makeCons(iter->second, buildList(iter, endIter)));
+		return(AST::makeCons(v, buildList(iter, endIter)));
 	}
 }
 /* note that the caller did (--endIter) so it now points to the World. */
@@ -60,7 +62,8 @@ AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keywor
 		size_t offset = 0;
 		std::stringstream sst;
 		std::vector<size_t> offsets;
-		Record_pack(FFIs::MACHINE_BYTE_ORDER, position, offset, formatString, buildList(iter, endIter), sst, offsets);
+		AST::Node* returnValue = Numbers::internNative(0); // FIXME non-integer return values
+		Record_pack(FFIs::MACHINE_BYTE_ORDER, position, offset, formatString, AST::makeCons(returnValue, buildList(iter, endIter)), sst, offsets);
 		assert(offsets.size() == argCount);
 		dataStd = sst.str();
 		char* data = (char*) dataStd.c_str();
@@ -75,7 +78,7 @@ AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keywor
 			}
 		}
 	}
-	if(argCount > 0 && ffi_prep_cif(&cif, abi, argCount, argTypes[0], argTypes + 1) == FFI_OK) {
+	if(argCount > 0 && ffi_prep_cif(&cif, abi, argCount - 1, argTypes[0], argTypes + 1) == FFI_OK) {
 		ffi_call(&cif, (void (*)(void)) proc->native, args[0], args + 1);
 		AST::Node* results;
 		char returnSig[2] = {*sig, 0};

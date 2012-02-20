@@ -246,6 +246,7 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 			new_offset = (offset + align - 1) & ~(align - 1);
 			for(; offset < new_offset; ++offset)
 				sst << '\0';
+			offsets.push_back(offset);
 			size_t size = pack_atom_value(byteOrder, formatC, headNode, sst);
 			offset += size;
 /*
