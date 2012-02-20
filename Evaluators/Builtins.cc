@@ -466,7 +466,7 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 			return(iter->second);
 		else {
 			std::stringstream sst;
-			sst << "unknown symbol '" << s->name;
+			sst << "unknown library symbol '" << s->name;
 			std::string v = sst.str();
 			throw Evaluators::EvaluationException(GCx_strdup(v.c_str()));
 		}
