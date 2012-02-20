@@ -29,7 +29,7 @@ typedef __gnu_cxx::hash_map<const char*, jumper_t*, __gnu_cxx::hash<const char*>
 
 #ifdef WIN32
 AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& endIter, AST::Node* options, AST::Node* world) {
-	fprintf(stderr, "warning: could not find marshaller for %s\n", signature->name);
+	fprintf(stderr, "warning: could not find marshaller for %s\n", proc->fSignature->name);
 	return Evaluators::makeIOMonad(NULL, endIter->second);
 }
 #endif
