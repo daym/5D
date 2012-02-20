@@ -120,14 +120,15 @@ static inline bool machineNoneBigEndianP(void) /* TODO pure */{
 
 #define PACK_BUF(type, buffer) \
 	assert(sizeof(buffer) == size); \
+	size_t size2 = size; \
 	if(BIG_ENDIAN_BYTE_ORDER_P(type) != machine ## type ## BigEndianP()) { \
 		char* b = (char*) &buffer; \
 		b += size; \
-		for(--b; size > 0; --size, --b) \
+		for(--b; size2 > 0; --size2, --b) \
 			sst << *b; \
 	} else { \
 		char* b = (char*) &buffer; \
-		for(; size > 0; --size, ++b) \
+		for(; size2 > 0; --size2, ++b) \
 			sst << *b; \
 	}
 
@@ -401,9 +402,8 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 			DECODE_BUF(None, value)
 			if(value == NULL)
 				return(NULL);
-			else {
+			else
 				return(AST::makeStr(value));
-			}
 		}
 	default:
 		{
