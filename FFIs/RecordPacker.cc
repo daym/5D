@@ -66,6 +66,8 @@ static size_t getAlignment(char c) {
 	case 'P': return(sizeof(long) == 8 ? 8 : 4);
 	case 'z': return(sizeof(long) == 8 ? 8 : 4);
 	case 'Z': return(sizeof(long) == 8 ? 8 : 4);
+	case 's': return(sizeof(long) == 8 ? 8 : 4);
+	case 'S': return(sizeof(long) == 8 ? 8 : 4);
 	case 'B': return(1);
 	case 'H': return(2);
 	case 'I': return(4);
@@ -167,6 +169,7 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 			return(size);
 		}
 		case 'z':
+		case 's':
 		case 'p': {
 			if(headNode == NULL)
 				throw Evaluators::EvaluationException("packRecord: that field cannot be nil");
@@ -175,6 +178,7 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 			return(size);
 		}
 		case 'Z':
+		case 'S':
 		case 'P': {
 			void* result = headNode ? Evaluators::get_native_pointer(headNode) : NULL;
 			PACK_BUF(None, result)
@@ -382,6 +386,7 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 			}
 		}
 	case 'z':
+	case 's':
 		{
 			char* value;
 			DECODE_BUF(None, value)
@@ -390,6 +395,7 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 			return(AST::makeStr(value));
 		}
 	case 'Z':
+	case 'S':
 		{
 			char* value;
 			DECODE_BUF(None, value)
