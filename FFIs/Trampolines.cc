@@ -62,7 +62,7 @@ AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keywor
 		size_t offset = 0;
 		std::stringstream sst;
 		std::vector<size_t> offsets;
-		AST::Node* returnValue = Numbers::internNative(0); // FIXME non-integer return values
+		AST::Node* returnValue = (ffiTypeFromChar(sig[0]) == &ffi_type_pointer) ? NULL : Numbers::internNative(0);
 		Record_pack(FFIs::MACHINE_BYTE_ORDER, position, offset, formatString, AST::makeCons(returnValue, buildList(iter, endIter)), sst, offsets);
 		assert(offsets.size() == argCount);
 		dataStd = sst.str();
