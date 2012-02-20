@@ -323,7 +323,7 @@ int main(int argc, char* argv[]) {
 	install_SIGINT_handler();
 	initialize_readline();
 	operator_precedence_list = new Scanners::OperatorPrecedenceList();
-	while((line = readline("\316\1\273\2> "))) {
+	while((line = readline("eval $ "))) {
 		if(!line)
 			break;
 		if(!line[0])
