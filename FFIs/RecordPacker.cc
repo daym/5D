@@ -334,19 +334,19 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 		{
 			unsigned long value;
 			DECODE_BUF(Integer, value)
-			return(Numbers::internNative((Numbers::NativeInt) value));
+			return(Numbers::internNativeU(value));
 		}
 	case 'q':
 		{
 			long long value;
 			DECODE_BUF(Integer, value)
-			return(Numbers::internNative((Numbers::NativeInt) value)); // FIXME larger
+			return(Numbers::internNative(value));
 		}
 	case 'Q':
 		{
 			unsigned long long value;
 			DECODE_BUF(Integer, value)
-			return(Numbers::internNative((Numbers::NativeInt) value)); // FIXME larger
+			return(Numbers::internNativeU(value));
 		}
 	case 'f':
 		{
