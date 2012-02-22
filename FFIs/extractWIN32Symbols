@@ -18,7 +18,7 @@ def parseExports(name): # dumpbin a.dll /exports
 						continue
 					if (line.find("(forwarded to ") != -1):
 						line = line.split("(forwarded to ", 2)[0]
-					parts = line.strip().replace("  ", " ").replace("  ", " ").replace("  ", " ").replace("  ", " ").replace("  ", " ").split(" ")
+					parts = line.strip().split("=")[0].strip().replace("  ", " ").replace("  ", " ").replace("  ", " ").replace("  ", " ").replace("  ", " ").split(" ")
 					name = parts[-1]
 					if name != "[NONAME]" and name.strip() != "":
 						yield name
