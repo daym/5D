@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <limits.h>
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "Evaluators/Operation"
@@ -70,6 +71,7 @@ Integer::Integer(const BigUnsigned &x, Sign s) : mag(x) {
 Integer::Integer(unsigned long  x) : mag(x) { sign = mag.isZero() ? zero : positive; }
 Integer::Integer(unsigned int   x) : mag(x) { sign = mag.isZero() ? zero : positive; }
 Integer::Integer(unsigned short x) : mag(x) { sign = mag.isZero() ? zero : positive; }
+Integer::Integer(unsigned long long x) : mag(x) { sign = mag.isZero() ? zero : positive; }
 
 // For signed input, determine the desired magnitude and sign separately.
 
@@ -91,6 +93,7 @@ namespace {
 Integer::Integer(long  x) : sign(signOf(x)), mag(magOf<long , unsigned long >(x)) {}
 Integer::Integer(int   x) : sign(signOf(x)), mag(magOf<int  , unsigned int  >(x)) {}
 Integer::Integer(short x) : sign(signOf(x)), mag(magOf<short, unsigned short>(x)) {}
+Integer::Integer(long long x) : sign(signOf(x)), mag(magOf<int  , unsigned int  >(x)) {}
 
 // CONVERSION TO PRIMITIVE INTEGERS
 
@@ -809,6 +812,28 @@ NativeInt toNativeInt(AST::Node* node, bool& B_ok) {
 	} else
 		return(0);
 }
+AST::Node* internUnsignedLongLong(unsigned long long value, bool B_negative) {
+	Integer result(0);
+	for(; value != 0; value <<= 1) {
+		result *= 2;
+		if(value & ((unsigned long long) LLONG_MAX + 1))
+			result += 1;
+	}
+	return new Integer(result);
+}
+AST::Node* internNativeU(NativeUInt value) {
+        if(value >= 0 && value < 256)
+                return(&integers[value]);
+	return (value < 0) ? internUnsignedLongLong((unsigned long long) (-value), true) : internUnsignedLongLong((unsigned long long) value, false);
+}
+#ifdef LONG_LONG_BIGGER_THAN_LONG
+AST::Node* internNative(long long value) {
+	return (value < 0) ? internUnsignedLongLong((unsigned long long) (-value), true) : internUnsignedLongLong((unsigned long long) value, false);
+}
+AST::Node* internNativeU(unsigned long long value) {
+	return internUnsignedLongLong(value, false);
+}
+#endif
 
 DEFINE_SIMPLE_OPERATION(IntP, (dynamic_cast<Int*>(reduce(argument)) != NULL))
 DEFINE_SIMPLE_OPERATION(IntegerP, (dynamic_cast<Int*>(reduce(argument)) !=NULL||dynamic_cast<Integer*>(reduce(argument)) != NULL))

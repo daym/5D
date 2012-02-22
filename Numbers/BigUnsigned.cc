@@ -8,9 +8,11 @@ using namespace Evaluators;
 // The templates used by these constructors and converters are at the bottom of
 // BigUnsigned.hh.
 
+BigUnsigned::BigUnsigned(unsigned long long x) { initFromPrimitive      (x); }
 BigUnsigned::BigUnsigned(unsigned long  x) { initFromPrimitive      (x); }
 BigUnsigned::BigUnsigned(unsigned int   x) { initFromPrimitive      (x); }
 BigUnsigned::BigUnsigned(unsigned short x) { initFromPrimitive      (x); }
+BigUnsigned::BigUnsigned(         long long  x) { initFromSignedPrimitive(x); }
 BigUnsigned::BigUnsigned(         long  x) { initFromSignedPrimitive(x); }
 BigUnsigned::BigUnsigned(         int   x) { initFromSignedPrimitive(x); }
 BigUnsigned::BigUnsigned(         short x) { initFromSignedPrimitive(x); }

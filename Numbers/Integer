@@ -12,12 +12,15 @@ AST::Node* internNative(bool value);
 };
 namespace Numbers {
 using namespace Evaluators;
+
 #ifdef __SIZEOF_LONG__
-#if __SIZEOF_LONG__ != __SIZEOF_INT__
-/* TODO only do this for 64 bits? */
+#if __SIZEOF_LONG_LONG__ != __SIZEOF_LONG__
+#define LONG_LONG_BIGGER_THAN_LONG
+AST::Node* internNative(long long value);
+AST::Node* internNativeU(unsigned long long value);
 typedef long int NativeInt; /* register type */
 #else
-typedef long int NativeInt; /* register type */
+typedef long long int NativeInt; /* register type */
 #endif
 #else
 typedef int NativeInt; /* register type */
@@ -81,7 +84,8 @@ public:
 	Integer(         int   x);
 	Integer(unsigned short x);
 	Integer(         short x);
-
+	Integer(long long x);
+	Integer(unsigned long long x);
 	/* Converters to primitive integer types
 	 * The implicit conversion operators caused trouble, so these are now
 	 * named. */
@@ -233,6 +237,7 @@ DECLARE_SMALL_VALUE(Int, Numbers::NativeInt)
 DECLARE_SIMPLE_OPERATION(IntP)
 DECLARE_SIMPLE_OPERATION(IntegerP)
 AST::Node* internNative(NativeInt value);
+AST::Node* internNativeU(NativeUInt value);
 DECLARE_SIMPLE_OPERATION(IntSucc)
 DECLARE_SIMPLE_OPERATION(IntegerSucc)
 
