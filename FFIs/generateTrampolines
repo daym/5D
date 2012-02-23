@@ -98,8 +98,8 @@ static inline AST::Node* makeBoxOrNil(AST::Node* repr, void* s) {
 #define inh Numbers::internNative((Numbers::NativeInt) 
 #define inL Numbers::internNative((long long) 
 #define inf Numbers::internNative((Numbers::NativeFloat) 
-#define inD Numbers::internNative((long double) 
-#define ind Numbers::internNative((double) 
+#define inD Numbers::internNative((Numbers::NativeFloat) 
+#define ind Numbers::internNative((Numbers::NativeFloat) 
 #define ins AST::makeStr(
 #define inS makeStrOrNil(
 #define inR (
