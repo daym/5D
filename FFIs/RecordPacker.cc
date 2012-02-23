@@ -334,7 +334,7 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 		{
 			unsigned long value;
 			DECODE_BUF(Integer, value)
-			return(Numbers::internNativeU(value));
+			return(Numbers::internNativeU((unsigned long long) value));
 		}
 	case 'q':
 		{

@@ -15,7 +15,8 @@ using namespace Evaluators;
 
 #ifdef __SIZEOF_LONG__
 #if __SIZEOF_LONG_LONG__ != __SIZEOF_LONG__
-#define LONG_LONG_BIGGER_THAN_LONG
+#define INTERN_NATIVE_NEED_LONG_LONG
+#error foo
 AST::Node* internNative(long long value);
 AST::Node* internNativeU(unsigned long long value);
 typedef long int NativeInt; /* register type */
@@ -23,7 +24,10 @@ typedef long int NativeInt; /* register type */
 typedef long long int NativeInt; /* register type */
 #endif
 #else
+#define INTERN_NATIVE_NEED_LONG_LONG
 typedef int NativeInt; /* register type */
+AST::Node* internNative(long long value);
+AST::Node* internNativeU(unsigned long long value);
 #endif
 
 

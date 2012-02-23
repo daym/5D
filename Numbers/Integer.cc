@@ -826,7 +826,7 @@ AST::Node* internNativeU(NativeUInt value) {
                 return(&integers[value]);
 	return (value < 0) ? internUnsignedLongLong((unsigned long long) (-value), true) : internUnsignedLongLong((unsigned long long) value, false);
 }
-#ifdef LONG_LONG_BIGGER_THAN_LONG
+#ifdef INTERN_NATIVE_NEED_LONG_LONG
 AST::Node* internNative(long long value) {
 	return (value < 0) ? internUnsignedLongLong((unsigned long long) (-value), true) : internUnsignedLongLong((unsigned long long) value, false);
 }
