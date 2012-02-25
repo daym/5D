@@ -497,10 +497,12 @@ keywordStr @mode: =&gt; "mode:"
 <h3>parseMath @position:0 @name:[] @terminator:[] \operatorPrecedenceList \inputFile \world</h3>
 <p>Given <span class="pre">inputFile</span>, results in the Abstract Syntax Tree for all input until the first occurence of the Symbol specified after <span class="pre">@terminator:</span> and a <span class="pre">world</span>.</p>
 <p><span class="pre">position</span> and <span class="pre">name</span> are used in error messages.</p>
+<p><span class="pre">operatorPrecedenceList</span> is the operator precedence list to use. This is <em>not</em> optional. If in doubt, just pass <span class="pre">operatorPrecedenceList</span> from a REPL.</p>
 <hr/>
 <h3>parseMathStr @position:0 @name:[] @terminator:[] \operatorPrecedenceList \inputStr</h3>
 <p>Given <span class="pre">inputStr</span>, results in the Abstract Syntax Tree for all input until the first occurence of the Symbol specified after <span class="pre">@terminator:</span>.</p>
 <p><span class="pre">position</span> and <span class="pre">name</span> are used in error messages.</p>
+<p><span class="pre">operatorPrecedenceList</span> is the operator precedence list to use. This is <em>not</em> optional. If in doubt, just pass <span class="pre">operatorPrecedenceList</span> from a REPL.</p>
 <p>Note that this function otherwise does no I/O.</p>
 </a>
 
