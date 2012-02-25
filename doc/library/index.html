@@ -23,7 +23,7 @@ hr { color: #808080;
 <li><a href="#lists">Module "List": Lists</a></li>
 <li><a href="#dpho">Module "List": Higher-Order Data Processing Functions</a></li>
 <li><a href="#state">Module "IO": State</a></li>
-<li><a href="#builtins">Module "Reflection": Builtin Types Except Lists</a></li>
+<li><a href="#builtins">Module "Reflection": Reflecting on Builtin Types Except Lists</a></li>
 <li><a href="#FFI">Module "FFI": Foreign Function Interface</a></li>
 <li><a href="#math">Module "Arithmetic": Higher Mathematics</a></li>
 <li><a href="#adorning">Module "Composition": Adorning Functions</a></li>
@@ -436,7 +436,7 @@ runIO readFile
 
 </a>
 
-<a name="builtins"><h2>Module "Reflection": Builtin Types Except Lists</h2>
+<a name="builtins"><h2>Module "Reflection": Reflecting on Builtin Types Except Lists</h2>
 <h3>toBool \v</h3>
 <p>Given a statement <span class="eq">v</span>, results in the symbol <span class="pre">t</span> if v is true, otherwise the symbol <span class="pre">f</span>.</p>
 <p>Definition:</p>
@@ -494,6 +494,14 @@ keywordStr @mode: =&gt; "mode:"
 <h3><del>int?</del></h3>
 <p>Given <span class="pre">v</span>, results in whether <span class="pre">v</span> is an Int or not.</p>
 <hr/>
+<h3>parseMath @position:0 @name:[] @terminator:[] \operatorPrecedenceList \inputFile \world</h3>
+<p>Given <span class="pre">inputFile</span>, results in the Abstract Syntax Tree for all input until the first occurence of the Symbol specified after <span class="pre">@terminator:</span> and a <span class="pre">world</span>.</p>
+<p><span class="pre">position</span> and <span class="pre">name</span> are used in error messages.</p>
+<hr/>
+<h3>parseMathStr @position:0 @name:[] @terminator:[] \operatorPrecedenceList \inputStr</h3>
+<p>Given <span class="pre">inputStr</span>, results in the Abstract Syntax Tree for all input until the first occurence of the Symbol specified after <span class="pre">@terminator:</span>.</p>
+<p><span class="pre">position</span> and <span class="pre">name</span> are used in error messages.</p>
+<p>Note that this function otherwise does no I/O.</p>
 </a>
 
 <a name="FFI"><h2>Module "FFI": Foreign Function Interface</h2>
