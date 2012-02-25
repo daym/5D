@@ -8,7 +8,7 @@ GENERATEDS = FFIs/Trampolines FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols F
 
 #LIBGC_LD_WRAP_LDFLAGS = -Wl,--wrap -Wl,read -Wl,--wrap -Wl,dlopen -Wl,--wrap -Wl,pthread_create -Wl,--wrap -Wl,pthread_join -Wl,--wrap -Wl,pthread_detach -Wl,--wrap -Wl,pthread_sigmask -Wl,--wrap -Wl,sleep
 LIBGC_LD_WRAP_CFLAGS = -D_REENTRANT -DGC_THREADS -DUSE_LD_WRAP
-CXXFLAGS += -Wall -I. -g3 -fno-strict-overflow -Wno-deprecated `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -pthread
+CXXFLAGS += -Wall -I. -g3 -fno-strict-overflow -Wno-deprecated `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -pthread -D_FILE_OFFSET_BITS=64
 ifdef PREFIX
 CXXFLAGS +=  -DPREFIX=\"$(PREFIX)\"
 endif
@@ -88,7 +88,7 @@ Scanners/test-Scanner.o: Scanners/test-Scanner.cc Scanners/Scanner AST/Symbol AS
 Scanners/MathParser.o: Scanners/MathParser.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol Scanners/OperatorPrecedenceList Evaluators/Builtins Evaluators/Evaluators
 Scanners/ShuntingYardParser.o: Scanners/ShuntingYardParser.cc Scanners/ShuntingYardParser Scanners/Scanner AST/AST AST/Symbol Scanners/OperatorPrecedenceList Evaluators/Builtins Evaluators/Evaluators AST/Symbols
 Scanners/SExpressionParser.o: Scanners/SExpressionParser.cc Scanners/SExpressionParser Scanners/Scanner AST/AST AST/Symbol Scanners/OperatorPrecedenceList Evaluators/Builtins Evaluators/Evaluators
-Scanners/OperatorPrecedenceList.o: Scanners/OperatorPrecedenceList.cc AST/AST AST/Symbol
+Scanners/OperatorPrecedenceList.o: Scanners/OperatorPrecedenceList.cc AST/AST AST/Symbol Evaluators/Operation
 Scanners/test-MathParser.o: Scanners/test-MathParser.cc Scanners/MathParser Scanners/Scanner Scanners/OperatorPrecedenceList Evaluators/Builtins
 Evaluators/Evaluators.o: Evaluators/Evaluators.cc FFIs/Allocators Evaluators/Evaluators Evaluators/Operation AST/AST AST/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList
 FFIs/Trampolines.o: FFIs/Trampolines.cc FFIs/RecordPacker Evaluators/Evaluators Numbers/Integer Numbers/Small
