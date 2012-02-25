@@ -535,7 +535,7 @@ static AST::Node* parseMath(Scanners::OperatorPrecedenceList* OPL, FILE* inputFi
 	}
 	try {
 	        Scanners::MathParser parser;
-		parser.push(inputFile, position, Evaluators::get_native_string(name));
+		parser.push(inputFile, position, name ? Evaluators::get_native_string(name) : "");
 		return(parser.parse(OPL, Symbols::SlessEOFgreater));
 	} catch(...) {
 		return(NULL); // FIXME
@@ -623,8 +623,8 @@ REGISTER_BUILTIN(AbstractionMaker, (-1), 0, AST::symbolFromStr("makeFn"))
 REGISTER_BUILTIN(AbstractionP, 1, 0, AST::symbolFromStr("fn?"))
 REGISTER_BUILTIN(AbstractionParameterGetter, 1, 0, AST::symbolFromStr("fnParam"))
 REGISTER_BUILTIN(AbstractionBodyGetter, 1, 0, AST::symbolFromStr("fnBody"))
-REGISTER_BUILTIN(RFileMathParser, (-2), 0, AST::symbolFromStr("parseMath"))
-REGISTER_BUILTIN(RStrMathParser, (-1), 0, AST::symbolFromStr("parseMathStr"))
+REGISTER_BUILTIN(RFileMathParser, (-3), 0, AST::symbolFromStr("parseMath"))
+REGISTER_BUILTIN(RStrMathParser, (-2), 0, AST::symbolFromStr("parseMathStr"))
 
 // FIXME make this GCable.
 CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument) {

@@ -11,11 +11,12 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/Symbol"
 #include "AST/Symbols"
 #include "Scanners/OperatorPrecedenceList"
+#include "Evaluators/Operation"
 
 namespace Scanners {
 using namespace AST;
 
-// TODO REGISTER_STR(OperatorPrecedenceList, return(...);)
+// NO REGISTER_STR(OperatorPrecedenceList, return("operatorPrecedenceList");)
 // TODO REGISTER_STR(OperatorPrecedenceItem, return(...);)
 int OperatorPrecedenceList::get_operator_precedence_and_associativity(AST::Symbol* symbol, AST::Symbol*& associativity_out) {
 	if(symbol != NULL)

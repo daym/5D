@@ -410,7 +410,8 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::Reducer);
 
-	REPL_add_static_builtin_binding(self, AST::symbolFromStr("REPL"), self);
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("REPL"), AST::makeBox(self, AST::symbolFromStr("REPL")));
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("operatorPrecedenceList"), AST::makeBox(REPL_ensure_operator_precedence_list(self), AST::symbolFromStr("operatorPrecedenceList")));
 	REPL_add_static_builtin_binding(self, Symbols::Sdefine, uncurried(&RDefiner, self));
 	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Simport, uncurried(&RImporter, self));

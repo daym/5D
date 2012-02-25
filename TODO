@@ -89,6 +89,8 @@ cache numbers for some time?
 --x
 "# " as line comment starter (=> rem)
 unary posfix operators like "!"?
+readFromString "XYZ" -> (quoted) AST
+eval AST userInitialEnvironment
 
 = Correctness =
 
