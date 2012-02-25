@@ -108,6 +108,8 @@ void BuiltinSelector_init(void) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("fn?"), &Evaluators::AbstractionP);
 	REPL_add_builtin_method(self, AST::symbolFromStr("fnParam"), &Evaluators::AbstractionParameterGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("fnBody"), &Evaluators::AbstractionBodyGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("parseMath"), &Evaluators::RFileMathParser);
+	REPL_add_builtin_method(self, AST::symbolFromStr("parseMathStr"), &Evaluators::RStrMathParser);
 	self[Symbols::Sexports->name] = consFromKeys(self.begin(), self.end());
 }
 

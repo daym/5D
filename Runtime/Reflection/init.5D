@@ -18,6 +18,8 @@ let symbol? = Builtins.symbol? in
 let symbolFromStr = Builtins.symbolFromStr in 
 let symbolsEqual? = Builtins.symbolsEqual? in 
 let addrsLE? = Builtins.addrsLE? in 
+let parseMath = Builtins.parseMath in 
+let parseMathStr = Builtins.parseMathStr in 
 dispatchModule [['app? app?]
 ['appOperand appOperand]
 ['appOperator appOperator]

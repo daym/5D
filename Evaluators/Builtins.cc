@@ -520,6 +520,56 @@ static AST::Node* makeAbstractionB(AST::Node* options, AST::Node* argument) {
 	//++iter;
 	return(AST::makeAbstraction(parameter, body));
 }
+/* INTERNAL! */
+static AST::Node* parseMath(Scanners::OperatorPrecedenceList* OPL, FILE* inputFile, CXXArguments& arguments, CXXArguments::const_iterator& iter, const CXXArguments::const_iterator& endIter) {
+	int position = 0; // FIXME size_t
+	AST::Node* name = NULL;
+	for(++iter; iter != endIter; ++iter) {
+		if(iter->first) { // likely
+			if(iter->first == AST::keywordFromStr("position:")) {
+				position = Evaluators::get_native_int(iter->second);
+			} else if(iter->first == AST::keywordFromStr("name:")) {
+				name = iter->second;
+			}
+		}
+	}
+	try {
+	        Scanners::MathParser parser;
+		parser.push(inputFile, position, Evaluators::get_native_string(name));
+		return(parser.parse(OPL, Symbols::SlessEOFgreater));
+	} catch(...) {
+		return(NULL); // FIXME
+	}
+}
+static AST::Node* makeFileMathParserB(AST::Node* options, AST::Node* argument) {
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
+	CXXArguments::const_iterator endIter = arguments.end();
+	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*)(Evaluators::get_native_pointer(iter->second));
+	++iter;
+	AST::Node* inputFile = iter->second;
+	++iter;
+	AST::Node* world = iter->second;
+	return(Evaluators::makeIOMonad(parseMath(OPL, (FILE*) Evaluators::get_native_pointer(inputFile), arguments, iter, endIter), world));
+}
+static AST::Node* makeStrMathParserB(AST::Node* options, AST::Node* argument) {
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
+	CXXArguments::const_iterator endIter = arguments.end();
+	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*)(Evaluators::get_native_pointer(iter->second));
+	++iter;
+	const char* command = Evaluators::get_native_string(iter->second);
+	FILE* inputFile = fmemopen((void*) command, strlen(command), "r");
+	// FIXME if !inputFile
+	try {
+		AST::Node* result = parseMath(OPL, inputFile, arguments, iter, endIter);
+		fclose(inputFile);
+		return(result);
+	} catch(...) {
+		fclose(inputFile);
+		return(NULL); // FIXME
+	}
+}
 static inline AST::Node* ensureApplication(AST::Node* node) {
 	if(!application_P(node))
 		throw EvaluationException("argument is not an application");
@@ -539,6 +589,9 @@ DEFINE_FULL_OPERATION(AbstractionMaker, return(makeAbstractionB(fn, argument)))
 DEFINE_SIMPLE_OPERATION(AbstractionP, AST::abstraction_P(reduce(argument)))
 DEFINE_SIMPLE_OPERATION(AbstractionParameterGetter, AST::get_abstraction_parameter(ensureAbstraction(reduce(argument))))
 DEFINE_SIMPLE_OPERATION(AbstractionBodyGetter, AST::get_abstraction_body(ensureAbstraction(reduce(argument))))
+
+DEFINE_FULL_OPERATION(RFileMathParser, return(makeFileMathParserB(fn, argument)))
+DEFINE_FULL_OPERATION(RStrMathParser, return(makeStrMathParserB(fn, argument)))
 
 REGISTER_BUILTIN(Conser, 2, 0, AST::symbolFromStr(":"))
 REGISTER_BUILTIN(ConsP, 1, 0, AST::symbolFromStr("cons?"))
@@ -570,6 +623,8 @@ REGISTER_BUILTIN(AbstractionMaker, (-1), 0, AST::symbolFromStr("makeFn"))
 REGISTER_BUILTIN(AbstractionP, 1, 0, AST::symbolFromStr("fn?"))
 REGISTER_BUILTIN(AbstractionParameterGetter, 1, 0, AST::symbolFromStr("fnParam"))
 REGISTER_BUILTIN(AbstractionBodyGetter, 1, 0, AST::symbolFromStr("fnBody"))
+REGISTER_BUILTIN(RFileMathParser, (-2), 0, AST::symbolFromStr("parseMath"))
+REGISTER_BUILTIN(RStrMathParser, (-1), 0, AST::symbolFromStr("parseMathStr"))
 
 // FIXME make this GCable.
 CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument) {
