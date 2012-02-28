@@ -9,24 +9,16 @@
 #include "AST/AST"
 #include "AST/Keyword"
 #include "AST/Symbols"
+#include "AST/HashTable"
 #include "Evaluators/Operation"
 #include "Evaluators/Evaluators"
-#include <ext/hash_map>
 
 namespace Trampolines {
-//typedef std::unordered_map<const char* , AST:Node*, std::hash<AST::Node*> > HashTable;
-struct eqstr {
-	bool operator()(const char* s1, const char* s2) const {
-		return strcmp(s1, s2) == 0;
-	}
-};
-
 
 typedef AST::Node* (jumper_t)(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end, AST::Node* options, AST::Node* world);
 AST::Node* jumpFFI(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end, AST::Node* options, AST::Node* world); 
 // do NOT gc_allocate the following since it seems to have a bug:
-typedef __gnu_cxx::hash_map<const char*, jumper_t*, __gnu_cxx::hash<const char*>, eqstr> HashTable;
-
+typedef RawHashTable<const char*, jumper_t*, hashstr, eqstr> HashTable;
 #ifdef WIN32
 AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& endIter, AST::Node* options, AST::Node* world) {
 	fprintf(stderr, "warning: could not find marshaller for %s\n", proc->fSignature->name);
