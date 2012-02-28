@@ -43,6 +43,8 @@ let √ = sqrt in
 let factorial = (rec (\fac \v if (v = 0) 1 v*(fac (v - 1)))) in 
 let ground = (\v divide v 1) in 
 let round1 = (\v if (0 <= v) (ground (v + 1/2)) (ground (v - 1/2))) in 
+let max = (\a \b if (a <= b) b a) in 
+let min = (\a \b if (a <= b) a b) in 
 dispatchModule [['(-) (-)]
 ['(*) (*)]
 ['(/) (/)]
@@ -71,4 +73,6 @@ dispatchModule [['(-) (-)]
 ['ground ground]
 ['round1 round1]
 ['π π]
-['pi pi]]
+['pi pi]
+['max max]
+['min min]]

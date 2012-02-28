@@ -17,6 +17,7 @@ let (-) = Arithmetic.(-) in
 let divide = Arithmetic.divide in 
 let else = Logic.else in 
 let rec = Composition.rec in 
+let max = Arithmetic.max in 
 let nil = [] in 
 let nil? = Builtins.nil? in 
 let cons? = Builtins.cons? in 
@@ -35,6 +36,7 @@ let merge = (mergeBy (<=)) in
 let length = (rec (\length \list if (nil? list) 0 (1 + length (tail list)))) in 
 let mergeSortBy = (\lessEqualComparator rec (\mergeSortBy \list if (nil? list || nil? (tail list)) list $ else mergeBy lessEqualComparator (mergeSortBy (take (divide (length list) 2) list)) (mergeSortBy (drop (divide (length list) 2) list)))) in 
 let mergeSort = (mergeSortBy (<=)) in 
+let extremum = (\fn \l foldr fn (head l) l) in 
 let filter = (\f rec (\filter \list if (nil? list) nil $ else if (f (head list)) (head list):(filter (tail list)) (filter (tail list)))) in 
 let reverse = (\list foldl (flip (:)) nil list) in 
 let rangeLL = (\step \end rec (\rangeLL \beginning if (step <= 0 - 1) (if (beginning <= end) nil beginning:(rangeLL (beginning + step))) (if (beginning >= end) nil beginning:(rangeLL (beginning + step))))) in 
@@ -54,6 +56,7 @@ dispatchModule [['nil nil]
 ['mergeBy mergeBy]
 ['mergeSort mergeSort]
 ['mergeSortBy mergeSortBy]
+['extremum extremum]
 ['drop drop]
 ['foldl foldl]
 ['foldr foldr]
