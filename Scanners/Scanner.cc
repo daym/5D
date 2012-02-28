@@ -17,12 +17,21 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/Builtins"
 #include "FFIs/Allocators"
 
+// we assume that if fgetc() returns EOF, we can call it again and it will return EOF again. Hence FGETC.
+
 /* parse_token() is the main function */
 
 namespace Scanners {
 using namespace AST;
 using namespace Evaluators;
 
+static inline void UNGETC(int input, FILE* input_file) {
+	if(input != EOF)
+		ungetc(input, input_file);
+}
+static inline int FGETC(FILE* input_file) {
+	return feof(input_file) ? EOF : fgetc(input_file);
+}
 ParseException::ParseException(const char* s) throw() {
 	message = GCx_strdup(s);
 }
@@ -111,9 +120,9 @@ void Scanner::parse_token(void) {
 	}
 	input_value = NULL;
 	int input;
-	input = increment_position(fgetc(input_file)); // this will possibly inject stuff
+	input = increment_position(FGETC(input_file)); // this will possibly inject stuff
 	if(!injected_input_values.empty()) {
-		ungetc(decrement_position(input), input_file); // keep char for later.
+		UNGETC(decrement_position(input), input_file); // keep char for later.
 		input_value = injected_input_values.front();
 		injected_input_values.pop_front();
 		return;
@@ -173,9 +182,9 @@ void Scanner::parse_token(void) {
 void Scanner::parse_optional_whitespace(void) {
 	int input;
 	// skip whitespace...
-	while(input = increment_position(fgetc(input_file)), input == ' ' || input == '\t' || input == '\n' || input == '\r' || input == '\f') {
+	while(input = increment_position(FGETC(input_file)), input == ' ' || input == '\t' || input == '\n' || input == '\r' || input == '\f') {
 	}
-	ungetc(decrement_position(input), input_file);
+	UNGETC(decrement_position(input), input_file);
 }
 void Scanner::parse_number(int input) {
 	using namespace AST;
@@ -190,7 +199,7 @@ void Scanner::parse_number(int input) {
 		}
 		matchtext << ((char) input);
 		oldInput = input;
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 		if(oldInput == '.') {
 			if(input < '0' || input > '9') { // this wasn't part of the number it seems, so maybe it's supposed to be an operator: 2.size
 				break;
@@ -200,18 +209,18 @@ void Scanner::parse_number(int input) {
 	}
 	if(input == 'e' || input == 'E') {
 		matchtext << ((char) input);
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 		if(input == '+' || input == '-') {
 			matchtext << ((char) input);                   
-			input = increment_position(fgetc(input_file));
+			input = increment_position(FGETC(input_file));
 		}
 		while((input >= '0' && input <= '9') /* || input == '.'*/) {
 			matchtext << ((char) input);                   
-			input = increment_position(fgetc(input_file));
+			input = increment_position(FGETC(input_file));
 		}
 	}
 	if(input != ' ' && input != '\t')
-		ungetc(decrement_position(input), input_file);
+		UNGETC(decrement_position(input), input_file);
 	input_value = AST::symbolFromStr(matchtext.str().c_str());
 	/* actual value will be provided by provide_dynamic_builtins */
 }
@@ -228,7 +237,7 @@ void Scanner::parse_unicode(int input) {
 	   All others will be handled as normal symbols. */
 	using namespace AST;
 	if(input == 0xC2) {
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 		if(input == 0xAC) { // ¬
 			input_value = Symbols::Snot;
 		} else
@@ -239,11 +248,11 @@ void Scanner::parse_unicode(int input) {
 		raise_error("<expression>", "<junk>");
 		return;
 	}
-	input = increment_position(fgetc(input_file));
+	input = increment_position(FGETC(input_file));
 	//if(input != 0x89) {
 	// second byte.
 	if(input == 0x8B) {
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 		switch(input) {
 		case 0x85: /* dot */
 			input_value = Symbols::Sasterisk;
@@ -254,7 +263,7 @@ void Scanner::parse_unicode(int input) {
 			return;
 		}
 	} else if(input == 0xA8) {
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 		switch(input) {
 		case 0xAF: /* ⨯ */
 			input_value = Symbols::Scrossproduct;
@@ -265,7 +274,7 @@ void Scanner::parse_unicode(int input) {
 			return;
 		}
 	} else if(input == 0x9F) {
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 		switch(input) {
 		case 0xA8: /* ⟨ */
 			input_value = Symbols::Sleftangle;
@@ -279,7 +288,7 @@ void Scanner::parse_unicode(int input) {
 			return;
 		}
 	} else if(input == 0x88) {
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 		switch(input) {
 		case 0xAB: /* ∫ */
 			input_value = Symbols::Sintegral;
@@ -300,7 +309,7 @@ void Scanner::parse_unicode(int input) {
 		//raise_error("<expression>", input);
 		return;
 	} else
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 	switch(input) {
 	case 0xA0:
 		input_value = Symbols::Sslashequal;
@@ -361,7 +370,7 @@ void Scanner::parse_string(int input) {
 	// assert input == '"'
 	// TODO S-Expressions probably shouldn't use this.
 	bool B_escaped = false;
-	for(input = increment_position(fgetc(input_file)); input != EOF && (input != '"' || B_escaped); input = increment_position(fgetc(input_file))) {
+	for(input = increment_position(FGETC(input_file)); input != EOF && (input != '"' || B_escaped); input = increment_position(FGETC(input_file))) {
 		if(!B_escaped) {
 			if(input == '\\') {
 				B_escaped = true;
@@ -399,10 +408,10 @@ void Scanner::parse_string(int input) {
 				{
 					int digit1;
 					int digit2;
-					input = increment_position(fgetc(input_file));
+					input = increment_position(FGETC(input_file));
 					// TODO handle invalid escapes.
 					digit1 = (input >= '0' && input <= '9') ? (input - '0') : (input >= 'a' && input <= 'f') ? (10 + (input - 'a')) : (input >= 'A' && input <= 'F') ? (10 + (input - 'A')) : 0;
-					input = increment_position(fgetc(input_file));
+					input = increment_position(FGETC(input_file));
 					digit2 = (input >= '0' && input <= '9') ? (input - '0') : (input >= 'a' && input <= 'f') ? (10 + (input - 'a')) : (input >= 'A' && input <= 'F') ? (10 + (input - 'A')) : 0;
 					matchtext << (char) (digit1 * 16 + digit2);
 				}
@@ -434,16 +443,16 @@ bool symbol_char_P(int input) {
 
 void Scanner::parse_keyword(int input) {
 	std::stringstream matchtext;
-	input = increment_position(fgetc(input_file));
+	input = increment_position(FGETC(input_file));
 	if(!symbol1_char_P(input)) {
 		raise_error("<symbol>", input);
 		return;
 	}
 	matchtext << (char) input;
-	input = increment_position(fgetc(input_file));
+	input = increment_position(FGETC(input_file));
 	while(symbol_char_P(input)) {
 		matchtext << (char) input;
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 	}
 	if(input != ':') {
 		raise_error(":", input);
@@ -462,13 +471,13 @@ void Scanner::parse_number_with_base(int input, int base) {
 		            -1;
 		if(digit == -1) {
 			if(input != ' ' && input != '\t')
-				ungetc(decrement_position(input), input_file);
+				UNGETC(decrement_position(input), input_file);
 			break;
 		}
 		if(digit < 0 || digit >= base)
 			raise_error("<number>", input);
 		value = value * base + digit;
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 	}
 	std::stringstream sst;
 	sst << value; /* decimal */
@@ -476,11 +485,11 @@ void Scanner::parse_number_with_base(int input, int base) {
 }
 void Scanner::parse_special_coding(int input) {
 	assert(input == '#');
-	input = increment_position(fgetc(input_file));
+	input = increment_position(FGETC(input_file));
 	switch(input) {
 	case '\\':
 		/* FIXME other names. ... */
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 		if(input != EOF) {
 			if(input == '\\')
 				input_value = AST::symbolFromStr("\\");
@@ -527,11 +536,11 @@ void Scanner::parse_special_coding(int input) {
 			int base = input == 'o' ? 8 : input == 'x' ? 16 : 0;
 			while(input >= '0' && input <= '9') {
 				base = base * 10 + (input - '0');
-				input = increment_position(fgetc(input_file));
+				input = increment_position(FGETC(input_file));
 			}
 			/* TODO is #or1 valid? */
 			if(input == 'r' || input == 'o' || input == 'x')
-				input = increment_position(fgetc(input_file));
+				input = increment_position(FGETC(input_file));
 			parse_number_with_base(input, base);
 		}
 		break;
@@ -557,12 +566,12 @@ void Scanner::parse_operator(int input) {
 		return(parse_symbol(input));
 	while(operatorCharP(input)) {
 		sst << (char) input;
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 		if(input == '\'' || structural_P(input))
 			break;
 	}
 	if(input != ' ' && input != '\t')
-		ungetc(decrement_position(input), input_file);
+		UNGETC(decrement_position(input), input_file);
 	std::string v = sst.str();
 	input_value = AST::symbolFromStr(v.c_str());
 }
@@ -580,20 +589,20 @@ void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) 
 	}
 	while(symbol_char_P(input)) {
 		matchtext << (char) input;
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 	}
 	if(input == 0xE2) {
-		input = increment_position(fgetc(input_file));
+		input = increment_position(FGETC(input_file));
 		if(input == 0x83) { // vector arrow etc.
-			input = increment_position(fgetc(input_file));
+			input = increment_position(FGETC(input_file));
 			matchtext << (char) 0xE2 << (char) 0x83 << (char) input; // usually 0x97
 		} else {
-			ungetc(decrement_position(input), input_file);
-			ungetc(decrement_position(0xE2), input_file); // FIXME it is actually unsupported to unget more than 1 character :-(
+			UNGETC(decrement_position(input), input_file);
+			UNGETC(decrement_position(0xE2), input_file); // FIXME it is actually unsupported to unget more than 1 character :-(
 			//raise_error("<unicode_operator>", "<unknown>");
 		}
 	} else if(input != ' ' && input != '\t') /* ignore whitespace */
-		ungetc(decrement_position(input), input_file);
+		UNGETC(decrement_position(input), input_file);
 	std::string v = matchtext.str();
 	input_value = AST::symbolFromStr(v.c_str());
 }
