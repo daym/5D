@@ -524,19 +524,24 @@ static AST::Node* makeAbstractionB(AST::Node* options, AST::Node* argument) {
 static AST::Node* parseMath(Scanners::OperatorPrecedenceList* OPL, FILE* inputFile, CXXArguments& arguments, CXXArguments::const_iterator& iter, const CXXArguments::const_iterator& endIter) {
 	int position = 0; // FIXME size_t
 	AST::Node* name = NULL;
+	AST::Symbol* terminator = NULL;
 	for(++iter; iter != endIter; ++iter) {
 		if(iter->first) { // likely
 			if(iter->first == AST::keywordFromStr("position:")) {
 				position = Evaluators::get_native_int(iter->second);
 			} else if(iter->first == AST::keywordFromStr("name:")) {
 				name = iter->second;
+			} else if(iter->first == AST::keywordFromStr("terminator:")) {
+				terminator = dynamic_cast<AST::Symbol*>(iter->second);
 			}
 		}
 	}
 	try {
-	        Scanners::MathParser parser;
+		if(!terminator)
+			terminator = Symbols::SlessEOFgreater;
+		Scanners::MathParser parser;
 		parser.push(inputFile, position, name ? Evaluators::get_native_string(name) : "");
-		return(parser.parse(OPL, Symbols::SlessEOFgreater));
+		return(parser.parse(OPL, terminator));
 	} catch(...) {
 		return(NULL); // FIXME
 	}

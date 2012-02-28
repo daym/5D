@@ -128,6 +128,7 @@ Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct RE
 }
 template<typename T>
 AST::Node* REPL_parse(struct REPL* self, const char* command, T destination/*for errors*/) {
+	// TODO just call the builtin! RStrMathParser
 	/* is not allowed to both print stuff AND return non-null, except when it updates the destination iter */
 	Scanners::MathParser parser;
 	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
@@ -412,6 +413,7 @@ static void REPL_init_builtins(struct REPL* self) {
 
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("REPL"), AST::makeBox(self, AST::symbolFromStr("REPL")));
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("operatorPrecedenceList"), AST::makeBox(REPL_ensure_operator_precedence_list(self), AST::symbolFromStr("operatorPrecedenceList")));
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("environment"), AST::makeBox(envEntryGetTail(self->fTailEnvironment), AST::symbolFromStr("environment"))); // TODO
 	REPL_add_static_builtin_binding(self, Symbols::Sdefine, uncurried(&RDefiner, self));
 	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Simport, uncurried(&RImporter, self));

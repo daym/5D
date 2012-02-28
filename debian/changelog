@@ -1,3 +1,9 @@
+5d (0.3.6) unstable; urgency=low
+
+  * add "parseMath" and "parseMathStr" to module "Reflection".
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Sat, 25 Feb 2012 19:39:00 +0100
+
 5d (0.3.5) unstable; urgency=low
 
   * add default trampoline (fallback).
