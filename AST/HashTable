@@ -208,7 +208,7 @@ public:
 	inline V& operator[](const K& key) {
 		struct HashTableEntry<K,V>* entry = findEntry(key);
 		if(!entry) {
-			V value;
+			V value = 0;
 			entry = actualPut(key, value);
 		}
 		return entry->second;
