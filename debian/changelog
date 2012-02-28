@@ -1,3 +1,9 @@
+5d (0.3.7) unstable; urgency=low
+
+  * switch to our own HashTable implementation.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Tue, 28 Feb 2012 23:46:00 +0100
+
 5d (0.3.6) unstable; urgency=low
 
   * add "parseMath" and "parseMathStr" to module "Reflection".
