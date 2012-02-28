@@ -49,7 +49,8 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 				++position, output << ')';
 			} else
 				print_CXX(OPL, output, position, operator_, precedence, operatorAssociativity != Symbols::Sleft);
-			print_text_raw(output, position, " ", false);
+			if(operatorSymbol != Symbols::Squote)
+				print_text_raw(output, position, " ", false);
 			print_CXX(OPL, output, position, get_application_operand(node), precedence, operatorAssociativity != Symbols::Sright);
 			maybe_print_closing_paren(output, position, operator_, B_parend); // f.e. we now are at +, but came from *, i.e. 2*(3+5)
 		}
