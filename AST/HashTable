@@ -1,7 +1,8 @@
 #ifndef __AST_HASH_TABLE_H
 #define __AST_HASH_TABLE_H
 #include <assert.h>
-#include <ext/hash_map>
+#include <stdlib.h>
+//#include <ext/hash_map>
 #include <map>
 #include <math.h>
 #include <string.h>
@@ -12,13 +13,20 @@
 
 namespace AST {
 
-/* and the table: */
+struct hashstr {
+	unsigned long operator()(const char* str) const {
+	        unsigned long hash = 5381;
+	        int c;
+		while ((c = *str++))
+			hash = ((hash << 5) + hash) ^ c; /* hash * 33 ^ c */
+		return hash;
+	}
+};
 struct eqstr {
 	bool operator()(const char* s1, const char* s2) const {
 		return strcmp(s1, s2) == 0;
 	}
 };
-
 struct ltstr {
 	bool operator()(const char* s1, const char* s2) const {
 		return strcmp(s1, s2) < 0;
@@ -218,7 +226,7 @@ public:
 	}
 	/* TODO (if we ever need that) deletion of entries */
 };
-typedef RawHashTable<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr> HashTable;
+typedef RawHashTable<const char*, AST::Node*, hashstr, eqstr> HashTable;
 
 #ifdef CX11
 class HashTable : public RawHashTable, public AST::Node {
