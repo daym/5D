@@ -2,6 +2,8 @@
 
   * switch to our own HashTable implementation.
   * make 'makeFn work.
+  * make TUI locale-aware.
+  * make GUI locale-aware.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Tue, 28 Feb 2012 23:46:00 +0100
 

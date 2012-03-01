@@ -15,6 +15,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <limits.h>
+#include <locale.h>
 #include "Scanners/MathParser"
 #include "Formatters/Math"
 #include "TUI/Interrupt"
@@ -303,6 +304,7 @@ int main(int argc, char* argv[]) {
 	struct REPL* REPL;
 	using namespace GUI;
 	const char* line;
+	setlocale(LC_ALL, "");
 	Allocator_init();
 	//GC_disable();
 	if(argc >= 1)

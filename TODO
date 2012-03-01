@@ -91,6 +91,7 @@ cache numbers for some time?
 unary posfix operators like "!"?
 readFromString "XYZ" -> (quoted) AST
 eval AST userInitialEnvironment
+add custom literal parsers
 
 = Correctness =
 
@@ -151,5 +152,6 @@ let open POSIX in puts ...
 
 = Interop =
 
+Windows COM support (interfaces, refcounting, ...)
 Windows COM strings
 Full Unicode strings
