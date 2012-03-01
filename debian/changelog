@@ -4,6 +4,7 @@
   * make 'makeFn work.
   * make TUI locale-aware.
   * make GUI locale-aware.
+  * add support for non-aligned data (not the default, though) to 'packRecord etc.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Tue, 28 Feb 2012 23:46:00 +0100
 

@@ -10,13 +10,14 @@ enum ByteOrder {
 	MACHINE_BYTE_ORDER,
 	LITTLE_ENDIAN_BYTE_ORDER,
 	BIG_ENDIAN_BYTE_ORDER,
+	MACHINE_BYTE_ORDER_ALIGNED,
 };
 
 /* uses C packing alignment */
 void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst, std::vector<size_t>& offsets);
 AST::Node* Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box* dataStr);
 AST::Str* Record_allocate(size_t size, bool bAtomicity);
-size_t Record_get_size(AST::Str* formatStr);
+size_t Record_get_size(enum ByteOrder byteOrder, AST::Str* formatStr);
 
 DECLARE_SIMPLE_OPERATION(RecordPacker)
 DECLARE_SIMPLE_OPERATION(RecordUnpacker)

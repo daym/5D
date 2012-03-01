@@ -16,32 +16,59 @@
 
 namespace FFIs {
 
-static size_t getSize(char c) {
-	switch(c) {
-	case 'b': return(sizeof(char));
-	case 'h': return(sizeof(int16_t));
-	case 'i': return(sizeof(int));
-	case 'f': return(sizeof(float));
-	case 'd': return(sizeof(double));
-	case 'D': return(sizeof(long double));
-	case 'l': return(sizeof(long));
-	case 'B': return(sizeof(unsigned char));
-	case 'H': return(sizeof(uint16_t));
-	case 'I': return(sizeof(unsigned int));
-	case 'L': return(sizeof(unsigned long));
-	case 'q': return(sizeof(long long));
-	case 'Q': return(sizeof(unsigned long long));
-	case 'p': return(sizeof(void*));
-	case 'P': return(sizeof(void*));
-	case 'z': return(sizeof(char*));
-	case 'Z': return(sizeof(char*));
-	case 's': return(sizeof(char*));
-	case 'S': return(sizeof(char*));
-	default: return(0); /* FIXME */
+// TODO add =, <, > standard size without alignment! (@ with alignment)
+
+static size_t getSize(enum ByteOrder byteOrder, char c) {
+	if(byteOrder == MACHINE_BYTE_ORDER_ALIGNED) {
+		switch(c) {
+		case 'b': return(sizeof(char));
+		case 'h': return(sizeof(int16_t));
+		case 'i': return(sizeof(int));
+		case 'f': return(sizeof(float));
+		case 'd': return(sizeof(double));
+		case 'D': return(sizeof(long double));
+		case 'l': return(sizeof(long));
+		case 'B': return(sizeof(unsigned char));
+		case 'H': return(sizeof(uint16_t));
+		case 'I': return(sizeof(unsigned int));
+		case 'L': return(sizeof(unsigned long));
+		case 'q': return(sizeof(long long));
+		case 'Q': return(sizeof(unsigned long long));
+		case 'p': return(sizeof(void*));
+		case 'P': return(sizeof(void*));
+		case 'z': return(sizeof(char*));
+		case 'Z': return(sizeof(char*));
+		case 's': return(sizeof(char*));
+		case 'S': return(sizeof(char*));
+		default: return(0); /* FIXME */
+		}
+	} else { /* defaults */
+		switch(c) {
+		case 'b': return(1);
+		case 'h': return(2);
+		case 'i': return(4);
+		case 'f': return(4);
+		case 'd': return(8);
+		case 'D': return(16); // FIXME
+		case 'l': return(4);
+		case 'B': return(1);
+		case 'H': return(2);
+		case 'I': return(4);
+		case 'L': return(4);
+		case 'q': return(8);
+		case 'Q': return(8);
+		case 'p': return(sizeof(void*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
+		case 'P': return(sizeof(void*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
+		case 'z': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
+		case 'Z': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
+		case 's': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
+		case 'S': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
+		default: return(0); /* FIXME */
+		}
 	}
 }
 // TODO do 64 bit systems align Q differently?
-static size_t getAlignment(char c) {
+static size_t getAlignment(char c) { /* note that this is only used for MACHINE_BYTE_ORDER_ALIGNED */
 	switch(c) {
 	case 'b': return(1);
 	case 'h': return(2);
@@ -116,7 +143,7 @@ static inline bool machineNoneBigEndianP(void) /* TODO pure */{
 	return(false);
 }
 
-#define BIG_ENDIAN_BYTE_ORDER_P(type) (byteOrder == BIG_ENDIAN_BYTE_ORDER || (byteOrder == MACHINE_BYTE_ORDER && machine ## type ## BigEndianP()))
+#define BIG_ENDIAN_BYTE_ORDER_P(type) (byteOrder == BIG_ENDIAN_BYTE_ORDER || ((byteOrder == MACHINE_BYTE_ORDER || byteOrder == MACHINE_BYTE_ORDER_ALIGNED) && machine ## type ## BigEndianP()))
 
 #define PACK_BUF(type, buffer) \
 	assert(sizeof(buffer) == size); \
@@ -134,7 +161,7 @@ static inline bool machineNoneBigEndianP(void) /* TODO pure */{
 
 
 static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST::Node* headNode, std::stringstream& sst) {
-	size_t size = getSize(formatC); 
+	size_t size = getSize(byteOrder, formatC); 
 	uint64_t mask = ~0; 
 	uint64_t limit;
 	long value = 0;
@@ -155,16 +182,19 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 	} else { /* non-integral */
 		switch(formatC) {
 		case 'f': {
+			assert(size == 4);
 			float result = Evaluators::get_native_float(headNode);
 			PACK_BUF(FloatingPoint, result)
 			return(size);
 		}
 		case 'd': {
+			assert(size == 8);
 			double result = Evaluators::get_native_double(headNode);
 			PACK_BUF(FloatingPoint, result)
 			return(size);
 		}
 		case 'D': {
+			assert(size == 16);
 			long double result = Evaluators::get_native_long_double(headNode);
 			PACK_BUF(FloatingPoint, result)
 			return(size);
@@ -222,13 +252,15 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 		char formatC = *format;
 		if(formatC == ']')
 			break;
-		if(formatC == '<' || formatC == '>' || formatC == '=') {
+		if(formatC == '<' || formatC == '>' || formatC == '=' || formatC == '@') {
 			if(formatC == '<')
 				byteOrder = LITTLE_ENDIAN_BYTE_ORDER;
 			else if(formatC == '>')
 				byteOrder = BIG_ENDIAN_BYTE_ORDER;
-			else
+			else if(formatC == '=')
 				byteOrder = MACHINE_BYTE_ORDER;
+			else
+				byteOrder = MACHINE_BYTE_ORDER_ALIGNED;
 			continue;
 		}
 		if(consNode == NULL)
@@ -247,10 +279,12 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 			position = subPosition;
 			format = ((const char*) formatStr->native) + position;
 		} else {
-			size_t align = getAlignment(formatC); 
-			new_offset = (offset + align - 1) & ~(align - 1);
-			for(; offset < new_offset; ++offset)
-				sst << '\0';
+			if(byteOrder == MACHINE_BYTE_ORDER_ALIGNED) {
+				size_t align = getAlignment(formatC); 
+				new_offset = (offset + align - 1) & ~(align - 1);
+				for(; offset < new_offset; ++offset)
+					sst << '\0';
+			}
 			offsets.push_back(offset);
 			size_t size = pack_atom_value(byteOrder, formatC, headNode, sst);
 			offset += size;
@@ -432,7 +466,7 @@ AST::Node* Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box
 	size_t position = 0; // in format
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		char formatC = *format;
-		if(formatC == '<' || formatC == '>' || formatC == '=')
+		if(formatC == '<' || formatC == '>' || formatC == '=' || formatC == '@')
 			continue;
 		++resultCount;
 	}
@@ -451,18 +485,23 @@ AST::Node* Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box
 	repr = tailtailtail(repr, resultCount);
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		char formatC = *format;
-		if(formatC == '<' || formatC == '>' || formatC == '=') {
+		if(formatC == '<' || formatC == '>' || formatC == '=' || formatC == '@') {
 			if(formatC == '<')
 				byteOrder = LITTLE_ENDIAN_BYTE_ORDER;
 			else if(formatC == '>')
 				byteOrder = BIG_ENDIAN_BYTE_ORDER;
-			else
+			else if(formatC == '=')
 				byteOrder = MACHINE_BYTE_ORDER;
+			else
+				byteOrder = MACHINE_BYTE_ORDER_ALIGNED;
 			continue;
 		}
-		size_t size = getSize(formatC);
-		size_t align = getAlignment(formatC);
-		new_offset = (offset + align - 1) & ~(align - 1);
+		size_t size = getSize(byteOrder, formatC);
+		if(byteOrder == MACHINE_BYTE_ORDER_ALIGNED) {
+			size_t align = getAlignment(formatC);
+			new_offset = (offset + align - 1) & ~(align - 1);
+		} else
+			new_offset = offset;
 		if(remainderLen < new_offset - offset)
 			throw Evaluators::EvaluationException("unpackRecord: not enough coded data for format padding.");
 		remainderLen -= new_offset - offset;
@@ -484,20 +523,32 @@ AST::Node* Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box
 	return(result);
 }
 // this doesn't work with record packers like "[p]" which have dynamic length.
-size_t Record_get_size(AST::Str* formatStr) {
+size_t Record_get_size(enum ByteOrder byteOrder, AST::Str* formatStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("recordSize needs format string.");
 	size_t offset = 0;
 	size_t new_offset = 0;
 	size_t position = 0; // in format
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
-		if(*format == '<' || *format == '>' || *format == '=')
+		char formatC = *format;
+		if(formatC == '<' || formatC == '>' || formatC == '=' || formatC == '@') {
+			if(formatC == '<')
+				byteOrder = LITTLE_ENDIAN_BYTE_ORDER;
+			else if(formatC == '>')
+				byteOrder = BIG_ENDIAN_BYTE_ORDER;
+			else if(formatC == '=')
+				byteOrder = MACHINE_BYTE_ORDER;
+			else
+				byteOrder = MACHINE_BYTE_ORDER_ALIGNED;
 			continue;
-		size_t size = getSize(*format);
-		size_t align = getAlignment(*format);
+		}
+		if(byteOrder == MACHINE_BYTE_ORDER_ALIGNED) {
+			size_t align = getAlignment(*format);
+			new_offset = (offset + align - 1) & ~(align - 1);
+			offset = new_offset;
+		}
+		size_t size = getSize(byteOrder, formatC);
 		offset += size;
-		new_offset = (offset + align - 1) & ~(align - 1);
-		offset = new_offset;
 	}
 	return(offset);
 }
@@ -507,7 +558,7 @@ bool Record_has_pointers(AST::Str* formatStr) {
 		throw Evaluators::EvaluationException("recordSize needs format string.");
 	size_t position = 0; // in format
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
-		if(*format == '<' || *format == '>' || *format == '=')
+		if(*format == '<' || *format == '>' || *format == '=' || *format == '@')
 			continue;
 		switch(*format) {
 		case 'p':
@@ -536,7 +587,7 @@ static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	size_t position = 0;
 	size_t offset = 0;
 	std::vector<size_t> offsets;
-	Record_pack(MACHINE_BYTE_ORDER, position, offset, dynamic_cast<AST::Str*>(a), b, sst, offsets);
+	Record_pack(MACHINE_BYTE_ORDER_ALIGNED, position, offset, dynamic_cast<AST::Str*>(a), b, sst, offsets);
 	std::string v = sst.str();
 	return(AST::makeStrCXX(v));
 }
@@ -546,12 +597,12 @@ static AST::Node* unpack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	// TODO size
-	return(Record_unpack(MACHINE_BYTE_ORDER, dynamic_cast<AST::Str*>(a), dynamic_cast<AST::Box*>(b)));
+	return(Record_unpack(MACHINE_BYTE_ORDER_ALIGNED, dynamic_cast<AST::Str*>(a), dynamic_cast<AST::Box*>(b)));
 }
 DEFINE_BINARY_OPERATION(RecordUnpacker, unpack)
 REGISTER_BUILTIN(RecordUnpacker, 2, 0, AST::symbolFromStr("unpackRecord"))
 
-DEFINE_SIMPLE_OPERATION(RecordSizeCalculator, Numbers::internNative((Numbers::NativeInt) Record_get_size(dynamic_cast<AST::Str*>(reduce(argument)))))
+DEFINE_SIMPLE_OPERATION(RecordSizeCalculator, Numbers::internNative((Numbers::NativeInt) Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, dynamic_cast<AST::Str*>(reduce(argument)))))
 REGISTER_BUILTIN(RecordSizeCalculator, 1, 0, AST::symbolFromStr("recordSize"))
 
 static AST::Node* wrapAllocateRecord(AST::Node* options, AST::Node* argument) {
@@ -560,7 +611,7 @@ static AST::Node* wrapAllocateRecord(AST::Node* options, AST::Node* argument) {
 	AST::Str* format = dynamic_cast<AST::Str*>(iter->second);
 	++iter;
 	AST::Node* world = iter->second;
-	AST::Node* result = Record_allocate(Record_get_size(format), !Record_has_pointers(format));
+	AST::Node* result = Record_allocate(Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, format), !Record_has_pointers(format));
 	return(Evaluators::makeIOMonad(result, world));
 }
 static AST::Node* wrapAllocateMemory(AST::Node* options, AST::Node* argument) {
