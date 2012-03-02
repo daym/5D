@@ -1,3 +1,9 @@
+5d (0.4.0) unstable; urgency=low
+
+  * make names of all monadic fns end on "!" if alphanumeric.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Fri, 02 Mar 2012 01:36:00 +0100
+
 5d (0.3.7) unstable; urgency=low
 
   * switch to our own HashTable implementation.
@@ -5,6 +11,7 @@
   * make TUI locale-aware.
   * make GUI locale-aware.
   * add support for unaligned data (not the default, though) to 'packRecord etc.
+  * fix bug in listFromStr so that (listFromStr "") works.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Tue, 28 Feb 2012 23:46:00 +0100
 

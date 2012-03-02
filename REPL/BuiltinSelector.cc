@@ -85,19 +85,19 @@ void BuiltinSelector_init(void) {
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stdout"), AST::makeBox(stdout, AST::symbolFromStr("stdout")));
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("stderr"), AST::makeBox(stderr, AST::symbolFromStr("stderr")));
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("PATHMAX"), Numbers::internNative((Numbers::NativeInt) PATH_MAX));
-	REPL_add_builtin_method(self, AST::symbolFromStr("write"), &Evaluators::Writer);
-	REPL_add_builtin_method(self, AST::symbolFromStr("flush"), &Evaluators::Flusher);
-	REPL_add_builtin_method(self, AST::symbolFromStr("readline"), &Evaluators::LineReader);
-	REPL_add_builtin_method(self, AST::symbolFromStr("messageBox"), &FFIs::MessageBoxDisplayer);
+	REPL_add_builtin_method(self, AST::symbolFromStr("write!"), &Evaluators::Writer);
+	REPL_add_builtin_method(self, AST::symbolFromStr("flush!"), &Evaluators::Flusher);
+	REPL_add_builtin_method(self, AST::symbolFromStr("readline!"), &Evaluators::LineReader);
+	REPL_add_builtin_method(self, AST::symbolFromStr("messageBox!"), &FFIs::MessageBoxDisplayer);
 	REPL_add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
-	REPL_add_builtin_method(self, AST::symbolFromStr("absolutePath"), &Evaluators::AbsolutePathGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("absolutePath!"), &Evaluators::AbsolutePathGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("absolutePath?"), &Evaluators::AbsolutePathP);
 	REPL_add_builtin_method(self, AST::symbolFromStr("packRecord"), &FFIs::RecordPacker);
 	REPL_add_builtin_method(self, AST::symbolFromStr("unpackRecord"), &FFIs::RecordUnpacker);
 	REPL_add_builtin_method(self, AST::symbolFromStr("recordSize"), &FFIs::RecordSizeCalculator);
-	REPL_add_builtin_method(self, AST::symbolFromStr("allocateMemory"), &FFIs::MemoryAllocator);
-	REPL_add_builtin_method(self, AST::symbolFromStr("allocateRecord"), &FFIs::RecordAllocator); // this is actually (compose allocateMemory recordSize)
-	REPL_add_builtin_method(self, AST::symbolFromStr("duplicateRecord"), &FFIs::RecordDuplicator);
+	REPL_add_builtin_method(self, AST::symbolFromStr("allocateMemory!"), &FFIs::MemoryAllocator);
+	REPL_add_builtin_method(self, AST::symbolFromStr("allocateRecord!"), &FFIs::RecordAllocator); // this is actually (compose allocateMemory recordSize)
+	REPL_add_builtin_method(self, AST::symbolFromStr("duplicateRecord!"), &FFIs::RecordDuplicator);
 	REPL_add_builtin_method(self, AST::symbolFromStr("archDepLibName"), &Evaluators::ArchDepLibNameGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("errno"), &Evaluators::ErrnoGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("makeApp"), &Evaluators::ApplicationMaker);
@@ -108,7 +108,7 @@ void BuiltinSelector_init(void) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("fn?"), &Evaluators::AbstractionP);
 	REPL_add_builtin_method(self, AST::symbolFromStr("fnParam"), &Evaluators::AbstractionParameterGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("fnBody"), &Evaluators::AbstractionBodyGetter);
-	REPL_add_builtin_method(self, AST::symbolFromStr("parseMath"), &Evaluators::RFileMathParser);
+	REPL_add_builtin_method(self, AST::symbolFromStr("parseMath!"), &Evaluators::RFileMathParser);
 	REPL_add_builtin_method(self, AST::symbolFromStr("parseMathStr"), &Evaluators::RStrMathParser);
 	self[Symbols::Sexports->name] = consFromKeys(self.begin(), self.end());
 }

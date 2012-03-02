@@ -113,6 +113,8 @@ ARM: support FPA10 floating-point accelerator (80 bit registers)
 import: once importing a name which is already in the environment, auto-add a generic function?
 module: once an unknown identifier is encountered, maybe auto-provide them to the importer so he can fill in what is needed.
 (infixl 1 whatever)
+\(**)
+(fn? Builtins) should be true since a module can be used exactly like a function can (that it isn't is just an implementation detail!) - so RModule "are" functions.
 
 = Debugging Macros =
 
@@ -155,3 +157,11 @@ let open POSIX in puts ...
 Windows COM support (interfaces, refcounting, ...)
 Windows COM strings
 Full Unicode strings
+
+= Free Symbols =
+
+`
+{
+,
+}
+~

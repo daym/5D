@@ -559,20 +559,20 @@ packRecord "ii" [1 2] =&gt; "\x01\x00\x00\x00\x02\x00\x00\x00"
 unpackRecord "ii" "\x01\x00\x00\x00\x02\x00\x00\x00" =&gt; [1 2]
 </pre>
 <hr/>
-<h3>allocateRecord \format \world</h3>
+<h3>allocateRecord! \format \world</h3>
 <p>Given a world, allocates an empty record with the given format, resulting in a Box (or Str) and a new World.</p>
 <p>Example:</p>
 <pre>
-allocateRecord "ii" ;\r
-liftIO r
+allocateRecord! "ii" ;\r
+liftIO! r
 </pre>
 <hr/>
-<h3>duplicateRecord \box \world</h3>
+<h3>duplicateRecord! \box \world</h3>
 <p>Given a world, duplicates the record in <span class="pre">box</span>, resulting in the new Box and a new World.</p>
 <p>Example:</p>
 <pre>
-duplicateRecord (packRecord "ii" [1 2]) ;\r
-liftIO r
+duplicateRecord! (packRecord "ii" [1 2]) ;\r
+liftIO! r
 </pre>
 <hr/>
 <h3>recordSize \format</h3>

@@ -78,11 +78,11 @@ mayTheForceBeWithYou42
 <h3>Hello world</h3>
 <pre>
 import "IO"
-runIO (write stdout "Hello world")
+runIO (write! stdout "Hello world")
 </pre>
 <p>What this does is:</p>
 <p><span class="pre">runIO</span> wraps IO.</p>
-<p><span class="pre">write \file \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">runIO</span> or <span class="pre" title="World time sequencer">;</span>).</p>
+<p><span class="pre">write! \file \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">runIO</span> or <span class="pre" title="World time sequencer">;</span>).</p>
 
 <h3>Mathematics</h3>
 <p>The usual calculator mathematics work:</p>
@@ -246,17 +246,17 @@ if (#t&amp;&amp;#t) 't $else 'f =&gt; t
 <pre>
 import "IO"
 runIO
-         write stdout "What's your name? " ;\_
-         flush stdout ;\_
-         readline stdin ;\name
-         write stdout "Hello " ;\_
-         write stdout name ;\_
-         flush stdout ;\_
-         liftIO name
+         write! stdout "What's your name? " ;\_
+         flush! stdout ;\_
+         readline! stdin ;\name
+         write! stdout "Hello " ;\_
+         write! stdout name ;\_
+         flush! stdout ;\_
+         liftIO! name
 </pre>
 <p>What this does is:</p>
 <p><span class="pre">runIO</span> wraps IO.</p>
-<p><span class="pre">write \file \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">runIO</span> or <span class="pre" title="World time sequencer">;</span>).</p>
+<p><span class="pre">write! \file \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">runIO</span> or <span class="pre" title="World time sequencer">;</span>).</p>
 <p><span class="pre">;</span> will sequence two operations so the left-hand-side operation will be done first and the right-hand-side operation will be done afterwards.</p>
 <p><span class="pre">_</span> is the traditional variable name for "don't care about the result".</p>
 <p>Note that the parens have been left out and replaced by indentation.</p>

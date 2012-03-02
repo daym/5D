@@ -98,6 +98,6 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 DEFINE_FULL_OPERATION(MessageBoxDisplayer, {
 	return(wrapMessageBox(fn, argument));
 })
-REGISTER_BUILTIN(MessageBoxDisplayer, (-2), 0, AST::symbolFromStr("messageBox"))
+REGISTER_BUILTIN(MessageBoxDisplayer, (-2), 0, AST::symbolFromStr("messageBox!"))
 
 }; // end namespace

@@ -1,2 +1,2 @@
-let messageBox = Builtins.messageBox in 
-dispatchModule [['messageBox messageBox]]
+let messageBox! = Builtins.messageBox! in 
+dispatchModule [['messageBox! messageBox!]]

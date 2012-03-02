@@ -631,7 +631,7 @@ REGISTER_BUILTIN(AbstractionMaker, (-2), 0, AST::symbolFromStr("makeFn"))
 REGISTER_BUILTIN(AbstractionP, 1, 0, AST::symbolFromStr("fn?"))
 REGISTER_BUILTIN(AbstractionParameterGetter, 1, 0, AST::symbolFromStr("fnParam"))
 REGISTER_BUILTIN(AbstractionBodyGetter, 1, 0, AST::symbolFromStr("fnBody"))
-REGISTER_BUILTIN(RFileMathParser, (-3), 0, AST::symbolFromStr("parseMath"))
+REGISTER_BUILTIN(RFileMathParser, (-3), 0, AST::symbolFromStr("parseMath!"))
 REGISTER_BUILTIN(RStrMathParser, (-2), 0, AST::symbolFromStr("parseMathStr"))
 
 // FIXME make this GCable.
