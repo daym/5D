@@ -53,7 +53,9 @@ AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keywor
 	//abi = (*sig == 'P') ? FFI_STDCALL : FFI_DEFAULT_API; TODO
 	if(*sig)
 		++sig;// skip calling convention
-	int argCount = strlen(sig); // Note: includes return value
+	size_t argCount = strlen(sig); // Note: includes return value
+	if(argCount == 0)
+		return Evaluators::makeIOMonad(NULL, endIter->second);
 	AST::Str* formatString = AST::makeStr(sig);
 	std::string dataStd;
 	void** args = (void**) alloca(argCount * sizeof(void*));
@@ -68,7 +70,7 @@ AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keywor
 		dataStd = sst.str();
 		char* data = (char*) dataStd.c_str();
 		argTypes = (ffi_type**) GC_MALLOC(argCount * sizeof(ffi_type*));
-		for(int i = 0; i < argCount; ++i) {
+		for(size_t i = 0; i < argCount; ++i) {
 			argTypes[i] = ffiTypeFromChar(sig[i]);
 			args[i] = data + offsets[i];
 			if(argTypes[i] == &ffi_type_void) {
