@@ -437,7 +437,7 @@ static bool symbol1_char_P(int input) {
 bool symbol_char_P(int input) {
 	return symbol1_char_P(input) 
 	    || (input >= '0' && input <= '9') 
-	    || /*input == '_' || */input == '?';
+	    || /*input == '_' || */input == '?' || input == '!';
 	  /*  || input == '^' not really part of the symbol name any more. */
 }
 
