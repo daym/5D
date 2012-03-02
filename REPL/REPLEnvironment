@@ -170,6 +170,7 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 }
 static AST::Node* REPL_force_import_module(struct REPL* self, const char* filename) {
 	// FIXME push symbol table
+	int previousErrno = errno;
 	AST::Node* result = NULL;
 	if(FFIs::sharedLibraryFileP(filename)) {
 		return Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&FFIs::SharedLibraryLoader, AST::makeStr(filename))), NULL)), AST::makeStr("access5DModuleV1")));
@@ -191,9 +192,11 @@ static AST::Node* REPL_force_import_module(struct REPL* self, const char* filena
 			result = Evaluators::reduce(result);
 			//fprintf(stderr, "after reduce_module\n");
 			fclose(input_file);
+			errno = previousErrno;
 			return(result);
 		} catch(...) {
 			fclose(input_file);
+			errno = previousErrno;
 			throw;
 		}
 	} catch(Evaluators::EvaluationException e) {

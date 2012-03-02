@@ -2,8 +2,10 @@
 #define __EVALUATORS_MODULES_H
 #include <string>
 #include <sys/stat.h>
+#include <errno.h>
 
 static inline std::string getModuleFileKey(const std::string& filename, std::string& outActualFilename) {
+	int previousErrno = errno;
 	outActualFilename = "";
 	std::stringstream moduleKeyStream;
 #ifdef WIN32
@@ -20,6 +22,7 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 	std::wstring filenameW = FromUTF8(filename.c_str());
 	if(_wstat(filenameW.c_str(), &buf) == -1) {
 		//perror(filename.c_str());
+		errno = previousErrno;
 		return("");
 	}
 	if(S_ISDIR(buf.st_mode)) {
@@ -27,6 +30,7 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 		filenameW = FromUTF8(outActualFilename.c_str());
 		if(_wstat(filenameW.c_str(), &buf) == -1) {
 			//perror(filename.c_str());
+			errno = previousErrno;
 			return("");
 		}
 	} else
@@ -36,12 +40,14 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 	struct stat buf;
 	if(stat(filename.c_str(), &buf) == -1) {
 		//perror(filename.c_str());
+		errno = previousErrno;
 		return("");
 	}
 	if(S_ISDIR(buf.st_mode)) {
 		outActualFilename = filename + "/init.5D";
 		if(stat(outActualFilename.c_str(), &buf) == -1) {
 			//perror(filename.c_str());
+			errno = previousErrno;
 			return("");
 		}
 	} else
@@ -49,6 +55,7 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 #endif
 	moduleKeyStream << buf.st_dev << ":" << buf.st_ino;
 	std::string moduleKey = moduleKeyStream.str();
+	errno = previousErrno;
 	return(moduleKey);
 }
 
