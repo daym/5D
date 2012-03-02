@@ -215,7 +215,7 @@ REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline!"))
 REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath!"))
 REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"))
 REGISTER_BUILTIN(AbsolutePathP, 1, 0, AST::symbolFromStr("absolutePath?"))
-REGISTER_BUILTIN(ErrnoGetter, 1, 0, AST::symbolFromStr("errno"))
+REGISTER_BUILTIN(ErrnoGetter, 1, 0, AST::symbolFromStr("errno!"))
 
 char* get_absolute_path(const char* filename) {
 #ifdef WIN32

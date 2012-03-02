@@ -6,6 +6,7 @@ list comprehensions in []
 
 eval $ runIO $ labs (-5.2)
 0
+loading modules (for example the one where errno! is in) causes errno to be clobbered.
 
 = Builtin Types =
 
