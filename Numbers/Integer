@@ -258,7 +258,8 @@ AST::Node* operator<=(const Integer& a, const Integer& b);
 */
 bool operator<=(const Int& a, const Int& b);
 
-NativeInt toNativeInt(AST::Node* node, bool& B_ok);
+bool toNativeInt(AST::Node* node, NativeInt& result);
+bool toNearestNativeInt(AST::Node* node, NativeInt& result);
 
 }; /* namespace Numbers */
 #endif

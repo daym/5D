@@ -169,12 +169,12 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 	limit = (1 << (8 * size - 1));
 	mask = limit - 1;
 	if(formatC == 'b' || formatC == 'h' || formatC == 'i' || formatC == 'l' || formatC == 'q') {
-		value = (long) Evaluators::get_native_long(headNode); // FIXME bigger values
+		value = (long) Evaluators::get_long(headNode); // FIXME bigger values
 		mask = ~mask;
 		if((value > 0 && (value & mask) != 0) || (value < 0 && ((-value-1) & mask) != 0))
 			B_out_of_range = true;
 	} else if(formatC == 'B' || formatC == 'H' || formatC == 'I' || formatC == 'L' || formatC == 'Q') {
-		value = (long) Evaluators::get_native_long(headNode); // FIXME bigger values
+		value = (long) Evaluators::get_long(headNode); // FIXME bigger values
 		mask = (mask << 1) + 1;
 		mask = ~mask;
 		if((value > 0 && (value & mask) != 0) || (value < 0))
@@ -183,19 +183,19 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 		switch(formatC) {
 		case 'f': {
 			assert(size == 4);
-			float result = Evaluators::get_native_float(headNode);
+			float result = Evaluators::get_float(headNode);
 			PACK_BUF(FloatingPoint, result)
 			return(size);
 		}
 		case 'd': {
 			assert(size == 8);
-			double result = Evaluators::get_native_double(headNode);
+			double result = Evaluators::get_double(headNode);
 			PACK_BUF(FloatingPoint, result)
 			return(size);
 		}
 		case 'D': {
 			assert(size == 16);
-			long double result = Evaluators::get_native_long_double(headNode);
+			long double result = Evaluators::get_long_double(headNode);
 			PACK_BUF(FloatingPoint, result)
 			return(size);
 		}
@@ -204,14 +204,14 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 		case 'p': {
 			if(headNode == NULL)
 				throw Evaluators::EvaluationException("packRecord: that field cannot be nil");
-			void* result = Evaluators::get_native_pointer(headNode);
+			void* result = Evaluators::get_pointer(headNode);
 			PACK_BUF(None, result)
 			return(size);
 		}
 		case 'Z':
 		case 'S':
 		case 'P': {
-			void* result = headNode ? Evaluators::get_native_pointer(headNode) : NULL;
+			void* result = headNode ? Evaluators::get_pointer(headNode) : NULL;
 			PACK_BUF(None, result)
 			return(size);
 		}
@@ -289,13 +289,13 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 			size_t size = pack_atom_value(byteOrder, formatC, headNode, sst);
 			offset += size;
 /*
-long long get_native_long_long(AST::Node* root);
-void* get_native_pointer(AST::Node* root);
-bool get_native_boolean(AST::Node* root);
-char* get_native_string(AST::Node* root);
-float get_native_float(AST::Node* root);
-long double get_native_long_double(AST::Node* root);
-double get_native_double(AST::Node* root);
+long long get_long_long(AST::Node* root);
+void* get_pointer(AST::Node* root);
+bool get_boolean(AST::Node* root);
+char* get_string(AST::Node* root);
+float get_float(AST::Node* root);
+long double get_long_double(AST::Node* root);
+double get_double(AST::Node* root);
 */
 		}
 	}
@@ -617,9 +617,8 @@ static AST::Node* wrapAllocateRecord(AST::Node* options, AST::Node* argument) {
 static AST::Node* wrapAllocateMemory(AST::Node* options, AST::Node* argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	bool B_ok = false;
-	Numbers::NativeInt size = Numbers::toNativeInt(iter->second, B_ok);
-	if(!B_ok)
+	Numbers::NativeInt size = 0;
+	if(!Numbers::toNativeInt(iter->second, size))
 		throw Evaluators::EvaluationException("cannot allocate memory with unknown size");
 	++iter;
 	AST::Node* world = iter->second;
@@ -665,10 +664,9 @@ AST::Node* listFromStr(AST::Str* node) {
 }
 AST::Node* strFromList(AST::Cons* node) {
 	std::stringstream sst;
-	bool B_ok;
+	Numbers::NativeInt c;
 	for(; node; node = evaluateToCons(node->tail)) {
-		int c = Numbers::toNativeInt(node->head, B_ok);
-		if(c < 0 || c > 255) // oops
+		if(!Numbers::toNativeInt(node->head, c) || c < 0 || c > 255) // oops
 			throw Evaluators::EvaluationException("list cannot be represented as a str.");
 		sst << (char) c;
 	}
@@ -686,9 +684,9 @@ static AST::Node* substr(AST::Node* options, AST::Node* argument) {
 	++iter;
 	if(!mBox)
 		throw Evaluators::EvaluationException("substr on non-string is undefined");
-	int beginning = Evaluators::get_native_int(iter->second);
+	int beginning = Evaluators::get_nearest_int(iter->second);
 	++iter;
-	int end = Evaluators::get_native_int(iter->second);
+	int end = Evaluators::get_nearest_int(iter->second);
 	++iter;
 	char* p = (char*) mBox->native;
 	size_t sz = mBox->size;

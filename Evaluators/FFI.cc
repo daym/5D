@@ -11,6 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 #ifndef WIN32
 #include <sys/utsname.h>
 #endif
@@ -27,44 +28,44 @@ using namespace AST;
 using namespace Numbers;
 
 typedef long long long_long;
+typedef long double long_double;
 
-#define IMPLEMENT_NATIVE_GETTER(typ) \
-typ get_native_##typ(AST::Node* root) { \
-	bool B_ok; \
-	typ result = Numbers::toNativeInt(root, B_ok); \
-	if(!B_ok) \
-		result = 0; /* FIXME FALLBACK */ \
+#define IMPLEMENT_NATIVE_INT_GETTER(typ) \
+typ get_##typ(AST::Node* root) { \
+	NativeInt result2 = 0; \
+	typ result = 0; \
+	if(!Numbers::toNativeInt(root, result2) || (result = result2) != result2) \
+		throw Evaluators::EvaluationException("value out of range for " #typ); \
 	return(result); \
-	/* FIXME support bigger than NativeInt */ \
 }
-
-float get_native_float(AST::Node* root) {
-	bool B_ok;
-	float result = Numbers::toNativeFloat(root, B_ok);
-	if(!B_ok) {
-		std::stringstream sst;
-		sst << "cannot get native float for " << str(root);
-		std::string v = sst.str();
-		throw Evaluators::EvaluationException(v.c_str());
+#define IMPLEMENT_NATIVE_FLOAT_GETTER(typ) \
+typ get_##typ(AST::Node* root) { \
+	NativeFloat result2 = 0.0; \
+	typ result = 0; \
+	if(!Numbers::toNativeFloat(root, result2) || (result = result2) != result2) \
+		throw Evaluators::EvaluationException("value out of range for " #typ); \
+	return(result); \
+}
+int get_nearest_int(AST::Node* root) {
+	NativeInt result2 = 0;
+	int result = 0;
+	if(!Numbers::toNearestNativeInt(root, result2))
+		throw Evaluators::EvaluationException("value out of range for int");
+	if((result = result2) != result2) { /* doesn't fit */
+		return (result2 < 0) ? INT_MIN : INT_MAX;
 	}
 	return(result);
-	/* FIXME support bigger than NativeInt */
-}
-long double get_native_long_double(AST::Node* root) {
-	// FIXME more precision.
-	return(get_native_float(root));
-}
-double get_native_double(AST::Node* root) {
-	// FIXME more precision.
-	return(get_native_float(root));
 }
 
-IMPLEMENT_NATIVE_GETTER(int)
-IMPLEMENT_NATIVE_GETTER(long)
-IMPLEMENT_NATIVE_GETTER(long_long)
-IMPLEMENT_NATIVE_GETTER(short)
+IMPLEMENT_NATIVE_INT_GETTER(int)
+IMPLEMENT_NATIVE_INT_GETTER(long)
+IMPLEMENT_NATIVE_INT_GETTER(long_long)
+IMPLEMENT_NATIVE_INT_GETTER(short)
+IMPLEMENT_NATIVE_FLOAT_GETTER(float)
+IMPLEMENT_NATIVE_FLOAT_GETTER(double)
+IMPLEMENT_NATIVE_FLOAT_GETTER(long_double)
 
-void* get_native_pointer(AST::Node* root) {
+void* get_pointer(AST::Node* root) {
 	Box* rootBox = dynamic_cast<Box*>(root);
 	if(rootBox)
 		return(rootBox->native);
@@ -75,11 +76,11 @@ void* get_native_pointer(AST::Node* root) {
 		throw Evaluators::EvaluationException(v.c_str());
 	}
 }
-bool get_native_boolean(AST::Node* root) {
+bool get_boolean(AST::Node* root) {
 	/* FIXME */
 	return(false);
 }
-char* get_native_string(AST::Node* root) {
+char* get_string(AST::Node* root) {
 	AST::Str* rootString = dynamic_cast<AST::Str*>(root);
 	if(rootString) {
 		// TODO maybe check terminating zero? Maybe not.
@@ -94,13 +95,12 @@ char* get_native_string(AST::Node* root) {
 	}
 }
 
-// FIXME move these to their own module:
 static AST::Node* wrapWrite(AST::Node* options, AST::Node* argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
 	++iter;
-	char* text = iter->second ? get_native_string(iter->second) : NULL;
+	char* text = iter->second ? get_string(iter->second) : NULL;
 	++iter;
 	if(!f)
 		throw Evaluators::EvaluationException("need file, but is missing");
@@ -108,7 +108,6 @@ static AST::Node* wrapWrite(AST::Node* options, AST::Node* argument) {
 	size_t result = fwrite(text ? text : "", 1, text ? strlen(text) : 0, (FILE*) f->native);
 	return(Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) result), world));
 }
-// FIXME move these to their own module:
 static AST::Node* wrapFlush(AST::Node* options, AST::Node* argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
@@ -117,7 +116,7 @@ static AST::Node* wrapFlush(AST::Node* options, AST::Node* argument) {
 	AST::Node* world = iter->second;
 	if(!f)
 		throw Evaluators::EvaluationException("need file, but is missing");
-	size_t result = fflush((FILE*) Evaluators::get_native_pointer(f));
+	size_t result = fflush((FILE*) Evaluators::get_pointer(f));
 	return(Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) result), world));
 }
 // FIXME unlimited length
@@ -142,7 +141,7 @@ static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
 static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
-	char* text = iter->second ? get_native_string(iter->second) : NULL;
+	char* text = iter->second ? get_string(iter->second) : NULL;
 	++iter;
 	AST::Node* world = iter->second;
 	text = get_absolute_path(text);

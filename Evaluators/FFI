@@ -18,16 +18,17 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace Evaluators {
 
-int get_native_int(AST::Node* root);
-long get_native_long(AST::Node* root);
-long long get_native_long_long(AST::Node* root);
-short get_native_short(AST::Node* root);
-void* get_native_pointer(AST::Node* root);
-bool get_native_boolean(AST::Node* root);
-char* get_native_string(AST::Node* root);
-float get_native_float(AST::Node* root);
-long double get_native_long_double(AST::Node* root);
-double get_native_double(AST::Node* root);
+int get_int(AST::Node* root);
+int get_nearest_int(AST::Node* root);
+long get_long(AST::Node* root);
+long long get_long_long(AST::Node* root);
+short get_short(AST::Node* root);
+void* get_pointer(AST::Node* root);
+bool get_boolean(AST::Node* root);
+char* get_string(AST::Node* root);
+float get_float(AST::Node* root);
+long double get_long_double(AST::Node* root);
+double get_double(AST::Node* root);
 char* get_absolute_path(const char* filename);
 bool absolute_path_P(AST::Str* name);
 

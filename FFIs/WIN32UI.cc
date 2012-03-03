@@ -41,11 +41,11 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 		(icon == AST::symbolFromStr("error")) ? MB_ICONERROR : 
 		0; // TODO more
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	cText = FromUTF8(Evaluators::get_native_string(iter->second));
+	cText = FromUTF8(Evaluators::get_string(iter->second));
 	++iter;
 	AST::Node* world = iter->second;
 	AST::Node* caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
-	cCaption = caption ? FromUTF8(Evaluators::get_native_string(caption)) : _T("");
+	cCaption = caption ? FromUTF8(Evaluators::get_string(caption)) : _T("");
 	int cResult = MessageBoxW(cParentWindow, cText.c_str(), cCaption.c_str(), cType);
 	AST::Symbol* result;
 	result = (cResult == IDOK) ? AST::symbolFromStr("ok") : 

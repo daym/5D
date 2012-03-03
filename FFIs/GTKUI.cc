@@ -39,11 +39,11 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	        (icon == AST::symbolFromStr("error")) ? GTK_MESSAGE_ERROR :
 	        GTK_MESSAGE_INFO; // TODO more
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	cText = Evaluators::get_native_string(iter->second);
+	cText = Evaluators::get_string(iter->second);
 	++iter;
 	AST::Node* world = iter->second;
 	AST::Node* caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
-	cCaption = caption ? Evaluators::get_native_string(caption) : NULL;
+	cCaption = caption ? Evaluators::get_string(caption) : NULL;
 	GtkWidget* dialog = gtk_message_dialog_new(cParentWindow, (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), cType, cButtons, "%s", cText);
 	if(cCaption)
 		gtk_window_set_title(GTK_WINDOW(dialog), cCaption);

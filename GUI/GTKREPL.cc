@@ -500,7 +500,7 @@ static void handle_tips_response(GtkDialog* dialog, gint response_id, struct REP
 	}
 	{
 		char* text;
-		text = current_tip ? Evaluators::get_native_string(current_tip->head) : NULL;
+		text = current_tip ? Evaluators::get_string(current_tip->head) : NULL;
 		if(!text)
 			text = g_strdup("You can complete text by pressing the Tabulator (Tab) key on your keyboard");
 		gtk_text_buffer_set_text(buffer, text, -1);

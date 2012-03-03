@@ -142,7 +142,7 @@ X Integer::convertToSignedPrimitive() const {
 }
 
 NativeInt Integer::toNativeInt() const {
-	return convertToUnsignedPrimitive<NativeInt>();
+	return convertToSignedPrimitive<NativeInt, NativeUInt>();
 }
 NativeUInt Integer::toNativeUInt() const {
 	return convertToUnsignedPrimitive<NativeUInt>();
@@ -795,22 +795,56 @@ REGISTER_STR(Integer, {
 	return(strInteger(node));
 })
 
-NativeInt toNativeInt(AST::Node* node, bool& B_ok) {
+bool toNativeInt(AST::Node* node, NativeInt& result) {
 	Int* intNode;
 	Integer* integerNode;
-	B_ok = false;
+	result = 0;
 	node = evaluate(node);
 	if(node == NULL)
-		return(0);
+		return(false);
 	else if((intNode = dynamic_cast<Int*>(node)) != NULL) {
-		B_ok = true;
-		return(intNode->value);
+		result = intNode->value;
+		return(true);
 	} else if((integerNode = dynamic_cast<Integer*>(node)) != NULL) {
-		NativeInt result = integerNode->toNativeInt();
-		B_ok = true;
-		return(result);
+		try {
+			result = integerNode->toNativeInt();
+		} catch(EvaluationException exception) { /* too big etc */
+			return(false);
+		}
+		return(true);
 	} else
-		return(0);
+		return(false);
+}
+bool toNearestNativeInt(AST::Node* node, NativeInt& result) {
+	Int* intNode;
+	Integer* integerNode;
+	result = 0;
+	node = evaluate(node);
+	if(node == NULL)
+		return(false);
+	else if((intNode = dynamic_cast<Int*>(node)) != NULL) {
+		result = intNode->value;
+		return(true);
+	} else if((integerNode = dynamic_cast<Integer*>(node)) != NULL) {
+		try {
+			result = integerNode->toNativeInt();
+		} catch(EvaluationException exception) { /* too big etc */
+			switch(integerNode->getSign()) {
+			case Integer::negative:
+				result = -1;
+				return(true);
+			case Integer::zero:
+				result = 0;
+				return(true);
+			case Integer::positive:
+				return(false);
+			default:
+				return(false);
+			}
+		}
+		return(true);
+	} else
+		return(false);
 }
 AST::Node* internUnsignedLongLong(unsigned long long value, bool B_negative) {
 	Integer result(0);

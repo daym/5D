@@ -36,11 +36,11 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 		(icon == AST::symbolFromStr("error")) ? "(E) " :
 		""; // TODO more
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	cText = Evaluators::get_native_string(iter->second);
+	cText = Evaluators::get_string(iter->second);
 	++iter;
 	AST::Node* world = iter->second;
 	AST::Node* caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
-	cCaption = caption ? Evaluators::get_native_string(caption) : NULL;
+	cCaption = caption ? Evaluators::get_string(caption) : NULL;
 	char buffer[21];
 	AST::Symbol* result = AST::symbolFromStr("close");
 	while(true) {

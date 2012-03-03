@@ -259,12 +259,12 @@ static AST::Node* REPL_import_module(AST::Node* options, AST::Node* fileNameNode
 	std::string realFilename = "";
 	std::string moduleKey = "";
 	if(Evaluators::absolute_path_P(dynamic_cast<AST::Str*>(fileNameNode))) {
-		filename = Evaluators::get_native_string(fileNameNode);
+		filename = Evaluators::get_string(fileNameNode);
 		moduleKey = getModuleFileKey(filename, realFilename);
 	} else for(std::vector<std::string>::const_iterator iterSearchPaths = searchPaths.begin(); iterSearchPaths != endSearchPaths; ++iterSearchPaths) {
 		std::stringstream filenameStream;
 		filenameStream << *iterSearchPaths;
-		filenameStream << Evaluators::get_native_string(fileNameNode);
+		filenameStream << Evaluators::get_string(fileNameNode);
 		filename = filenameStream.str();
 		moduleKey = getModuleFileKey(filename, realFilename);
 		if(moduleKey.length() != 0)
@@ -318,7 +318,7 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	AST::Node* blacklistN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("blacklist:"));
 	AST::HashTable blacklist = setFromList(blacklistN);
 	AST::Node* prefixN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("prefix:"));
-	char* prefix = prefixN ? Evaluators::get_native_string(prefixN) : NULL;
+	char* prefix = prefixN ? Evaluators::get_string(prefixN) : NULL;
 
 	AST::Node* exports = Evaluators::reduce(AST::makeApplication(body, Symbols::Sexports));
 	AST::Cons* usedExports = NULL;
@@ -366,7 +366,7 @@ static AST::Node* REPL_describe(AST::Node* options, AST::Node* argument) {
 	++iter;
 	assert(iter != arguments.end());
 	argument = iter->second;
-	int backOffset = Evaluators::get_native_int(Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("@backOffset:")));
+	int backOffset = Evaluators::get_int(Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("@backOffset:")));
 	if(dynamic_cast<AST::Symbol*>(argument) != NULL) {
 		AST::Node* body = REPL_get_definition_backwards(self, dynamic_cast<AST::Symbol*>(argument), backOffset);
 		return(body);

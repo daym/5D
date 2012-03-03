@@ -54,7 +54,7 @@ static inline AST::Node* extr(const std::list<std::pair<AST::Keyword*, AST::Node
 }
 
 static inline void* getSomethingUseful(AST::Node* n) {
-  void* result = Evaluators::get_native_pointer(n);
+  void* result = Evaluators::get_pointer(n);
   if(result == NULL)
     throw Evaluators::EvaluationException("argument is required but empty");
   return(result);
@@ -79,15 +79,15 @@ static inline AST::Node* makeBoxOrNil(AST::Node* repr, void* s) {
 #define unproc iter == end ? NULL : dynamic_cast<Evaluators::CProcedure*>(extr(iter++))
 #define unp iter == end ? NULL : getSomethingUseful(extr(iter++))
 #define unP iter == end ? NULL : getSomethingUsefulOrNull(extr(iter++))
-#define uni iter == end ? 0 : Evaluators::get_native_int(extr(iter++))
-#define unl iter == end ? 0 : Evaluators::get_native_long(extr(iter++))
-#define unh iter == end ? 0 : Evaluators::get_native_short(extr(iter++))
-#define unL iter == end ? 0 : Evaluators::get_native_long_long(extr(iter++))
-#define uns iter == end ? NULL : Evaluators::get_native_string(extr(iter++))
-#define unS iter == end ? NULL : Evaluators::get_native_string(extr(iter++))
-#define unf iter == end ? 0 : Evaluators::get_native_float(extr(iter++))
-#define unD iter == end ? 0.0L : Evaluators::get_native_long_double(extr(iter++))
-#define und iter == end ? 0.0 : Evaluators::get_native_double(extr(iter++))
+#define uni iter == end ? 0 : Evaluators::get_int(extr(iter++))
+#define unl iter == end ? 0 : Evaluators::get_long(extr(iter++))
+#define unh iter == end ? 0 : Evaluators::get_short(extr(iter++))
+#define unL iter == end ? 0 : Evaluators::get_long_long(extr(iter++))
+#define uns iter == end ? NULL : Evaluators::get_string(extr(iter++))
+#define unS iter == end ? NULL : Evaluators::get_string(extr(iter++))
+#define unf iter == end ? 0 : Evaluators::get_float(extr(iter++))
+#define unD iter == end ? 0.0L : Evaluators::get_long_double(extr(iter++))
+#define und iter == end ? 0.0 : Evaluators::get_double(extr(iter++))
 #define unR iter == end ? NULL : extr(iter++)
 #define inv
 #define REPRME AST::makeApplication(options, world)

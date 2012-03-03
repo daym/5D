@@ -30,7 +30,7 @@ AST::Node* wrapAccessLibrary(AST::Node* options, AST::Node* argument) {
 	Evaluators::CXXArguments::const_iterator endIter = arguments.end();
 	assert(iter != endIter);
 	assert(iter->first == NULL);
-	void* body = Evaluators::get_native_pointer(iter->second);
+	void* body = Evaluators::get_pointer(iter->second);
 	++iter;
 	assert(iter != endIter);
 	assert(iter->first == NULL);
@@ -45,13 +45,13 @@ AST::Node* wrapAccessLibrary(AST::Node* options, AST::Node* argument) {
 	AST::Node* fnName = iter->second;
 	++iter;
 
-	void* nativeProc = body && fnName ? dlsym(body, Evaluators::get_native_string(fnName)) : NULL; // FIXME
+	void* nativeProc = body && fnName ? dlsym(body, Evaluators::get_string(fnName)) : NULL; // FIXME
 	// filename is the second argument, so ignore.
 	//return(Evaluators::reduce(AST::makeApplication(body, argument)));
 	return(new CProcedure(nativeProc, AST::makeApplication(AST::makeApplication(AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), libName), quote(signature)), fnName), strlen(signature->name) - 2 + 1/*monad*/, 0, signature));
 }
 AST::Node* wrapLoadLibraryC(AST::Node* nameS) {
-	const char* name = Evaluators::get_native_string(nameS);
+	const char* name = Evaluators::get_string(nameS);
 	void* clib = dlopen(name, RTLD_LAZY);
 	if(!clib) {
 		fprintf(stderr, "(dlopen \"%s\") failed because: %s\n", name, dlerror());

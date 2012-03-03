@@ -61,27 +61,26 @@ AST::Node* operator<=(const Real& a, const Real& b) {
 
 REGISTER_BUILTIN(FloatP, 1, 0, AST::symbolFromStr("float?"))
 
-NativeFloat toNativeFloat(AST::Node* node, bool& B_ok) {
+bool toNativeFloat(AST::Node* node, NativeFloat& result) {
 	Float* floatNode;
 	Real* realNode;
-	B_ok = false;
+	result = 0.0;
 	node = evaluate(node);
 	if(node == NULL)
-		return(0);
+		return(false);
 	else if((floatNode = dynamic_cast<Float*>(node)) != NULL) {
-		B_ok = true;
-		return(floatNode->value);
+		result = floatNode->value;
+		return(true);
 	} else if((realNode = dynamic_cast<Real*>(node)) != NULL) {
 		//NativeFloat result = realNode->toNativeFloat();
-		//B_ok = true;
-		return(0.0f); // FIXME
+		return(false); // FIXME
 	} else {
 		// only coerce integers to float if there is no information loss
-		NativeInt value = toNativeInt(node, B_ok);
-		NativeFloat result = (NativeFloat) value;
-		if((NativeInt) result != value)
-			B_ok = false;
-		return(result);
+		NativeInt value = 0;
+		if(!toNativeInt(node, value))
+			return(false);
+		result = (NativeFloat) value;
+		return((NativeInt) result == value);
 	}
 }
 

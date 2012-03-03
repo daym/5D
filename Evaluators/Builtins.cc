@@ -485,8 +485,8 @@ DEFINE_SIMPLE_OPERATION(TailGetter, ((argument = reduce(argument), cons_P(argume
 DEFINE_SIMPLE_OPERATION(StrP, str_P(reduce(argument)))
 DEFINE_SIMPLE_OPERATION(KeywordP, keyword_P(reduce(argument)))
 DEFINE_SIMPLE_OPERATION(SymbolP, symbol_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(SymbolFromStrGetter, (argument = reduce(argument), str_P(argument) ? AST::symbolFromStr(get_native_string(argument)) : FALLBACK))
-DEFINE_SIMPLE_OPERATION(KeywordFromStrGetter, (argument = reduce(argument), str_P(argument) ? AST::keywordFromStr(get_native_string(argument)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(SymbolFromStrGetter, (argument = reduce(argument), str_P(argument) ? AST::symbolFromStr(get_string(argument)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(KeywordFromStrGetter, (argument = reduce(argument), str_P(argument) ? AST::keywordFromStr(get_string(argument)) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(KeywordStr, (argument = reduce(argument), keyword_P(argument) ? Evaluators::internNative(dynamic_cast<Keyword*>(argument)->name) : FALLBACK))
 IMPLEMENT_NUMERIC_BUILTIN(addA, +)
 DEFINE_BINARY_OPERATION(Adder, addA)
@@ -531,7 +531,7 @@ static AST::Node* parseMath(Scanners::OperatorPrecedenceList* OPL, FILE* inputFi
 	for(++iter; iter != endIter; ++iter) {
 		if(iter->first) { // likely
 			if(iter->first == AST::keywordFromStr("position:")) {
-				position = Evaluators::get_native_int(iter->second);
+				position = Evaluators::get_int(iter->second);
 			} else if(iter->first == AST::keywordFromStr("name:")) {
 				name = iter->second;
 			} else if(iter->first == AST::keywordFromStr("terminator:")) {
@@ -543,7 +543,7 @@ static AST::Node* parseMath(Scanners::OperatorPrecedenceList* OPL, FILE* inputFi
 		if(!terminator)
 			terminator = Symbols::SlessEOFgreater;
 		Scanners::MathParser parser;
-		parser.push(inputFile, position, name ? Evaluators::get_native_string(name) : "");
+		parser.push(inputFile, position, name ? Evaluators::get_string(name) : "");
 		return(parser.parse(OPL, terminator));
 	} catch(...) {
 		return(NULL); // FIXME
@@ -553,20 +553,20 @@ static AST::Node* makeFileMathParserB(AST::Node* options, AST::Node* argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	CXXArguments::const_iterator endIter = arguments.end();
-	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*)(Evaluators::get_native_pointer(iter->second));
+	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*)(Evaluators::get_pointer(iter->second));
 	++iter;
 	AST::Node* inputFile = iter->second;
 	++iter;
 	AST::Node* world = iter->second;
-	return(Evaluators::makeIOMonad(parseMath(OPL, (FILE*) Evaluators::get_native_pointer(inputFile), arguments, iter, endIter), world));
+	return(Evaluators::makeIOMonad(parseMath(OPL, (FILE*) Evaluators::get_pointer(inputFile), arguments, iter, endIter), world));
 }
 static AST::Node* makeStrMathParserB(AST::Node* options, AST::Node* argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	CXXArguments::const_iterator endIter = arguments.end();
-	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*)(Evaluators::get_native_pointer(iter->second));
+	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*)(Evaluators::get_pointer(iter->second));
 	++iter;
-	const char* command = Evaluators::get_native_string(iter->second);
+	const char* command = Evaluators::get_string(iter->second);
 	FILE* inputFile = fmemopen((void*) command, strlen(command), "r");
 	// FIXME if !inputFile
 	try {

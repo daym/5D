@@ -129,7 +129,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 				AST::Node* value = *iter_arguments;
 				if(keywordName == Symbols::StextBufferText) {
 					const char* text;
-					text = (value == Symbols::Snil || value == NULL) ? "" : Evaluators::get_native_string(value);
+					text = (value == Symbols::Snil || value == NULL) ? "" : Evaluators::get_string(value);
 					REPL_append_to_output_buffer(self, text);
 				} else if(keywordName == Symbols::Senvironment) {
 					if(value && value != Symbols::Snil)
