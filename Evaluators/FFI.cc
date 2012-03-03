@@ -50,7 +50,7 @@ int get_nearest_int(AST::Node* root) {
 	NativeInt result2 = 0;
 	int result = 0;
 	if(!Numbers::toNearestNativeInt(root, result2))
-		throw Evaluators::EvaluationException("value out of range for int");
+		throw Evaluators::EvaluationException("cannot convert to int");
 	if((result = result2) != result2) { /* doesn't fit */
 		return (result2 < 0) ? INT_MIN : INT_MAX;
 	}
