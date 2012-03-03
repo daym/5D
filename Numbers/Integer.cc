@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <limits.h>
+#include <limits>
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "Evaluators/Operation"
@@ -831,13 +831,14 @@ bool toNearestNativeInt(AST::Node* node, NativeInt& result) {
 		} catch(EvaluationException exception) { /* too big etc */
 			switch(integerNode->getSign()) {
 			case Integer::negative:
-				result = -1;
+				result = std::numeric_limits<NativeInt>::min();
 				return(true);
 			case Integer::zero:
 				result = 0;
 				return(true);
 			case Integer::positive:
-				return(false);
+				result = std::numeric_limits<NativeInt>::max();
+				return(true);
 			default:
 				return(false);
 			}
@@ -850,7 +851,7 @@ AST::Node* internUnsignedLongLong(unsigned long long value, bool B_negative) {
 	Integer result(0);
 	for(; value != 0; value <<= 1) {
 		result *= 2;
-		if(value & ((unsigned long long) LLONG_MAX + 1))
+		if(value & ((unsigned long long) std::numeric_limits<long long>::max() + 1))
 			result += 1;
 	}
 	return new Integer(result);
