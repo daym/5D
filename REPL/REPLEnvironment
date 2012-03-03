@@ -366,7 +366,8 @@ static AST::Node* REPL_describe(AST::Node* options, AST::Node* argument) {
 	++iter;
 	assert(iter != arguments.end());
 	argument = iter->second;
-	int backOffset = Evaluators::get_int(Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("@backOffset:")));
+	AST::Node* backOffsetNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("@backOffset:"));
+	int backOffset = backOffsetNode ? Evaluators::get_int(backOffsetNode) : 0;
 	if(dynamic_cast<AST::Symbol*>(argument) != NULL) {
 		AST::Node* body = REPL_get_definition_backwards(self, dynamic_cast<AST::Symbol*>(argument), backOffset);
 		return(body);

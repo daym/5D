@@ -1,6 +1,7 @@
 5d (0.4.0) unstable; urgency=low
 
   * make names of all monadic fns end on "!" if alphanumeric.
+  * fix conversions to C primitives.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Fri, 02 Mar 2012 01:36:00 +0100
 
