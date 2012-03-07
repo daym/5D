@@ -30,7 +30,7 @@ static AST::Node* internEnviron(WCHAR* envp) {
 	if(*envp) {
 		int count = wcslen(envp);
 		AST::Node* head = AST::makeStr(ToUTF8(envp));
-		envp += count;
+		envp += count + 1;
 		return(AST::makeCons(head, internEnviron(envp)));
 	}
 	else
@@ -58,7 +58,7 @@ static AST::Box* environFromList(AST::Node* argument) {
 	i = 0;
 	for(std::vector<std::wstring>::const_iterator iter = result.begin(); iter != endIter; ++iter) {
 		std::wstring v = *iter;
-		memcpy(&resultC[i], v.c_str(), v.length() + 1);
+		memcpy(&resultC[i], v.c_str(), (v.length() + 1) * sizeof(WCHAR));
 		i += v.length() + 1;
 	}
 	resultC[i] = 0;
