@@ -16,6 +16,7 @@
 #include "FFIs/FFIs"
 #include "Evaluators/Evaluators"
 #include "Numbers/Integer"
+#include "FFIs/ProcessInfos"
 
 // for now, these are kept all in the main executable. After ensuring that GC actually works across DLL boundaries, we can also extract stuff into their own extension modules.
 namespace REPLB {
@@ -90,19 +91,19 @@ void BuiltinSelector_init(void) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("readline!"), &Evaluators::LineReader);
 	REPL_add_builtin_method(self, AST::symbolFromStr("messageBox!"), &FFIs::MessageBoxDisplayer);
 	REPL_add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
-	REPL_add_builtin_method(self, AST::symbolFromStr("absolutePath!"), &Evaluators::AbsolutePathGetter);
-	REPL_add_builtin_method(self, AST::symbolFromStr("absolutePath?"), &Evaluators::AbsolutePathP);
+	REPL_add_builtin_method(self, AST::symbolFromStr("absolutePath!"), &FFIs::AbsolutePathGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("absolutePath?"), &FFIs::AbsolutePathP);
 	REPL_add_builtin_method(self, AST::symbolFromStr("packRecord"), &FFIs::RecordPacker);
 	REPL_add_builtin_method(self, AST::symbolFromStr("unpackRecord"), &FFIs::RecordUnpacker);
 	REPL_add_builtin_method(self, AST::symbolFromStr("recordSize"), &FFIs::RecordSizeCalculator);
 	REPL_add_builtin_method(self, AST::symbolFromStr("allocateMemory!"), &FFIs::MemoryAllocator);
 	REPL_add_builtin_method(self, AST::symbolFromStr("allocateRecord!"), &FFIs::RecordAllocator); // this is actually (compose allocateMemory recordSize)
 	REPL_add_builtin_method(self, AST::symbolFromStr("duplicateRecord!"), &FFIs::RecordDuplicator);
-	REPL_add_builtin_method(self, AST::symbolFromStr("archDepLibName"), &Evaluators::ArchDepLibNameGetter);
-	REPL_add_builtin_method(self, AST::symbolFromStr("errno!"), &Evaluators::ErrnoGetter);
-	REPL_add_builtin_method(self, AST::symbolFromStr("environ!"), &Evaluators::EnvironGetter);
-	REPL_add_builtin_method(self, AST::symbolFromStr("listFromEnviron"), &Evaluators::EnvironInterner);
-	REPL_add_builtin_method(self, AST::symbolFromStr("environFromList"), &Evaluators::EnvironFromList);
+	REPL_add_builtin_method(self, AST::symbolFromStr("archDepLibName"), &FFIs::ArchDepLibNameGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("errno!"), &FFIs::ErrnoGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("environ!"), &FFIs::EnvironGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("listFromEnviron"), &FFIs::EnvironInterner);
+	REPL_add_builtin_method(self, AST::symbolFromStr("environFromList"), &FFIs::EnvironFromList);
 	REPL_add_builtin_method(self, AST::symbolFromStr("makeApp"), &Evaluators::ApplicationMaker);
 	REPL_add_builtin_method(self, AST::symbolFromStr("app?"), &Evaluators::ApplicationP);
 	REPL_add_builtin_method(self, AST::symbolFromStr("appOperator"), &Evaluators::ApplicationOperatorGetter);
