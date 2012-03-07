@@ -2,7 +2,11 @@
 #include "stdafx.h"
 #include "AST/AST"
 #include "Evaluators/Evaluators"
+#include "Evaluators/FFI"
+#include "Evaluators/Builtins"
 #include "FFIs/ProcessInfos"
+#include "FFIs/Allocators"
+
 namespace FFIs {
 static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
 	return(nameNode);
@@ -44,15 +48,16 @@ static AST::Box* environFromList(AST::Node* argument) {
 	int i = 0;
 	AST::Node* listNode = Evaluators::reduce(argument);
 	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
-		std::wstring v = ToUTF8(Evaluators::get_string(node->head);
-		result.push_back();
+		std::wstring v = FromUTF8(Evaluators::get_string(node->head));
+		result.push_back(v);
 		count += v.length() + 1;
 		// FIXME handle overflow
 	}
-	result = (char**) GC_MALLOC(sizeof(WCHAR) * (count + 1));
+	resultC = (WCHAR*) GC_MALLOC(sizeof(WCHAR) * (count + 1));
 	std::vector<std::wstring>::const_iterator endIter = result.end();
 	i = 0;
-	for(std::vector<std::wstring>::const_iterator iter = result.begin(); iter != result.end(); ++iter) {
+	for(std::vector<std::wstring>::const_iterator iter = result.begin(); iter != endIter; ++iter) {
+		std::wstring v = *iter;
 		memcpy(&resultC[i], v.c_str(), v.length() + 1);
 		i += v.length() + 1;
 	}
@@ -62,25 +67,42 @@ static AST::Box* environFromList(AST::Node* argument) {
 static AST::Node* wrapGetEnviron(AST::Node* world) {
 	AST::Node* result;
 	LPWSTR env = GetEnvironmentStringsW();
-	result = Evaluators::makeIOMonad(internEnviron(env, world));
+	result = Evaluators::makeIOMonad(internEnviron(env), world);
 	FreeEnvironmentStringsW(env);
 	return(result);
 }
-DEFINE_SIMPLE_OPERATION(EnvironGetter, wrapGetEnviron(reduce(argument)))
-
+DEFINE_SIMPLE_OPERATION(EnvironGetter, wrapGetEnviron(Evaluators::reduce(argument)))
+char* get_absolute_path(const char* filename) {
+	if(filename == NULL || filename[0] == 0)
+		filename = ".";
+	std::wstring filenameW = FromUTF8(filename);
+	WCHAR buffer[2049];
+	if(GetFullPathNameW(filenameW.c_str(), 2048, buffer, NULL) != 0) {
+		return(ToUTF8(buffer));
+	} else
+		return(GCx_strdup(filename));
+}
+static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
+	char* text = iter->second ? Evaluators::get_string(iter->second) : NULL;
+	++iter;
+	AST::Node* world = iter->second;
+	text = get_absolute_path(text);
+	return(Evaluators::makeIOMonad(AST::makeStr(text), world));
+}
 DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 	return(wrapGetAbsolutePath(fn, argument));
 })
-DEFINE_SIMPLE_OPERATION(EnvironInterner, wrapInternEnviron(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(EnvironInterner, wrapInternEnviron(Evaluators::reduce(argument)))
 DEFINE_SIMPLE_OPERATION(EnvironFromList, environFromList(argument))
 
-DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(reduce(argument))))
-DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(dynamic_cast<AST::Str*>(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(Evaluators::reduce(argument))))
+DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(dynamic_cast<AST::Str*>(Evaluators::reduce(argument))))
 
 REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath!"))
 REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"))
 REGISTER_BUILTIN(AbsolutePathP, 1, 0, AST::symbolFromStr("absolutePath?"))
-REGISTER_BUILTIN(ErrnoGetter, 1, 0, AST::symbolFromStr("errno!"))
 REGISTER_BUILTIN(EnvironGetter, 1, 0, AST::symbolFromStr("environ!"))
 REGISTER_BUILTIN(EnvironInterner, 1, 0, AST::symbolFromStr("listFromEnviron"))
 REGISTER_BUILTIN(EnvironFromList, 1, 0, AST::symbolFromStr("environFromList"))

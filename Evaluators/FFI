@@ -29,12 +29,11 @@ char* get_string(AST::Node* root);
 float get_float(AST::Node* root);
 long double get_long_double(AST::Node* root);
 double get_double(AST::Node* root);
-char* get_absolute_path(const char* filename);
-bool absolute_path_P(AST::Str* name);
 
 DECLARE_FULL_OPERATION(Writer)
 DECLARE_FULL_OPERATION(Flusher)
 DECLARE_FULL_OPERATION(LineReader)
+DECLARE_SIMPLE_OPERATION(ErrnoGetter)
 
 }; // end namespace
 

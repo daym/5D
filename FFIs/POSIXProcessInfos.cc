@@ -1,6 +1,8 @@
 #include "AST/AST"
 #include "Evaluators/Evaluators"
 #include "FFIs/ProcessInfos"
+#include "FFIs/Allocators"
+
 namespace FFIs {
 
 static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
@@ -57,7 +59,32 @@ static AST::Box* environFromList(AST::Node* argument) {
 	return(AST::makeBox(result, AST::makeApplication(&EnvironFromList, listNode/* or argument*/)));
 }
 DEFINE_SIMPLE_OPERATION(EnvironGetter, Evaluators::makeIOMonad(internEnviron((const char**) environ), reduce(argument)))
-
+char* get_absolute_path(const char* filename) {
+	if(filename && filename[0] == '/')
+		return(GCx_strdup(filename));
+	else {
+		char buffer[2049];
+		std::stringstream sst;
+		if(getcwd(buffer, 2048)) {
+			sst << buffer;
+			if(buffer[0] && buffer[strlen(buffer) - 1] != '/')
+				sst << '/';
+		}
+		if(filename)
+			sst << filename;
+		std::string v = sst.str();
+		return(GCx_strdup(v.c_str()));
+	}
+}
+static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
+	char* text = iter->second ? get_string(iter->second) : NULL;
+	++iter;
+	AST::Node* world = iter->second;
+	text = get_absolute_path(text);
+	return(Evaluators::makeIOMonad(AST::makeStr(text), world));
+}
 DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 	return(wrapGetAbsolutePath(fn, argument));
 })

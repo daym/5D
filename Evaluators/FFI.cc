@@ -138,15 +138,6 @@ static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
 	return(Evaluators::makeIOMonad(result, world));
 }
 
-static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
-	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
-	CXXArguments::const_iterator iter = arguments.begin();
-	char* text = iter->second ? get_string(iter->second) : NULL;
-	++iter;
-	AST::Node* world = iter->second;
-	text = get_absolute_path(text);
-	return(Evaluators::makeIOMonad(AST::makeStr(text), world));
-}
 DEFINE_FULL_OPERATION(Writer, {
 	return(wrapWrite(fn, argument));
 })
@@ -160,35 +151,6 @@ DEFINE_SIMPLE_OPERATION(ErrnoGetter, Evaluators::makeIOMonad(Numbers::internNati
 REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write!"))
 REGISTER_BUILTIN(Flusher, 2, 0, AST::symbolFromStr("flush!"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline!"))
-
-char* get_absolute_path(const char* filename) {
-#ifdef WIN32
-	if(filename == NULL || filename[0] == 0)
-		filename = ".";
-	std::wstring filenameW = FromUTF8(filename);
-	WCHAR buffer[2049];
-	if(GetFullPathNameW(filenameW.c_str(), 2048, buffer, NULL) != 0) {
-		return(ToUTF8(buffer));
-	} else
-		return(GCx_strdup(filename));
-#else
-	if(filename && filename[0] == '/')
-		return(GCx_strdup(filename));
-	else {
-		char buffer[2049];
-		std::stringstream sst;
-		if(getcwd(buffer, 2048)) {
-			sst << buffer;
-			if(buffer[0] && buffer[strlen(buffer) - 1] != '/')
-				sst << '/';
-		}
-		if(filename)
-			sst << filename;
-		std::string v = sst.str();
-		return(GCx_strdup(v.c_str()));
-	}
-#endif
-}
-
+REGISTER_BUILTIN(ErrnoGetter, 1, 0, AST::symbolFromStr("errno!"))
 
 }; /* end namespace */
