@@ -112,13 +112,13 @@ test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-
 	./Scanners/test-Scanner
 	./Scanners/test-MathParser
 
-REPL/5DREPL: REPL/main.o REPL/REPL.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o REPL/BuiltinSelector.o $(FFIS)
+REPL/5DREPL: REPL/main.o REPL/REPL.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o REPL/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS)
 	g++ -o $@ $^ $(LDFLAGS)
 
-TUI/TUI: TUI/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o REPL/BuiltinSelector.o $(FFIS)
+TUI/TUI: TUI/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o REPL/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS)
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
-TUI2/5DTUI: TUI2/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o REPL/BuiltinSelector.o $(FFIS)
+TUI2/5DTUI: TUI2/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o REPL/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS)
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 REPL/main.o: REPL/main.cc REPL/REPL Version FFIs/Allocators REPL/REPLEnvironment Evaluators/Modules FFIs/FFIs AST/AST AST/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators Scanners/MathParser Scanners/SExpressionParser Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Scanners/MathParser Scanners/Scanner Evaluators/Evaluators Numbers/Small Evaluators/Operation Numbers/Integer Numbers/Real FFIs/ProcessInfos
@@ -181,10 +181,10 @@ GUI/GTKView.o: GUI/GTKView.cc
 REPL/BuiltinSelectors.o: REPL/BuiltinSelector.cc REPL/BuiltinSelector AST/AST AST/HashTable AST/Symbol AST/Symbols Evaluators/Builtins Evaluators/FFI FFIs/RecordPacker FFIs/UI FFIs/FFIs Evaluators/Evaluators Numbers/Integer Numbers/Small FFIs/ProcessInfos
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-FFIs/POSIXProcessInfo.o: FFIs/POSIXProcessInfo.cc FFIs/ProcessInfo AST/AST Evaluators/Evaluators AST/HashTable AST/Symbol Evaluators/FFI Evaluators/Builtins FFIs/Allocators
+FFIs/POSIXProcessInfos.o: FFIs/POSIXProcessInfos.cc FFIs/ProcessInfos AST/AST Evaluators/Evaluators AST/HashTable AST/Symbol Evaluators/FFI Evaluators/Builtins FFIs/Allocators
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/5D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Formatters/SExpression.o REPL/REPL.o GUI/GTKCompleter.o Evaluators/Backtracker.o AST/Keyword.o GUI/GTKTerminalEmulator.o Scanners/OperatorPrecedenceList.o Formatters/Math.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/GTKUI.o FFIs/RecordPacker.o REPL/BuiltinSelector.o $(FFIS)
+GUI/5D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Formatters/SExpression.o REPL/REPL.o GUI/GTKCompleter.o Evaluators/Backtracker.o AST/Keyword.o GUI/GTKTerminalEmulator.o Scanners/OperatorPrecedenceList.o Formatters/Math.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/GTKUI.o FFIs/RecordPacker.o REPL/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS)
 	g++ -o $@ $^ $(GUI_LDFLAGS) -lutil
 
 GUI/GTKTerminalEmulator.o: GUI/GTKTerminalEmulator.cc GUI/TerminalEmulator
