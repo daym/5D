@@ -1,3 +1,4 @@
+#include <vector>
 #include "stdafx.h"
 #include "AST/AST"
 #include "Evaluators/Evaluators"
@@ -23,8 +24,8 @@ bool absolute_path_P(AST::Str* name) {
 }
 static AST::Node* internEnviron(WCHAR* envp) {
 	if(*envp) {
-		int count = _wstrlen(envp);
-		AST::Node* head = AST::makeStr(EncodeUTF8(envp));
+		int count = wcslen(envp);
+		AST::Node* head = AST::makeStr(ToUTF8(envp));
 		envp += count;
 		return(AST::makeCons(head, internEnviron(envp)));
 	}
@@ -41,9 +42,9 @@ static AST::Box* environFromList(AST::Node* argument) {
 	WCHAR* resultC;
 	std::vector<std::wstring> result;
 	int i = 0;
-	AST::Node* listNode = reduce(argument);
+	AST::Node* listNode = Evaluators::reduce(argument);
 	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
-		std::wstring v = DecodeUTF8(Evaluators::get_string(node->head);
+		std::wstring v = ToUTF8(Evaluators::get_string(node->head);
 		result.push_back();
 		count += v.length() + 1;
 		// FIXME handle overflow
