@@ -160,10 +160,11 @@ static AST::Node* wrapInternEnviron(AST::Node* argument) {
 	// TODO check whether it worked? No.
 	return internEnviron((const char**) envp->native);
 }
-static char** environFromList(AST::Node* listNode) {
+static AST::Box* environFromList(AST::Node* argument) {
 	int count = 0;
 	char** result;
 	int i = 0;
+	AST::Node* listNode = reduce(argument);
 	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
 		++count;
 		// FIXME handle overflow
@@ -173,10 +174,10 @@ static char** environFromList(AST::Node* listNode) {
 		result[i] = Evaluators::get_string(node->head);
 		++i;
 	}
-	return(result);
+	return(AST::makeBox(result, AST::makeApplication(&EnvironFromList, listNode/* or argument*/)));
 }
 DEFINE_SIMPLE_OPERATION(EnvironInterner, wrapInternEnviron(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(EnvironFromList, environFromList(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(EnvironFromList, environFromList(argument))
 DEFINE_FULL_OPERATION(Writer, {
 	return(wrapWrite(fn, argument));
 })
@@ -247,7 +248,7 @@ REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"
 REGISTER_BUILTIN(AbsolutePathP, 1, 0, AST::symbolFromStr("absolutePath?"))
 REGISTER_BUILTIN(ErrnoGetter, 1, 0, AST::symbolFromStr("errno!"))
 REGISTER_BUILTIN(EnvironGetter, 1, 0, AST::symbolFromStr("environ!"))
-REGISTER_BUILTIN(EnvironInterner, 1, 0, AST::symbolFromStr("internEnviron"))
+REGISTER_BUILTIN(EnvironInterner, 1, 0, AST::symbolFromStr("listFromEnviron"))
 REGISTER_BUILTIN(EnvironFromList, 1, 0, AST::symbolFromStr("environFromList"))
 
 char* get_absolute_path(const char* filename) {

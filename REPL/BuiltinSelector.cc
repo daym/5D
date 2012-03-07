@@ -101,7 +101,7 @@ void BuiltinSelector_init(void) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("archDepLibName"), &Evaluators::ArchDepLibNameGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("errno!"), &Evaluators::ErrnoGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("environ!"), &Evaluators::EnvironGetter);
-	REPL_add_builtin_method(self, AST::symbolFromStr("internEnviron"), &Evaluators::EnvironInterner);
+	REPL_add_builtin_method(self, AST::symbolFromStr("listFromEnviron"), &Evaluators::EnvironInterner);
 	REPL_add_builtin_method(self, AST::symbolFromStr("environFromList"), &Evaluators::EnvironFromList);
 	REPL_add_builtin_method(self, AST::symbolFromStr("makeApp"), &Evaluators::ApplicationMaker);
 	REPL_add_builtin_method(self, AST::symbolFromStr("app?"), &Evaluators::ApplicationP);

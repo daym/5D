@@ -8,7 +8,7 @@ let archDepLibName = Builtins.archDepLibName in
 let strUntilZero = Builtins.strUntilZero in 
 let allocatePointer! = allocateMemory! (recordSize "p") in 
 let environFromList = Builtins.environFromList in 
-let internEnviron = Builtins.internEnviron in 
+let listFromEnviron = Builtins.listFromEnviron in 
 dispatchModule [['allocateRecord! allocateRecord!]
 ['allocateMemory! allocateMemory!]
 ['duplicateRecord! duplicateRecord!]
@@ -19,4 +19,4 @@ dispatchModule [['allocateRecord! allocateRecord!]
 ['strUntilZero strUntilZero]
 ['allocatePointer! allocatePointer!]
 ['environFromList environFromList]
-['internEnviron internEnviron]]
+['listFromEnviron listFromEnviron]]
