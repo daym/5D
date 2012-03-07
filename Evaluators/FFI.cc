@@ -147,7 +147,36 @@ static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
 	text = get_absolute_path(text);
 	return(Evaluators::makeIOMonad(AST::makeStr(text), world));
 }
-
+static AST::Node* internEnviron(const char** envp) {
+	if(*envp) {
+		AST::Node* head = AST::makeStr(*envp++);
+		return(AST::makeCons(head, internEnviron(envp)));
+	}
+	else
+		return(NULL);
+}
+static AST::Node* wrapInternEnviron(AST::Node* argument) {
+	AST::Box* envp = dynamic_cast<AST::Box*>(argument);
+	// TODO check whether it worked? No.
+	return internEnviron((const char**) envp->native);
+}
+static char** environFromList(AST::Node* listNode) {
+	int count = 0;
+	char** result;
+	int i = 0;
+	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
+		++count;
+		// FIXME handle overflow
+	}
+	result = (char**) GC_MALLOC(sizeof(char*) * (count + 1));
+	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
+		result[i] = Evaluators::get_string(node->head);
+		++i;
+	}
+	return(result);
+}
+DEFINE_SIMPLE_OPERATION(EnvironInterner, wrapInternEnviron(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(EnvironFromList, environFromList(reduce(argument)))
 DEFINE_FULL_OPERATION(Writer, {
 	return(wrapWrite(fn, argument));
 })
@@ -205,9 +234,11 @@ bool absolute_path_P(AST::Str* name) {
 	return(*c == '/');
 }
 #endif
+
 DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(reduce(argument))))
 DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(dynamic_cast<AST::Str*>(reduce(argument))))
 DEFINE_SIMPLE_OPERATION(ErrnoGetter, Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) errno), reduce(argument)))
+DEFINE_SIMPLE_OPERATION(EnvironGetter, Evaluators::makeIOMonad(internEnviron((const char**) environ), reduce(argument)))
 REGISTER_BUILTIN(Writer, 3, 0, AST::symbolFromStr("write!"))
 REGISTER_BUILTIN(Flusher, 2, 0, AST::symbolFromStr("flush!"))
 REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline!"))
@@ -215,6 +246,9 @@ REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath!"))
 REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"))
 REGISTER_BUILTIN(AbsolutePathP, 1, 0, AST::symbolFromStr("absolutePath?"))
 REGISTER_BUILTIN(ErrnoGetter, 1, 0, AST::symbolFromStr("errno!"))
+REGISTER_BUILTIN(EnvironGetter, 1, 0, AST::symbolFromStr("environ!"))
+REGISTER_BUILTIN(EnvironInterner, 1, 0, AST::symbolFromStr("internEnviron"))
+REGISTER_BUILTIN(EnvironFromList, 1, 0, AST::symbolFromStr("environFromList"))
 
 char* get_absolute_path(const char* filename) {
 #ifdef WIN32

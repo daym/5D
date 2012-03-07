@@ -116,6 +116,7 @@ module: once an unknown identifier is encountered, maybe auto-provide them to th
 (infixl 1 whatever)
 \(**)
 (fn? Builtins) should be true since a module can be used exactly like a function can (that it isn't is just an implementation detail!) - so RModule "are" functions.
+allow building our own OperationPrecedenceList from within 5D.
 
 = Debugging Macros =
 

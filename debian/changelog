@@ -1,3 +1,9 @@
+5d (0.4.1) unstable; urgency=low
+
+  * add strcat
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  06 Mar 2012 20:38:00 +0100
+
 5d (0.4.0) unstable; urgency=low
 
   * make names of all monadic fns end on "!" if alphanumeric.
