@@ -100,7 +100,7 @@ void BuiltinSelector_init(void) {
 	REPL_add_builtin_method(self, AST::symbolFromStr("allocateRecord!"), &FFIs::RecordAllocator); // this is actually (compose allocateMemory recordSize)
 	REPL_add_builtin_method(self, AST::symbolFromStr("duplicateRecord!"), &FFIs::RecordDuplicator);
 	REPL_add_builtin_method(self, AST::symbolFromStr("archDepLibName"), &FFIs::ArchDepLibNameGetter);
-	REPL_add_builtin_method(self, AST::symbolFromStr("errno!"), &FFIs::ErrnoGetter);
+	REPL_add_builtin_method(self, AST::symbolFromStr("errno!"), &Evaluators::ErrnoGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("environ!"), &FFIs::EnvironGetter);
 	REPL_add_builtin_method(self, AST::symbolFromStr("listFromEnviron"), &FFIs::EnvironInterner);
 	REPL_add_builtin_method(self, AST::symbolFromStr("environFromList"), &FFIs::EnvironFromList);

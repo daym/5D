@@ -12,6 +12,7 @@
 #include "Evaluators/FFI"
 #include "REPL/REPL"
 #include "AST/AST"
+#include "FFIs/ProcessInfos"
 
 #define MAX_LOADSTRING 100
 
@@ -92,7 +93,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	HACCEL hAccelTable;
 	WCHAR buffer[2049];
 	if(GetModuleFileNameW(GetModuleHandle(NULL), buffer, 2048) > 0) {
-		char* name = Evaluators::get_absolute_path(ToUTF8(buffer));
+		char* name = FFIs::get_absolute_path(ToUTF8(buffer));
 		char* slash = strrchr(name, '\\');
 		std::string name2;
 		if(slash != NULL) {

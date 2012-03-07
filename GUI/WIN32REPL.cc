@@ -279,7 +279,7 @@ HWND REPL_get_search_window(struct REPL* self) {
 	return(self->fSearchDialog);
 }
 char* REPL_get_absolute_pathw(const std::wstring& file_name) {
-	return Evaluators::get_absolute_path(ToUTF8(file_name));
+	return FFIs::get_absolute_path(ToUTF8(file_name));
 }
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name) {
 	std::wstring text = FromUTF8(absolute_name);
