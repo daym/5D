@@ -6,9 +6,11 @@ let strFromList = Builtins.strFromList in
 let substr = Builtins.substr in 
 let (++) = List.(++) in 
 let strcat = \a \b strFromList ((listFromStr a) ++ (listFromStr b)) in 
+let strjoin = \sep \l strFromList (let sepl = (listFromStr sep) in let parts = (map (\x listFromStr x ++ sepl) l) in foldr (++) "" parts) in 
 dispatchModule [['listFromStr listFromStr]
 ['str? str?]
 ['strFromKeyword strFromKeyword]
 ['strFromList strFromList]
 ['substr substr]
-['strcat strcat]]
+['strcat strcat]
+['strjoin strjoin]]
