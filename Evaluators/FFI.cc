@@ -12,9 +12,6 @@ You should have received a copy of the GNU General Public License along with thi
 #include <string.h>
 #include <errno.h>
 #include <limits.h>
-#ifndef WIN32
-#include <sys/utsname.h>
-#endif
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
 #include "AST/AST"

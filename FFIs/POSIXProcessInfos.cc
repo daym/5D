@@ -1,7 +1,12 @@
+#include <sstream>
+#include <vector>
+#include <sys/utsname.h>
 #include "AST/AST"
 #include "Evaluators/Evaluators"
 #include "FFIs/ProcessInfos"
 #include "FFIs/Allocators"
+#include "Evaluators/Builtins"
+#include "Evaluators/FFI"
 
 namespace FFIs {
 
@@ -46,7 +51,7 @@ static AST::Box* environFromList(AST::Node* argument) {
 	int count = 0;
 	char** result;
 	int i = 0;
-	AST::Node* listNode = reduce(argument);
+	AST::Node* listNode = Evaluators::reduce(argument);
 	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
 		++count;
 		// FIXME handle overflow
@@ -58,7 +63,7 @@ static AST::Box* environFromList(AST::Node* argument) {
 	}
 	return(AST::makeBox(result, AST::makeApplication(&EnvironFromList, listNode/* or argument*/)));
 }
-DEFINE_SIMPLE_OPERATION(EnvironGetter, Evaluators::makeIOMonad(internEnviron((const char**) environ), reduce(argument)))
+DEFINE_SIMPLE_OPERATION(EnvironGetter, Evaluators::makeIOMonad(internEnviron((const char**) environ), Evaluators::reduce(argument)))
 char* get_absolute_path(const char* filename) {
 	if(filename && filename[0] == '/')
 		return(GCx_strdup(filename));
@@ -77,9 +82,9 @@ char* get_absolute_path(const char* filename) {
 	}
 }
 static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
-	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
-	CXXArguments::const_iterator iter = arguments.begin();
-	char* text = iter->second ? get_string(iter->second) : NULL;
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
+	char* text = iter->second ? Evaluators::get_string(iter->second) : NULL;
 	++iter;
 	AST::Node* world = iter->second;
 	text = get_absolute_path(text);
@@ -88,16 +93,15 @@ static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
 DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 	return(wrapGetAbsolutePath(fn, argument));
 })
-DEFINE_SIMPLE_OPERATION(EnvironInterner, wrapInternEnviron(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(EnvironInterner, wrapInternEnviron(Evaluators::reduce(argument)))
 DEFINE_SIMPLE_OPERATION(EnvironFromList, environFromList(argument))
 
-DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(reduce(argument))))
-DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(dynamic_cast<AST::Str*>(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(Evaluators::reduce(argument))))
+DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(dynamic_cast<AST::Str*>(Evaluators::reduce(argument))))
 
 REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath!"))
 REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"))
 REGISTER_BUILTIN(AbsolutePathP, 1, 0, AST::symbolFromStr("absolutePath?"))
-REGISTER_BUILTIN(ErrnoGetter, 1, 0, AST::symbolFromStr("errno!"))
 REGISTER_BUILTIN(EnvironGetter, 1, 0, AST::symbolFromStr("environ!"))
 REGISTER_BUILTIN(EnvironInterner, 1, 0, AST::symbolFromStr("listFromEnviron"))
 REGISTER_BUILTIN(EnvironFromList, 1, 0, AST::symbolFromStr("environFromList"))

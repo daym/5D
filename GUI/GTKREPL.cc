@@ -38,6 +38,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/OperatorPrecedenceList"
 #include "AST/HashTable"
 #include "FFIs/Allocators"
+#include "FFIs/ProcessInfos"
 
 #define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(REPL_handle_##name), self)
@@ -894,7 +895,7 @@ bool REPL_load_contents_by_name(struct REPL* self, const char* file_name) {
 	if(!REPL_load_contents_from(self, file_name))
 		return(false);
 	else {
-		char* absolute_name = Evaluators::get_absolute_path(file_name);
+		char* absolute_name = FFIs::get_absolute_path(file_name);
 		REPL_set_file_modified(self, false);
 		REPL_set_current_environment_name(self, absolute_name);
 		return(true);
@@ -947,7 +948,7 @@ bool REPL_save(struct REPL* self, bool B_force_dialog) {
 			fclose(output_file);
 			close(FD);
 			if(rename(temp_name, file_name) != -1) {
-				char* absolute_name = Evaluators::get_absolute_path(file_name);
+				char* absolute_name = FFIs::get_absolute_path(file_name);
 				B_OK = true;
 				REPL_set_current_environment_name(self, absolute_name);
 				REPL_set_file_modified(self, false);
