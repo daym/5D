@@ -418,6 +418,7 @@ static void REPL_init_builtins(struct REPL* self) {
 
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("REPL"), AST::makeBox(self, AST::symbolFromStr("REPL")));
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("operatorPrecedenceList"), AST::makeBox(REPL_ensure_operator_precedence_list(self), AST::symbolFromStr("operatorPrecedenceList")));
+	// TODO add get_all_operators
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("environment"), AST::makeBox(envEntryGetTail(self->fTailEnvironment), AST::symbolFromStr("environment"))); // TODO
 	REPL_add_static_builtin_binding(self, Symbols::Sdefine, uncurried(&RDefiner, self));
 	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &Evaluators::Quoter); // dummy

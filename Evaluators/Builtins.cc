@@ -482,7 +482,7 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 			return(iter->second);
 		else {
 			if(fallback) { // this should always hold
-				return(reduce(fallback));
+				return(reduce(AST::makeApplication(fallback, key)));
 			} else { // this is a leftover
 				std::stringstream sst;
 				sst << "library does not contain '" << s->name;
