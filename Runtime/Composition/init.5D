@@ -11,6 +11,7 @@ let export = id in
 let makeModuleBox = Builtins.makeModuleBox in 
 let dispatchModule2 = Builtins.dispatchModule in 
 let dispatch = (\table \fallbackAction \key dispatchModule2 (makeModuleBox table) fallbackAction key) in 
+let dispatch1 \table = dispatch table raiseMissingSymbolError in 
 dispatch [['(|) (|)]
 ['($) ($)]
 ['compose compose]
@@ -20,5 +21,6 @@ dispatch [['(|) (|)]
 ['rem rem]
 ['export export]
 ['dispatch dispatch]
-['raiseMissingSymbolError raiseMissingSymbolError]]
+['raiseMissingSymbolError raiseMissingSymbolError]
+['dispatch1 dispatch1]]
 raiseMissingSymbolError

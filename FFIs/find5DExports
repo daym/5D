@@ -20,5 +20,5 @@ def getNames(n):
 	return(sets.Set(result))
 
 l = ["['%s %s]" % (n, n) for n in getNames(sys.argv[1])]
-print "dispatchModule ",
+print "(requireModule \"Composition\").dispatch1 ",
 print "[" + ("\n".join(l)) + "]"
