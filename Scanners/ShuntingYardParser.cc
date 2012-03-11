@@ -114,7 +114,6 @@ AST::Node* ShuntingYardParser::parse_let_macro(void) {
 	return(AST::makeCons(Symbols::Slet, AST::makeCons(parameter, AST::makeCons(body, NULL))));
 }
 AST::Node* ShuntingYardParser::parse_list_macro(void) {
-	// TODO use the colon operator!
 	AST::Application* root = NULL;
 	AST::Application* tail = NULL;
 	while(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
