@@ -24,5 +24,6 @@ dispatch [['allocateRecord! allocateRecord!]
 ['strUntilZero strUntilZero]
 ['allocatePointer! allocatePointer!]
 ['environFromList environFromList]
-['listFromEnviron listFromEnviron]]
+['listFromEnviron listFromEnviron]
+['requireSharedLibrary requireSharedLibrary]]
 raiseMissingSymbolError
