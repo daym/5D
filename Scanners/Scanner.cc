@@ -165,7 +165,7 @@ void Scanner::parse_token(void) {
 		if(!deinject())
 			input_value = Symbols::SlessEOFgreater;
 		break;
-	case '@': // FIXME remove this for S expressions?
+	case '@': // TODO remove this for S expressions?
 		parse_keyword(input);
 		break;
 	case '#':
@@ -431,7 +431,6 @@ static bool symbol1_char_P(int input) {
 	return (input >= 'A' && input <= 'Z')
 	    || (input >= 'a' && input <= 'z')
 	    || input == '#'
-	    // FIXME || input == '$'
 	    || (input >= 128 && input != 0xE2 /* operators */);
 }
 bool symbol_char_P(int input) {
@@ -488,7 +487,7 @@ void Scanner::parse_special_coding(int input) {
 	input = increment_position(FGETC(input_file));
 	switch(input) {
 	case '\\':
-		/* FIXME other names. ... */
+		/* TODO other names. ... */
 		input = increment_position(FGETC(input_file));
 		if(input != EOF) {
 			if(input == '\\')
@@ -512,6 +511,8 @@ void Scanner::parse_special_coding(int input) {
 						sst << (unsigned) '\b';
 					else if(input_value == Symbols::Sescape)
 						sst << 27;
+					else if(input_value == AST::symbolFromStr("equal"))
+						sst << (unsigned) '=';
 					else
 						raise_error("<character>", str(input_value));
 				}

@@ -167,3 +167,7 @@ Full Unicode strings
 ,
 }
 ~
+
+= OS module =
+
+OS.startFile

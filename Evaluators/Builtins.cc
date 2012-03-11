@@ -423,8 +423,6 @@ static AST::Node* mapGetFst(AST::Cons* c) {
 	else
 		return(AST::makeCons(reduce(evaluateToCons(reduce(c->head))->head), mapGetFst(evaluateToCons(c->tail))));
 }
-// <http://forums.devshed.com/c-programming-42/tip-about-stl-hash-map-and-string-55093.html>
-//typedef std::unordered_map<const char* , AST:Node*, std::hash<AST::Node*> > HashTable;
 static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
