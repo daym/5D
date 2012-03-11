@@ -1,4 +1,6 @@
 let List = requireModule "List" in 
+let Error = requireModule "Error" in 
+let raiseMissingSymbolError = Error.raiseMissingSymbolError in
 let head = List.head in 
 let tail = List.tail in 
 let ioValue = (\m head m) in 
@@ -25,3 +27,4 @@ dispatchModule [['ioValue ioValue]
 ['(;) (;)]
 ['write! write!]
 ['errno! errno!]]
+raiseMissingSymbolError

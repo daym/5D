@@ -1,5 +1,8 @@
+let Error = requireModule "Error" in 
+let raiseMissingSymbolError = Error.raiseMissingSymbolError in
 let absolutePath = Builtins.absolutePath in 
 let absolutePath? = Builtins.absolutePath? in 
 dispatchModule [['absolutePath absolutePath]
 ['absolutePath? absolutePath?]
 ]
+raiseMissingSymbolError

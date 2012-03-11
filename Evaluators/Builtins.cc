@@ -21,6 +21,7 @@
 #include "Numbers/Integer"
 #include "Evaluators/Operation"
 #include "FFIs/Allocators"
+#include "Formatters/Math"
 
 namespace Evaluators {
 
@@ -424,12 +425,26 @@ static AST::Node* mapGetFst(AST::Cons* c) {
 		return(AST::makeCons(reduce(evaluateToCons(reduce(c->head))->head), mapGetFst(evaluateToCons(c->tail))));
 }
 static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
-	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	/* parameters: <exports> <fallback> <key> 
+	               2         1          0*/
+	CXXArguments arguments = Evaluators::CXXfromArgumentsU(options, argument, 1);
 	CXXArguments::const_iterator iter = arguments.begin();
+	/*std::stringstream buffer;
+	std::string v;
+	int position = 0;
+	Formatters::Math::print_CXX(new Scanners::OperatorPrecedenceList(), buffer, position, iter->second, 0, false);
+	v = buffer.str();
+	printf("%s\n", v.c_str());*/
 	AST::Box* mBox = dynamic_cast<AST::Box*>(iter->second);
+	++iter;
+	AST::Node* fallback = iter->second;
 	++iter;
 	AST::Node* key = iter->second;
 	AST::HashTable* m;
+	if(!mBox) {
+		throw Evaluators::EvaluationException("invalid symbol table entry (*)");
+		return(NULL); // FIXME
+	}
 	if(dynamic_cast<AST::HashTable*>((AST::Node*) mBox->native) == NULL) {
 		//cons_P((AST::Node*) mBox->native)) {
 		m = new (UseGC) AST::HashTable;
@@ -466,10 +481,14 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 		if(iter != m->end())
 			return(iter->second);
 		else {
-			std::stringstream sst;
-			sst << "library does not contain '" << s->name;
-			std::string v = sst.str();
-			throw Evaluators::EvaluationException(GCx_strdup(v.c_str()));
+			if(fallback) { // this should always hold
+				return(reduce(fallback));
+			} else { // this is a leftover
+				std::stringstream sst;
+				sst << "library does not contain '" << s->name;
+				std::string v = sst.str();
+				throw Evaluators::EvaluationException(GCx_strdup(v.c_str()));
+			}
 		}
 	} else
 		throw Evaluators::EvaluationException("not a symbol");
@@ -619,7 +638,7 @@ REGISTER_BUILTIN(SymbolFromStrGetter, 1, 0, AST::symbolFromStr("symbolFromStr"))
 REGISTER_BUILTIN(KeywordFromStrGetter, 1, 0, AST::symbolFromStr("keywordFromStr"))
 REGISTER_BUILTIN(KeywordStr, 1, 0, AST::symbolFromStr("keywordStr"))
 REGISTER_BUILTIN(IORunner, 1, 0, AST::symbolFromStr("runIO"))
-REGISTER_BUILTIN(ModuleDispatcher, 2, 1, AST::symbolFromStr("dispatchModule"))
+REGISTER_BUILTIN(ModuleDispatcher, (-3), 1, AST::symbolFromStr("dispatchModule"))
 REGISTER_BUILTIN(ModuleBoxMaker, 1, 0, AST::symbolFromStr("makeModuleBox"))
 REGISTER_BUILTIN(ApplicationMaker, (-2), 0, AST::symbolFromStr("makeApp"))
 REGISTER_BUILTIN(ApplicationP, 1, 0, AST::symbolFromStr("app?"))
@@ -633,17 +652,18 @@ REGISTER_BUILTIN(RFileMathParser, (-3), 0, AST::symbolFromStr("parseMath!"))
 REGISTER_BUILTIN(RStrMathParser, (-2), 0, AST::symbolFromStr("parseMathStr"))
 
 // FIXME make this GCable.
-CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument) {
+CXXArguments CXXfromArgumentsU(AST::Node* options, AST::Node* argument, int backwardsIndexOfArgumentNotToReduce) {
 	CXXArguments result;
 	AST::Node* v;
 	AST::Node* p;
+	int i = 1;
 	bool B_pending_value = false;
 	assert(options);
-	p = reduce(argument);
+	p = backwardsIndexOfArgumentNotToReduce == 0 ? argument : reduce(argument);
 	B_pending_value = true;
 	Evaluators::CurriedOperation* self;
-	for(self = dynamic_cast<Evaluators::CurriedOperation*>(options); self; self = dynamic_cast<Evaluators::CurriedOperation*>(self->fOperation)) {
-		v = reduce(self->fArgument); // backwards...
+	for(self = dynamic_cast<Evaluators::CurriedOperation*>(options); self; self = dynamic_cast<Evaluators::CurriedOperation*>(self->fOperation), ++i) {
+		v = i == backwardsIndexOfArgumentNotToReduce ? self->fArgument : reduce(self->fArgument); // backwards...
 		if(B_pending_value && keyword_P(v)) {
 			result.push_back(std::make_pair(dynamic_cast<AST::Keyword*>(v), p));
 			p = NULL;
@@ -660,6 +680,9 @@ CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument) {
 		result.push_front(std::pair<AST::Keyword*, AST::Node*>(NULL, p));
 	}
 	return(result);
+}
+CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument) {
+	return(CXXfromArgumentsU(options, argument, -1));
 }
 AST::Node* CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* key) {
 	for(std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = list.begin(); iter != list.end(); ++iter)

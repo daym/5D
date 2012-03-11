@@ -1,3 +1,5 @@
+let Error = requireModule "Error" in 
+let raiseMissingSymbolError = Error.raiseMissingSymbolError in
 let #t = Builtins.#t in 
 let #f = Builtins.#f in 
 let (||) = (\a \b \t \f a t (b t f)) in 
@@ -21,3 +23,4 @@ dispatchModule [['#t #t]
 ['not not]
 ['otherwise otherwise]
 ['equivalent? equivalent?]]
+raiseMissingSymbolError

@@ -69,6 +69,8 @@ DECLARE_SIMPLE_OPERATION(RStrMathParser)
 typedef std::list<std::pair<AST::Keyword*, AST::Node*>, gc_allocator<std::pair<AST::Keyword*, AST::Node*> > > CXXArguments;
 /* WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
 CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument); /* non-keyword arguments will be at the FRONT */
+
+CXXArguments CXXfromArgumentsU(AST::Node* options, AST::Node* argument, int backwardsIndexOfArgumentNotToReduce); /* non-keyword arguments will be at the FRONT */
 AST::Node* CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* key);
 
 };

@@ -1,3 +1,5 @@
+let Error = requireModule "Error" in 
+let raiseMissingSymbolError = Error.raiseMissingSymbolError in
 let allocateRecord! = Builtins.allocateRecord! in 
 let allocateMemory! = Builtins.allocateMemory! in 
 let duplicateRecord! = Builtins.duplicateRecord! in 
@@ -20,3 +22,4 @@ dispatchModule [['allocateRecord! allocateRecord!]
 ['allocatePointer! allocatePointer!]
 ['environFromList environFromList]
 ['listFromEnviron listFromEnviron]]
+raiseMissingSymbolError

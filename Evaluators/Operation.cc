@@ -116,6 +116,7 @@ AST::Node* repr(AST::Node* node) {
 			return(node);
 		else
 			return(AST::makeApplication(fn, argument));
+		// TODO repr hashtable for dispatchmodule as a simple list.
 	} else
 		return(node);
 }

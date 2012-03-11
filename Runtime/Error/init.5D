@@ -1,2 +1,3 @@
 let raiseErrorWithCode = (\part \code code) in 
-dispatchModule [['raiseErrorWithCode raiseErrorWithCode]]
+let raiseMissingSymbolError = (\key ["missing symbol" key]) in 
+dispatchModule [['raiseErrorWithCode raiseErrorWithCode] ['raiseMissingSymbolError raiseMissingSymbolError]] raiseMissingSymbolError
