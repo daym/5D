@@ -424,7 +424,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Simport, uncurried(&RImporter, self));
 	REPL_add_static_builtin_binding(self, Symbols::SrequireModule, uncurried(&RModuleLoader, self));
-	REPL_add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
+	//REPL_add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
 	REPL_add_builtin_method(self, Symbols::Sdescribe, uncurried(&RInformant, self));
 
 	//REPL_add_builtin_method(self, Symbols::SBuiltins, AST::makeAbstraction(Symbols::Sa, AST::makeApplication(&REPLB::BuiltinGetter, Symbols::Sa))); // indirection in order to make cacheable.
