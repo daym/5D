@@ -418,11 +418,12 @@ template<>
 class std::hash<AST::Node*> {
 };
 */
-static AST::Node* mapGetFst(AST::Cons* c) {
-	if(c == NULL)
-		return(NULL);
-	else
-		return(AST::makeCons(reduce(evaluateToCons(reduce(c->head))->head), mapGetFst(evaluateToCons(c->tail))));
+static AST::Node* mapGetFst2(AST::Node* fallback, AST::Cons* c) {
+	if(c == NULL) {
+		AST::Node* tail = fallback ? reduce(AST::makeApplication(fallback, Symbols::Sexports)) : NULL;
+		return(tail);
+	} else
+		return(AST::makeCons(reduce(evaluateToCons(reduce(c->head))->head), mapGetFst2(fallback, evaluateToCons(c->tail))));
 }
 static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 	/* parameters: <exports> <fallback> <key> 
@@ -465,8 +466,8 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 				(*m)[name] = value;
 		}
 		AST::Cons* table = (AST::Cons*) mBox->native;
-		(*m)["exports"] = mapGetFst(table);
 		mBox->native = m;
+		(*m)["exports"] = mapGetFst2(fallback, table);
 	}
 	m = (AST::HashTable*) mBox->native;
 	AST::Symbol* s = dynamic_cast<AST::Symbol*>(key);
