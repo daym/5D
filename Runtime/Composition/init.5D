@@ -1,5 +1,4 @@
-let Error = requireModule "Error" in 
-let raiseMissingSymbolError = Error.raiseMissingSymbolError in
+let raiseMissingSymbolError = (\key ["missing symbol" key]) in
 let (|) = (\a \b b a) in 
 let ($) = (\a \b a b) in 
 let compose = (\f \g \x f (g x)) in 
@@ -11,8 +10,8 @@ let rem = \a \b b in
 let export = id in 
 let makeModuleBox = Builtins.makeModuleBox in 
 let dispatchModule2 = Builtins.dispatchModule in 
-let dispatch = (\fallbackAction \table \key dispatchModule2 fallbackAction (makeModuleBox table) key) in 
-dispatchModule [['(|) (|)]
+let dispatch = (\table \fallbackAction \key dispatchModule2 (makeModuleBox table) fallbackAction key) in 
+dispatch [['(|) (|)]
 ['($) ($)]
 ['compose compose]
 ['flip flip]
@@ -20,5 +19,6 @@ dispatchModule [['(|) (|)]
 ['rec rec]
 ['rem rem]
 ['export export]
-['dispatch dispatch]]
+['dispatch dispatch]
+['raiseMissingSymbolError raiseMissingSymbolError]]
 raiseMissingSymbolError

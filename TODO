@@ -93,6 +93,7 @@ unary posfix operators like "!"?
 readFromString "XYZ" -> (quoted) AST
 eval AST userInitialEnvironment
 add custom literal parsers
+make an extra "]" emit a nicer error message
 
 = Correctness =
 

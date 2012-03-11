@@ -2,7 +2,8 @@ let Composition = requireModule "Composition" in
 let Logic = requireModule "Logic" in 
 let Arithmetic = requireModule "Arithmetic" in 
 let Error = requireModule "Error" in 
-let raiseMissingSymbolError = Error.raiseMissingSymbolError in
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
+let dispatch = Composition.dispatch in
 let ($) = Composition.($) in 
 let compose = Composition.compose in 
 let flip = Composition.flip in 
@@ -47,7 +48,7 @@ let range = (\beginning \end \step rangeLL step end beginning) in
 let zipBy = (\zipper rec (\zipBy \l1 \l2 if (nil? l1 || nil? l2) nil $ else (zipper (head l1) (head l2)):(zipBy (tail l1) (tail l2)))) in 
 let zip = (zipBy (\x \y [x y])) in 
 let enumerate = (\list zip (range 0 (length list) 1) list) in 
-dispatchModule [['nil nil]
+dispatch [['nil nil]
 ['nil? nil?]
 ['cons? cons?]
 ['list? list?]

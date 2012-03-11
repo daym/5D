@@ -1,5 +1,7 @@
 let Error = requireModule "Error" in 
-let raiseMissingSymbolError = Error.raiseMissingSymbolError in
+let Composition = requireModule "Composition" in
+let dispatch = Composition.dispatch in
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
 let allocateRecord! = Builtins.allocateRecord! in 
 let allocateMemory! = Builtins.allocateMemory! in 
 let duplicateRecord! = Builtins.duplicateRecord! in 
@@ -11,7 +13,7 @@ let strUntilZero = Builtins.strUntilZero in
 let allocatePointer! = allocateMemory! (recordSize "p") in 
 let environFromList = Builtins.environFromList in 
 let listFromEnviron = Builtins.listFromEnviron in 
-dispatchModule [['allocateRecord! allocateRecord!]
+dispatch [['allocateRecord! allocateRecord!]
 ['allocateMemory! allocateMemory!]
 ['duplicateRecord! duplicateRecord!]
 ['packRecord packRecord]

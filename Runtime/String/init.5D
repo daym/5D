@@ -1,6 +1,8 @@
 let List = requireModule "List" in 
-let Error = requireModule "Error" in 
-let raiseMissingSymbolError = Error.raiseMissingSymbolError in
+let Error = requireModule "Error" in
+let Composition = requireModule "Composition" in
+let dispatch = Composition.dispatch in 
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
 let listFromStr = Builtins.listFromStr in 
 let str? = Builtins.str? in 
 let strFromKeyword = Builtins.strFromKeyword in 
@@ -10,7 +12,7 @@ let (++) = List.(++) in
 let strcat = \a \b strFromList ((listFromStr a) ++ (listFromStr b)) in 
 let strjoinp = \sep \l strFromList (let sepl = (listFromStr sep) in let parts = (map (\x sepl ++ listFromStr x) l) in foldr (++) "" parts) in 
 let strjoin = \sep \l tail (strjoinp sep l) in 
-dispatchModule [['listFromStr listFromStr]
+dispatch [['listFromStr listFromStr]
 ['str? str?]
 ['strFromKeyword strFromKeyword]
 ['strFromList strFromList]

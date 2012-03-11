@@ -1,8 +1,7 @@
 let Logic = requireModule "Logic" in 
 let Composition = requireModule "Composition" in 
-let dispatchModule = Composition.dispatchModule in 
-let Error = requireModule "Error" in 
-let raiseMissingSymbolError = Error.raiseMissingSymbolError in 
+let dispatch = Composition.dispatch in 
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in 
 let rec = Composition.rec in 
 let head = Builtins.head in 
 let tail = Builtins.tail in 
@@ -48,7 +47,7 @@ let ground = (\v divide v 1) in
 let round1 = (\v if (0 <= v) (ground (v + 1/2)) (ground (v - 1/2))) in 
 let max = (\a \b if (a <= b) b a) in 
 let min = (\a \b if (a <= b) a b) in 
-dispatchModule [['(-) (-)]
+dispatch [['(-) (-)]
 ['(*) (*)]
 ['(/) (/)]
 ['(%) (%)]

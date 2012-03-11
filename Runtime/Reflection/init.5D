@@ -1,5 +1,7 @@
 let Error = requireModule "Error" in 
-let raiseMissingSymbolError = Error.raiseMissingSymbolError in
+let Composition = requireModule "Composition" in
+let dispatch = Composition.dispatch in
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
 let app? = Builtins.app? in 
 let appOperand = Builtins.appOperand in 
 let appOperator = Builtins.appOperator in 
@@ -22,7 +24,7 @@ let symbolsEqual? = Builtins.symbolsEqual? in
 let addrsLE? = Builtins.addrsLE? in 
 let parseMath! = Builtins.parseMath! in 
 let parseMathStr = Builtins.parseMathStr in 
-dispatchModule [['app? app?]
+dispatch [['app? app?]
 ['appOperand appOperand]
 ['appOperator appOperator]
 ['fn? fn?]

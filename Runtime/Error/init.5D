@@ -1,3 +1,5 @@
+let Composition = requireModule "Composition" in
+let dispatch = Composition.dispatch in
 let raiseErrorWithCode = (\part \code code) in 
-let raiseMissingSymbolError = (\key ["missing symbol" key]) in 
-dispatchModule [['raiseErrorWithCode raiseErrorWithCode] ['raiseMissingSymbolError raiseMissingSymbolError]] raiseMissingSymbolError
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in 
+dispatch [['raiseErrorWithCode raiseErrorWithCode] ['raiseMissingSymbolError raiseMissingSymbolError]] raiseMissingSymbolError

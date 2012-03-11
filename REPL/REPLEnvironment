@@ -187,7 +187,7 @@ static AST::Node* REPL_force_import_module(struct REPL* self, const char* filena
 			AST::Node* result = NULL;
 			result = parser.parse(REPL_ensure_operator_precedence_list(self), Symbols::SlessEOFgreater);
 			result = Evaluators::close(Symbols::Scolon, &Evaluators::Conser, result); // dispatchModule needs that, so provide it :P
-			result = Evaluators::close(Symbols::SdispatchModule, AST::makeAbstraction(Symbols::Sexports, AST::makeApplication(&Evaluators::ModuleDispatcher, AST::makeApplication(&Evaluators::ModuleBoxMaker, Symbols::Sexports))), result);
+			// ?? result = Evaluators::close(Symbols::SdispatchModule, AST::makeAbstraction(Symbols::Sexports, AST::makeApplication(&Evaluators::ModuleDispatcher, AST::makeApplication(&Evaluators::ModuleBoxMaker, Symbols::Sexports))), result);
 			result = REPL_prepare(self, result);
 			//fprintf(stderr, "before reduce_module\n");
 			result = Evaluators::reduce(result);
