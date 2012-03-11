@@ -33,13 +33,13 @@ struct OperatorPrecedenceList : AST::Node {
 	short prefix_usages[256];
 	struct OperatorPrecedenceItem* levels[MAX_PRECEDENCE_LEVELS];
 	OperatorPrecedenceList(bool bInitDefaults = true);
-	int get_operator_precedence(AST::Symbol* symbol);
-	int get_operator_precedence_and_associativity(AST::Symbol* symbol, struct AST::Symbol*& associativity_out);
+	int get_operator_precedence(AST::Symbol* symbol) const;
+	int get_operator_precedence_and_associativity(AST::Symbol* symbol, struct AST::Symbol*& associativity_out) const;
 	int empty_P(int precedence_level) {
 		return(precedence_level >= MAX_PRECEDENCE_LEVELS || levels[precedence_level] == NULL);
 	}
 	/* for speed reasons, it can happen that the same operator is present multiple times on the same level. */
-	AST::Node* match_operator(int precedence_level, AST::Node* operator_, struct AST::Symbol*& associativity_out, bool& B_visible_operator) {
+	AST::Node* match_operator(int precedence_level, AST::Node* operator_, struct AST::Symbol*& associativity_out, bool& B_visible_operator) const {
 		B_visible_operator = true;
 		if(precedence_level < 0 || precedence_level >= MAX_PRECEDENCE_LEVELS)
 			return(NULL);
@@ -61,12 +61,12 @@ struct OperatorPrecedenceList : AST::Node {
 		associativity_out = NULL;
 		return(NULL);
 	}
-	bool any_operator_P(AST::Node* thingie) {
+	bool any_operator_P(AST::Node* thingie) const {
 		if(!this) // if we don't have OperatorPrecedenceList, no point in checking it
 			return(false);
 		return(get_operator_precedence(dynamic_cast<AST::Symbol*>(thingie)) != -1);
 	}
-	int next_precedence_level(int precedence_level) {
+	int next_precedence_level(int precedence_level) const {
 		++precedence_level;
 		/* skip empty levels */
 		while(precedence_level >= 0 && precedence_level < MAX_PRECEDENCE_LEVELS && levels[precedence_level] == NULL)
@@ -75,6 +75,7 @@ struct OperatorPrecedenceList : AST::Node {
 	}
 	void cons(int precedence_level, struct AST::Symbol* operator_, struct AST::Symbol* associativity);
 	void uncons(int precedence_level, struct AST::Symbol* operator_, struct AST::Symbol* associativity);
+	AST::Cons* get_all_operators(int precedence_level) const;
 };
 
 }; /* end namespace Scanners */

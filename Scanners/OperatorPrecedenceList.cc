@@ -18,7 +18,7 @@ using namespace AST;
 
 // NO REGISTER_STR(OperatorPrecedenceList, return("operatorPrecedenceList");)
 // TODO REGISTER_STR(OperatorPrecedenceItem, return(...);)
-int OperatorPrecedenceList::get_operator_precedence_and_associativity(AST::Symbol* symbol, AST::Symbol*& associativity_out) {
+int OperatorPrecedenceList::get_operator_precedence_and_associativity(AST::Symbol* symbol, AST::Symbol*& associativity_out) const {
 	if(symbol != NULL)
 		for(int i = 0; i < MAX_PRECEDENCE_LEVELS; ++i) {
 			for(struct OperatorPrecedenceItem* item = levels[i]; item; item = item->next)
@@ -30,7 +30,7 @@ int OperatorPrecedenceList::get_operator_precedence_and_associativity(AST::Symbo
 	associativity_out = NULL;
 	return(-1);
 }
-int OperatorPrecedenceList::get_operator_precedence(AST::Symbol* symbol) {
+int OperatorPrecedenceList::get_operator_precedence(AST::Symbol* symbol) const {
 	AST::Symbol* assoc;
 	return(get_operator_precedence_and_associativity(symbol, assoc));
 }
@@ -124,6 +124,16 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 #undef L
 #undef R
 #undef I
+}
+static AST::Cons* get_level_operators(struct OperatorPrecedenceItem* item) {
+	return item ? AST::makeCons(item->operator_, get_level_operators(item->next)) : NULL;
+}
+AST::Cons* OperatorPrecedenceList::get_all_operators(int precedence_level) const {
+	if(precedence_level >= 0 && precedence_level < MAX_PRECEDENCE_LEVELS) {
+		AST::Node* h = get_level_operators(levels[precedence_level]);
+		return(AST::makeCons(h, get_all_operators(next_precedence_level(precedence_level))));
+	} else
+		return(NULL);
 }
 
 }; /* end namespace Scanners */
