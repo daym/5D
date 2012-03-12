@@ -39,14 +39,14 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 #else
 	struct stat buf;
 	if(stat(filename.c_str(), &buf) == -1) {
-		perror(filename.c_str());
+		//perror(filename.c_str());
 		errno = previousErrno;
 		return("");
 	}
 	if(S_ISDIR(buf.st_mode)) {
 		outActualFilename = filename + "/init.5D";
 		if(stat(outActualFilename.c_str(), &buf) == -1) {
-			perror(filename.c_str());
+			//perror(filename.c_str());
 			errno = previousErrno;
 			return("");
 		}
