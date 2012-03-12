@@ -1,6 +1,7 @@
 = Macros = 
 
 list comprehensions in []
+macro to make dispatch lists easier to write?
 
 = Bugs =
 
@@ -118,6 +119,8 @@ module: once an unknown identifier is encountered, maybe auto-provide them to th
 \(**)
 (fn? Builtins) should be true since a module can be used exactly like a function can (that it isn't is just an implementation detail!) - so RModule "are" functions.
 allow building our own OperationPrecedenceList from within 5D.
+Instead of 'dispatch, memoizing a normal conditional (into a HashTable) should be enough.
+Fix HashTable to use a prime size.
 
 = Debugging Macros =
 
@@ -128,7 +131,7 @@ disassemble
 
 = TODO =
 
-move all the builtins into a .so file and load them via FFI.
+move all the builtins into a .so file and load them via FFI (and the REPL).
 support reloading of modules (in that case, need to use monads)
 Multithreading: per-thread mutable boxes (monadic).
 Messagebox custom buttons
@@ -137,11 +140,7 @@ Messagebox custom buttons
 = GC =
 
 fix Shunting Yard deque?
-by default, make allocators use GC_uncollectable_malloc
-integer, float: allocate low-level detail so the GC knows?
-./Numbers/BigUnsigned.cc:	Blk *subtractBuf = new Blk[size()];
-./GUI/GTKCompleter.cc:	self->fMatches = new std::set<AST::Symbol*>;
-./GUI/WIN32Completer.cc:	self->fMatches = new std::set<AST::Symbol*>;
+(by default, make allocators use GC_uncollectable_malloc - done by LD_PRELOAD)
 
 = Modules =
 
@@ -172,3 +171,8 @@ Full Unicode strings
 = OS module =
 
 OS.startFile
+
+= Object Orientation =
+
+Derive everything from Object, not from raiseMissingSymbolError.
+
