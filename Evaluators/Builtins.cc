@@ -467,7 +467,7 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 		}
 		AST::Cons* table = (AST::Cons*) mBox->native;
 		mBox->native = m;
-		(*m)["exports"] = mapGetFst2(fallback, table);
+		(*m)["exports"] = AST::makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
 	}
 	m = (AST::HashTable*) mBox->native;
 	AST::Symbol* s = dynamic_cast<AST::Symbol*>(key);
