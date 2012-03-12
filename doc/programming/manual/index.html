@@ -114,7 +114,8 @@ cos 2
 <p>You can load functions of shared libraries:</p>
 <p>Example:</p>
 <pre>
-define puts requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cip "puts"
+import "FFI"
+define puts FFI.requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cip "puts"
 runIO (puts "Hello world")
 </pre>
 <p>What this does is:</p>
