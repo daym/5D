@@ -272,7 +272,6 @@ static AST::Node* REPL_import_module(AST::Node* options, AST::Node* fileNameNode
 			break;
 	}
 	if(moduleKey.length() == 0 || realFilename.length() == 0) {
-		perror(filename.c_str());
 		return(FALLBACK);
 	}
 	char* actualFilename = FFIs::get_absolute_path(realFilename.c_str());
