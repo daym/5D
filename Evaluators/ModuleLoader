@@ -1,0 +1,77 @@
+#ifndef __EVALUATORS_MODULES_H
+#define __EVALUATORS_MODULES_H
+#include <string>
+#include <sstream>
+#include <sys/stat.h>
+#include <errno.h>
+#include "Evaluators/Operation"
+
+namespace Evaluators {
+
+static inline std::string getModuleFileKey(const std::string& filename, std::string& outActualFilename) {
+	int previousErrno = errno;
+	outActualFilename = "";
+	std::stringstream moduleKeyStream;
+#ifdef WIN32
+#ifndef S_IFDIR
+#define S_IFDIR _S_IFDIR
+#endif
+#ifndef S_IFMT
+#define S_IFMT (S_IFDIR|S_IFCHR|S_IFREG)
+#endif
+#ifndef S_ISDIR
+#define S_ISDIR(x) (((x) & S_IFMT) == S_IFDIR)
+#endif
+	struct _stat buf;
+	std::wstring filenameW = FromUTF8(filename.c_str());
+	if(_wstat(filenameW.c_str(), &buf) == -1) {
+		//perror(filename.c_str());
+		errno = previousErrno;
+		return("");
+	}
+	if(S_ISDIR(buf.st_mode)) {
+		outActualFilename = filename + "\\init.5D";
+		filenameW = FromUTF8(outActualFilename.c_str());
+		if(_wstat(filenameW.c_str(), &buf) == -1) {
+			//perror(filename.c_str());
+			errno = previousErrno;
+			return("");
+		}
+	} else
+		outActualFilename = filename;
+	moduleKeyStream << filename << ":"; /* on Windows, st_ino is 0, so HACK HACK HACK */
+#else
+	struct stat buf;
+	if(stat(filename.c_str(), &buf) == -1) {
+		//perror(filename.c_str());
+		errno = previousErrno;
+		return("");
+	}
+	if(S_ISDIR(buf.st_mode)) {
+		outActualFilename = filename + "/init.5D";
+		if(stat(outActualFilename.c_str(), &buf) == -1) {
+			//perror(filename.c_str());
+			errno = previousErrno;
+			return("");
+		}
+	} else
+		outActualFilename = filename;
+#endif
+	moduleKeyStream << buf.st_dev << ":" << buf.st_ino;
+	std::string moduleKey = moduleKeyStream.str();
+	errno = previousErrno;
+	return(moduleKey);
+}
+
+DECLARE_FULL_OPERATION(RModule)
+DECLARE_FULL_OPERATION(RModuleLoader)
+AST::Node* require_module(const char* filename, const std::string& xmoduleKey);
+AST::Node* prepare_module(AST::Node* input);
+AST::Node* import_module(AST::Node* options, AST::Node* fileNameNode);
+void set_shared_dir(const std::string& name);
+std::string get_shared_dir(void);
+void set_shared_dir_by_executable(const char* argv0 /* should be full path */);
+
+}; /* end namespace */
+
+#endif /* ndef __EVALUATORS_MODULES_H */

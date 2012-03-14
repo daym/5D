@@ -9,7 +9,7 @@
 #include "AST/Keyword"
 #include "FFIs/UI"
 #include "FFIs/RecordPacker"
-#include "Evaluators/Modules"
+#include "Evaluators/ModuleLoader"
 #include "REPL/BuiltinSelector"
 #include "FFIs/ProcessInfos"
 
