@@ -7,7 +7,7 @@ macro to make dispatch lists easier to write?
 
 eval $ runIO $ labs (-5.2)
 0
-loading modules (for example the one where errno! is in) causes errno to be clobbered.
+loading modules (for example the one where GetLastError! is in) causes GetLastError() to be clobbered.
 
 = Builtin Types =
 
@@ -152,7 +152,6 @@ List.reverse [1 2 3]
 List.head [1 2 3]
 fst
 snd
-let open POSIX in puts ...
 
 = Interop =
 
