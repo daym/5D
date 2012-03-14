@@ -22,9 +22,6 @@ bool REPL_save_contents_to(struct REPL* self, FILE* output_file);
 bool REPL_load_contents_from(struct REPL* self, const char* name);
 AST::Node* REPL_get_environment(struct REPL* self);
 void REPL_add_to_environment(struct REPL* self, AST::Node* name, AST::Node* body);
-void REPL_set_shared_dir(const std::string& name);
-std::string REPL_get_shared_dir(void);
-void REPL_set_shared_dir_by_executable(const char* argv0 /* should be full path */);
 
 }; /* end namespace */
 

@@ -160,25 +160,6 @@ void REPL_add_to_environment(struct REPL* self, AST::Node* name, AST::Node* body
 		REPL_add_to_environment_simple(self, nameSymbol, body);
 }
 
-static std::string sharedDir = PREFIX "/share/5D/"; // keep "/" suffix.
-std::string REPL_get_shared_dir(void) {
-	return(sharedDir);
-}
-void REPL_set_shared_dir(const std::string& name) {
-	sharedDir = name;
-}
-void REPL_set_shared_dir_by_executable(const char* argv0) {
-	/* if the program was found in search path, this isn't worth much. */
-	/*
-	sharedDir = argv0;
-	std::string::size_type slashPos = sharedDir.find_last_of('/');
-	if(slashPos != std::string::npos) {
-		sharedDir = sharedDir.substr(0, slashPos + 1);
-		sharedDir += "../share/5D/"; // TODO version
-	} else {
-		sharedDir = "";
-	}*/
-}
 
 }; // end namespace GUI
 

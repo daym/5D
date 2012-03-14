@@ -1,6 +1,7 @@
 #ifndef __EVALUATORS_MODULES_H
 #define __EVALUATORS_MODULES_H
 #include <string>
+#include <sstream>
 #include <sys/stat.h>
 #include <errno.h>
 #include "Evaluators/Operation"
@@ -63,8 +64,13 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 }
 
 DECLARE_FULL_OPERATION(RModule)
+DECLARE_FULL_OPERATION(RModuleLoader)
 AST::Node* require_module(const char* filename, const std::string& xmoduleKey);
 AST::Node* prepare_module(AST::Node* input);
+AST::Node* import_module(AST::Node* options, AST::Node* fileNameNode);
+void set_shared_dir(const std::string& name);
+std::string get_shared_dir(void);
+void set_shared_dir_by_executable(const char* argv0 /* should be full path */);
 
 }; /* end namespace */
 

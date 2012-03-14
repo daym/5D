@@ -165,49 +165,6 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 #define DEFINE_REPL_OPERATION(P, B) \
 	DEFINE_FULL_OPERATION(P, B)
 
-static AST::Node* REPL_import_module(AST::Node* options, AST::Node* filename);
-DEFINE_REPL_OPERATION(RModuleLoader, {
-	return(REPL_import_module(fn, argument));
-})
-static std::vector<std::string> REPL_get_module_search_path(void) {
-	std::vector<std::string> result;
-#ifdef WIN32
-	result.push_back(".\\");
-	result.push_back(REPL_get_shared_dir());
-#else
-	result.push_back("");
-	result.push_back(REPL_get_shared_dir());
-#endif
-	return(result);
-}
-static AST::Node* REPL_import_module(AST::Node* options, AST::Node* fileNameNode) {
-	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, fileNameNode);
-	//struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
-	//assert(self);
-	std::vector<std::string> searchPaths = REPL_get_module_search_path();
-	std::vector<std::string>::const_iterator endSearchPaths = searchPaths.end();
-	std::string filename = "";
-	std::string realFilename = "";
-	std::string moduleKey = "";
-	if(FFIs::absolute_path_P(dynamic_cast<AST::Str*>(fileNameNode))) {
-		filename = Evaluators::get_string(fileNameNode);
-		moduleKey = getModuleFileKey(filename, realFilename);
-	} else for(std::vector<std::string>::const_iterator iterSearchPaths = searchPaths.begin(); iterSearchPaths != endSearchPaths; ++iterSearchPaths) {
-		std::stringstream filenameStream;
-		filenameStream << *iterSearchPaths;
-		filenameStream << Evaluators::get_string(fileNameNode);
-		filename = filenameStream.str();
-		moduleKey = getModuleFileKey(filename, realFilename);
-		if(moduleKey.length() != 0)
-			break;
-	}
-	if(moduleKey.length() == 0 || realFilename.length() == 0) {
-		return(FALLBACK);
-	}
-	char* actualFilename = FFIs::get_absolute_path(realFilename.c_str());
-	AST::Node* body = Evaluators::require_module(actualFilename, moduleKey);
-	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&RModule, body)), AST::makeStr(actualFilename))));
-}
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument);
 DEFINE_REPL_OPERATION(RImporter, {
 	return(REPL_import(fn, argument));
@@ -237,7 +194,7 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	AST::Node* filename = iter->second;
 	if(!str_P(filename))
 		throw Evaluators::EvaluationException("import: expected Str filename");
-	AST::Node* body = REPL_import_module(options/*FIXME*/, filename);
+	AST::Node* body = Evaluators::import_module(options/*FIXME*/, filename);
 	//body = Evaluators::annotate(body);
 	//REPL_prepare(self, body);
 	//REPL_add_to_environment(self, name, body);
