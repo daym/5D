@@ -57,7 +57,7 @@ static AST::Node* force_import_module(const char* filename) {
 			result = Evaluators::close(Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb))), result); // TODO close
 			result = Evaluators::close(Symbols::Scolon, &Evaluators::Conser, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::SrequireModule, &RModuleLoader, result); // module needs that, so provide it.
-			result = Evaluators::close(Symbols::SBuiltins, &Evaluators::BuiltinGetter);
+			result = Evaluators::close(Symbols::SBuiltins, &Evaluators::BuiltinGetter, result);
 			// ?? result = Evaluators::close(Symbols::SdispatchModule, AST::makeAbstraction(Symbols::Sexports, AST::makeApplication(&Evaluators::ModuleDispatcher, AST::makeApplication(&Evaluators::ModuleBoxMaker, Symbols::Sexports))), result);
 			result = prepare_module(result);
 			//fprintf(stderr, "before reduce_module\n");
