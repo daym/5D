@@ -169,10 +169,6 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument);
 DEFINE_REPL_OPERATION(RImporter, {
 	return(REPL_import(fn, argument));
 })
-/* will result is a curried RModule */
-static inline AST::Str* makeStr2(std::string v) {
-	return(AST::makeStr(v.c_str()));
-}
 static AST::HashTable setFromList(AST::Node* listNode) {
 	AST::HashTable result;
 	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
