@@ -27,6 +27,7 @@
 #include "AST/AST"
 //#include "Config/Config"
 #include "FFIs/Allocators"
+#include "Evaluators/ModuleLoader"
 
 namespace REPLX {
 
@@ -308,7 +309,7 @@ int main(int argc, char* argv[]) {
 	Allocator_init();
 	//GC_disable();
 	if(argc >= 1)
-		REPL_set_shared_dir_by_executable(argv[0]);
+		Evaluators::set_shared_dir_by_executable(argv[0]);
 	REPL = REPL_new();
 	REPL1 = REPL;
 	if(argc > 1 && REPL_load_contents_by_name(REPL, argv[argc - 1])) {

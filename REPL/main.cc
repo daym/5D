@@ -17,6 +17,7 @@
 #include "AST/Symbols"
 #include "AST/HashTable"
 #include "FFIs/Allocators"
+#include "Evaluators/ModuleLoader"
 
 namespace GUI {
 bool interrupted_P(void) {

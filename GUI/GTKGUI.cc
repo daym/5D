@@ -11,6 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/GTKView"
 #include "REPL/REPL"
 #include "FFIs/Allocators"
+#include "Evaluators/ModuleLoader"
 
 using namespace GUI;
 
@@ -71,7 +72,7 @@ int main(int argc, char* argv[]) {
 	setlocale(LC_ALL, "");
 	Allocator_init();
 	if(argc >= 1)
-		REPL_set_shared_dir_by_executable(argv[0]);
+		Evaluators::set_shared_dir_by_executable(argv[0]);
 	/*GtkWindow* view;*/
 	gtk_init(&argc, &argv);
 	/*view = make_view_window();*/
