@@ -296,7 +296,7 @@ static void REPL_init_builtins(struct REPL* self) {
 		self->fTailUserEnvironment = self->fTailEnvironment;
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
 	}
-	REPLB::BuiltinSelector_init();
+	Evaluators::BuiltinSelector_init();
 	REPL_add_static_builtin_binding(self, Symbols::Squote, &Evaluators::Quoter); /* keep at the beginning */
 	REPL_add_static_builtin_binding(self, Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb)))); // TODO close
 	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
@@ -313,8 +313,8 @@ static void REPL_init_builtins(struct REPL* self) {
 	//REPL_add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
 	REPL_add_builtin_method(self, Symbols::Sdescribe, uncurried(&RInformant, self));
 
-	//REPL_add_builtin_method(self, Symbols::SBuiltins, AST::makeAbstraction(Symbols::Sa, AST::makeApplication(&REPLB::BuiltinGetter, Symbols::Sa))); // indirection in order to make cacheable.
-	REPL_add_builtin_method(self, Symbols::SBuiltins, &REPLB::BuiltinGetter);
+	//REPL_add_builtin_method(self, Symbols::SBuiltins, AST::makeAbstraction(Symbols::Sa, AST::makeApplication(&Evaluators::BuiltinGetter, Symbols::Sa))); // indirection in order to make cacheable.
+	REPL_add_builtin_method(self, Symbols::SBuiltins, &Evaluators::BuiltinGetter);
 	REPL_add_builtin_method(self, Symbols::Scolon, &Evaluators::Conser); // module dispatch list needs that anyway
 
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;

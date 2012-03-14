@@ -1,12 +1,12 @@
-#ifndef __REPL_BUILTIN_SELECTOR_H
-#define __REPL_BUILTIN_SELECTOR_H
+#ifndef __BUILTIN_SELECTOR_H
+#define __BUILTIN_SELECTOR_H
 #include "Evaluators/Operation"
 
-namespace REPLB {
+namespace Evaluators {
 void BuiltinSelector_init(void);
 DECLARE_SIMPLE_OPERATION(BuiltinGetter)
 
 };
 
 
-#endif /* ndef __REPL_BUILTIN_SELECTOR_H */
+#endif /* ndef __BUILTIN_SELECTOR_H */

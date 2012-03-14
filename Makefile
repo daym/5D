@@ -97,7 +97,7 @@ Evaluators/Operation.o: Evaluators/Operation.cc Evaluators/Operation Evaluators/
 Evaluators/Builtins.o: Evaluators/Builtins.cc FFIs/Allocators AST/HashTable Scanners/MathParser Evaluators/Builtins Numbers/Integer Numbers/Real AST/AST AST/Symbol AST/Keyword FFIs/FFIs  Scanners/OperatorPrecedenceList Numbers/Small Evaluators/Operation
 Evaluators/Backtracker.o: Evaluators/Backtracker.cc Evaluators/Backtracker
 Evaluators/FFI.o: Evaluators/FFI.cc FFIs/Allocators Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation
-Evaluators/ModuleLoader.o: Evaluators/ModuleLoader.cc Evaluators/ModuleLoader Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation FFIs/FFIs Scanners/MathParser Scanners/ShuntingYardParser Scanners/Scanner FFIs/Allocators FFIs/ProcessInfos
+Evaluators/ModuleLoader.o: Evaluators/ModuleLoader.cc Evaluators/ModuleLoader Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation FFIs/FFIs Scanners/MathParser Scanners/ShuntingYardParser Scanners/Scanner FFIs/Allocators FFIs/ProcessInfos Evaluators/BuiltinSelector
 FFIs/POSIX.o: FFIs/POSIX.cc Evaluators/Builtins FFIs/FFIs Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Numbers/Integer Numbers/Real Evaluators/Operation
 Config/GTKConfig.o: Config/GTKConfig.cc Config/Config FFIs/Allocators AST/AST
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
