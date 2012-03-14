@@ -10,7 +10,7 @@
 #include "FFIs/UI"
 #include "FFIs/RecordPacker"
 #include "Evaluators/ModuleLoader"
-#include "REPL/BuiltinSelector"
+#include "Evaluators/BuiltinSelector"
 #include "FFIs/ProcessInfos"
 
 namespace GUI {
