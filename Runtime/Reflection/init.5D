@@ -1,7 +1,7 @@
 let Error = requireModule "Error" in 
 let Composition = requireModule "Composition" in
 let dispatch = Composition.dispatch in
-let Object = Composition.Object in
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
 let app? = Builtins.app? in 
 let appOperand = Builtins.appOperand in 
 let appOperator = Builtins.appOperator in 
@@ -46,4 +46,4 @@ dispatch [['app? app?]
 ['addrsLE? addrsLE?]
 ['parseMath! parseMath!]
 ['parseMathStr parseMathStr]]
-Object
+raiseMissingSymbolError

@@ -1,6 +1,6 @@
 let Error = requireModule "Error" in 
 let Composition = requireModule "Composition" in
 let dispatch = Composition.dispatch in
-let Object = Composition.Object in 
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in 
 let messageBox! = Builtins.messageBox! in 
-dispatch [['messageBox! messageBox!]] Object
+dispatch [['messageBox! messageBox!]] raiseMissingSymbolError

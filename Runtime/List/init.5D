@@ -2,7 +2,7 @@ let Composition = requireModule "Composition" in
 let Logic = requireModule "Logic" in 
 let Arithmetic = requireModule "Arithmetic" in 
 let Error = requireModule "Error" in 
-let Object = Composition.Object in
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
 let dispatch = Composition.dispatch in
 let ($) = Composition.($) in 
 let compose = Composition.compose in 
@@ -74,4 +74,4 @@ dispatch [['nil nil]
 ['take take]
 ['zip zip]
 ['zipBy zipBy]]
-Object
+raiseMissingSymbolError

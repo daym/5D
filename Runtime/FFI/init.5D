@@ -1,7 +1,7 @@
 let Error = requireModule "Error" in 
 let Composition = requireModule "Composition" in 
 let dispatch = Composition.dispatch in 
-let Object = Composition.Object in 
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in 
 let allocateRecord! = Builtins.allocateRecord! in 
 let allocateMemory! = Builtins.allocateMemory! in 
 let duplicateRecord! = Builtins.duplicateRecord! in 
@@ -26,4 +26,4 @@ dispatch [['allocateRecord! allocateRecord!]
 ['environFromList environFromList]
 ['listFromEnviron listFromEnviron]
 ['requireSharedLibrary requireSharedLibrary]]
-Object
+raiseMissingSymbolError

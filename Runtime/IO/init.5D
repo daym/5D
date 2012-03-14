@@ -2,7 +2,7 @@ let List = requireModule "List" in
 let Error = requireModule "Error" in 
 let Composition = requireModule "Composition" in
 let dispatch = Composition.dispatch in
-let Object = Composition.Object in
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
 let head = List.head in 
 let tail = List.tail in 
 let ioValue = (\m head m) in 
@@ -29,4 +29,4 @@ dispatch [['ioValue ioValue]
 ['(;) (;)]
 ['write! write!]
 ['errno! errno!]]
-Object
+raiseMissingSymbolError

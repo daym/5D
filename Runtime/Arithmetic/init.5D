@@ -1,7 +1,7 @@
 let Logic = requireModule "Logic" in 
 let Composition = requireModule "Composition" in 
 let dispatch = Composition.dispatch in 
-let Object = Composition.Object in 
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in 
 let rec = Composition.rec in 
 let head = Builtins.head in 
 let tail = Builtins.tail in 
@@ -78,4 +78,4 @@ dispatch [['(-) (-)]
 ['pi pi]
 ['max max]
 ['min min]]
-Object
+raiseMissingSymbolError

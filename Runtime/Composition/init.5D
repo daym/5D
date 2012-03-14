@@ -25,4 +25,4 @@ dispatch [['(|) (|)]
 ['raiseMissingSymbolError raiseMissingSymbolError]
 ['dispatch1 dispatch1]
 ['Object Object]]
-Object
+raiseMissingSymbolError
