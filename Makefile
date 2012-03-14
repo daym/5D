@@ -163,7 +163,7 @@ TUI/Interrupt.o: TUI/Interrupt.cc TUI/Interrupt
 GUI/GTKGUI.o: GUI/GTKGUI.cc Version GUI/GTKREPL GUI/GTKView REPL/REPL FFIs/Allocators Evaluators/ModuleLoader
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKREPL.o: GUI/GTKREPL.cc Scanners/MathParser Version Evaluators/Builtins FFIs/Allocators Scanners/Scanner AST/AST AST/Symbol Config/Config Formatters/LATEX GUI/UI_definition.UI GUI/GTKLATEXGenerator Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators REPL/REPL GUI/CommonCompleter GUI/GTKCompleter REPL/REPLEnvironment FFIs/ProcessInfos GUI/WindowIcon Scanners/OperatorPrecedenceList  Numbers/Small Evaluators/Operation Numbers/Integer Numbers/Real FFIs/ProcessInfos
+GUI/GTKREPL.o: GUI/GTKREPL.cc Scanners/MathParser Version Evaluators/Builtins FFIs/Allocators Scanners/Scanner AST/AST AST/Symbol Config/Config Formatters/LATEX GUI/UI_definition.UI GUI/GTKLATEXGenerator Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators REPL/REPL GUI/CommonCompleter GUI/GTKCompleter REPL/REPLEnvironment FFIs/ProcessInfos GUI/WindowIcon Scanners/OperatorPrecedenceList  Numbers/Small Evaluators/Operation Numbers/Integer Numbers/Real FFIs/ProcessInfos Evaluators/ModuleLoader
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 GUI/GTKCompleter.o: GUI/GTKCompleter.cc GUI/CommonCompleter GUI/GTKCompleter FFIs/Allocators AST/AST AST/Symbol Scanners/MathParser Scanners/OperatorPrecedenceList

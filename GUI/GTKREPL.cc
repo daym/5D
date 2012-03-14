@@ -39,6 +39,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/HashTable"
 #include "FFIs/Allocators"
 #include "FFIs/ProcessInfos"
+#include "Evaluators/ModuleLoader"
 
 #define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(REPL_handle_##name), self)
@@ -454,7 +455,7 @@ static int current_tip_index = -1;
 static AST::Cons* current_tip = NULL;
 void REPL_load_tips(struct REPL* self) {
 	FILE* input_file;
-	std::string d = REPL_get_shared_dir();
+	std::string d = Evaluators::get_shared_dir();
 	d += "tips";
 	input_file = fopen(d.c_str(), "r");
 	if(input_file) {
