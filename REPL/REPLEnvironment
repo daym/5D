@@ -110,17 +110,6 @@ bool exit_P(const char* text) {
 	return(strncmp(text, "#exit", strlen("#exit")) == 0);
 }
 AST::Node* REPL_prepare(struct REPL* self, AST::Node* input);
-static AST::Node* REPL_access_module(AST::Node* fn, AST::Node* argument) {
-	Evaluators::CurriedOperation* o = dynamic_cast<Evaluators::CurriedOperation*>(fn);
-	Evaluators::CurriedOperation* o2 = dynamic_cast<Evaluators::CurriedOperation*>(o->fOperation);
-	AST::Node* body = o2->fArgument;
-	// filename is the second argument, so ignore.
-	std::string v = Evaluators::str(o->fArgument);
-	//fprintf(stderr, "accessing module %s\n", v.c_str());
-	AST::Node* result = Evaluators::reduce(AST::makeApplication(body, argument));
-	//fprintf(stderr, "end accessing module %s\n", v.c_str());
-	return(result);
-}
 Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self) {
 	Scanners::OperatorPrecedenceList* result;
 	result = new Scanners::OperatorPrecedenceList;
@@ -169,61 +158,6 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 	REPL_set_file_modified(self, true);
 	return(B_ok);
 }
-static AST::Node* REPL_force_import_module(struct REPL* self, const char* filename) {
-	// FIXME push symbol table
-	int previousErrno = errno;
-	AST::Node* result = NULL;
-	if(FFIs::sharedLibraryFileP(filename)) {
-		return Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&FFIs::SharedLibraryLoader, AST::makeStr(filename))), NULL)), AST::makeStr("access5DModuleV1")));
-	}
-	// TODO in principle, this could just be loaded into a new REPL.
-	try {
-		Scanners::MathParser parser;
-		FILE* input_file = fopen(filename, "rb");
-		if(!input_file)
-			return(FALLBACK);
-		try {
-			parser.push(input_file, 0, filename);
-			AST::Node* result = NULL;
-			result = parser.parse(REPL_ensure_operator_precedence_list(self), Symbols::SlessEOFgreater);
-			result = Evaluators::close(Symbols::Scolon, &Evaluators::Conser, result); // dispatchModule needs that, so provide it :P
-			// ?? result = Evaluators::close(Symbols::SdispatchModule, AST::makeAbstraction(Symbols::Sexports, AST::makeApplication(&Evaluators::ModuleDispatcher, AST::makeApplication(&Evaluators::ModuleBoxMaker, Symbols::Sexports))), result);
-			result = REPL_prepare(self, result);
-			//fprintf(stderr, "before reduce_module\n");
-			result = Evaluators::reduce(result);
-			//fprintf(stderr, "after reduce_module\n");
-			fclose(input_file);
-			errno = previousErrno;
-			return(result);
-		} catch(...) {
-			fclose(input_file);
-			errno = previousErrno;
-			throw;
-		}
-	} catch(Evaluators::EvaluationException e) {
-		std::string v = e.what() ? e.what() : "error";
-		v = " => " + v + "\n";
-		fprintf(stderr, "%s\n", v.c_str());
-		// FIXME REPL_insert_into_output_buffer(self, destination, v.c_str());
-	} catch(Scanners::ParseException& e) {
-		std::string v = e.what() ? e.what() : "error";
-		fprintf(stderr, "%s\n", v.c_str());
-	}
-	// FIXME pop symbol table
-	return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
-	// FIXME return(uncurried(&RModule, AST::makeStr(filename)));
-}
-static AST::Node* REPL_require_module(struct REPL* self, const char* filename, const std::string& xmoduleKey) {
-	if(self->fModules == NULL)
-		self->fModules = new AST::HashTable;
-	const char* moduleKeyC = xmoduleKey.c_str();
-	char* moduleKey = GCx_strdup(moduleKeyC);
-	if((*self->fModules).find(moduleKey) == self->fModules->end()) {
-		(*self->fModules)[moduleKey] = AST::symbolFromStr("loading"); // protect against endless recusion.
-		(*self->fModules)[moduleKey] = REPL_force_import_module(self, filename);
-	}
-	return((*self->fModules)[moduleKey]);
-}
 
 #define DECLARE_REPL_OPERATION(P) \
 	DECLARE_FULL_OPERATION(P)
@@ -231,9 +165,6 @@ static AST::Node* REPL_require_module(struct REPL* self, const char* filename, c
 #define DEFINE_REPL_OPERATION(P, B) \
 	DEFINE_FULL_OPERATION(P, B)
 
-DEFINE_REPL_OPERATION(RModule, {
-	return(REPL_access_module(fn, argument));
-})
 static AST::Node* REPL_import_module(AST::Node* options, AST::Node* filename);
 DEFINE_REPL_OPERATION(RModuleLoader, {
 	return(REPL_import_module(fn, argument));
@@ -251,9 +182,8 @@ static std::vector<std::string> REPL_get_module_search_path(void) {
 }
 static AST::Node* REPL_import_module(AST::Node* options, AST::Node* fileNameNode) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, fileNameNode);
-	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
-	assert(self);
-
+	//struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
+	//assert(self);
 	std::vector<std::string> searchPaths = REPL_get_module_search_path();
 	std::vector<std::string>::const_iterator endSearchPaths = searchPaths.end();
 	std::string filename = "";
@@ -275,7 +205,7 @@ static AST::Node* REPL_import_module(AST::Node* options, AST::Node* fileNameNode
 		return(FALLBACK);
 	}
 	char* actualFilename = FFIs::get_absolute_path(realFilename.c_str());
-	AST::Node* body = REPL_require_module(self, actualFilename, moduleKey);
+	AST::Node* body = Evaluators::require_module(actualFilename, moduleKey);
 	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&RModule, body)), AST::makeStr(actualFilename))));
 }
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument);
@@ -422,7 +352,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, Symbols::Sdefine, uncurried(&RDefiner, self));
 	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Simport, uncurried(&RImporter, self));
-	REPL_add_static_builtin_binding(self, Symbols::SrequireModule, uncurried(&RModuleLoader, self));
+	REPL_add_static_builtin_binding(self, Symbols::SrequireModule, &RModuleLoader);
 	//REPL_add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
 	REPL_add_builtin_method(self, Symbols::Sdescribe, uncurried(&RInformant, self));
 
@@ -510,17 +440,12 @@ AST::Node* REPL_get_user_environment(struct REPL* self) {
 	return(self->fTailUserEnvironment ? envEntryGetTail(self->fTailUserEnvironment) : NULL);
 }
 AST::Node* REPL_prepare(struct REPL* self, AST::Node* input) {
-	AST::Node* result = REPL_close_environment(self, input);
-	result = Evaluators::provide_dynamic_builtins(result);
-	result = Evaluators::annotate(result);
-	return(result);
+	return(prepare_module(REPL_close_environment(self, input)));
 }
 
 REGISTER_BUILTIN(RImporter, (-2), 1, AST::symbolFromStr("import"))
 REGISTER_BUILTIN(RInformant, (-2), 1, AST::symbolFromStr("describe"));
 REGISTER_BUILTIN(RDefiner, (-3), 1, AST::symbolFromStr("define"));
-REGISTER_BUILTIN(RModule, 3, 1, AST::symbolFromStr("requireModule"));
-REGISTER_BUILTIN(RModuleLoader, 2, 1, AST::symbolFromStr("requireModule"));
 REGISTER_STR(REPL, return("REPL");)
 
 }; /* end namespace */

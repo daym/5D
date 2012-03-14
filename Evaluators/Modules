@@ -3,6 +3,9 @@
 #include <string>
 #include <sys/stat.h>
 #include <errno.h>
+#include "Evaluators/Operation"
+
+namespace Evaluators {
 
 static inline std::string getModuleFileKey(const std::string& filename, std::string& outActualFilename) {
 	int previousErrno = errno;
@@ -58,5 +61,11 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 	errno = previousErrno;
 	return(moduleKey);
 }
+
+DECLARE_FULL_OPERATION(RModule)
+AST::Node* require_module(const char* filename, const std::string& xmoduleKey);
+AST::Node* prepare_module(AST::Node* input);
+
+}; /* end namespace */
 
 #endif /* ndef __EVALUATORS_MODULES_H */

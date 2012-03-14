@@ -8,7 +8,6 @@ macro to make dispatch lists easier to write?
 eval $ runIO $ labs (-5.2)
 0
 loading modules (for example the one where errno! is in) causes errno to be clobbered.
-When I try to requireModule "doesnotexist/foo" I get "Success" as error message
 
 = Builtin Types =
 

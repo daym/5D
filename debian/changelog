@@ -1,6 +1,8 @@
 5d (0.5.0) unstable; urgency=low
 
   * add base case to module dispatcher.
+  * add "Object".
+  * extract module system from REPL into Modules.cc
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 11 Mar 2012 11:36:00 +0100
 
