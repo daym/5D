@@ -2,7 +2,7 @@ let List = requireModule "List" in
 let Error = requireModule "Error" in
 let Composition = requireModule "Composition" in
 let dispatch = Composition.dispatch in 
-let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
+let Object = Composition.Object in
 let listFromStr = Builtins.listFromStr in 
 let str? = Builtins.str? in 
 let strFromKeyword = Builtins.strFromKeyword in 
@@ -19,4 +19,4 @@ dispatch [['listFromStr listFromStr]
 ['substr substr]
 ['strcat strcat]
 ['strjoin strjoin]]
-raiseMissingSymbolError
+Object
