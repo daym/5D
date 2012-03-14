@@ -12,7 +12,7 @@
 
 namespace Evaluators {
 
-Scanners::OperatorPrecedenceList* ensure_operator_precedence_list(void) {
+Scanners::OperatorPrecedenceList* default_operator_precedence_list(void) {
 	Scanners::OperatorPrecedenceList* result;
 	result = new Scanners::OperatorPrecedenceList;
 	// FIXME just reuse the same global all the time.
@@ -51,7 +51,7 @@ static AST::Node* force_import_module(const char* filename) {
 		try {
 			parser.push(input_file, 0, filename);
 			AST::Node* result = NULL;
-			result = parser.parse(ensure_operator_precedence_list(), Symbols::SlessEOFgreater);
+			result = parser.parse(default_operator_precedence_list(), Symbols::SlessEOFgreater);
 			result = Evaluators::close(Symbols::Scolon, &Evaluators::Conser, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::SrequireModule, &RModuleLoader, result); // module needs that, so provide it.
 			// ?? result = Evaluators::close(Symbols::SdispatchModule, AST::makeAbstraction(Symbols::Sexports, AST::makeApplication(&Evaluators::ModuleDispatcher, AST::makeApplication(&Evaluators::ModuleBoxMaker, Symbols::Sexports))), result);
