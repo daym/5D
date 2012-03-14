@@ -13,6 +13,7 @@
 #include "REPL/REPL"
 #include "AST/AST"
 #include "FFIs/ProcessInfos"
+#include "Evaluators/ModuleLoader"
 
 #define MAX_LOADSTRING 100
 
@@ -104,7 +105,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			name2 += "\\";
 		}
 		name2 += "..\\share\\";
-		GUI::REPL_set_shared_dir(name2);
+		Evaluators::set_shared_dir(name2);
 	}
 	// Initialize global strings
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
