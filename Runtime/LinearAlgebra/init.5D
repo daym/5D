@@ -1,0 +1,31 @@
+let Logic = requireModule "Logic" in 
+let List = requireModule "List" in 
+let Composition = requireModule "Composition" in 
+let dispatch = Composition.dispatch in 
+let raiseMissingSymbolError = Composition.raiseMissingSymbolError in 
+let rec = Composition.rec in 
+let compose = Composition.compose in 
+let head = List.head in 
+let tail = List.tail in 
+let foldr = List.foldr in 
+let zipBy = List.zipBy in 
+let map = List.map in 
+let transpose = List.transpose in 
+let (:) = List.(:) in 
+let flip = Composition.flip in 
+let not = Logic.not in 
+let (&&) = Logic.(&&) in 
+let (||) = Logic.(||) in 
+let if = Logic.if in 
+let else = Logic.else in 
+let (-) = Builtins.(-) in 
+let (*) = Builtins.(*) in 
+let (+) = Builtins.(+) in 
+let sum = (\list foldr (+) 0 list) in 
+let oldInproduct = (\a \b sum (zipBy (*) a b)) in 
+let cartesianProduct = (\f \as \bs map (\a map (\b (f a b)) bs) as) in 
+let mmul = (\as \bs cartesianProduct oldInproduct as (transpose bs)) in 
+let madd = (compose sum (map sum)) in 
+dispatch [['mmul mmul]
+['madd madd]]
+raiseMissingSymbolError
