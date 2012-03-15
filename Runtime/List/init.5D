@@ -47,6 +47,8 @@ let range1 = (\beginning \end rangeLL 1 end beginning) in
 let range = (\beginning \end \step rangeLL step end beginning) in 
 let zipBy = (\zipper rec (\zipBy \l1 \l2 if (nil? l1 || nil? l2) nil $ else (zipper (head l1) (head l2)):(zipBy (tail l1) (tail l2)))) in 
 let zip = (zipBy (\x \y [x y])) in 
+let repeatEndlessly = (rec\repeatEndlessly \v v:(repeatEndlessly v)) in 
+let transpose = (\matrix foldr (zipBy (:)) (repeatEndlessly nil) matrix) in 
 let enumerate = (\list zip (range 0 (length list) 1) list) in 
 dispatch [['nil nil]
 ['nil? nil?]
@@ -73,5 +75,6 @@ dispatch [['nil nil]
 ['range1 range1]
 ['take take]
 ['zip zip]
+['transpose transpose]
 ['zipBy zipBy]]
 raiseMissingSymbolError
