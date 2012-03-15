@@ -205,6 +205,7 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 
 	AST::Node* exports = Evaluators::reduce(AST::makeApplication(body, Symbols::Sexports));
 	AST::Cons* usedExports = NULL;
+	blacklist[Symbols::Sexports->name] = NULL;
 	for(AST::Cons* node = Evaluators::evaluateToCons(exports); node; node = Evaluators::evaluateToCons(node->tail)) {
 		AST::Symbol* xname = dynamic_cast<AST::Symbol*>(node->head);
 		if(xname && (whitelist.empty() || whitelist.find(xname->name) != whitelist.end()) && blacklist.find(xname->name) == blacklist.end()) {

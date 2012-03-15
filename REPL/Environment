@@ -1,0 +1,13 @@
+#ifndef __REPL_ENVIRONMENT_H
+#define __REPL_ENVIRONMENT_H
+#include "AST/AST"
+#include "AST/Symbol"
+
+namespace REPL {
+
+typedef AST::HashTable Environment;
+Environment* addToEnvironment(Environment* orignal, AST::Symbol* key, AST::Node* value);
+AST::Node* getFromEnvironment(Environment* environment, AST::Symbol* key, bool& B_found);
+
+};
+#endif /* ndef __REPL_ENVIRONMENT_H */
