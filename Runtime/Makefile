@@ -16,6 +16,7 @@ all:
 	$(MAKE) -C String all
 	$(MAKE) -C Reflection all
 	$(MAKE) -C Error all
+	$(MAKE) -C LinearAlgebra all
 
 clean:
 	$(MAKE) -C Arithmetic clean
@@ -29,6 +30,7 @@ clean:
 	$(MAKE) -C String clean
 	$(MAKE) -C Reflection clean
 	$(MAKE) -C Error clean
+	$(MAKE) -C LinearAlgebra clean
 
 distclean:
 	$(MAKE) -C Arithmetic distclean
@@ -42,6 +44,7 @@ distclean:
 	$(MAKE) -C String distclean
 	$(MAKE) -C Reflection distclean
 	$(MAKE) -C Error distclean
+	$(MAKE) -C LinearAlgebra distclean
 
 install:
 	$(MAKE) -C Arithmetic install
@@ -55,5 +58,6 @@ install:
 	$(MAKE) -C String install
 	$(MAKE) -C Reflection install
 	$(MAKE) -C Error install
+	$(MAKE) -C LinearAlgebra install
 
 dist:
