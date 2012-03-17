@@ -108,5 +108,6 @@ AST::Symbol* Sroot = AST::symbolFromStr("√");
 AST::Symbol* Sa = AST::symbolFromStr("a");
 AST::Symbol* Sb = AST::symbolFromStr("b");
 AST::Symbol* SBuiltins = AST::symbolFromStr("Builtins");
+AST::Symbol* Scolonequal = AST::symbolFromStr(":=");
 
 };

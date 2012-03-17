@@ -1,6 +1,7 @@
 5d (0.5.1) unstable; urgency=low
 
   * add "LinearAlgebra" module.
+  * support ":=" in let.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Thu, 15 Mar 2012 07:50:00 +0100
 

@@ -112,6 +112,7 @@ extern AST::Symbol* Sroot;
 extern AST::Symbol* Sa;
 extern AST::Symbol* Sb;
 extern AST::Symbol* SBuiltins;
+extern AST::Symbol* Scolonequal;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

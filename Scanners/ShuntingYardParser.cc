@@ -107,7 +107,11 @@ AST::Node* ShuntingYardParser::parse_let_macro(void) {
 	} else 
 		parameter = scanner->consume(); // a symbol
 	//parse_value(); // this is supposed to be a symbol or so
-	scanner->consume(Symbols::Sequal);
+	if(scanner->input_value == Symbols::Sequal) {
+		/* backwards compat */
+		scanner->consume(Symbols::Sequal);
+	} else
+		scanner->consume(Symbols::Scolonequal);
 	//AST::Node* body = parse_value();
 	AST::Node* body = parse_expression(OPL, Symbols::Sin);
 	scanner->consume(Symbols::Sin);

@@ -15,6 +15,8 @@ def getNames(n):
 				continue
 			rest = line[len("export let ") : ]
 			rest = rest[: rest.find("=")].strip()
+			if rest.endswith(":"): # :=
+				rest = rest[:-1].strip()
 			name = rest
 			result.append(name)
 	return(sets.Set(result))
