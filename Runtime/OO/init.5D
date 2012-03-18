@@ -1,0 +1,12 @@
+let Composition := (requireModule "Composition") in 
+let dispatch := Composition.dispatch in 
+let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
+let wrap := (\class \native \key class key native) in 
+let wrap! := (\class \native (requireModule "IO").liftIO! (\key class key native)) in 
+let Object := (
+	dispatch [['id (\self self)]
+	]
+	raiseMissingSymbolError 
+) in 
+dispatch [['Object Object]]
+raiseMissingSymbolError
