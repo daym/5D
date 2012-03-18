@@ -17,6 +17,7 @@ all:
 	$(MAKE) -C Reflection all
 	$(MAKE) -C Error all
 	$(MAKE) -C LinearAlgebra all
+	$(MAKE) -C OO all
 
 clean:
 	$(MAKE) -C Arithmetic clean
@@ -31,6 +32,7 @@ clean:
 	$(MAKE) -C Reflection clean
 	$(MAKE) -C Error clean
 	$(MAKE) -C LinearAlgebra clean
+	$(MAKE) -C OO clean
 
 distclean:
 	$(MAKE) -C Arithmetic distclean
@@ -45,6 +47,7 @@ distclean:
 	$(MAKE) -C Reflection distclean
 	$(MAKE) -C Error distclean
 	$(MAKE) -C LinearAlgebra distclean
+	$(MAKE) -C OO distclean
 
 install:
 	$(MAKE) -C Arithmetic install
@@ -59,5 +62,6 @@ install:
 	$(MAKE) -C Reflection install
 	$(MAKE) -C Error install
 	$(MAKE) -C LinearAlgebra install
+	$(MAKE) -C OO install
 
 dist:
