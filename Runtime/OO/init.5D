@@ -8,5 +8,7 @@ let Object := (
 	]
 	raiseMissingSymbolError 
 ) in 
-dispatch [['Object Object]]
+dispatch [['Object Object]
+['wrap wrap]
+['wrap! wrap!]]
 raiseMissingSymbolError
