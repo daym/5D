@@ -43,7 +43,8 @@ static inline void maybe_print_closing_paren(std::ostream& output, int& position
 		return;
 	}
 	if(B_parend) {
-		++position, output << "\\right)";
+		// the space is hopefully not visible. It's there because LATEX likes to special-case "!\right)".
+		++position, output << " \\right)";
 	}
 }
 static void print_text_LATEX(std::ostream& output, const char* text) {
