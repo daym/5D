@@ -3,8 +3,9 @@ namespace GUI {
 static void match_entry(const char* key, void* value, struct Completer* self) {
 	const char* possible_text;
 	possible_text = key;
-	if(!self->fEntryNeedle || strncmp(possible_text, self->fEntryNeedle, strlen(self->fEntryNeedle)) == 0) /* match */
+	if(!self->fEntryNeedle || strncmp(possible_text, self->fEntryNeedle, strlen(self->fEntryNeedle)) == 0) /* match */ {
 		(*self->fMatches)[GCx_strdup(key)] = NULL;
+	}
 }
 static void Completer_accept_match(struct Completer* self, const char* match, bool B_automatic_space) {
 	const char* entry_text;

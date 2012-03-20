@@ -637,7 +637,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 		abort();
 	self->accelerator_group = gtk_ui_manager_get_accel_group(UI_manager);
 	self->fFileModified = false;
-	self->fEnvironmentKeys = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) gtk_tree_iter_free);
+	self->fEnvironmentKeys = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, (GDestroyNotify) gtk_tree_iter_free);
 	self->fWidget = (GtkWindow*) gtk_window_new(GTK_WINDOW_TOPLEVEL);
         gtk_window_set_title(self->fWidget, "(5D)");
 	gtk_window_set_icon(self->fWidget, gdk_pixbuf_new_from_inline(-1, window_icon, FALSE, NULL));
@@ -766,7 +766,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value) {
 	GtkTreeIter iter;
 	GtkTreePath* path = NULL;
-	g_hash_table_replace(self->fEnvironmentKeys, name, gtk_tree_iter_copy(&iter));
+	g_hash_table_replace(self->fEnvironmentKeys, g_strdup(name->name), gtk_tree_iter_copy(&iter));
 	gtk_tree_view_get_cursor(self->fEnvironmentView, &path, NULL);
 	if(path) {
 		gint* indices;
