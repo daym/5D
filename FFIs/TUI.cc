@@ -13,9 +13,9 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	char* cCaption;
 	const char* buttons;
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
-	AST::Node* parent = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("parent:"));
+	//AST::Node* parent = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("parent:"));
 	AST::Node* type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("type:"));
-	AST::Node* modality = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("modality:"));
+	//AST::Node* modality = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("modality:"));
 	AST::Node* icon = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("icon:"));
 	const char* cIcon;
 	buttons = (type_ == AST::symbolFromStr("ok")) ? "ok" :
