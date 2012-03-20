@@ -117,20 +117,17 @@ AST::Node* ShuntingYardParser::parse_let_macro(void) {
 	scanner->consume(Symbols::Sin);
 	return(AST::makeCons(Symbols::Slet, AST::makeCons(parameter, AST::makeCons(body, NULL))));
 }
+AST::Node* ShuntingYardParser::parse_list_macro_body(void) {
+	if(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
+		AST::Node* hd = parse_value();
+		return(AST::makeApplication(AST::makeApplication(Symbols::Scolon, hd), parse_list_macro_body()));
+	} else
+		return(Symbols::Snil);
+}
 AST::Node* ShuntingYardParser::parse_list_macro(void) {
-	AST::Application* root = NULL;
-	AST::Application* tail = NULL;
-	while(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
-		//value = parse_value(), value != Symbols::Srightbracket && value != Symbols::SlessEOFgreater) {
-		AST::Application* n = AST::makeApplication(AST::makeApplication(Symbols::Scolon, parse_value()), NULL);
-		if(tail)
-			tail->operand = n;
-		else
-			root = n;
-		tail = n;
-	}
+	AST::Node* result = parse_list_macro_body();
 	scanner->consume(Symbols::Srightbracket);
-	return(root);
+	return(result);
 }
 AST::Node* ShuntingYardParser::parse_quote_macro(void) {
 	if(scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::Sautorightparen || scanner->input_value == Symbols::SlessEOFgreater) {
