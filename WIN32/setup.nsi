@@ -5,7 +5,7 @@ Name 5D
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.4.1
+!define VERSION 0.5.1
 !define COMPANY "X"
 !define URL ""
 
@@ -94,6 +94,9 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\share\Arithmetic
     SetOverwrite on
     File ..\Runtime\Arithmetic\init.5D
+    SetOutPath $INSTDIR\share\LinearAlgebra
+    SetOverwrite on
+    File ..\Runtime\LinearAlgebra\init.5D
 
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
     
