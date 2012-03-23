@@ -32,11 +32,24 @@ typedef struct  tagSAFEARRAYBOUND {
  
 typedef struct  tagSAFEARRAY {
     USHORT             cDims;
-    USHORT             fFeatures;
-    ULONG              cbElements;
+    USHORT             fFeatures; /* can be a combination of:
+    FADF_AUTO 0x0001 An array that is allocated on the stack.
+    FADF_STATIC 0x0002 An array that is statically allocated.
+    FADF_EMBEDDED 0x0004 An array that is embedded in a structure.
+    FADF_FIXEDSIZE 0x0010 An array that may not be resized or reallocated.
+    FADF_RECORD 0x0020 An array that contains records. When set, there will be a pointer to the IRecordInfo interface at negative offset 4 in the array descriptor.
+    FADF_HAVEIID 0x0040 An array that has an IID identifying interface. When set, there will be a GUID at negative offset 16 in the safe array descriptor. Flag is set only when FADF_DISPATCH or FADF_UNKNOWN is also set.
+    FADF_HAVEVARTYPE 0x0080 An array that has an IID identifying interface. When set, there will be a GUID at negative offset 16 in the safe array descriptor. Flag is set only when FADF_DISPATCH or FADF_UNKNOWN is also set.
+    FADF_BSTR 0x0100 An array of BSTRs.
+    FADF_UNKNOWN 0x0200 An array of IUnknown*.
+    FADF_DISPATCH 0x0400 An array of IDispatch*.
+    FADF_VARIANT 0x0800 An array of VARIANTs.
+    FADF_RESERVED 0xF008 Bits reserved for future use. 
+*/
+    ULONG              cbElements; /* size of one array element */
     ULONG              cLocks;
     PVOID              pvData;
-    SAFEARRAYBOUND     rgsabound [0];
+    SAFEARRAYBOUND     rgsabound[1];
 } SAFEARRAY;
 typedef CY             CURRENCY;
 typedef short          VARIANT_BOOL;
@@ -217,6 +230,7 @@ void encodeVariant(AST::Node* both, VARIANT* value) {
 	AST::Node* source;
 	AST::Node* a;
 	AST::Node* b;
+	VariantInit(value);
 	get_tuple_with_two_elements(both, vtNum, source);
 	encodeNumber(vtNum, value->vt);
 	if(value->vt & VT_BYREF) {
@@ -231,6 +245,7 @@ void encodeVariant(AST::Node* both, VARIANT* value) {
 	switch(value->vt) {
 	case VT_BSTR:
 		{
+			/*The string is not terminated.  Instead, the length of the string is stored as an unsigned long (four bytes) just before the first character of the string, which is not what the pointer points to! */
 			std::wstring v = FromUTF8(Evaluators::get_string(source));
 			value->bstrVal = SysAllocString(v.c_str()); // later SysFreeString
 		}
@@ -473,3 +488,12 @@ if( FAILED(hresult)) {
    *    The TypeDesc.VT_PTR is an <code>Integer</code> and is used as a discriminant to select ptrTypeDesc, TypeDesc.VT_CARRAY 
    *  chooses ptrArrayDesc. <br>
    */
+/*
+typedef struct CLSID // 16 bytes
+{
+DWORD Data1;
+WORD Data2;
+WORD Data3;
+BYTE Data4[8]; // chars are one-based
+} CLSID; 
+*/
