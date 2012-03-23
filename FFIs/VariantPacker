@@ -1,0 +1,7 @@
+#ifndef __FFIS_VARIANT_PACKER_H
+#define __FFIS_VARIANT_PACKER_H
+namespace FFIs {
+void encodeVariant(AST::Node* source, VARIANT* value);
+AST::Node* decodeVariant(VARIANT* value);
+};
+#endif /* __FFIS_VARIANT_PACKER_H */

@@ -1,9 +1,12 @@
+#ifdef WIN32
+#include "stdafx.h"
+#include <objbase.h>
+#include <OaIdl.h> /* VARIANT */
+#endif
 #include <stdio.h>
 #include <sstream>
 #include <assert.h>
-#ifdef WIN32
-//typedef short uint16_t;
-#else
+#ifndef WIN32
 #include <endian.h>
 #include <stdint.h>
 #endif
@@ -13,6 +16,7 @@
 #include "Evaluators/FFI"
 #include "Numbers/Integer"
 #include "Evaluators/Builtins"
+#include "FFIs/VariantPacker"
 
 namespace FFIs {
 
@@ -40,6 +44,9 @@ static size_t getSize(enum ByteOrder byteOrder, char c) {
 		case 'Z': return(sizeof(char*));
 		case 's': return(sizeof(char*));
 		case 'S': return(sizeof(char*));
+#ifdef WIN32
+		case 'V': return(sizeof(VARIANT));
+#endif
 		default: return(0); /* FIXME */
 		}
 	} else { /* defaults */
@@ -63,6 +70,9 @@ static size_t getSize(enum ByteOrder byteOrder, char c) {
 		case 'Z': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
 		case 's': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
 		case 'S': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
+#ifdef WIN32
+		case 'V': return(sizeof(VARIANT)); // FIXME
+#endif
 		default: return(0); /* FIXME */
 		}
 	}
@@ -113,6 +123,9 @@ static size_t getAlignment(char c) { /* note that this is only used for MACHINE_
 4
 #endif
 );
+#ifdef WIN32
+	case 'V': return(8);
+#endif
 	default: return(0); /* FIXME */
 	}
 }
@@ -158,7 +171,6 @@ static inline bool machineNoneBigEndianP(void) /* TODO pure */{
 		for(; size2 > 0; --size2, ++b) \
 			sst << *b; \
 	}
-
 
 static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST::Node* headNode, std::stringstream& sst) {
 	size_t size = getSize(byteOrder, formatC); 
@@ -215,6 +227,14 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 			PACK_BUF(None, result)
 			return(size);
 		}
+#ifdef WIN32
+		case 'V': {
+			VARIANT result;
+			encodeVariant(headNode, &result);
+			PACK_BUF(None, result);
+			return(size);
+		}
+#endif
 		default: {
 			std::stringstream sst;
 			sst << "unknown format \"" << formatC << "\"";
@@ -438,6 +458,12 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 				return(NULL);
 			else
 				return(AST::makeStr(value));
+		}
+	case 'V':
+		{
+			VARIANT value;
+			DECODE_BUF(None, value)
+			return(decodeVariant(&value));
 		}
 	default:
 		{
