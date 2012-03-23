@@ -16,7 +16,7 @@ typedef struct  tagCY {
     unsigned long      Lo;
     long               Hi;
 } CY;
- 
+typedef ULONG SCODE; 
 typedef struct  tagDEC {
     USHORT             wReserved;
     BYTE               scale;
@@ -98,15 +98,15 @@ typedef struct tagVARIANT {
         FLOAT               fltVal; // VT_R4  4-byte float
         DOUBLE              dblVal; // VT_R8  8-byte float
         VARIANT_BOOL        boolVal;
-        _VARIANT_BOOL       bool_;
-        SCODE               scode;
-        CY                  cyVal;
-        DATE                date;
-        BSTR                bstrVal;
-        IUnknown            *punkVal;
-        IDispatch           *pdispVal;
-        SAFEARRAY           *parray; // see SafeArrayCreateVector, SafeArrayPutElement
-        BYTE                *pbVal;
+        //_VARIANT_BOOL       bool_;
+        SCODE               scode; // VT_ERROR
+        CY                  cyVal; // VT_CY
+        DATE                date; // VT_DATE
+        BSTR                bstrVal; // VT_BSTR
+        IUnknown            *punkVal; // VT_UNKNOWN
+        IDispatch           *pdispVal; // VT_DISPATCH
+        SAFEARRAY           *parray; // VT_ARRAY, see SafeArrayCreateVector, SafeArrayPutElement
+        BYTE                *pbVal; 
         SHORT               *piVal;
         LONG                *plVal;
         LONGLONG            *pllVal;
@@ -123,13 +123,13 @@ typedef struct tagVARIANT {
         SAFEARRAY           **pparray;
         VARIANT             *pvarVal;
         PVOID               byref;
-        CHAR                cVal;
-        USHORT              uiVal;
-        ULONG               ulVal;
-        ULONGLONG           ullVal;
-        INT                 intVal;
-        UINT                uintVal;
-        DECIMAL             *pdecVal;
+        CHAR                cVal; // VT_I1
+        USHORT              uiVal; // VT_UI2
+        ULONG               ulVal; // VT_UI4
+        ULONGLONG           ullVal; // VT_UI8
+        INT                 intVal; // VT_INT
+        UINT                uintVal; // VT_UINT
+        DECIMAL             *pdecVal; // VT_BYREF|VT_DECIMAL
         CHAR                *pcVal;
         USHORT              *puiVal;
         ULONG               *pulVal;
@@ -305,10 +305,10 @@ ULONGLONG          Lo64;*/
 		return();
 		break;
 	case VT_ERROR:
-		return(); // HRESULT
+		encodeNumber(source, value->scode); // HRESULT
 		break;
 	case VT_HRESULT:
-		return(); // HRESULT
+		encodeNumber(source, value->scode); // HRESULT
 		break;
 	case VT_PTR: /* unique PTR */
 		return();
@@ -408,9 +408,9 @@ ULONGLONG          Lo64;*/
 	case VT_DISPATCH:
 		return();
 	case VT_ERROR:
-		return(); // HRESULT
+		return(MAKE_VTV(Numbers::internNativeU(value->scode))); // HRESULT
 	case VT_HRESULT:
-		return(); // HRESULT
+		return(MAKE_VTV(Numbers::internNativeU(value->scode)));
 	case VT_PTR: /* unique PTR */
 		return();
 	case VT_UNKNOWN:
