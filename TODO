@@ -159,6 +159,7 @@ snd
 Windows COM support (interfaces, refcounting, ...)
 Windows COM strings
 Full Unicode strings
+DECIMAL type (suffix m or M)
 
 = Free Symbols =
 

@@ -1,0 +1,25 @@
+#ifndef __REPL_REPL2_H
+#define __REPL_REPL2_H
+/*
+5D programming language
+Copyright (C) 2011  Danny Milosavljevic
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* this file is unused */
+#include "AST/AST"
+#include "REPL/Environment"
+namespace Scanners {
+struct OperatorPrecedenceList;
+};
+namespace REPL { // new interface
+OperatorPrecedenceList* getOperatorPrecedenceList(struct REPL* self);
+Environment* getEnvironment(struct REPL* self);
+AST::Node* describe(struct REPL* self, AST::Node* options, AST::Node* key);
+AST::Node* define(struct REPL* self, AST::Node* key, AST::Node* value);
+AST::Node* import(struct REPL* self, AST::Node* options, AST::Node* filename);
+void purge(struct REPL* self);
+AST::Node* execute(struct REPL* self, AST::Node* node);
+};
+#endif /*ndef __REPL_REPL2_H*/

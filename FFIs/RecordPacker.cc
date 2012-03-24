@@ -16,7 +16,9 @@
 #include "Evaluators/FFI"
 #include "Numbers/Integer"
 #include "Evaluators/Builtins"
+#ifdef WIN32
 #include "FFIs/VariantPacker"
+#endif
 
 namespace FFIs {
 
@@ -459,12 +461,14 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 			else
 				return(AST::makeStr(value));
 		}
+#ifdef WIN32
 	case 'V':
 		{
 			VARIANT value;
 			DECODE_BUF(None, value)
 			return(decodeVariant(&value));
 		}
+#endif
 	default:
 		{
 			std::stringstream sst;

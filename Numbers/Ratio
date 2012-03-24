@@ -1,0 +1,12 @@
+#ifndef __NUMBERS_RATIO_H
+#define __NUMBERS_RATIO_H
+#include "AST/AST"
+namespace Numbers {
+	struct Ratio : AST::Node {
+		AST::Node* a;
+		AST::Node* b;
+	};
+	Ratio* makeRatio(AST::Node* aa, AST::Node* bb);
+};
+
+#endif /* ndef __NUMBERS_RATIO_H */
