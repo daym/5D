@@ -335,6 +335,7 @@ static AST::Node* makeACons(AST::Node* h, AST::Node* t, AST::Node* fallback) {
 	//t = reduce(t);
 	return(makeCons(h, t));
 }
+// FIXME add fractions here:
 #define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
 AST::Node* N(AST::Node* a, AST::Node* b, AST::Node* fallback) { \
 	a = reduce(a); \

@@ -6,6 +6,7 @@
 #include "Formatters/SExpression"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
+#include "Numbers/Ratio"
 
 namespace Formatters {
 using namespace Evaluators;

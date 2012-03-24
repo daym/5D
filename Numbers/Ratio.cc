@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "Numbers/Ratio"
 #include "Evaluators/Builtins"
 namespace Numbers {
@@ -6,6 +7,9 @@ Ratio* makeRatio(AST::Node* aa, AST::Node* bb) {
 	result->a = aa;
 	result->b = bb;
 	return(result);
+}
+bool ratio_P(AST::Node* n) {
+	return(dynamic_cast<Ratio*>(n) != NULL);
 }
 REGISTER_STR(Ratio, {
 	std::stringstream result;

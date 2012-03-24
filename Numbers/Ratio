@@ -7,6 +7,13 @@ namespace Numbers {
 		AST::Node* b;
 	};
 	Ratio* makeRatio(AST::Node* aa, AST::Node* bb);
+	bool ratio_P(AST::Node* n);
+	inline AST::Node* Ratio_getA(AST::Node* n) {
+		return(((Ratio*)n)->a);
+	}
+	inline AST::Node* Ratio_getB(AST::Node* n) {
+		return(((Ratio*)n)->b);
+	}
 };
 
 #endif /* ndef __NUMBERS_RATIO_H */

@@ -8,6 +8,7 @@
 #include "Evaluators/Evaluators"
 #include "Scanners/OperatorPrecedenceList"
 #include "Evaluators/Builtins"
+#include "Numbers/Ratio"
 
 namespace Formatters {
 namespace Math {

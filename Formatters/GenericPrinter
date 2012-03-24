@@ -62,6 +62,18 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 			print_CXX(OPL, output, position, dynamic_cast<AST::Cons*>(vnode)->head, 0, false);
 		}
 		output << "]";
+	} else if(Numbers::ratio_P(node)) { /* copied from the application_P() case. */
+		AST::Symbol* operatorSymbol = Symbols::Sslash;
+		AST::Node* operator_ = operatorSymbol;
+		AST::Symbol* operatorAssociativity = NULL;
+		int precedence = operatorSymbol ? OPL->get_operator_precedence_and_associativity(operatorSymbol, operatorAssociativity) : -1;
+		assert(precedence != -1);
+		bool B_parend = maybe_print_opening_paren(output, position, operator_, precedence, precedence_limit, B_paren_equal_levels);
+		print_CXX(OPL, output, position, Numbers::Ratio_getA(node), precedence, operatorAssociativity != Symbols::Sleft);
+		print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
+		////print_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
+		print_CXX(OPL, output, position, Numbers::Ratio_getB(node), precedence, operatorAssociativity != Symbols::Sright);
+		maybe_print_closing_paren(output, position, operator_, B_parend);
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
 		std::string value = str(node);

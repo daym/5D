@@ -10,6 +10,7 @@
 #include "Evaluators/Builtins"
 #include "Formatters/UTFStateMachine"
 #include "AST/Symbols"
+#include "Numbers/Ratio"
 
 namespace Formatters {
 namespace LATEX {
