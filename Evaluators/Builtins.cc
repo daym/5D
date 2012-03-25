@@ -323,9 +323,9 @@ static AST::Node* fetchValueAndWorld(AST::Node* n) {
 DEFINE_SIMPLE_OPERATION(IORunner, fetchValueAndWorld(makeApplication(argument, WORLD)))
 AST::Node* operator/(const Int& a, const Int& b) {
 	if((a.value % b.value) == 0)
-		return internNative(a.value / b.value); // int
+		return Numbers::internNative(a.value / b.value); // int
 	else
-	        return(internNative((NativeFloat) a.value / (NativeFloat) b.value));
+	        return(Numbers::internNative((NativeFloat) a.value / (NativeFloat) b.value));
 }
 AST::Node* operator/(const Integer& a, const Integer& b) {
 	if (b.isZero()) throw Evaluators::EvaluationException("Integer::operator /: division by zero");
@@ -539,7 +539,10 @@ static inline AST::Node* simplifyRatio(AST::Node* r) {
 			g = gcd(a, b);
 			a = divideA(a, g, NULL);
 			b = divideA(b, g, NULL);
-			return(makeRatio(a, b));
+			if(Evaluators::get_boolean(leqA(&int01, b, NULL)) && Evaluators::get_boolean(leqA(b, &int01, NULL)))
+				return(a);
+			else
+				return(makeRatio(a, b));
 		}
 	} else {
 		return(r);
