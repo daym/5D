@@ -21,10 +21,15 @@ static AST::Node* makeRatioB(AST::Node* options, AST::Node* argument) {
 	//++iter;
 	return(makeRatio(a, b));
 }
+static inline AST::Node* ensureRatio(AST::Node* node) {
+	if(!ratio_P(node))
+		throw EvaluationException("argument is not a Ratio");
+	return(node);
+}
 DEFINE_FULL_OPERATION(RatioMaker, return(makeRatioB(fn, argument)))
 DEFINE_SIMPLE_OPERATION(RatioP, (dynamic_cast<Ratio*>(reduce(argument)) !=NULL||dynamic_cast<Ratio*>(reduce(argument)) != NULL))
-DEFINE_SIMPLE_OPERATION(RatioNumeratorGetter, Ratio_getA(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(RatioDenominatorGetter, Ratio_getB(reduce(argument)))
+DEFINE_SIMPLE_OPERATION(RatioNumeratorGetter, Ratio_getA(ensureRatio(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(RatioDenominatorGetter, Ratio_getB(ensureRatio(reduce(argument))))
 
 /*
 a/b + c/d = (a*d + c*b)/(b*d)
