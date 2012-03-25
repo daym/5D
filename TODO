@@ -122,6 +122,7 @@ allow building our own OperationPrecedenceList from within 5D.
 Instead of 'dispatch, memoizing a normal conditional (into a HashTable) should be enough.
 Fix HashTable to use a prime size.
 What about comparing (-0.0) and 0.0 ?
+Handle division by zero for ratios?
 
 = Debugging Macros =
 

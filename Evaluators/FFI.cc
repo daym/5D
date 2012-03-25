@@ -74,9 +74,9 @@ void* get_pointer(AST::Node* root) {
 		throw Evaluators::EvaluationException(v.c_str());
 	}
 }
+static Int int01(1);
 bool get_boolean(AST::Node* root) {
-	/* FIXME */
-	return(false);
+	return(Evaluators::reduce(AST::makeApplication(AST::makeApplication(root, &int01), NULL)) != NULL);
 }
 char* get_string(AST::Node* root) {
 	AST::Str* rootString = dynamic_cast<AST::Str*>(root);
@@ -92,7 +92,6 @@ char* get_string(AST::Node* root) {
 		//return((char*) v->native);
 	}
 }
-
 static AST::Node* wrapWrite(AST::Node* options, AST::Node* argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();

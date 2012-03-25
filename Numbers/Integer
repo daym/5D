@@ -248,7 +248,6 @@ DECLARE_SIMPLE_OPERATION(IntegerSucc)
 AST::Node* operator+(const Int& a, const Int& b);
 AST::Node* operator-(const Int& a, const Int& b);
 AST::Node* operator*(const Int& a, const Int& b);
-AST::Node* operator/(const Int& a, const Int& b);
 /*
 Integer* operator+(const Integer& a, const Integer& b);
 Integer* operator-(const Integer& a, const Integer& b);

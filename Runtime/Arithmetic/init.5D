@@ -47,6 +47,7 @@ let ground = (\v divide v 1) in
 let round1 = (\v if (0 <= v) (ground (v + 1/2)) (ground (v - 1/2))) in 
 let max = (\a \b if (a <= b) b a) in 
 let min = (\a \b if (a <= b) a b) in 
+let gcd = (rec\gcd \a \b if (b = 0) a $else (gcd b (a % b))) in 
 dispatch [['(-) (-)]
 ['(*) (*)]
 ['(/) (/)]
@@ -77,5 +78,6 @@ dispatch [['(-) (-)]
 ['π π]
 ['pi pi]
 ['max max]
-['min min]]
+['min min]
+['gcd gcd]]
 raiseMissingSymbolError

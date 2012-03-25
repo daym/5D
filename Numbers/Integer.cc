@@ -714,9 +714,6 @@ AST::Node* operator*(const Int& a, const Int& b) {
 	else
 		return(new Integer(result));
 }
-AST::Node* operator/(const Int& a, const Int& b) {
-        return(internNative((NativeFloat) a.value / (NativeFloat) b.value)); /* FIXME */
-}
 /*
 Integer* operator+(const Integer& a, const Integer& b) {
         return(NULL); // FIXME

@@ -321,7 +321,12 @@ static AST::Node* fetchValueAndWorld(AST::Node* n) {
 }
 #define WORLD Numbers::internNative((Numbers::NativeInt) 42)
 DEFINE_SIMPLE_OPERATION(IORunner, fetchValueAndWorld(makeApplication(argument, WORLD)))
-
+AST::Node* operator/(const Int& a, const Int& b) {
+	if((a.value % b.value) == 0)
+		return internNative(a.value / b.value); // int
+	else
+	        return(internNative((NativeFloat) a.value / (NativeFloat) b.value));
+}
 AST::Node* operator/(const Integer& a, const Integer& b) {
 	if (b.isZero()) throw Evaluators::EvaluationException("Integer::operator /: division by zero");
 	Integer q, r;
@@ -333,6 +338,7 @@ AST::Node* operator/(const Integer& a, const Integer& b) {
 		return toHeap(promoteToFloat(a) / promoteToFloat(b)); // FIXME faster?
 	}
 }
+
 static AST::Node* makeACons(AST::Node* h, AST::Node* t, AST::Node* fallback) {
 	h = reduce(h);
 	//t = reduce(t);
@@ -507,19 +513,38 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 		throw Evaluators::EvaluationException("not a symbol");
 	return(NULL);
 }
-static inline AST::Node* simplifyRatio(AST::Node* a) {
-	if(Numbers::ratio_P(a)) {
-		// TODO simplify
-		return(a);
-	} else {
-		return(a);
+AST::Node* leqA(AST::Node* a, AST::Node* b, AST::Node* fallback);
+static AST::Node* gcd(AST::Node* a, AST::Node* b) {
+	while(!(Evaluators::get_boolean(leqA(b, &integer00, NULL)) && Evaluators::get_boolean(leqA(&integer00, b, NULL)))) { // B /= 0
+		AST::Node* t = b;
+		b = AST::get_cons_head(AST::get_cons_tail(divremA(a, b, NULL))); // remainder
+		a = t;
 	}
+	return a;
 }
 AST::Node* addA(AST::Node* a, AST::Node* b, AST::Node* fallback);
 AST::Node* multiplyA(AST::Node* a, AST::Node* b, AST::Node* fallback);
 AST::Node* subtractA(AST::Node* a, AST::Node* b, AST::Node* fallback);
 AST::Node* divideA(AST::Node* a, AST::Node* b, AST::Node* fallback);
-AST::Node* leqA(AST::Node* a, AST::Node* b, AST::Node* fallback);
+static inline AST::Node* simplifyRatio(AST::Node* r) {
+	if(ratio_P(r)) {
+		if(Evaluators::get_boolean(leqA(&int01, Ratio_getB(r), NULL)) && Evaluators::get_boolean(leqA(Ratio_getB(r), &int01, NULL))) {
+			return(Ratio_getA(r));
+		} else {
+			AST::Node* a;
+			AST::Node* b;
+			AST::Node* g;
+			a = Ratio_getA(r);
+			b = Ratio_getB(r);
+			g = gcd(a, b);
+			a = divideA(a, g, NULL);
+			b = divideA(b, g, NULL);
+			return(makeRatio(a, b));
+		}
+	} else {
+		return(r);
+	}
+}
 static AST::Node* addARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
