@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <assert.h>
 #include "Numbers/Ratio"
 #include "Evaluators/Builtins"
 namespace Numbers {

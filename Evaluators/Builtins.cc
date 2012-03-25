@@ -515,10 +515,16 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 	return(NULL);
 }
 AST::Node* leqA(AST::Node* a, AST::Node* b, AST::Node* fallback);
+static inline bool equalP(AST::Node* a, AST::Node* b) {
+	return(Evaluators::get_boolean(leqA(a, b, NULL)) && Evaluators::get_boolean(leqA(b, a, NULL)));
+}
 static AST::Node* gcd(AST::Node* a, AST::Node* b) {
-	while(!(Evaluators::get_boolean(leqA(b, &integer00, NULL)) && Evaluators::get_boolean(leqA(&integer00, b, NULL)))) { // B /= 0
+	while(!equalP(b, &integer00)) {
 		AST::Node* t = b;
-		b = AST::get_cons_head(AST::get_cons_tail(divremA(a, b, NULL))); // remainder
+		AST::Node* c = divremA(a, b, NULL);
+		if(!c || !cons_P(c)) /* failed */
+			throw EvaluationException("could not find greatest common divisor");
+		b = AST::get_cons_head(Evaluators::evaluateToCons(AST::get_cons_tail(c))); // remainder
 		a = t;
 	}
 	return a;
@@ -529,21 +535,27 @@ AST::Node* subtractA(AST::Node* a, AST::Node* b, AST::Node* fallback);
 AST::Node* divideA(AST::Node* a, AST::Node* b, AST::Node* fallback);
 static inline AST::Node* simplifyRatio(AST::Node* r) {
 	if(ratio_P(r)) {
-		if(Evaluators::get_boolean(leqA(&int01, Ratio_getB(r), NULL)) && Evaluators::get_boolean(leqA(Ratio_getB(r), &int01, NULL))) {
+		if(equalP(&int01, Ratio_getB(r)))
 			return(Ratio_getA(r));
-		} else {
+		else {
 			AST::Node* a;
 			AST::Node* b;
 			AST::Node* g;
 			a = Ratio_getA(r);
 			b = Ratio_getB(r);
-			g = gcd(a, b);
+			if(!a || !b)
+				return(r);
+			try {
+				g = gcd(a, b);
+			} catch(EvaluationException e) {
+				return(r);
+			}
 			if(Evaluators::get_boolean(leqA(g, &int01, NULL)) && Evaluators::get_boolean(leqA(&intM01, g, NULL))) {
 			} else {
 				a = divideA(a, g, NULL);
 				b = divideA(b, g, NULL);
 			}
-			if(Evaluators::get_boolean(leqA(&int01, b, NULL)) && Evaluators::get_boolean(leqA(b, &int01, NULL)))
+			if(equalP(&int01, b))
 				return(a);
 			else
 				return(makeRatio(a, b));
@@ -559,7 +571,7 @@ static AST::Node* addARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
 		b = makeRatio(b, &int01);
-	if(Ratio_getB(a) == Ratio_getB(b))
+	if(equalP(Ratio_getB(a), Ratio_getB(b)))
 		return(simplifyRatio(makeRatio(
 			addA(Ratio_getA(a), Ratio_getA(b), NULL),
 			Ratio_getB(a)
@@ -577,7 +589,7 @@ static AST::Node* subtractARatio(AST::Node* a, AST::Node* b, AST::Node* fallback
 		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
 		b = makeRatio(b, &int01);
-	if(Ratio_getB(a) == Ratio_getB(b))
+	if(equalP(Ratio_getB(a), Ratio_getB(b)))
 		return(simplifyRatio(makeRatio(
 			subtractA(Ratio_getA(a), Ratio_getA(b), NULL),
 			Ratio_getB(a)
