@@ -176,7 +176,7 @@ static AST::Node* divremInt(const Numbers::Int& a, const Numbers::Int& b) {
 	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
 }
 static Integer integer00(0);
-static Integer integer01(1);
+static Int int01(1);
 static AST::Node* divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
 	if(b == integer00)
 		throw EvaluationException("division by zero");
@@ -524,13 +524,13 @@ static AST::Node* addARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	if(!ratio_P(a))
-		a = makeRatio(a, &integer01);
+		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
-		b = makeRatio(b, &integer01);
+		b = makeRatio(b, &int01);
 	if(Ratio_getB(a) == Ratio_getB(b))
 		return(simplifyRatio(makeRatio(
 			addA(Ratio_getA(a), Ratio_getA(b), NULL),
-			Ratio_getA(a)
+			Ratio_getB(a)
 		)));
 	else
 		return(simplifyRatio(makeRatio(
@@ -542,13 +542,13 @@ static AST::Node* subtractARatio(AST::Node* a, AST::Node* b, AST::Node* fallback
 	a = reduce(a);
 	b = reduce(b);
 	if(!ratio_P(a))
-		a = makeRatio(a, &integer01);
+		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
-		b = makeRatio(b, &integer01);
+		b = makeRatio(b, &int01);
 	if(Ratio_getB(a) == Ratio_getB(b))
 		return(simplifyRatio(makeRatio(
 			subtractA(Ratio_getA(a), Ratio_getA(b), NULL),
-			Ratio_getA(a)
+			Ratio_getB(a)
 		)));
 	else
 		return(simplifyRatio(makeRatio(
@@ -560,9 +560,9 @@ static AST::Node* multiplyARatio(AST::Node* a, AST::Node* b, AST::Node* fallback
 	a = reduce(a);
 	b = reduce(b);
 	if(!ratio_P(a))
-		a = makeRatio(a, &integer01);
+		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
-		b = makeRatio(b, &integer01);
+		b = makeRatio(b, &int01);
 	return(simplifyRatio(makeRatio(
 		multiplyA(Ratio_getA(a), Ratio_getA(b), NULL), 
 		multiplyA(Ratio_getB(a), Ratio_getB(b), NULL)
@@ -572,9 +572,9 @@ static AST::Node* divideARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) 
 	a = reduce(a);
 	b = reduce(b);
 	if(!ratio_P(a))
-		a = makeRatio(a, &integer01);
+		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
-		b = makeRatio(b, &integer01);
+		b = makeRatio(b, &int01);
 	return(simplifyRatio(makeRatio(
 		multiplyA(Ratio_getA(a), Ratio_getB(b), NULL), 
 		multiplyA(Ratio_getB(a), Ratio_getA(b), NULL)
@@ -582,9 +582,9 @@ static AST::Node* divideARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) 
 }
 static AST::Node* leqARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	if(!ratio_P(a))
-		a = makeRatio(a, &integer01);
+		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
-		b = makeRatio(b, &integer01);
+		b = makeRatio(b, &int01);
 	return(leqA(
 		multiplyA(Ratio_getA(a), Ratio_getB(b), NULL), 
 		multiplyA(Ratio_getB(a), Ratio_getA(b), NULL),
@@ -593,9 +593,9 @@ static AST::Node* leqARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 }
 static AST::Node* divremARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	if(!ratio_P(a))
-		a = makeRatio(a, &integer01);
+		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
-		b = makeRatio(b, &integer01);
+		b = makeRatio(b, &int01);
 	return(NULL); // FIXME
 }
 DEFINE_BINARY_OPERATION(Conser, makeACons)
