@@ -17,6 +17,8 @@
 #include "Evaluators/Evaluators"
 #include "Numbers/Integer"
 #include "FFIs/ProcessInfos"
+#include "Numbers/Real"
+#include "Numbers/Ratio"
 
 // for now, these are kept all in the main executable. After ensuring that GC actually works across DLL boundaries, we can also extract stuff into their own extension modules.
 namespace Evaluators {
@@ -112,6 +114,10 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, AST::symbolFromStr("fn?"), &Evaluators::AbstractionP);
 	add_builtin_method(self, AST::symbolFromStr("fnParam"), &Evaluators::AbstractionParameterGetter);
 	add_builtin_method(self, AST::symbolFromStr("fnBody"), &Evaluators::AbstractionBodyGetter);
+	add_builtin_method(self, AST::symbolFromStr("makeRatio"), &Numbers::RatioMaker);
+	add_builtin_method(self, AST::symbolFromStr("ratio?"), &Numbers::RatioP);
+	add_builtin_method(self, AST::symbolFromStr("ratioNum"), &Numbers::RatioNumeratorGetter);
+	add_builtin_method(self, AST::symbolFromStr("ratioDenom"), &Numbers::RatioDenominatorGetter);
 	add_builtin_method(self, AST::symbolFromStr("parseMath!"), &Evaluators::RFileMathParser);
 	add_builtin_method(self, AST::symbolFromStr("parseMathStr"), &Evaluators::RStrMathParser);
 	add_builtin_method(self, AST::symbolFromStr("dispatchModule"), &Evaluators::ModuleDispatcher);

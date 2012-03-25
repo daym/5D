@@ -12,6 +12,10 @@ let float? = Builtins.float? in
 let int? = Builtins.int? in 
 let int0 = Builtins.int0 in 
 let integer? = Builtins.integer? in 
+let ratio? = Builtins.ratio? in 
+let ratioNum = Builtins.ratioNum in 
+let ratioDenom = Builtins.ratioDenom in 
+let makeRatio = Builtins.makeRatio in 
 let integerSucc = Builtins.integerSucc in 
 let intSucc = Builtins.intSucc in 
 let keyword? = Builtins.keyword? in 
@@ -45,5 +49,10 @@ dispatch [['app? app?]
 ['symbolsEqual? symbolsEqual?]
 ['addrsLE? addrsLE?]
 ['parseMath! parseMath!]
-['parseMathStr parseMathStr]]
+['parseMathStr parseMathStr]
+['ratio? ratio?]
+['ratioNum ratioNum]
+['ratioDenom ratioDenom]
+['makeRatio makeRatio]
+]
 raiseMissingSymbolError

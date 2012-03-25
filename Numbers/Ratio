@@ -1,6 +1,7 @@
 #ifndef __NUMBERS_RATIO_H
 #define __NUMBERS_RATIO_H
 #include "AST/AST"
+#include "Evaluators/Operation"
 namespace Numbers {
 	struct Ratio : AST::Node {
 		AST::Node* a; /* numerator */
@@ -14,6 +15,11 @@ namespace Numbers {
 	inline AST::Node* Ratio_getB(AST::Node* n) {
 		return(((Ratio*)n)->b);
 	}
+DECLARE_SIMPLE_OPERATION(RatioMaker)
+DECLARE_SIMPLE_OPERATION(RatioP)
+DECLARE_SIMPLE_OPERATION(RatioNumeratorGetter)
+DECLARE_SIMPLE_OPERATION(RatioDenominatorGetter)
+
 };
 
 #endif /* ndef __NUMBERS_RATIO_H */
