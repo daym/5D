@@ -78,8 +78,12 @@ void* get_pointer(AST::Node* root) {
 	}
 }
 static Int int01(1);
+static Int int00(0);
 bool get_boolean(AST::Node* root) {
-	return(Evaluators::reduce(AST::makeApplication(AST::makeApplication(root, &int01), NULL)) != NULL);
+	AST::Node* result = Evaluators::reduce(AST::makeApplication(AST::makeApplication(root, &int01), &int00));
+	if(result == NULL)
+		throw Evaluators::EvaluationException("that cannot be reduced to a boolean");
+	return(result == &int01);
 }
 char* get_string(AST::Node* root) {
 	AST::Str* rootString = dynamic_cast<AST::Str*>(root);

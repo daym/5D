@@ -534,7 +534,7 @@ AST::Node* addA(AST::Node* a, AST::Node* b, AST::Node* fallback);
 AST::Node* multiplyA(AST::Node* a, AST::Node* b, AST::Node* fallback);
 AST::Node* subtractA(AST::Node* a, AST::Node* b, AST::Node* fallback);
 AST::Node* divideA(AST::Node* a, AST::Node* b, AST::Node* fallback);
-static inline AST::Node* simplifyRatio(AST::Node* r) {
+static AST::Node* simplifyRatio(AST::Node* r) {
 	if(ratio_P(r)) {
 		if(equalP(&int01, Ratio_getB(r)))
 			return(Ratio_getA(r));
