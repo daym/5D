@@ -3,8 +3,8 @@
 #include "AST/AST"
 namespace Numbers {
 	struct Ratio : AST::Node {
-		AST::Node* a;
-		AST::Node* b;
+		AST::Node* a; /* numerator */
+		AST::Node* b; /* denominator */
 	};
 	Ratio* makeRatio(AST::Node* aa, AST::Node* bb);
 	bool ratio_P(AST::Node* n);

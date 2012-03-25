@@ -22,6 +22,8 @@
 #include "Evaluators/Operation"
 #include "FFIs/Allocators"
 #include "Formatters/Math"
+#include "Numbers/Real"
+#include "Numbers/Ratio"
 
 namespace Evaluators {
 
@@ -174,6 +176,7 @@ static AST::Node* divremInt(const Numbers::Int& a, const Numbers::Int& b) {
 	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
 }
 static Integer integer00(0);
+static Integer integer01(1);
 static AST::Node* divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
 	if(b == integer00)
 		throw EvaluationException("division by zero");
@@ -335,7 +338,6 @@ static AST::Node* makeACons(AST::Node* h, AST::Node* t, AST::Node* fallback) {
 	//t = reduce(t);
 	return(makeCons(h, t));
 }
-// FIXME add fractions here:
 #define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
 AST::Node* N(AST::Node* a, AST::Node* b, AST::Node* fallback) { \
 	a = reduce(a); \
@@ -350,7 +352,11 @@ AST::Node* N(AST::Node* a, AST::Node* b, AST::Node* fallback) { \
 		if(aInteger && bInteger) { \
 			return toHeap((*aInteger) op (*bInteger)); \
 		} else { \
-			if(aInteger && bInt) \
+			Numbers::Ratio* aRatio = dynamic_cast<Numbers::Ratio*>(a); \
+			Numbers::Ratio* bRatio = dynamic_cast<Numbers::Ratio*>(b); \
+			if(aRatio || bRatio) { \
+				return(N##Ratio(a, b, fallback)); \
+			} else if(aInteger && bInt) \
 				return toHeap((*aInteger) op Integer(bInt->value)); \
 			else if(aInt && bInteger) \
 				return toHeap(Integer(aInt->value) op (*bInteger)); \
@@ -371,6 +377,7 @@ AST::Node* N(AST::Node* a, AST::Node* b, AST::Node* fallback) { \
 	return(makeOperation(AST::symbolFromStr(#op), a, b)); \
 }
 
+static AST::Node* divremARatio(AST::Node* a, AST::Node* b, AST::Node* fallback);
 static AST::Node* divremA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
@@ -384,7 +391,11 @@ static AST::Node* divremA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 		if(aInteger && bInteger) {
 			return toHeap(divremInteger((*aInteger), (*bInteger)));
 		} else {
-			if(aInteger && bInt)
+			Numbers::Ratio* aRatio = dynamic_cast<Numbers::Ratio*>(a); \
+			Numbers::Ratio* bRatio = dynamic_cast<Numbers::Ratio*>(b); \
+			if(aRatio || bRatio)
+				return(divremARatio(a, b, fallback));
+			else if(aInteger && bInt)
 				return toHeap(divremInteger((*aInteger), Integer(bInt->value)));
 			else if(aInt && bInteger)
 				return toHeap(divremInteger(Integer(aInt->value), (*bInteger)));
@@ -496,6 +507,97 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 		throw Evaluators::EvaluationException("not a symbol");
 	return(NULL);
 }
+static inline AST::Node* simplifyRatio(AST::Node* a) {
+	if(Numbers::ratio_P(a)) {
+		// TODO simplify
+		return(a);
+	} else {
+		return(a);
+	}
+}
+AST::Node* addA(AST::Node* a, AST::Node* b, AST::Node* fallback);
+AST::Node* multiplyA(AST::Node* a, AST::Node* b, AST::Node* fallback);
+AST::Node* subtractA(AST::Node* a, AST::Node* b, AST::Node* fallback);
+AST::Node* divideA(AST::Node* a, AST::Node* b, AST::Node* fallback);
+AST::Node* leqA(AST::Node* a, AST::Node* b, AST::Node* fallback);
+static AST::Node* addARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+	a = reduce(a);
+	b = reduce(b);
+	if(!ratio_P(a))
+		a = makeRatio(a, &integer01);
+	if(!ratio_P(b))
+		b = makeRatio(b, &integer01);
+	if(Ratio_getB(a) == Ratio_getB(b))
+		return(simplifyRatio(makeRatio(
+			addA(Ratio_getA(a), Ratio_getA(b), NULL),
+			Ratio_getA(a)
+		)));
+	else
+		return(simplifyRatio(makeRatio(
+			addA(multiplyA(Ratio_getA(a), Ratio_getB(b), NULL), multiplyA(Ratio_getB(a), Ratio_getA(b), NULL), NULL),
+			multiplyA(Ratio_getB(a), Ratio_getB(b), NULL)
+		)));
+}
+static AST::Node* subtractARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+	a = reduce(a);
+	b = reduce(b);
+	if(!ratio_P(a))
+		a = makeRatio(a, &integer01);
+	if(!ratio_P(b))
+		b = makeRatio(b, &integer01);
+	if(Ratio_getB(a) == Ratio_getB(b))
+		return(simplifyRatio(makeRatio(
+			subtractA(Ratio_getA(a), Ratio_getA(b), NULL),
+			Ratio_getA(a)
+		)));
+	else
+		return(simplifyRatio(makeRatio(
+			subtractA(multiplyA(Ratio_getA(a), Ratio_getB(b), NULL), multiplyA(Ratio_getB(a), Ratio_getA(b), NULL), NULL),
+			multiplyA(Ratio_getB(a), Ratio_getB(b), NULL)
+		)));
+}
+static AST::Node* multiplyARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+	a = reduce(a);
+	b = reduce(b);
+	if(!ratio_P(a))
+		a = makeRatio(a, &integer01);
+	if(!ratio_P(b))
+		b = makeRatio(b, &integer01);
+	return(simplifyRatio(makeRatio(
+		multiplyA(Ratio_getA(a), Ratio_getA(b), NULL), 
+		multiplyA(Ratio_getB(a), Ratio_getB(b), NULL)
+	)));
+}
+static AST::Node* divideARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+	a = reduce(a);
+	b = reduce(b);
+	if(!ratio_P(a))
+		a = makeRatio(a, &integer01);
+	if(!ratio_P(b))
+		b = makeRatio(b, &integer01);
+	return(simplifyRatio(makeRatio(
+		multiplyA(Ratio_getA(a), Ratio_getB(b), NULL), 
+		multiplyA(Ratio_getB(a), Ratio_getA(b), NULL)
+	)));
+}
+static AST::Node* leqARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+	if(!ratio_P(a))
+		a = makeRatio(a, &integer01);
+	if(!ratio_P(b))
+		b = makeRatio(b, &integer01);
+	return(leqA(
+		multiplyA(Ratio_getA(a), Ratio_getB(b), NULL), 
+		multiplyA(Ratio_getB(a), Ratio_getA(b), NULL),
+		NULL
+	));
+}
+static AST::Node* divremARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+	if(!ratio_P(a))
+		a = makeRatio(a, &integer01);
+	if(!ratio_P(b))
+		b = makeRatio(b, &integer01);
+	return(NULL); // FIXME
+}
 DEFINE_BINARY_OPERATION(Conser, makeACons)
 DEFINE_SIMPLE_OPERATION(ConsP, cons_P(reduce(argument)))
 DEFINE_SIMPLE_OPERATION(NilP, nil_P(reduce(argument)))
@@ -514,7 +616,7 @@ DEFINE_BINARY_OPERATION(Subtractor, subtractA)
 IMPLEMENT_NUMERIC_BUILTIN(multiplyA, *)
 DEFINE_BINARY_OPERATION(Multiplicator, multiplyA)
 IMPLEMENT_NUMERIC_BUILTIN(divideA, /)
-DEFINE_BINARY_OPERATION(Divider, divideA)
+DEFINE_BINARY_OPERATION(Divider, divideARatio)
 DEFINE_BINARY_OPERATION(QModulator2, divremA)
 /* TODO "non-numeric" comparison (i.e. strings) */
 IMPLEMENT_NUMERIC_BUILTIN(leqA, <=)
@@ -692,6 +794,5 @@ AST::Node* CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* ke
 			return(iter->second);
 	return(NULL);
 }
-
 
 }; /* end namespace Evaluators */

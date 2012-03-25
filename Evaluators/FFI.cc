@@ -35,6 +35,7 @@ typ get_##typ(AST::Node* root) { \
 		throw Evaluators::EvaluationException("value out of range for " #typ); \
 	return(result); \
 }
+// TODO support Ratio - at least for the floats, maybe.
 #define IMPLEMENT_NATIVE_FLOAT_GETTER(typ) \
 typ get_##typ(AST::Node* root) { \
 	NativeFloat result2 = 0.0; \
