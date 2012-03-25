@@ -381,6 +381,7 @@ AST::Node* N(AST::Node* a, AST::Node* b, AST::Node* fallback) { \
 				return toHeap(promoteToFloat(*aInteger) op *bFloat); \
 		} \
 	} /* TODO optimize this: */ \
+	/* TODO fish out neutral element */ \
 	return(makeOperation(AST::symbolFromStr(#op), a, b)); \
 }
 
