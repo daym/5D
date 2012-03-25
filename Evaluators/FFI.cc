@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Numbers/Real"
 #include "Evaluators/Operation"
 #include "FFIs/Allocators"
+#include "Numbers/Ratio"
 
 namespace Evaluators {
 using namespace AST;
@@ -40,6 +41,8 @@ typ get_##typ(AST::Node* root) { \
 typ get_##typ(AST::Node* root) { \
 	NativeFloat result2 = 0.0; \
 	typ result = 0; \
+	if(Numbers::ratio_P(root)) \
+		root = Evaluators::divideA(Ratio_getA(root), Ratio_getB(root), NULL); \
 	if(!Numbers::toNativeFloat(root, result2) || (result = result2) != result2) \
 		throw Evaluators::EvaluationException("value out of range for " #typ); \
 	return(result); \

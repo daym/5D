@@ -177,6 +177,7 @@ static AST::Node* divremInt(const Numbers::Int& a, const Numbers::Int& b) {
 }
 static Integer integer00(0);
 static Int int01(1);
+static Int intM01(-1);
 static AST::Node* divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
 	if(b == integer00)
 		throw EvaluationException("division by zero");
@@ -537,8 +538,11 @@ static inline AST::Node* simplifyRatio(AST::Node* r) {
 			a = Ratio_getA(r);
 			b = Ratio_getB(r);
 			g = gcd(a, b);
-			a = divideA(a, g, NULL);
-			b = divideA(b, g, NULL);
+			if(Evaluators::get_boolean(leqA(g, &int01, NULL)) && Evaluators::get_boolean(leqA(&intM01, g, NULL))) {
+			} else {
+				a = divideA(a, g, NULL);
+				b = divideA(b, g, NULL);
+			}
 			if(Evaluators::get_boolean(leqA(&int01, b, NULL)) && Evaluators::get_boolean(leqA(b, &int01, NULL)))
 				return(a);
 			else
