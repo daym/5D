@@ -1,0 +1,15 @@
+#ifndef __FFIS_COMWRAPPER_H
+#define __FFIS_COMWRAPPER_H
+#include <objbase.h>
+#include <oleauto.h>
+
+namespace FFIs {
+
+IDispatch* unwrapIDispatch(AST::Node* source);
+IUnknown* unwrapIUnknown(AST::Node* source);
+AST::Node* wrapIDispatch(IDispatch* source);
+AST::Node* wrapIUnknown(IUnknown* source);
+
+}; /* end namespace FFIs */
+
+#endif /* ndef __FFIS_COMWRAPPER_H */

@@ -8,7 +8,11 @@
 #include "Evaluators/Evaluators"
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
+#include "FFIs/COMWrapper"
+#include "Numbers/Ratio"
+
 //typedef short uint16_t;
+// TODO support different endiannesses.
 #ifdef WIN32
 #include <OaIdl.h> /* VARIANT */
 #else
@@ -78,18 +82,18 @@ typedef  enum tagVARENUM
   VT_UI1 = 0x0011,
   VT_UI2 = 0x0012,
   VT_UI4 = 0x0013,
-  VT_I8 = 0x0014,
-  VT_UI8 = 0x0015,
+  VT_I8 = 0x0014, // not for VARIANT
+  VT_UI8 = 0x0015,  // not for VARIANT
   VT_INT = 0x0016,
   VT_UINT = 0x0017,
-  VT_VOID = 0x0018,
-  VT_HRESULT = 0x0019,
-  VT_PTR = 0x001A,
-  VT_SAFEARRAY = 0x001B,
-  VT_CARRAY = 0x001C,
-  VT_USERDEFINED = 0x001D,
-  VT_LPSTR = 0x001E,
-  VT_LPWSTR = 0x001F,
+  VT_VOID = 0x0018, // not for VARIANT
+  VT_HRESULT = 0x0019, // not for VARIANT
+  VT_PTR = 0x001A, // not for VARIANT
+  VT_SAFEARRAY = 0x001B, // not for VARIANT
+  VT_CARRAY = 0x001C, // not for VARIANT
+  VT_USERDEFINED = 0x001D, // not for VARIANT
+  VT_LPSTR = 0x001E, // only for PROPVARIANT
+  VT_LPWSTR = 0x001F, // only for PROPVARIANT
   VT_RECORD = 0x0024,
   VT_INT_PTR = 0x0025,
   VT_UINT_PTR = 0x0026,
@@ -159,16 +163,16 @@ typedef struct tagVARIANT {
   } __VARIANT_NAME_1;
 } VARIANT;
 #endif
+namespace FFIs {
+using namespace Numbers;
 
-static SAFEARRAY* marshalCArray(AST::Node* source) {
+/*static SAFEARRAY* marshalCArray(AST::Node* source) {
 	SAFEARRAY* result = SafeArrayCreateVector(VT_BSTR, 0, (unsigned int) myPaths.size() );
-	// FIXME
 	return(result);
 }
 static AST::Node* demarshalCArray(SAFEARRAY* arr) {
-	// FIXME
 	return(NULL);
-}
+}*/
 static SAFEARRAY* marshalSafeArray(VARTYPE itemType, AST::Node* source) {
 	// FIXME
 	return(NULL);
@@ -188,19 +192,21 @@ static AST::Node* demarshalSafeArray(VARTYPE itemType, SAFEARRAY* arr) {
 	long i;
 	SafeArrayPutElement(parray, &i, element);
 	*/
-	SafeArrayGetLBound(psa, 1, &lBound);
-	SafeArrayGetUBound(psa, 1, &uBound);
-	long numElems = uBound - lBound + 1;
-
+	//SafeArrayGetDim()
 	IUnknown** rawArray;
-	SafeArrayAccessData(psa, (void**)&rawArray);
+	SafeArrayAccessData(arr, (void**)&rawArray);
+	for(USHORT iDim = 1; iDim <= arr->cDims; ++iDim) {
+		SafeArrayGetLBound(arr, 1, &lBound);
+		SafeArrayGetUBound(arr, 1, &uBound);
+		long numElems = uBound - lBound + 1;
+	}
+
 	/*for (long i = 0; i < numElems; ++i) {
 	  IUnknown* pElem = rawArray[i];
 	  DoSomething(pElem);
 	}*/
-	SafeArrayUnaccessData(psa);
-	cDims
-	fFeature
+	SafeArrayUnaccessData(arr);
+	// FIXME fFeature
 /*
 typedef struct  tagSAFEARRAYBOUND {
     ULONG              cElements;
@@ -220,12 +226,65 @@ typedef struct  tagSAFEARRAY {
 static void get_tuple_with_two_elements(AST::Node* tuple, AST::Node*& a, AST::Node*& b) {
 	/* FIXME */
 }
-static inline void encodeNumber(AST::Node* source, int& destination) {
-	if(!Numbers::toNativeInt(source, destination))
+template<typename A>
+static inline void encodeNumber(AST::Node* source, A& destination) {
+	Numbers::NativeInt temp;
+	if(!Numbers::toNativeInt(source, temp))
 		throw Evaluators::EvaluationException("pack: number does not fit into slot");
+	else {
+		destination = (A) temp;
+		if(destination != temp)
+			throw Evaluators::EvaluationException("pack: number does not fit into slot");
+	}
+}
+static const ULONGLONG max64 = ~0ULL;
+static AST::Node* powersOf10[8] = {
+	new Int(1), // 0
+	new Int(10), // 1
+	new Int(100), // 2
+	new Int(1000), // 3
+	new Int(10000), // 4
+	new Int(100000), // 5
+	new Int(1000000), // 6
+	new Int(10000000), // 7
+	// C++ has problems with literals up to 10**28
+};
+static void get_DECIMAL(AST::Node* source, DECIMAL* dest) {
+	// dest->wReserved = 0; ???  we assume that the caller took care of that (ugh).
+	AST::Node* c = Evaluators::divremA(source, (Int*) powersOf10[0], NULL);
+	if(!c || ! cons_P(c))
+		throw EvaluationException("cannot convert that to DECIMAL");
+	AST::Node* root = get_cons_head(c); // the integral part.
+	NativeInt result2 = 0;
+	dest->scale = 0; // FIXME log10 root
+	dest->sign = 0; // FIXME DECIMAL_NEG if negative, otherwise 0.
+	dest->Lo64 = 0;
+	dest->Hi32 = 0;
+	// FIXME Float, Rational.
+	if(!Numbers::toNativeInt(root, result2) || (dest->Lo64 = result2) != result2) {
+		// FIXME larger numbers.
+		throw Evaluators::EvaluationException("value out of range for Variant");
+	}
+}
+AST::Node* internDECIMAL(DECIMAL* source) {
+	//Given DECIMAL d, the number of decimal places is d.scale 
+	//and the value is (d.sign?-1:1) * (double(d.Lo64) + double(d.Hi32) * double(1UL<<32) * double(1UL<<32)) * pow(10, d.scale)
+	AST::Node* denominator;
+	if (source->scale < 8) // and >= 0
+		denominator = powersOf10[source->scale];
+	else {
+		Integer result(1);
+		for(unsigned i = 0; i < source->scale; ++i)
+			result *= 10;
+		denominator = new Integer(result);
+	}
+	// scale: Valid values are from 0 to 28. So 12.345 is represented as 12345 with a scale of 3.
+	Integer result = Integer(source->Hi32) * max64 + Integer(source->Hi32) + Integer(source->Lo64);
+	if(source->sign & DECIMAL_NEG)
+		result = -result;
+	return(Numbers::makeRatio(new Integer(result), denominator));
 }
 void encodeVariant(AST::Node* both, VARIANT* value) {
-	bool B_ok = false;
 	AST::Node* vtNum;
 	AST::Node* source;
 	AST::Node* a;
@@ -265,14 +324,7 @@ void encodeVariant(AST::Node* both, VARIANT* value) {
 		return();
 		break;*/
 	case VT_DECIMAL:
-		/* decVal 
-USHORT             wReserved;
-BYTE               scale;
-BYTE               sign;
-ULONG              Hi32;
-ULONGLONG          Lo64;*/
-/* see VarDec* , VarDecCmp, VarDecDiv, VarDecMul, VarDecInt, VarDecSub */
-		value->decVal;
+		get_DECIMAL(source, &value->decVal);
 		break;
 	case VT_UI1:
 		encodeNumber(source, value->bVal);
@@ -316,23 +368,37 @@ ULONGLONG          Lo64;*/
 	case VT_EMPTY: /* cannot be BYREF */
 		value->byref = NULL; /* just in case */
 		break;
-	case VT_DISPATCH:
-		return();
-		break;
 	case VT_ERROR:
 		encodeNumber(source, value->scode); // HRESULT
+		break;
+	case VT_DISPATCH:
+		value->pdispVal = unwrapIDispatch(source);
+		break;
+	case VT_UNKNOWN:
+		value->punkVal = unwrapIUnknown(source);
+		break;
+	case VT_NULL: /* cannot be BYREF */
+		value->byref = NULL; /* just in case */
+		break;
+/* not for variant
+	case VT_LPSTR:
+		value->pcVal = _strdup(Evaluators::get_string(source));
+		break;
+	case VT_USERDEFINED:
+		return();
+		break;
+	case VT_LPWSTR:
+		{
+			std::wstring v = FromUTF8(Evaluators::get_string(source));
+			value->puiVal = _wcsdup(v.c_str());
+		}
+		return();
 		break;
 	case VT_HRESULT:
 		encodeNumber(source, value->scode); // HRESULT
 		break;
-	case VT_PTR: /* unique PTR */
+	case VT_PTR: // unique PTR
 		return();
-		break;
-	case VT_UNKNOWN:
-		return();
-		break;
-	case VT_NULL: /* cannot be BYREF */
-		value->byref = NULL; /* just in case */
 		break;
 	case VT_SAFEARRAY:
 		value->parray = marshalSafeArray(source);
@@ -341,27 +407,24 @@ ULONGLONG          Lo64;*/
 		value->parray = marshalCArray(source);
 		typeDesc.lpadesc;
 		break;
-	case VT_USERDEFINED:
-		return();
-		break;
-	case VT_LPSTR:
-		return();
-		break;
-	case VT_LPWSTR:
-		return();
-		break;
+*/
 	case VT_RECORD:
-		// BRECORD
-		return();
+		// BRECORD FIXME
 		break;
 	case VT_INT_PTR:
-		return(sizeof(void*) ? );
+		if(sizeof(value->lVal) == sizeof(value->byref))
+			encodeNumber(source, value->lVal);
+		else
+			encodeNumber(source, value->llVal);
 		break;
 	case VT_UINT_PTR:
-		return(sizeof(void*) ? );
+		if(sizeof(value->lVal) == sizeof(value->byref))
+			encodeNumber(source, value->ulVal);
+		else
+			encodeNumber(source, value->ullVal);
 		break;
 	default:
-		B_ok = false;
+		throw Evaluators::EvaluationException("pack: unknown Variant Type");
 		break;
 	}
 }
@@ -375,65 +438,61 @@ AST::Node* decodeVariant(VARIANT* value) {
 	}
 	switch(value->vt) {
 	case VT_BSTR:
-		return(MAKE_VTV(ToUTF8(std::wstring(value->bstrVal)))); // TODO support native UCS-4 strings? Probably not.
+		return(MAKE_VTV(AST::makeStr(ToUTF8(std::wstring(value->bstrVal))))); // TODO support native UCS-4 strings? Probably not.
 	case VT_BOOL:
-		return(MAKE_VTV(AST::internNative(value->boolVal)));
+		return(MAKE_VTV(Evaluators::internNative(value->boolVal)));
 	case VT_CY:
-		return(MAKE_VTV(AST::makeCons(Numbers::internNativeU(value->cyVal.Lo), AST::makeCons(Numbers::internNative(value->cyVal.Hi), NULL)));
+		return(MAKE_VTV(AST::makeCons(Numbers::internNativeU((unsigned long long) value->cyVal.Lo), AST::makeCons(Numbers::internNative((Numbers::NativeInt/*FIXME*/) value->cyVal.Hi), NULL))));
 	case VT_DATE:
-		return(MAKE_VTV(Numbers::internNative(value->date)));
+		return(MAKE_VTV(Numbers::internNative((Numbers::NativeFloat /* TODO */) value->date)));
+#if 0
 	case VT_VARIANT: /* pointer to variant blah */
 		return();
+#endif
 	case VT_DECIMAL:
-		/*
-USHORT             wReserved;
-BYTE               scale;
-BYTE               sign;
-ULONG              Hi32;
-ULONGLONG          Lo64;*/
-		return();
+		return(MAKE_VTV(internDECIMAL(&value->decVal)));
 	case VT_UI1:
-		return(MAKE_VTV(Numbers::internNative(value->bVal)));
+		return(MAKE_VTV(Numbers::internNativeU((unsigned long long) value->bVal)));
 	case VT_UI2:
-		return(MAKE_VTV(Numbers::internNative(value->uiVal)));
+		return(MAKE_VTV(Numbers::internNativeU((unsigned long long) value->uiVal)));
 	case VT_UI4:
-		return(MAKE_VTV(Numbers::internNative(value->ulVal))));
-	case VT_UI8:
-		return(MAKE_VTV(Numbers::internNative(value->ullVal))));
+		return(MAKE_VTV(Numbers::internNativeU((unsigned long long) value->ulVal)));
+	case VT_UI8: /* technically not used for VARIANT */
+		return(MAKE_VTV(Numbers::internNativeU((unsigned long long) value->ullVal)));
 	case VT_I1:
-		return(MAKE_VTV(Numbers::internNative(value->cVal)));
+		return(MAKE_VTV(Numbers::internNative((long long) value->cVal)));
 	case VT_I2:
-		return(MAKE_VTV(Numbers::internNative(value->iVal)));
+		return(MAKE_VTV(Numbers::internNative((long long) value->iVal)));
 	case VT_I4:
-		return(MAKE_VTV(Numbers::internNative(value->lVal))));
-	case VT_I8:
-		return(MAKE_VTV(Numbers::internNative(value->llVal))));
+		return(MAKE_VTV(Numbers::internNative((long long) value->lVal)));
+	case VT_I8: /* technically not used for VARIANT */
+		return(MAKE_VTV(Numbers::internNative((long long) value->llVal)));
 	case VT_R4:
-		return(MAKE_VTV(Numbers::internNative((Numbers::NativeFloat /* FIXME */) value->fltVal))));
+		return(MAKE_VTV(Numbers::internNative((Numbers::NativeFloat /* TODO */) value->fltVal)));
 	case VT_R8:
-		return(MAKE_VTV(Numbers::internNative(value->dblVal)));
+		return(MAKE_VTV(Numbers::internNative((Numbers::NativeFloat /* TODO */) value->dblVal)));
 	case VT_INT:
 		return(MAKE_VTV(Numbers::internNative(value->intVal)));
 	case VT_UINT:
-		return(MAKE_VTV(Numbers::internNative(value->uintVal)));
+		return(MAKE_VTV(Numbers::internNativeU(value->uintVal)));
 	case VT_VOID:
 		return(MAKE_VTV(NULL));
 	case VT_EMPTY: /* cannot be BYREF */
 		return(MAKE_VTV(NULL));
-	case VT_DISPATCH:
-		return();
 	case VT_ERROR:
-		return(MAKE_VTV(Numbers::internNativeU(value->scode))); // HRESULT
-	case VT_HRESULT:
-		return(MAKE_VTV(Numbers::internNativeU(value->scode)));
-	case VT_PTR: /* unique PTR */
-		return();
+		return(MAKE_VTV(Numbers::internNativeU((unsigned long long) value->scode))); // HRESULT
+	case VT_HRESULT: /* technically not used for VARIANT */
+		return(MAKE_VTV(Numbers::internNativeU((unsigned long long) value->scode)));
+	case VT_DISPATCH:
+		return(MAKE_VTV(wrapIDispatch(value->pdispVal)));
 	case VT_UNKNOWN:
-		return(MAKE_VTV(???));
+		return(MAKE_VTV(wrapIUnknown(value->punkVal)));
 	case VT_NULL: /* cannot be BYREF */
 		return(MAKE_VTV(NULL)); /* nil, whatever */
-	case VT_SAFEARRAY:
+/*	case VT_SAFEARRAY:
 		return(MAKE_VTV(demarshalSafeArray(value->parray)));
+	case VT_PTR:
+		return();
 	case VT_CARRAY:
 		return(MAKE_VTV(demarshalCArray(value->parray)));
 	case VT_USERDEFINED:
@@ -442,15 +501,15 @@ ULONGLONG          Lo64;*/
 		return();
 	case VT_LPWSTR:
 		return();
-	case VT_RECORD:
-		// BRECORD
-		return();
+*/
+	//case VT_RECORD:
+		// BRECORD FIXME
 	case VT_INT_PTR:
-		return(sizeof(void*) ? );
+		return(MAKE_VTV(Numbers::internNative((Numbers::NativeInt) (sizeof(value->lVal) == sizeof(value->byref) ? value->lVal : value->llVal)))); // TODO proper size
 	case VT_UINT_PTR:
-		return(sizeof(void*) ? );
+		return(MAKE_VTV(Numbers::internNative((Numbers::NativeInt) (sizeof(value->ulVal) == sizeof(value->byref) ? value->ulVal : value->ullVal)))); // TODO proper size
 	default:
-		return();
+		throw Evaluators::EvaluationException("unpack: unknown Variant Type");
 	}
 }
 /*
@@ -497,3 +556,4 @@ WORD Data3;
 BYTE Data4[8]; // chars are one-based
 } CLSID; 
 */
+}; /* end namespace FFIs */

@@ -74,6 +74,7 @@ CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument); /* non-k
 CXXArguments CXXfromArgumentsU(AST::Node* options, AST::Node* argument, int backwardsIndexOfArgumentNotToReduce); /* non-keyword arguments will be at the FRONT */
 AST::Node* CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* key);
 AST::Node* divideA(AST::Node* a, AST::Node* b, AST::Node* fallback);
+AST::Node* divremA(AST::Node* a, AST::Node* b, AST::Node* fallback);
 
 };
 

@@ -414,7 +414,7 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 		{
 			double value;
 			DECODE_BUF(FloatingPoint, value)
-			return(Numbers::internNative((Numbers::NativeFloat) value)); // FIXME larger
+			return(Numbers::internNative((Numbers::NativeFloat) value));
 		}
 	case 'D':
 		{

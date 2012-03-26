@@ -386,7 +386,7 @@ AST::Node* N(AST::Node* a, AST::Node* b, AST::Node* fallback) { \
 }
 
 static AST::Node* divremARatio(AST::Node* a, AST::Node* b, AST::Node* fallback);
-static AST::Node* divremA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+AST::Node* divremA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);

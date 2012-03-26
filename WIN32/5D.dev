@@ -1,7 +1,7 @@
 [Project]
 FileName=5D.dev
 Name=5D
-UnitCount=86
+UnitCount=90
 Type=0
 Ver=1
 ObjFiles=
@@ -12,7 +12,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=-D_UNICODE -DUNICODE_@@_
 CppCompiler=-D_UNICODE -DUNICODE_@@_
-Linker=-lcomctl32 -lgc_@@_
+Linker=-lcomctl32 -lgc -loleaut32_@@_
 IsCpp=1
 Icon=
 ExeOutput=
@@ -873,6 +873,44 @@ BuildCmd=
 
 [Unit86]
 FileName=..\FFIs\VariantPacker
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit87]
+FileName=..\FFIs\COMWrapper.cc
+CompileCpp=1
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit88]
+FileName=..\FFIs\COMWrapper
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit89]
+FileName=..\Numbers\Ratio.cc
+CompileCpp=1
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit90]
+FileName=..\Numbers\Ratio
 Folder=5D
 Compile=0
 Link=0
