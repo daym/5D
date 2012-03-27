@@ -345,6 +345,7 @@ static AST::Node* makeACons(AST::Node* h, AST::Node* t, AST::Node* fallback) {
 	//t = reduce(t);
 	return(makeCons(h, t));
 }
+/* make sure NOT to return a ratio here when it wasn't already one. The ratio constructor is divideARatio, not divideA. */
 #define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
 AST::Node* N(AST::Node* a, AST::Node* b, AST::Node* fallback) { \
 	a = reduce(a); \
@@ -637,11 +638,16 @@ static AST::Node* leqARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	));
 }
 static AST::Node* divremARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
-	if(!ratio_P(a))
-		a = makeRatio(a, &int01);
-	if(!ratio_P(b))
-		b = makeRatio(b, &int01);
-	return(NULL); // FIXME
+	AST::Node* q = divideARatio(a, b, NULL); // TODO fallback
+	if(ratio_P(q)) {
+		AST::Node* b = divremA(Ratio_getA(q), Ratio_getB(q), NULL); // TODO fallback
+		if(b)
+			q = get_cons_head(b);
+	}
+	// b*q + rem = a
+	// d = a - b*q
+	AST::Node* rem = subtractA(a, multiplyA(b, q, NULL), NULL); // TODO fallback
+	return(AST::makeCons(q, AST::makeCons(rem, NULL)));
 }
 DEFINE_BINARY_OPERATION(Conser, makeACons)
 DEFINE_SIMPLE_OPERATION(ConsP, cons_P(reduce(argument)))
