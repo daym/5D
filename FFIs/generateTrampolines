@@ -16,6 +16,7 @@ longNames = {
     "S": "char*", # or null
     "f": "float",
     "R": "AST::Node*", # or null
+    "V": "VARIANT",
 }
 
 def getLongName(c):
@@ -46,8 +47,10 @@ print("""
 #include "Evaluators/Builtins"
 #include "Numbers/Integer"
 #include "Numbers/Real"
+#include "FFIs/VariantPacker"
 
 namespace Trampolines {
+using namespace FFIs;
 
 static inline AST::Node* extr(const std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter) {
   return(iter->second);
@@ -76,6 +79,7 @@ static inline AST::Node* makeBox(AST::Node* repr, void* s) {
 static inline AST::Node* makeBoxOrNil(AST::Node* repr, void* s) {
   return(s ? makeBox(repr, s) : NULL);
 }
+static VARIANT variantEmpty = {0};
 #define unproc iter == end ? NULL : dynamic_cast<Evaluators::CProcedure*>(extr(iter++))
 #define unp iter == end ? NULL : getSomethingUseful(extr(iter++))
 #define unP iter == end ? NULL : getSomethingUsefulOrNull(extr(iter++))
@@ -89,6 +93,7 @@ static inline AST::Node* makeBoxOrNil(AST::Node* repr, void* s) {
 #define unD iter == end ? 0.0L : Evaluators::get_long_double(extr(iter++))
 #define und iter == end ? 0.0 : Evaluators::get_double(extr(iter++))
 #define unR iter == end ? NULL : extr(iter++)
+#define unV iter == end ? variantEmpty : FFIs::encodeVariantCXX(extr(iter++))
 #define inv
 #define REPRME AST::makeApplication(options, world)
 #define inp makeBox(REPRME, 
@@ -103,6 +108,7 @@ static inline AST::Node* makeBoxOrNil(AST::Node* repr, void* s) {
 #define ins AST::makeStr(
 #define inS makeStrOrNil(
 #define inR (
+#define inV FFIs::decodeVariantCXX(
 /* FIXME do inL properly */
 
 //typedef AST::Node* (jumper_t)(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end, AST::Node* options, AST::Node* world);
