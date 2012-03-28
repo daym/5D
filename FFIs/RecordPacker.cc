@@ -44,7 +44,7 @@ static size_t getSize(enum ByteOrder byteOrder, char c) {
 		case 'i': return(sizeof(int));
 		case 'f': return(sizeof(float));
 		case 'd': return(sizeof(double));
-		case 'D': return(sizeof(long double));
+		case 'g': return(sizeof(long double));
 		case 'l': return(sizeof(long));
 		case 'B': return(sizeof(unsigned char));
 		case 'H': return(sizeof(uint16_t));
@@ -70,7 +70,7 @@ static size_t getSize(enum ByteOrder byteOrder, char c) {
 		case 'i': return(4);
 		case 'f': return(4);
 		case 'd': return(8);
-		case 'D': return(16); // FIXME
+		case 'g': return(16); // FIXME
 		case 'l': return(4);
 		case 'B': return(1);
 		case 'H': return(2);
@@ -106,7 +106,7 @@ static size_t getAlignment(char c) { /* note that this is only used for MACHINE_
 4
 #endif
 );
-	case 'D': return(sizeof(long) == 8 ? 16 : 
+	case 'g': return(sizeof(long) == 8 ? 16 : 
 #ifdef WIN32
 8
 #else
@@ -219,7 +219,7 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 			PACK_BUF(FloatingPoint, result)
 			return(size);
 		}
-		case 'D': {
+		case 'g': {
 			assert(size == 16);
 			long double result = Evaluators::get_long_double(headNode);
 			PACK_BUF(FloatingPoint, result)
@@ -425,7 +425,7 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 			DECODE_BUF(FloatingPoint, value)
 			return(Numbers::internNative((Numbers::NativeFloat) value));
 		}
-	case 'D':
+	case 'g':
 		{
 			long double value;
 			DECODE_BUF(FloatingPoint, value)
