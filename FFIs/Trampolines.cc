@@ -31,7 +31,7 @@ static inline ffi_type* ffiTypeFromChar(char t) {
 	      t == 'S' ? &ffi_type_pointer :
 	      t == 'z' ? &ffi_type_pointer :
 	      t == 'Z' ? &ffi_type_pointer :
-	      t == 'D' ? &ffi_type_longdouble : 
+	      t == 'g' ? &ffi_type_longdouble : 
 	      &ffi_type_void;
 }
 static AST::Node* buildList(std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& endIter) {
