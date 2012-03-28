@@ -536,15 +536,16 @@ runIO (puts "Hello world")
 <tr><td>D</td><td>long double</td></tr>
 <tr><td>p</td><td>pointer</td></tr>
 <tr><td>P</td><td>pointer or nil</td></tr>
+<tr><td>x</td><td>padding byte (no input needed)</td></tr>
 <tr><td>[</td><td>array of the following</td></tr>
 </table>
 <p>The format string can contain endian control characters. The tail of the format string starting at the endian control character will be encoded using the given endianness.</p>
 <p>These are:</p>
 <table border="1">
 <tr><th>Character</th><th>Meaning</th></tr>
-<tr><td>=</td><td>use machine native endian</td></tr>
-<tr><td>&gt;</td><td>use big endian</td></tr>
-<tr><td>&lt;</td><td>use little endian</td></tr>
+<tr><td>=</td><td>use machine native endian (will also align primitive fields)</td></tr>
+<tr><td>&gt;</td><td>use big endian (without alignment)</td></tr>
+<tr><td>&lt;</td><td>use little endian (without alignment)</td></tr>
 </table>
 <p>Example:</p>
 <pre>
