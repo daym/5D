@@ -1,7 +1,5 @@
 #ifdef WIN32
 #include "stdafx.h"
-#include <objbase.h>
-#include <OaIdl.h> /* VARIANT */
 #endif
 #include <stdio.h>
 #include <sstream>
@@ -16,9 +14,6 @@
 #include "Evaluators/FFI"
 #include "Numbers/Integer"
 #include "Evaluators/Builtins"
-#ifdef WIN32
-#include "FFIs/VariantPacker"
-#endif
 
 namespace FFIs {
 
@@ -31,12 +26,12 @@ struct packing can used in the following modes:
 '<' means little endian mode
 '>' means big endian mode
 
-In machine mode, the format character maps to alignment and the actual C datatype for that format, see #getSize. As a special case, VARIANT is supported.
+In machine mode, the format character maps to alignment and the actual C datatype for that format, see #getSize.
 In the other modes, the format character means to use old well-known sizes (and no alignment).
 
 It is assumed that the user does the mapping of user-defined types to actual C intrinsic on hir own, it is NOT within the scope of the struct module to do so.
 
-Note that 'u' and 'U' are already taken by the FFI Trampolines.
+Note that 'V' is already taken by the FFI Trampolines (for VARIANT).
 */
 
 // TODO add =, <, > standard size without alignment! (@ with alignment)
@@ -245,14 +240,6 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 			PACK_BUF(None, result)
 			return(size);
 		}
-#ifdef WIN32
-		case 'V': {
-			VARIANT result;
-			encodeVariant(headNode, &result);
-			PACK_BUF(None, result);
-			return(size);
-		}
-#endif
 		default: {
 			std::stringstream sst;
 			sst << "unknown format \"" << formatC << "\"";
@@ -477,14 +464,6 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 			else
 				return(AST::makeStr(value));
 		}
-#ifdef WIN32
-	case 'V':
-		{
-			VARIANT value;
-			DECODE_BUF(None, value)
-			return(decodeVariant(&value));
-		}
-#endif
 	default:
 		{
 			std::stringstream sst;
