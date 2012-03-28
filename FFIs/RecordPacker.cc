@@ -84,6 +84,7 @@ static size_t getSize(enum ByteOrder byteOrder, char c) {
 		case 'Z': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
 		case 's': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
 		case 'S': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
+		case 'x': return(1); // padding
 #ifdef WIN32
 		case 'V': return(4);
 #endif
@@ -286,6 +287,11 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 				byteOrder = MACHINE_BYTE_ORDER;
 			else
 				byteOrder = MACHINE_BYTE_ORDER_ALIGNED;
+			continue;
+		}
+		if(formatC == 'x') {
+			sst << (char) 0;
+			offset += 1;
 			continue;
 		}
 		if(consNode == NULL)
