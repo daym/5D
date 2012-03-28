@@ -22,6 +22,22 @@
 
 namespace FFIs {
 
+/* design is as follows:
+
+
+struct packing can used in the following modes:
+
+'=' means machine mode
+'<' means little endian mode
+'>' means big endian mode
+
+In machine mode, the format character maps to alignment and the actual C datatype for that format, see #getSize. As a special case, VARIANT is supported.
+In the other modes, the format character means to use old well-known sizes (and no alignment).
+
+It is assumed that the user does the mapping of user-defined types to actual C intrinsic on hir own, it is NOT within the scope of the struct module to do so.
+
+*/
+
 // TODO add =, <, > standard size without alignment! (@ with alignment)
 
 static size_t getSize(enum ByteOrder byteOrder, char c) {
@@ -118,7 +134,7 @@ static size_t getAlignment(char c) { /* note that this is only used for MACHINE_
 4
 #endif
 );
-	case 'Q': return(sizeof(long) == 8 ? 8 : 
+	case 'Q': return(sizeof(unsigned long) == 8 ? 8 : 
 #ifdef WIN32
 8
 #else
@@ -173,22 +189,21 @@ static inline bool machineNoneBigEndianP(void) /* TODO pure */{
 		for(; size2 > 0; --size2, ++b) \
 			sst << *b; \
 	}
-
 static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST::Node* headNode, std::stringstream& sst) {
 	size_t size = getSize(byteOrder, formatC); 
 	uint64_t mask = ~0; 
 	uint64_t limit;
-	long value = 0;
+	long long value = 0;
 	bool B_out_of_range = false;
 	limit = (1 << (8 * size - 1));
 	mask = limit - 1;
 	if(formatC == 'b' || formatC == 'h' || formatC == 'i' || formatC == 'l' || formatC == 'q') {
-		value = (long) Evaluators::get_long(headNode); // FIXME bigger values
+		value = (long long) Evaluators::get_long_long(headNode); // FIXME bigger values
 		mask = ~mask;
 		if((value > 0 && (value & mask) != 0) || (value < 0 && ((-value-1) & mask) != 0))
 			B_out_of_range = true;
 	} else if(formatC == 'B' || formatC == 'H' || formatC == 'I' || formatC == 'L' || formatC == 'Q') {
-		value = (long) Evaluators::get_long(headNode); // FIXME bigger values
+		value = (long long) Evaluators::get_long_long(headNode); // FIXME bigger values
 		mask = (mask << 1) + 1;
 		mask = ~mask;
 		if((value > 0 && (value & mask) != 0) || (value < 0))
