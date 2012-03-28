@@ -36,6 +36,7 @@ In the other modes, the format character means to use old well-known sizes (and 
 
 It is assumed that the user does the mapping of user-defined types to actual C intrinsic on hir own, it is NOT within the scope of the struct module to do so.
 
+Note that 'u' and 'U' are already taken by the FFI Trampolines.
 */
 
 // TODO add =, <, > standard size without alignment! (@ with alignment)
@@ -63,7 +64,7 @@ static size_t getSize(enum ByteOrder byteOrder, char c) {
 		case 's': return(sizeof(char*));
 		case 'S': return(sizeof(char*));
 #ifdef WIN32
-		case 'V': return(sizeof(VARIANT));
+		case 'V': return(sizeof(int));
 #endif
 		default: return(0); /* FIXME */
 		}
@@ -89,7 +90,7 @@ static size_t getSize(enum ByteOrder byteOrder, char c) {
 		case 's': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
 		case 'S': return(sizeof(char*)); // this isn't useful if it isn't the machine pointer, so maybe think about it.
 #ifdef WIN32
-		case 'V': return(sizeof(VARIANT)); // FIXME
+		case 'V': return(4);
 #endif
 		default: return(0); /* FIXME */
 		}
