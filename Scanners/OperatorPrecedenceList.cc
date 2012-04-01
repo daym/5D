@@ -78,9 +78,9 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(19, I("_"), R);
 		cons(19, I("^"), R);
 		cons(18, I("**"), R);
-		cons(17, I("⨯"), R);
-		cons(16, I("*"), L);
-		cons(16, I("/"), L);
+		cons(17, I("*"), L);
+		cons(17, I("/"), L);
+		cons(16, I("⨯"), R);
 		// TODO div rem quot 17 L
 		cons(15, I(":"), R);
 		cons(14, I("'"), P);
