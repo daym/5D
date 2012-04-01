@@ -267,6 +267,23 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 	}
 	return(size);
 }
+static void Record_skip_format(size_t& position /* in format Str */, AST::Str* formatStr) {
+	if(position > formatStr->size)
+		position = formatStr->size;
+	for(const char* format = ((const char*) formatStr->native) + position; position < formatStr->size; ++format, ++position) {
+		char formatC = *format;
+		if(formatC == ']')
+			break;
+		if(formatC == '[') {
+			++position;
+			size_t subPosition;
+			Record_skip_format(position, formatStr);
+			format = ((const char*) formatStr->native) + position;
+			if(*format != ']')
+				throw Evaluators::EvaluationException("packRecord: format Str is invalid");
+		}
+	}
+}
 void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst, std::vector<size_t>& offsets) {
 	size_t new_offset = 0;
 	if(formatStr == NULL)
@@ -307,8 +324,13 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 				AST::Node* headNode = Evaluators::reduce(consNode->head);
 				Record_pack(byteOrder, subPosition, offset, formatStr, headNode, sst, offsets);
 			}
+			if(subPosition == position) { /* didn't do anything, so we have to fake the advance in the format string. */
+				Record_skip_format(subPosition, formatStr);
+			}
 			position = subPosition;
 			format = ((const char*) formatStr->native) + position;
+			if(*format != ']')
+				throw Evaluators::EvaluationException("packRecord: format Str is invalid");
 		} else {
 			if(byteOrder == MACHINE_BYTE_ORDER_ALIGNED) {
 				size_t align = getAlignment(formatC); 

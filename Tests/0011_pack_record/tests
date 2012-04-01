@@ -1,0 +1,3 @@
+let env = [] in (packRecord "[p]P" [(map (\i [i]) env) []])
+
+=> not []
