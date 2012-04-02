@@ -2,5 +2,7 @@
           "You can complete text by pressing the Tabulator (Tab) key on your keyboard"
           "You can define new functionals by (define sinc \\x (sin x)/x)"
           "You can chain I/O actions by appending the character ';', followed by a continuation functional. (a;\\input b)"
-          "You can add a comment by (rem \"comment\" <body>) where <body> is the non-comment part"
+          "You can add a comment by (rem \"<comment>\" <body>) where <body> is the non-comment part"
+          "You can access an existing module by (requireModule \"<name>\") relative to the shared 5D directory"
+          "You can define variables by something like (let x := 5 in x*x)"
 )
