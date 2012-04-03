@@ -1,4 +1,0 @@
-let cos = (\x 1) in
-let sin = (\x x) in
-(dispatchModule $ zip ['cos 'sin]
-                      [ cos  sin])
