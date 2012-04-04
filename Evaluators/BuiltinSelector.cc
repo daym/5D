@@ -19,6 +19,7 @@
 #include "FFIs/ProcessInfos"
 #include "Numbers/Real"
 #include "Numbers/Ratio"
+#include "Evaluators/ModuleLoader"
 
 // for now, these are kept all in the main executable. After ensuring that GC actually works across DLL boundaries, we can also extract stuff into their own extension modules.
 namespace Evaluators {
@@ -49,8 +50,7 @@ void BuiltinSelector_init(void) {
 		return;
 	didInit = 1;
 	add_static_builtin_binding(self, Symbols::Squote, &Evaluators::Quoter); /* keep at the beginning */
-	// TODO add_static_builtin_binding(self, Symbols::SrequireModule, uncurried(&RModuleLoader, self));
-	// no add_builtin_method(self, Symbols::Sdescribe, uncurried(&RInformant, self));
+	add_static_builtin_binding(self, Symbols::SrequireModule, &RModuleLoader);
 	add_static_builtin_binding(self, Symbols::Snil, NULL);
 	add_builtin_method(self, Symbols::Scolon, &Evaluators::Conser);
 	add_builtin_method(self, Symbols::SconsP, &Evaluators::ConsP);

@@ -178,7 +178,7 @@ GUI/GTKLATEXGenerator.o: GUI/GTKLATEXGenerator.cc GUI/GTKLATEXGenerator
 GUI/GTKView.o: GUI/GTKView.cc
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-Evaluators/BuiltinSelectors.o: Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector AST/AST AST/HashTable AST/Symbol AST/Symbols Evaluators/Builtins Evaluators/FFI FFIs/RecordPacker FFIs/UI FFIs/FFIs Evaluators/Evaluators Numbers/Integer Numbers/Small FFIs/ProcessInfos Numbers/Ratio
+Evaluators/BuiltinSelectors.o: Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector AST/AST AST/HashTable AST/Symbol AST/Symbols Evaluators/Builtins Evaluators/FFI FFIs/RecordPacker FFIs/UI FFIs/FFIs Evaluators/Evaluators Numbers/Integer Numbers/Small FFIs/ProcessInfos Numbers/Ratio Evaluators/ModuleLoader
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 FFIs/POSIXProcessInfos.o: FFIs/POSIXProcessInfos.cc FFIs/ProcessInfos AST/AST Evaluators/Evaluators AST/HashTable AST/Symbol Evaluators/FFI Evaluators/Builtins FFIs/Allocators
