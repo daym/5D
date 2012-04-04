@@ -180,7 +180,6 @@ static AST::HashTable setFromList(AST::Node* listNode) {
 	return(result);
 }
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
-	std::string vop = Evaluators::str(options);
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	struct REPL* self = dynamic_cast<struct REPL*>(iter->second);
