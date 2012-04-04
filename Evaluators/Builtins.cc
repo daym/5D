@@ -675,7 +675,10 @@ DEFINE_BINARY_OPERATION(LEComparer, leqA)
 DEFINE_BINARY_OPERATION(AddrLEComparer, compareAddrsLEA)
 DEFINE_BINARY_OPERATION(SymbolEqualityChecker, addrsEqualA)
 DEFINE_FULL_OPERATION(ModuleDispatcher, return(dispatchModule(fn, argument));)
-DEFINE_SIMPLE_OPERATION(ModuleBoxMaker, AST::makeBox(reduce(argument), AST::makeApplication(&ModuleBoxMaker, reduce(argument))))
+static inline AST::Node* makeModuleBox(AST::Node* argument) {
+	return AST::makeBox(argument, AST::makeApplication(&ModuleBoxMaker, argument));
+}
+DEFINE_SIMPLE_OPERATION(ModuleBoxMaker, makeModuleBox(reduce(argument)))
 
 static AST::Node* makeApplicationB(AST::Node* options, AST::Node* argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
