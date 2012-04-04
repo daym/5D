@@ -20,6 +20,6 @@ AST::Node* describe(struct REPL* self, AST::Node* options, AST::Node* key);
 AST::Node* define(struct REPL* self, AST::Node* key, AST::Node* value);
 AST::Node* import(struct REPL* self, AST::Node* options, AST::Node* filename);
 void purge(struct REPL* self);
-AST::Node* execute(struct REPL* self, AST::Node* node);
+AST::Node* evaluate(struct REPL* self, AST::Node* node);
 };
 #endif /*ndef __REPL_REPL2_H*/
