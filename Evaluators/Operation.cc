@@ -12,6 +12,7 @@
 #include "AST/HashTable"
 #include "Evaluators/Operation"
 #include "Evaluators/Evaluators"
+#include "FFIs/VariantPacker"
 
 namespace Trampolines {
 
