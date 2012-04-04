@@ -2,6 +2,7 @@
 
   * make cross product operator precedence less than product operator precedence (to make ∇⨯a⋅b = ∇⨯(a⋅b)).
   * add Ratio for rational numbers.
+  * add sum, product, anyTrue?, allTrue? .
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Sat, 24 Mar 2012 23:17:00 +0100
 

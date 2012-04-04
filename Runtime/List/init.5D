@@ -10,6 +10,8 @@ let flip = Composition.flip in
 let if = Logic.if in 
 let (||) = Logic.(||) in 
 let (&&) = Logic.(&&) in 
+let (#t) = Logic.(#t) in 
+let (#f) = Logic.(#f) in 
 let not = Logic.not in 
 let (<=) = Arithmetic.(<=) in 
 let (>=) = Arithmetic.(>=) in 
@@ -17,6 +19,7 @@ let (=) = Arithmetic.(=) in
 let (/=) = Arithmetic.(/=) in 
 let (+) = Arithmetic.(+) in 
 let (-) = Arithmetic.(-) in 
+let (*) = Arithmetic.(*) in 
 let divide = Arithmetic.divide in 
 let else = Logic.else in 
 let rec = Composition.rec in 
@@ -50,6 +53,10 @@ let zip = (zipBy (\x \y [x y])) in
 let repeatEndlessly = (rec\repeatEndlessly \v v:(repeatEndlessly v)) in 
 let transpose = (\matrix foldr (zipBy (:)) (repeatEndlessly nil) matrix) in 
 let enumerate = (\list zip (range 0 (length list) 1) list) in 
+let sum = (\list foldr (+) 0 list) in 
+let product = (\list foldr (*) 1 list) in 
+let anyTrue? = (\list foldr (||) #f list) in 
+let allTrue? = (\list foldr (&&) #t list) in 
 dispatch [['nil nil]
 ['nil? nil?]
 ['cons? cons?]
@@ -76,5 +83,9 @@ dispatch [['nil nil]
 ['take take]
 ['zip zip]
 ['transpose transpose]
-['zipBy zipBy]]
+['zipBy zipBy]
+['sum sum]
+['product product]
+['anyTrue? anyTrue?]
+['allTrue? allTrue?]]
 raiseMissingSymbolError
