@@ -5,6 +5,7 @@
 #include "AST/AST"
 #include "AST/Symbol"
 #include "Evaluators/Operation"
+#include "AST/HashTable"
 
 namespace Evaluators {
 class EvaluationException : public std::exception {
@@ -21,7 +22,7 @@ static inline AST::NodeT throwFallback(const char* text) {
 #define FALLBACK Evaluators::throwFallback("could not reduce")
 /* (AST::NodeT) reduce(makeOperation(Symbols::Sspace, fallback, argument))*/
 
-void get_free_variables(AST::NodeT root, std::set<AST::Symbol*>& freeNames);
+void get_free_variables(AST::NodeT root, AST::HashTable& freeNames);
 AST::NodeT annotate(AST::NodeT root);
 extern int fGeneration;
 static inline bool application_result_P(AST::NodeT app) {

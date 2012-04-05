@@ -60,9 +60,7 @@ static BigUnsigned unsigneds[] = {
 	BigUnsigned(16),
 };
 static std::map<AST::Symbol*, AST::NodeT> cachedDynamicBuiltins;
-static AST::NodeT get_dynamic_builtin(AST::Symbol* symbol) {
-	const char* name;
-	name = symbol->name;
+static AST::NodeT get_dynamic_builtin(const char* name) {
 	if((name[0] >= '0' && name[0] <= '9') || name[0] == '-') { /* hello, number */
 		long int value;
 		char* endptr = NULL;
@@ -92,32 +90,31 @@ static AST::NodeT get_dynamic_builtin(AST::Symbol* symbol) {
 				for(; *nrString; ++nrString) {
 					char c = (*nrString);
 					if(c < '0' || c > '9')
-						return(symbol);
+						return(NULL);
 					if(c != '0')
 						B_zero = false;
 					v = v * unsigneds[10] + unsigneds[c - '0'];
 				}
 				return(new Integer(v, B_zero ? Integer::zero : B_negative ? Integer::negative : Integer::positive));
-				//return(symbol); // TODO allow to hook into this.
 			}
 		}
 		return(Numbers::internNative((NativeInt) value));
 	} else
 		return(NULL);
 }
-AST::NodeT provide_dynamic_builtins_impl(AST::NodeT body, std::set<AST::Symbol*>::const_iterator end_iter, std::set<AST::Symbol*>::const_iterator iter) {
+AST::NodeT provide_dynamic_builtins_impl(AST::NodeT body, AST::HashTable::const_iterator end_iter, AST::HashTable::const_iterator iter) {
 	if(iter == end_iter)
 		return(body);
 	else {
-		AST::Symbol* name = *iter;
+		const char* name = iter->first;
 		AST::NodeT value = get_dynamic_builtin(name);
 		++iter;
-		return(value ? Evaluators::close(name, value, provide_dynamic_builtins_impl(body, end_iter, iter)) : provide_dynamic_builtins_impl(body, end_iter, iter));
+		return(value ? Evaluators::close(AST::symbolFromStr(name), value, provide_dynamic_builtins_impl(body, end_iter, iter)) : provide_dynamic_builtins_impl(body, end_iter, iter));
 	}
 }
 AST::NodeT provide_dynamic_builtins(AST::NodeT body) {
-	std::set<AST::Symbol*> freeNames;
-	std::set<AST::Symbol*>::const_iterator end_iter;
+	AST::HashTable freeNames;
+	AST::HashTable::const_iterator end_iter = freeNames.end();
 	get_free_variables(body, freeNames);
 	end_iter = freeNames.end();
 	return(provide_dynamic_builtins_impl(body, end_iter, freeNames.begin()));
