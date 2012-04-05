@@ -40,10 +40,10 @@ CProcedure::CProcedure(void* native, AST::NodeT aRepr, int aArgumentCount, int a
 	fSignature(aSignature)
 {
 	assert(fReservedArgumentCount == 0 || fReservedArgumentCount == 1);
-	AST::Symbol* aSym = dynamic_cast<AST::Symbol*>(aRepr);
-	std::string v = aSym ? aSym->name : str(aRepr);
-	if(v == "<node>")
-		abort();
+	//AST::Symbol* aSym = dynamic_cast<AST::Symbol*>(aRepr);
+	//std::string v = aSym ? aSym->name : str(aRepr);
+	//if(v == "<node>")
+	//	abort();
 }
 REGISTER_STR(CurriedOperation, {
 	std::stringstream sst;

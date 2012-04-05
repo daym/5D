@@ -30,19 +30,18 @@ static void print_indentation(std::ostream& output, int indentation) {
 void print_S_Expression_CXX(std::ostream& output, int& position, int indentation, AST::NodeT node) {
 	bool B_split_cons_items = true;
 	node = repr(node);
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
-	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);	
+	const char* symbolName;
 	if(node == NULL)
 		print_text(output, position, "nil");
-	else if(symbolNode)
-		print_text(output, position, symbolNode->name);
-	else if(consNode) {
+	else if((symbolName = AST::get_symbol1_name(node)) != NULL)
+		print_text(output, position, symbolName);
+	else if(cons_P(node)) {
 		int index = 0;
 		output << '(';
 		++position;
-		for(; consNode; ++index, consNode = Evaluators::evaluateToCons(consNode->tail)) {
-			print_S_Expression_CXX(output, position, indentation, consNode->head);
-			if(consNode->tail) {
+		for(; node; ++index, node = Evaluators::evaluateToCons(get_cons_tail(node))) {
+			print_S_Expression_CXX(output, position, indentation, get_cons_head(node));
+			if(get_cons_tail(node)) {
 				if(B_split_cons_items && index >= 1) {
 					if(index == 1) {
 						output << std::endl;

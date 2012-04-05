@@ -68,7 +68,7 @@ AST::NodeT SExpressionParser::parse_S_Expression(void) {
 		/* TODO do this without tokenizing? How? */
 		if(scanner->input_value == Symbols::Sleftparen) {
 			result = parse_S_list(true);
-		} else if(dynamic_cast<AST::Symbol*>(scanner->input_value) != NULL) {
+		} else if(AST::get_symbol1_name(scanner->input_value) != NULL) {
 			result = scanner->consume(); // & whitespace.
 		} else {
 			/* numbers, strings */

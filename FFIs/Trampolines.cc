@@ -48,8 +48,7 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keywor
 	ffi_cif cif;
 	ffi_abi abi = FFI_DEFAULT_ABI;
 	ffi_type** argTypes;
-	AST::Symbol* signature = proc->fSignature;
-	const char* sig = signature->name;
+	const char* sig = AST::get_symbol1_name(proc->fSignature);
 	//abi = (*sig == 'P') ? FFI_STDCALL : FFI_DEFAULT_API; TODO
 	if(*sig)
 		++sig;// skip calling convention
@@ -88,7 +87,7 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keywor
 		AST::NodeT result = (cons_P(results) ? get_cons_head(results) : NULL);
 		return Evaluators::makeIOMonad(result, endIter->second);
 	}
-	fprintf(stderr, "warning: could not find marshaller for %s\n", signature->name);
+	fprintf(stderr, "warning: could not find marshaller for %s\n", sig);
 	return Evaluators::makeIOMonad(NULL, endIter->second);
 }
 

@@ -31,11 +31,10 @@ bool quote_P(AST::NodeT root);
 extern int recursionLevel;
 AST::NodeT reduce1(AST::NodeT term);
 static inline AST::NodeT reduce(AST::NodeT term) {
-	AST::Application* a;
 	AST::NodeT result;
 	//std::string tv = Evaluators::str(term);
 	//fprintf(stderr, "DEBUG: (%d) reducing %s\n", recursionLevel, tv.c_str());
-	if((a = dynamic_cast<AST::Application*>(term)) == NULL)
+	if(!AST::application_P(term))
 		result = term;
 	else {
 		if(application_result_P(term))

@@ -23,14 +23,8 @@ Scanners::OperatorPrecedenceList* default_operator_precedence_list(void) {
 	return(result);
 }
 static AST::NodeT access_module(AST::NodeT fn, AST::NodeT argument) {
-	Evaluators::CurriedOperation* o = dynamic_cast<Evaluators::CurriedOperation*>(fn);
-	Evaluators::CurriedOperation* o2 = dynamic_cast<Evaluators::CurriedOperation*>(o->fOperation);
-	AST::NodeT body = o2->fArgument;
-	// filename is the second argument, so ignore.
-	std::string v = Evaluators::str(o->fArgument);
-	//fprintf(stderr, "accessing module %s\n", v.c_str());
+	AST::NodeT body = get_curried_operation_argument(get_curried_operation_operation(fn));
 	AST::NodeT result = Evaluators::reduce(AST::makeApplication(body, argument));
-	//fprintf(stderr, "end accessing module %s\n", v.c_str());
 	return(result);
 }
 
@@ -115,7 +109,7 @@ AST::NodeT import_module(AST::NodeT options, AST::NodeT fileNameNode) {
 	std::string filename = "";
 	std::string realFilename = "";
 	std::string moduleKey = "";
-	if(FFIs::absolute_path_P(dynamic_cast<AST::Str*>(fileNameNode))) {
+	if(FFIs::absolute_path_P(fileNameNode)) {
 		filename = Evaluators::get_string(fileNameNode);
 		moduleKey = getModuleFileKey(filename, realFilename);
 	} else for(std::vector<std::string>::const_iterator iterSearchPaths = searchPaths.begin(); iterSearchPaths != endSearchPaths; ++iterSearchPaths) {
