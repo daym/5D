@@ -24,9 +24,8 @@ AST::NodeT getFromEnvironment(Environment* environment, AST::Symbol* key, bool& 
 	if(environment && key) {
 		Environment::const_iterator iter = environment->find(key->name);
 		if(iter != environment->end()) {
-			AST::Cons* list = dynamic_cast<AST::Cons*>(iter->second);
 			B_found = true;
-			return(AST::get_cons_head(list));
+			return(AST::get_cons_head(iter->second));
 		}
 	}
 	return(NULL);

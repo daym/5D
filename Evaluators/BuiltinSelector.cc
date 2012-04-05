@@ -132,17 +132,20 @@ void BuiltinSelector_init(void) {
 	self[Symbols::Sexports->name] = consFromKeys(self.begin(), self.end());
 }
 
-static AST::NodeT getEntry(AST::Symbol* name) {
-	if(!name || !name->name)
+static AST::NodeT getEntry(AST::NodeT sym) {
+	if(nil_P(sym)) { /* ?!?!?! */
 		return(NULL);
-	AST::HashTable::const_iterator iter = self.find(name->name);
-	if(iter == self.end())
-		return(NULL);
-	return(iter->second);
+	} else {
+		const char* name = AST::get_symbol1_name(sym);
+		AST::HashTable::const_iterator iter = self.find(name);
+		if(iter == self.end())
+			return(NULL);
+		return(iter->second);
+	}
 }
 
 // FIXME error checking
-DEFINE_SIMPLE_OPERATION(BuiltinGetter, getEntry(dynamic_cast<AST::Symbol*>(Evaluators::reduce(argument))))
+DEFINE_SIMPLE_OPERATION(BuiltinGetter, getEntry(Evaluators::reduce(argument)))
 REGISTER_BUILTIN(BuiltinGetter, 1, 0, Symbols::SBuiltins)
 
 };
