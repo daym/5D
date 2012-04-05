@@ -68,9 +68,8 @@ static AST::NodeT P##_execute(AST::NodeT fn, AST::NodeT argument) { \
 #define DEFINE_BINARY_OPERATION(P, B) \
 extern Evaluators::CProcedure P; \
 static AST::NodeT P##_execute(AST::NodeT fn, AST::NodeT argument) { \
-	Evaluators::CurriedOperation* c = dynamic_cast<Evaluators::CurriedOperation*>(fn); \
-	assert(c); \
-	return(B(c->fArgument, argument, c->fOperation)); \
+	assert(Evaluators::curried_operation_P(fn)); \
+	return(B(Evaluators::get_curried_operation_argument(fn), argument, Evaluators::get_curried_operation_operation(fn))); \
 }
 
 

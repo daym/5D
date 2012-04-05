@@ -833,14 +833,14 @@ CXXArguments CXXfromArgumentsU(AST::NodeT options, AST::NodeT argument, int back
 			B_pending_value = false;
 		} else {
 			if(B_pending_value)
-				result.push_front(std::pair<AST::Keyword*, AST::NodeT>(NULL, p));
+				result.push_front(std::pair<AST::NodeT, AST::NodeT>(NULL, p));
 			p = v;
 			B_pending_value = true;
 		}
 	}
 	if(B_pending_value) {
 		B_pending_value = false;
-		result.push_front(std::pair<AST::Keyword*, AST::NodeT>(NULL, p));
+		result.push_front(std::pair<NodeT, AST::NodeT>(NULL, p));
 	}
 	return(result);
 }
