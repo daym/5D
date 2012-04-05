@@ -5,8 +5,6 @@ macro to make dispatch lists easier to write?
 
 = Bugs =
 
-eval $ runIO $ labs (-5.2)
-0
 loading modules (for example the one where GetLastError! is in) causes GetLastError() to be clobbered.
 
 = Builtin Types =
@@ -173,7 +171,7 @@ DECIMAL type (suffix m or M)
 
 = OS module =
 
-OS.startFile
+OS.openFile!
 
 = Object Orientation =
 
