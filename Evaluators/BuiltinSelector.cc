@@ -1,6 +1,11 @@
+#ifdef WIN32
+#include "stdafx.h"
+#endif
 #include <stdio.h>
 #ifdef WIN32
+#ifndef PATH_MAX
 #define PATH_MAX 4096
+#endif
 #else
 #include <limits.h>
 #endif
@@ -123,7 +128,7 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, AST::symbolFromStr("parseMathStr"), &Evaluators::RStrMathParser);
 	add_builtin_method(self, AST::symbolFromStr("dispatchModule"), &Evaluators::ModuleDispatcher);
 	add_builtin_method(self, AST::symbolFromStr("makeModuleBox"), &Evaluators::ModuleBoxMaker);
-	add_builtin_method(self, AST::symbolFromStr("REPLMethods"), &REPL::REPLMethodGetter);
+	add_builtin_method(self, AST::symbolFromStr("REPLMethods"), &REPLX::REPLMethodGetter);
 	self[Symbols::Sexports->name] = consFromKeys(self.begin(), self.end());
 }
 

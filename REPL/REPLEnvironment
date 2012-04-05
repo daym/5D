@@ -17,6 +17,7 @@
 namespace GUI {
 };
 namespace REPLX {
+struct REPL;
 typedef AST::Node EnvEntry; /* actually Application, but we don't want the client to assume silly things */
 using namespace GUI;
 
@@ -75,6 +76,7 @@ static void getEnvEntry(AST::Node* entry, AST::Node*& name, AST::Node*& body, AS
 	next = get_abstraction_body(abstraction);
 	body = get_application_operand(entry);
 }
+
 AST::Node* REPL_get_definition_backwards(struct REPL* self, AST::Symbol* name, size_t backOffset) {
 	// envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL);
 	AST::Node* x_name;
@@ -358,7 +360,7 @@ static void REPL_init_builtins(struct REPL* self) {
 
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("REPL"), AST::makeAbstraction(Symbols::Sa, 
 		AST::makeApplication(AST::makeApplication(
-			&::REPL::REPLMethodGetter, // AST::makeApplication(&Evaluators::BuiltinGetter, AST::symbolFromStr("REPLMethods")), 
+			&REPLX::REPLMethodGetter, // AST::makeApplication(&Evaluators::BuiltinGetter, AST::symbolFromStr("REPLMethods")), 
 			Symbols::Sa), AST::makeBox(self, AST::symbolFromStr("REPL")))));
 	REPL_add_static_builtin_binding(self, Symbols::SrequireModule, &ModuleLoader);
 	REPL_add_builtin_method(self, Symbols::SBuiltins, &Evaluators::BuiltinGetter);

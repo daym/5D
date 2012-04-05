@@ -1,7 +1,7 @@
 [Project]
 FileName=5D.dev
 Name=5D
-UnitCount=90
+UnitCount=91
 Type=0
 Ver=1
 ObjFiles=
@@ -914,6 +914,16 @@ FileName=..\Numbers\Ratio
 Folder=5D
 Compile=0
 Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit91]
+FileName=..\REPL\ExtREPL.cc
+CompileCpp=1
+Folder=5D
+Compile=1
+Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=

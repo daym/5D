@@ -10,8 +10,6 @@ DECLARE_SIMPLE_OPERATION(RDefiner)
 DECLARE_SIMPLE_OPERATION(ROperatorPrecedenceListGetter)
 DECLARE_SIMPLE_OPERATION(RPurger)
 DECLARE_SIMPLE_OPERATION(RExecutor)
-};
-namespace REPL {
 
 static AST::Node* getMethod(AST::Node* name) {
 	if(name == Symbols::SgetOperatorPrecedenceListexclam)
