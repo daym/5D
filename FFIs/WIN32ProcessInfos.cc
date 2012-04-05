@@ -8,15 +8,15 @@
 #include "FFIs/Allocators"
 
 namespace FFIs {
-static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
+static AST::NodeT get_arch_dep_path(AST::NodeT nameNode) {
 	return(nameNode);
 }
-bool absolute_path_P(AST::Str* name) {
+bool absolute_path_P(AST::NodeT name) {
 	if(name == NULL) // an empty path is not an absolute path.
 		return(false);
-	if(name->size < 2)
-		return(false);
-	char* c = (char*) name->native;
+	//if(name->size < 2)
+	//	return(false);
+	char* c = Evaluators::get_string(name);
 	if(*c != '\\' && *c != '/' && *(c + 1) != ':')
 		return(false);
 	if(*c == '\\' || *c == '/')
@@ -96,8 +96,8 @@ DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 DEFINE_SIMPLE_OPERATION(EnvironInterner, wrapInternEnviron(Evaluators::reduce(argument)))
 DEFINE_SIMPLE_OPERATION(EnvironFromList, environFromList(argument))
 
-DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(Evaluators::reduce(argument))))
-DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(dynamic_cast<AST::Str*>(Evaluators::reduce(argument))))
+DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(Evaluators::reduce(argument)))
+DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(Evaluators::reduce(argument)))
 
 REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath!"))
 REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"))

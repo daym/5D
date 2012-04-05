@@ -77,7 +77,7 @@ static void getEnvEntry(AST::NodeT entry, AST::NodeT& name, AST::NodeT& body, AS
 	body = get_application_operand(entry);
 }
 
-AST::NodeT REPL_get_definition_backwards(struct REPL* self, AST::Symbol* name, size_t backOffset) {
+AST::NodeT REPL_get_definition_backwards(struct REPL* self, AST::NodeT /*Symbol*/ name, size_t backOffset) {
 	// envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL);
 	AST::NodeT x_name;
 	AST::NodeT x_body;
@@ -176,10 +176,10 @@ DEFINE_REPL_OPERATION(RImporter, {
 static AST::HashTable setFromList(AST::NodeT listNode) {
 	AST::HashTable result;
 	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
-		AST::Symbol* name = dynamic_cast<AST::Symbol*>(node->head);
+		const char* name = AST::get_symbol1_name(AST::get_cons_head(node));
 		// TODO error handling
 		if(name)
-			result[GCx_strdup(name->name)] = NULL;
+			result[GCx_strdup(name)] = NULL;
 	}
 	return(result);
 }
@@ -213,18 +213,19 @@ static AST::NodeT REPL_import(AST::NodeT options, AST::NodeT argument) {
 	AST::Cons* usedExports = NULL;
 	blacklist[Symbols::Sexports->name] = NULL;
 	for(AST::Cons* node = Evaluators::evaluateToCons(exports); node; node = Evaluators::evaluateToCons(node->tail)) {
-		AST::Symbol* xname = dynamic_cast<AST::Symbol*>(node->head);
-		if(xname && (whitelist.empty() || whitelist.find(xname->name) != whitelist.end()) && blacklist.find(xname->name) == blacklist.end()) {
-			AST::NodeT xbody = AST::makeApplication(body, Evaluators::quote(xname));
+		AST::NodeT key = get_cons_head(node);
+		const char* xname = AST::get_symbol1_name(key);
+		if(xname && (whitelist.empty() || whitelist.find(xname) != whitelist.end()) && blacklist.find(xname) == blacklist.end()) {
+			AST::NodeT xbody = AST::makeApplication(body, Evaluators::quote(key));
 			//REPL_prepare(self, xbody);
 			if(prefix && prefix[0]) {
 				std::stringstream sst;
-				sst << prefix << xname->name;
+				sst << prefix << xname;
 				std::string v = sst.str();
-				xname = AST::symbolFromStr(v.c_str());
+				key = AST::symbolFromStr(v.c_str());
 			}
-			REPL_add_to_environment(self, xname, xbody);
-			usedExports = AST::makeCons(xname, usedExports);
+			REPL_add_to_environment(self, key, xbody);
+			usedExports = AST::makeCons(key, usedExports);
 		}
 	}
 	return(Evaluators::makeIOMonad(usedExports, world));
@@ -263,8 +264,8 @@ static AST::NodeT REPL_describe(AST::NodeT options, AST::NodeT argument) {
 	AST::NodeT world = iter->second;
 	AST::NodeT backOffsetNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("@backOffset:"));
 	int backOffset = backOffsetNode ? Evaluators::get_int(backOffsetNode) : 0;
-	if(dynamic_cast<AST::Symbol*>(argument) != NULL) {
-		AST::NodeT body = REPL_get_definition_backwards(self, dynamic_cast<AST::Symbol*>(argument), backOffset);
+	if(AST::get_symbol1_name(argument) != NULL) {
+		AST::NodeT body = REPL_get_definition_backwards(self, argument, backOffset);
 		return(Evaluators::makeIOMonad(body, world));
 	} else
 		return(Evaluators::makeIOMonad(argument, world));

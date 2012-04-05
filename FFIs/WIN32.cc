@@ -31,11 +31,11 @@ AST::NodeT wrapAccessLibrary(AST::NodeT options, AST::NodeT argument) {
 	++iter;
 	assert(iter != endIter);
 	assert(iter->first == NULL);
-	AST::Str* libName = dynamic_cast<AST::Str*>(iter->second);
+	AST::NodeT libName = iter->second; // Str
 	++iter;
 	assert(iter != endIter);
 	assert(iter->first == NULL);
-	AST::Symbol* signature = dynamic_cast<AST::Symbol*>(iter->second);
+	AST::NodeT signature = iter->second; // Symbol
 	++iter;
 	assert(iter != endIter);
 	assert(iter->first == NULL);
@@ -45,7 +45,7 @@ AST::NodeT wrapAccessLibrary(AST::NodeT options, AST::NodeT argument) {
 	void* nativeProc = body && fnName ? (void*) GetProcAddress((HMODULE) body, Evaluators::get_string(fnName)) : NULL; // FIXME
 	// filename is the second argument, so ignore.
 	//return(Evaluators::reduce(AST::makeApplication(body, argument)));
-	return(new CProcedure(nativeProc, AST::makeApplication(AST::makeApplication(AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), libName), quote(signature)), fnName), strlen(signature->name) - 2 + 1/*monad*/, 0, signature));
+	return(new CProcedure(nativeProc, AST::makeApplication(AST::makeApplication(AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), libName), quote(signature)), fnName), strlen(AST::get_symbol_name(signature)) - 2 + 1/*monad*/, 0, signature));
 }
 AST::NodeT wrapLoadLibraryC(AST::NodeT nameS) {
 	const char* name = Evaluators::get_string(nameS);
@@ -60,9 +60,6 @@ AST::NodeT wrapLoadLibraryC(AST::NodeT nameS) {
 }
 static AST::NodeT wrapLoadLibrary(AST::NodeT options, AST::NodeT filename) {
 	filename = reduce(filename);
-	//std::list<std::pair<AST::Keyword*, AST::NodeT> > arguments = Evaluators::CXXfromArguments(options, filename);
-	// struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
-	//assert(self);
 	AST::NodeT body = wrapLoadLibraryC(filename);
 	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&SharedLibrary, body)), filename)));
 }

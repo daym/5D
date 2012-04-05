@@ -15,8 +15,8 @@ static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
 	GtkMessageType cType = GTK_MESSAGE_INFO;
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	AST::NodeT parent = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("parent:"));
-	if(parent && dynamic_cast<AST::Box*>(parent) != NULL) {
-		cParentWindow = (GtkWindow*) dynamic_cast<AST::Box*>(parent)->native;
+	if(!nil_P(parent)) {
+		cParentWindow = (GtkWindow*) Evaluators::get_pointer(parent);
 	}
 	AST::NodeT type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("type:"));
 	cButtons = (type_ == AST::symbolFromStr("ok")) ? GTK_BUTTONS_OK:

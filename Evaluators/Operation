@@ -41,8 +41,8 @@ static StrRegistration##typ fStrRegistration##typ;
 struct CProcedure : AST::Box {
 	int fArgumentCount; // sigh. <0: can also do keyword arguments.
 	int fReservedArgumentCount; // how many not to repr.
-	AST::Symbol* fSignature;
-        CProcedure(void* native, AST::NodeT aRepr, int aArgumentCount, int aReservedArgumentCount, AST::Symbol* aSignature);
+	AST::NodeT /*Symbol**/ fSignature;
+        CProcedure(void* native, AST::NodeT aRepr, int aArgumentCount, int aReservedArgumentCount, AST::NodeT /*Symbol**/ aSignature);
 };
 #define DECLARE_SIMPLE_OPERATION(P) \
 extern Evaluators::CProcedure P;

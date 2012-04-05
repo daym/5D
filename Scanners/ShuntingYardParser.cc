@@ -233,7 +233,7 @@ int ShuntingYardParser::get_operator_precedence_and_associativity(AST::NodeT nod
 	AST::Cons* c = Evaluators::evaluateToCons(node);
 	if(c) // macro-like operators have their operator symbol as the head
 		node = c->head;
-	assert(dynamic_cast<AST::Symbol*>(node) != NULL);
+	assert(AST::get_symbol1_name(node) != NULL);
 	outAssociativity = Symbols::Sright;
 	return(OPL->get_operator_precedence_and_associativity((AST::Symbol*) node, outAssociativity));
 }

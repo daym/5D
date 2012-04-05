@@ -22,7 +22,8 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*
 typedef AST::RawHashTable<const char*, jumper_t*, AST::hashstr, AST::eqstr> HashTable;
 #ifdef WIN32
 AST::NodeT jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& endIter, AST::NodeT options, AST::NodeT world) {
-	fprintf(stderr, "warning: could not find marshaller for %s\n", proc->fSignature->name);
+	std::string v = Evaluators::str(proc->fSignature);
+	fprintf(stderr, "warning: could not find marshaller for %s\n", v.c_str());
 	return Evaluators::makeIOMonad(NULL, endIter->second);
 }
 #endif
@@ -32,7 +33,7 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keywor
 
 namespace Evaluators {
 
-CProcedure::CProcedure(void* native, AST::NodeT aRepr, int aArgumentCount, int aReservedArgumentCount, AST::Symbol* aSignature) : 
+CProcedure::CProcedure(void* native, AST::NodeT aRepr, int aArgumentCount, int aReservedArgumentCount, AST::NodeT aSignature) : 
 	AST::Box(native, aRepr),
 	fArgumentCount(aArgumentCount),
 	fReservedArgumentCount(aReservedArgumentCount),
@@ -86,7 +87,7 @@ AST::NodeT call_builtin(AST::NodeT fn, AST::NodeT argument) {
 		return Evaluators::makeCurriedOperation(fn, argument);
 	}
 	//printf("call %p\n", proc2->native);
-	if(proc2->fSignature == NULL) { // probably wants the arguments unevaluated, so stop messing with them.
+	if(nil_P(proc2->fSignature)) { // probably wants the arguments unevaluated, so stop messing with them.
 		AST::NodeT (*proc3)(AST::NodeT, AST::NodeT) = (AST::NodeT (*)(AST::NodeT, AST::NodeT)) proc2->native;
 		return((*proc3)(fn, argument));
 	} else

@@ -194,9 +194,8 @@ static AST::NodeT jumpT(Evaluators::CProcedure* proc, AST::NodeT options, AST::N
 		initMarshallers();
 	assert(iter != endIter);
 	assert(iter->first == NULL);
-	AST::Symbol* signature = proc->fSignature;
 	--endIter; /* hide the world */
-	HashTable::const_iterator iterMarshaller = fMarshallers.find(signature->name);
+	HashTable::const_iterator iterMarshaller = fMarshallers.find(AST::get_symbol_name(proc->fSignature)/* TODO check NULL */);
 	if(iterMarshaller == fMarshallers.end()) {
 		return jumpFFI(proc, iter, endIter, options, world);
 	} else
