@@ -37,9 +37,8 @@ static AST::NodeT internEnviron(WCHAR* envp) {
 		return(NULL);
 }
 static AST::NodeT wrapInternEnviron(AST::NodeT argument) {
-	AST::Box* envp = dynamic_cast<AST::Box*>(argument);
 	// TODO check whether it worked? No.
-	return internEnviron((WCHAR*) envp->native);
+	return internEnviron((WCHAR*) Evaluators::get_pointer(argument));
 }
 static AST::Box* environFromList(AST::NodeT argument) {
 	int count = 0;

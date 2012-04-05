@@ -10,12 +10,13 @@
 
 namespace FFIs {
 
-static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
+static AST::Str* get_arch_dep_path(AST::NodeT nameNode) {
 	if(nameNode == NULL)
 		return(NULL);
+	const char* name = Evaluators::get_string(nameNode);
 	// keep that result constant and invariant.
 	std::stringstream sst;
-	std::string name((char*) nameNode->native, nameNode->size);
+	//std::string name((char*) nameNode->native, nameNode->size);
 	sst << "/lib/";
 	struct utsname buf;
 	if(uname(&buf) == -1)
@@ -26,12 +27,10 @@ static AST::Str* get_arch_dep_path(AST::Str* nameNode) {
 	sst << name;
 	return(AST::makeStrCXX(sst.str()));
 }
-bool absolute_path_P(AST::Str* name) {
-	if(name == NULL) // an empty path is not an absolute path.
+bool absolute_path_P(AST::NodeT nameN) {
+	char* c = nameN ? Evaluators::get_string(nameN) : NULL;
+	if(!c || !*c)
 		return(false);
-	if(name->size < 1)
-		return(false);
-	char* c = (char*) name->native;
 	return(*c == '/');
 }
 static AST::NodeT internEnviron(const char** envp) {
@@ -43,9 +42,7 @@ static AST::NodeT internEnviron(const char** envp) {
 		return(NULL);
 }
 static AST::NodeT wrapInternEnviron(AST::NodeT argument) {
-	AST::Box* envp = dynamic_cast<AST::Box*>(argument);
-	// TODO check whether it worked? No.
-	return internEnviron((const char**) envp->native);
+	return internEnviron((const char**) Evaluators::get_pointer(argument));
 }
 static AST::Box* environFromList(AST::NodeT argument) {
 	int count = 0;
@@ -96,8 +93,8 @@ DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 DEFINE_SIMPLE_OPERATION(EnvironInterner, wrapInternEnviron(Evaluators::reduce(argument)))
 DEFINE_SIMPLE_OPERATION(EnvironFromList, environFromList(argument))
 
-DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(dynamic_cast<AST::Str*>(Evaluators::reduce(argument))))
-DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(dynamic_cast<AST::Str*>(Evaluators::reduce(argument))))
+DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(Evaluators::reduce(argument)))
+DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(Evaluators::reduce(argument)))
 
 REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath!"))
 REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"))

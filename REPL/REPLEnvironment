@@ -395,18 +395,10 @@ void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::N
 	if(REPL_add_to_environment_simple_end(self, name, value, self->fTailUserEnvironmentFrontier))
 		self->fTailUserEnvironmentFrontier = envEntryGetTail(self->fTailUserEnvironmentFrontier);
 }
-static AST::NodeT uncacheNodeResult(void* userData, AST::NodeT node) {
-	if(application_P(node)) {
-		AST::Application* app = dynamic_cast<AST::Application*>(node);
-		app->resultGeneration = 0; /* make sure it is not used */
-		return(app);
-	} else
-		return(node);
-}
 static AST::NodeT REPL_close_environment(struct REPL* self, AST::NodeT node) {
 	if(self->fTailUserEnvironmentFrontier) {
 		if(increaseGeneration() == 1) { /* overflow */
-			mapTree(NULL, uncacheNodeResult, Evaluators::evaluateToCons(self->fTailUserEnvironment)->tail);
+			mapTree(NULL, AST::uncacheNodeResult, Evaluators::evaluateToCons(self->fTailUserEnvironment)->tail);
 		}
 		envEntrySetTail(self->fTailUserEnvironmentFrontier, node);
 		return(envEntryGetTail(self->fTailEnvironment));

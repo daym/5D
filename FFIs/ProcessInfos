@@ -8,7 +8,7 @@ DECLARE_SIMPLE_OPERATION(EnvironGetter)
 DECLARE_SIMPLE_OPERATION(EnvironInterner)
 DECLARE_SIMPLE_OPERATION(EnvironFromList)
 char* get_absolute_path(const char* filename);
-bool absolute_path_P(AST::Str* name);
+bool absolute_path_P(AST::NodeT name);
 
 };
 #endif /* ndef __FFI_PROCESSINFOS_H */

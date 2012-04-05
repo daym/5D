@@ -52,8 +52,8 @@ ShuntingYardParser::ShuntingYardParser(void) {
 	scanner = new Scanner();
 }
 AST::NodeT ShuntingYardParser::parse_abstraction_parameter(void) {
-	AST::Symbol* parameter;
-	if((parameter = dynamic_cast<AST::Symbol*>(scanner->input_value)) == NULL) {
+	AST::NodeT parameter = scanner->input_value;
+	if(!AST::get_symbol1_name(parameter)) {
 		scanner->raise_error("<symbol>", str(scanner->input_value));
 		return(NULL);
 	} else {
@@ -66,7 +66,7 @@ AST::NodeT ShuntingYardParser::parse_abstraction_parameter(void) {
 	}
 }
 bool ShuntingYardParser::macro_standin_P(AST::NodeT op1) {
-	return(dynamic_cast<AST::Symbol*>(op1) == NULL);
+	return(!AST::get_symbol1_name(op1));
 }
 AST::NodeT ShuntingYardParser::parse_value(void) {
 	// TODO maybe at least allow other macros?
@@ -94,7 +94,7 @@ AST::NodeT ShuntingYardParser::parse_define_macro(AST::NodeT operator_) {
 	//return(AST::makeCons(operator_, AST::makeCons(parameter, NULL)));
 	if(symbol_P(parameter))
 		parameter = quote(parameter);
-	if(dynamic_cast<AST::Abstraction*>(body))
+	if(abstraction_P(body))
 		body = quote(body);
 	return(AST::makeApplication(AST::makeApplication(operator_, parameter), body));
 }
@@ -350,7 +350,7 @@ void ShuntingYardParser::enter_abstraction(AST::Symbol* name) {
 	bound_symbols = AST::makeCons(name, bound_symbols);
 }
 void ShuntingYardParser::leave_abstraction(AST::Symbol* name) {
-	assert(bound_symbols && dynamic_cast<AST::Symbol*>(bound_symbols->head) == name);
+	assert(bound_symbols && bound_symbols->head == name);
 	AST::NodeT n = bound_symbols->tail;
 	bound_symbols->tail = NULL;
 	bound_symbols = (AST::Cons*) n;

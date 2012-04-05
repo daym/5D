@@ -468,9 +468,9 @@ void REPL_load_tips(struct REPL* self) {
 		parser.push(input_file, 0, "<stdin>");
 		contents = parser.parse_S_Expression();
 		fclose(input_file);
-		AST::Cons* contentsCons = dynamic_cast<AST::Cons*>(contents);
+		AST::Cons* contentsCons = Evaluators::evaluateToCons(contents);
 		if(contentsCons && contentsCons->head == AST::symbolFromStr("tips5DV1"))
-			tips = dynamic_cast<AST::Cons*>(contentsCons->tail);
+			tips = Evaluators::evaluateToCons(contentsCons->tail);
 		else
 			tips = NULL;
 	}

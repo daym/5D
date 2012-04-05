@@ -99,6 +99,14 @@ static inline bool cons_P(AST::NodeT node) {
 static inline bool nil_P(AST::NodeT node) {
 	return(node == NULL);
 }
+static inline AST::NodeT uncacheNodeResult(void* userData, AST::NodeT node) {
+	if(application_P(node)) {
+		AST::Application* app = dynamic_cast<AST::Application*>(node);
+		app->resultGeneration = 0; /* make sure it is not used */
+		return(app);
+	} else
+		return(node);
+}
 
 
 }; /* namespace AST */
