@@ -94,7 +94,7 @@ Evaluators/Evaluators.o: Evaluators/Evaluators.cc FFIs/Allocators Evaluators/Eva
 FFIs/Trampolines.o: FFIs/Trampolines.cc FFIs/RecordPacker Evaluators/Evaluators Numbers/Integer Numbers/Small Numbers/Ratio
 Evaluators/Operation.o: Evaluators/Operation.cc Evaluators/Operation Evaluators/Evaluators AST/AST AST/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList FFIs/Trampolines FFIs/RecordPacker Numbers/Ratio
 	$(CC) -O2 -Wall -I. -fno-strict-overflow -c -o $@ $< 
-Evaluators/Builtins.o: Evaluators/Builtins.cc FFIs/Allocators AST/HashTable Scanners/MathParser Evaluators/Builtins Numbers/Integer Numbers/Real AST/AST AST/Symbol AST/Keyword FFIs/FFIs  Scanners/OperatorPrecedenceList Numbers/Small Evaluators/Operation Numbers/Ratio
+Evaluators/Builtins.o: Evaluators/Builtins.cc FFIs/Allocators AST/HashTable Scanners/MathParser Evaluators/Builtins Numbers/Integer Numbers/Real AST/AST AST/Symbol AST/Keyword FFIs/FFIs  Scanners/OperatorPrecedenceList Numbers/Small Evaluators/Operation Numbers/Ratio Evaluators/Evaluators
 Evaluators/Backtracker.o: Evaluators/Backtracker.cc Evaluators/Backtracker
 Evaluators/FFI.o: Evaluators/FFI.cc FFIs/Allocators Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation Numbers/Ratio
 Evaluators/ModuleLoader.o: Evaluators/ModuleLoader.cc Evaluators/ModuleLoader Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation FFIs/FFIs Scanners/MathParser Scanners/ShuntingYardParser Scanners/Scanner FFIs/Allocators FFIs/ProcessInfos Evaluators/BuiltinSelector Numbers/Ratio

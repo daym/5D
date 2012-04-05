@@ -166,31 +166,25 @@ AST::NodeT ShuntingYardParser::handle_unary_operator(AST::NodeT operator_) {
 	return(operator_);
 }
 static AST::NodeT macro_standin_operator(AST::NodeT op1) {
-	AST::Cons* consOp1 = dynamic_cast<AST::Cons*>(op1);
-	if(consOp1 == NULL)
-		return(NULL);
-	AST::NodeT operator_ = consOp1->head; 
-	return(operator_);
+	return AST::cons_P(op1) ? AST::get_cons_head(op1) : NULL;
 }
 AST::NodeT ShuntingYardParser::expand_macro(AST::NodeT op1, AST::NodeT suffix) {
-	AST::Cons* consOp1 = dynamic_cast<AST::Cons*>(op1);
-	if(consOp1 == NULL)
+	if(!AST::cons_P(op1))
 		abort();
-	AST::NodeT operator_ = consOp1->head;
+	AST::NodeT operator_ = get_cons_head(op1);
 	if(operator_ == Symbols::Sbackslash) {
-		assert(consOp1->tail);
-		AST::Symbol* parameter = dynamic_cast<AST::Symbol*>(Evaluators::evaluateToCons(consOp1->tail)->head);
+		AST::NodeT parameter = AST::get_cons_head(Evaluators::evaluateToCons(get_cons_tail(op1)));
 		return(AST::makeAbstraction(parameter, suffix));
 	} else if(operator_ == Symbols::Squote) {
 		return(AST::makeApplication(Symbols::Squote, suffix));
 	} else if(operator_ == Symbols::Slet) {
-		assert(consOp1->tail);
-		AST::Cons* c2 = Evaluators::evaluateToCons(consOp1->tail);
-		AST::Symbol* parameter = dynamic_cast<AST::Symbol*>(c2->head);
-		assert(parameter);
-		assert(c2->tail);
-		AST::Cons* c3 = Evaluators::evaluateToCons(c2->tail);
-		AST::NodeT replacement = c3->head;
+		assert(AST::get_cons_tail(op1));
+		AST::NodeT c2 = Evaluators::evaluateToCons(AST::get_cons_tail(op1));
+		AST::NodeT parameter = AST::get_cons_head(c2);
+		assert(AST::get_symbol1_name(parameter));
+		assert(AST::get_cons_tail(c2));
+		AST::Cons* c3 = Evaluators::evaluateToCons(AST::get_cons_tail(c2));
+		AST::NodeT replacement = AST::get_cons_head(c3);
 		return(Evaluators::close(parameter, replacement, suffix));
 	} else if(operator_ == Symbols::Sunarydash) {
 		return(AST::makeOperation(Symbols::Sdash, Symbols::Szero, suffix));

@@ -51,31 +51,16 @@ void get_free_variables(AST::NodeT root, AST::HashTable& freeNames) {
 	AST::HashTable boundNames;
 	get_free_variables_impl(root, boundNames, freeNames);
 }
-static AST::Symbol* get_variable_name(AST::NodeT root) {
-	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
-	if(refNode)
-		return(refNode->symbol);
-	else
-		return(NULL);
-}
-static inline int get_variable_index(AST::NodeT root) {
-	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
-	if(refNode)
-		return(refNode->index);
-	else
-		return(-1);
-}
 bool quote_P(AST::NodeT root) {
 	if(root == Symbols::Squote || root == &Quoter)
 		return(true);
-	else {
-		AST::SymbolReference* ref = dynamic_cast<AST::SymbolReference*>(root);
-		return(ref && ref->symbol == Symbols::Squote);
-	}
+	else
+		return(symbol_reference_P(root) && get_symbol_reference_name(root) == Symbols::Squote);
 }
 static inline bool quoted_P(AST::NodeT root) {
 	return(quote_P(root));
 }
+// TODO GC-proof deque
 AST::NodeT annotate_impl(AST::NodeT root, std::deque<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& boundNamesSet) {
 	// TODO maybe traverse cons etc? maybe not.
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(root);
@@ -86,7 +71,7 @@ AST::NodeT annotate_impl(AST::NodeT root, std::deque<AST::Symbol*>& boundNames, 
 		AST::Symbol* parameterSymbolNode = dynamic_cast<AST::Symbol*>(parameterNode);
 		assert(parameterSymbolNode);
 		boundNames.push_front(parameterSymbolNode);
-		if(boundNamesSet.find(symbolNode) == boundNamesSet.end()) { // not bound yet
+		if(boundNamesSet.find(parameterSymbolNode) == boundNamesSet.end()) { // not bound yet
 			boundNamesSet.insert(parameterSymbolNode);
 			result = annotate_impl(body, boundNames, boundNamesSet);
 			boundNamesSet.erase(parameterSymbolNode);
@@ -136,12 +121,12 @@ AST::NodeT annotate(AST::NodeT root) {
 }
 static AST::NodeT shift(AST::NodeT argument, int index, AST::NodeT term) {
 	int x_index;
-	x_index = get_variable_index(term);
+	x_index = get_symbol_reference_index(term);
 	if(x_index != -1) {
 		if(x_index == index)
 			return(argument);
 		else if(x_index > index)
-			return(new SymbolReference(get_variable_name(term), x_index - 1));
+			return(new SymbolReference(get_symbol_reference_name(term), x_index - 1));
 		else
 			return(term);
 	} else if(application_P(term)) {
@@ -328,7 +313,7 @@ AST::NodeT reduce1(AST::NodeT term) {
 	} else
 		return(term);
 }
-AST::NodeT close(AST::Symbol* parameter, AST::NodeT argument, AST::NodeT body) {
+AST::NodeT close(AST::NodeT parameter, AST::NodeT argument, AST::NodeT body) {
 	return(makeApplication(makeAbstraction(parameter, body), argument));
 }
 AST::NodeT makeError(const char* reason) {
@@ -348,21 +333,20 @@ AST::Cons* evaluateToCons(AST::NodeT computation) {
 	return(dynamic_cast<AST::Cons*>(evaluate(computation))); // TODO error check
 }
 AST::NodeT programFromSExpression(AST::NodeT root) {
-	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
-	if(consNode) {
+	if(cons_P(root)) {
 		// application or abstraction
-		if(consNode->head == Symbols::Sbackslash) { // abstraction
-			assert(consNode->tail);
-			assert(evaluateToCons(consNode->tail)->tail);
-			assert(evaluateToCons(evaluateToCons(consNode->tail)->tail)->tail == NULL);
-			AST::NodeT parameter = evaluateToCons(consNode->tail)->head;
-			AST::NodeT body = evaluateToCons(evaluateToCons(consNode->tail)->tail)->head;
+		if(get_cons_head(root) == Symbols::Sbackslash) { // abstraction
+			assert(get_cons_tail(root));
+			assert(get_cons_tail(evaluateToCons(get_cons_tail(root))));
+			assert(get_cons_tail(evaluateToCons(get_cons_tail(evaluateToCons(get_cons_tail(root))))) == NULL);
+			AST::NodeT parameter = get_cons_head(evaluateToCons(get_cons_tail(root)));
+			AST::NodeT body = get_cons_head(evaluateToCons(get_cons_tail(evaluateToCons(get_cons_tail(root)))));
 			return(makeAbstraction(programFromSExpression(parameter), programFromSExpression(body)));
 		} else { // application
-			assert(evaluateToCons(consNode->tail));
-			assert(evaluateToCons(evaluateToCons(consNode->tail)->tail) == NULL);
-			AST::NodeT operator_ = consNode->head;
-			AST::NodeT operand = evaluateToCons(consNode->tail)->head;
+			assert(evaluateToCons(get_cons_tail(root)));
+			assert(evaluateToCons(get_cons_tail(evaluateToCons(get_cons_tail(root)))) == NULL);
+			AST::NodeT operator_ = get_cons_head(root);
+			AST::NodeT operand = get_cons_head(evaluateToCons(get_cons_tail(root)));
 			return(makeApplication(programFromSExpression(operator_), programFromSExpression(operand)));
 		}
 	} else

@@ -47,7 +47,7 @@ static inline AST::NodeT reduce(AST::NodeT term) {
 	//fprintf(stderr, "=> result %s\n", rv.c_str());
 	return(result);
 }
-AST::NodeT close(AST::Symbol* parameter, AST::NodeT argument, AST::NodeT body);
+AST::NodeT close(AST::NodeT /* symbol */ parameter, AST::NodeT argument, AST::NodeT body);
 AST::NodeT makeError(const char* reason);
 bool define_P(AST::NodeT input);
 AST::NodeT programFromSExpression(AST::NodeT root);

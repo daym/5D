@@ -45,6 +45,23 @@ static inline const char* get_symbol1_name(AST::NodeT argument) {
 	Symbol* s = dynamic_cast<Symbol*>(argument);
 	return s ? s->name : NULL;
 }
+static inline AST::Symbol* get_symbol_reference_name(AST::NodeT root) {
+	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
+	if(refNode)
+		return(refNode->symbol);
+	else
+		return(NULL);
+}
+static inline int get_symbol_reference_index(AST::NodeT root) {
+	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
+	if(refNode)
+		return(refNode->index);
+	else
+		return(-1);
+}
+static inline bool symbol_reference_P(AST::NodeT root) {
+	return(dynamic_cast<AST::SymbolReference*>(root) != NULL);
+}
 
 };
 #endif /* ndef __AST_SYMBOL_H */
