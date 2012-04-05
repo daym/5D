@@ -354,7 +354,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, Symbols::Squote, &Evaluators::Quoter); /* keep at the beginning */
 	REPL_add_static_builtin_binding(self, Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb)))); // TODO close
 	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
-	REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::Reducer);
+	// ??? REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::Reducer);
 
 	REPL_add_static_builtin_binding(self, AST::symbolFromStr("REPL"), AST::makeAbstraction(Symbols::Sa, 
 		AST::makeApplication(AST::makeApplication(
