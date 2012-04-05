@@ -5,10 +5,10 @@
 
 namespace FFIs {
 
-IDispatch* unwrapIDispatch(AST::Node* source);
-IUnknown* unwrapIUnknown(AST::Node* source);
-AST::Node* wrapIDispatch(IDispatch* source);
-AST::Node* wrapIUnknown(IUnknown* source);
+IDispatch* unwrapIDispatch(AST::NodeT source);
+IUnknown* unwrapIUnknown(AST::NodeT source);
+AST::NodeT wrapIDispatch(IDispatch* source);
+AST::NodeT wrapIUnknown(IUnknown* source);
 
 }; /* end namespace FFIs */
 

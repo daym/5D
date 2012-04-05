@@ -130,7 +130,7 @@ static AST::Cons* get_level_operators(struct OperatorPrecedenceItem* item) {
 }
 AST::Cons* OperatorPrecedenceList::get_all_operators(int precedence_level) const {
 	if(precedence_level >= 0 && precedence_level < MAX_PRECEDENCE_LEVELS) {
-		AST::Node* h = get_level_operators(levels[precedence_level]);
+		AST::NodeT h = get_level_operators(levels[precedence_level]);
 		return(AST::makeCons(h, get_all_operators(next_precedence_level(precedence_level))));
 	} else
 		return(NULL);

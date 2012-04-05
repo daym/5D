@@ -26,27 +26,27 @@ protected:
 	OperatorPrecedenceList* operator_precedence_list;
 private:
 	AST::Cons* bound_symbols;
-	AST::Node* parse_value(void);
-	AST::Node* parse_application(void);
-	AST::Node* parse_argument(void);
-	AST::Node* parse_binary_operation(bool B_allow_args, int precedence_level);
-	AST::Node* parse_abstraction(void);
-	AST::Node* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2);
-	AST::Node* parse_macro(AST::Node* operand_1);
-	AST::Node* parse_define(AST::Node* operand_1);
-	AST::Node* parse_defrec(AST::Node* operand_1);
-	AST::Node* parse_quote(AST::Node* operand_1);
-	AST::Node* parse_list(void);
-	AST::Node* parse_let_form(void);
+	AST::NodeT parse_value(void);
+	AST::NodeT parse_application(void);
+	AST::NodeT parse_argument(void);
+	AST::NodeT parse_binary_operation(bool B_allow_args, int precedence_level);
+	AST::NodeT parse_abstraction(void);
+	AST::NodeT operation(AST::NodeT operator_, AST::NodeT operand_1, AST::NodeT operand_2);
+	AST::NodeT parse_macro(AST::NodeT operand_1);
+	AST::NodeT parse_define(AST::NodeT operand_1);
+	AST::NodeT parse_defrec(AST::NodeT operand_1);
+	AST::NodeT parse_quote(AST::NodeT operand_1);
+	AST::NodeT parse_list(void);
+	AST::NodeT parse_let_form(void);
 protected:
-	AST::Node* parse_expression(void);
+	AST::NodeT parse_expression(void);
 	AST::Cons* parse_S_list_body(void);
 public:
 	void parse_closing_brace(void);
-	AST::Node* parse(OperatorPrecedenceList* operator_precedence_list);
+	AST::NodeT parse(OperatorPrecedenceList* operator_precedence_list);
 	AST::Cons* parse_S_list(bool B_consume_closing_brace);
-	AST::Node* parse_S_Expression(void);
-	static AST::Node* parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list); // TODO remove
+	AST::NodeT parse_S_Expression(void);
+	static AST::NodeT parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list); // TODO remove
 	MathParser(void);
 	void push(FILE* input_file, int line_number);
 protected:
@@ -56,7 +56,7 @@ public:
 	std::set<AST::Symbol*> get_bound_symbols(const char* prefix);
 };
 
-bool macro_operator_P(AST::Node* operator_);
+bool macro_operator_P(AST::NodeT operator_);
 #endif
 
 }; /* end namespace Scanners */

@@ -32,9 +32,9 @@
 namespace REPLX {
 
 struct REPL : AST::Node {
-	AST::Node* fTailEnvironment;
-	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::Node* fTailUserEnvironmentFrontier;
+	AST::NodeT fTailEnvironment;
+	AST::NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::NodeT fTailUserEnvironmentFrontier;
 	int fEnvironmentCount;
 	bool fFileModified;
 	char* fEnvironmentName;
@@ -44,7 +44,7 @@ struct REPL : AST::Node {
 	AST::HashTable* fModules;
 	int fCursorPosition;
 };
-int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
+int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::NodeT value) {
 	if(self->fEnvironmentTable.find(name->name) == self->fEnvironmentTable.end()) {
 		self->fEnvironmentTable[name->name] = value;
 		self->fEnvironmentNames = AST::makeCons(name, self->fEnvironmentNames);
@@ -62,7 +62,7 @@ int REPL_insert_into_output_buffer(struct REPL* self, int destination, const cha
 }
 Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self);
 
-static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destination) {
+static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT result, int destination) {
 	// TODO LATEX
 	int position = 0; // TODO use actual horizontal position at the destination.
 	std::stringstream buffer;
@@ -243,18 +243,18 @@ static void initialize_readline(void) {
 using namespace REPLX;
 static Scanners::OperatorPrecedenceList* operator_precedence_list;
 void run(struct REPL* REPL, const char* text) {
-	AST::Node* result;
+	AST::NodeT result;
 	if(exit_P(text)) /* special case for computers which can't signal EOF. */
 		exit(0);
 	try {
 		result = REPL_parse(REPL, text, 0);
 		REPL_execute(REPL, result, 0);
 	} catch(Scanners::ParseException exception) {
-		AST::Node* err = Evaluators::makeError(exception.what());
+		AST::NodeT err = Evaluators::makeError(exception.what());
 		std::string errStr = str(err);
 		fprintf(stderr, "%s\n", errStr.c_str());
 	} catch(Evaluators::EvaluationException exception) {
-		AST::Node* err = Evaluators::makeError(exception.what());
+		AST::NodeT err = Evaluators::makeError(exception.what());
 		std::string errStr = str(err);
 		fprintf(stderr, "%s\n", errStr.c_str());
 	}

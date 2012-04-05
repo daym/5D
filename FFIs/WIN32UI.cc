@@ -7,17 +7,17 @@
 #include "Evaluators/Builtins"
 namespace FFIs {
 
-static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
+static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
 	HWND cParentWindow = NULL;
 	std::wstring cText;
 	std::wstring cCaption;
 	int cType = 0;
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
-	AST::Node* parent = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("parent:"));
-	if(parent && dynamic_cast<AST::Box*>(parent) != NULL) {
-		cParentWindow = (HWND) dynamic_cast<AST::Box*>(parent)->native;
+	AST::NodeT parent = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("parent:"));
+	if(parent) {
+		cParentWindow = (HWND) Evaluators::get_pointer(parent);
 	}
-	AST::Node* type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("type:"));
+	AST::NodeT type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("type:"));
 	cType |= (type_ == AST::symbolFromStr("ok")) ? MB_OK :
 	         (type_ == AST::symbolFromStr("okcancel")) ? MB_OKCANCEL :
 			 (type_ == AST::symbolFromStr("abortretryignore")) ? MB_ABORTRETRYIGNORE :
@@ -25,12 +25,12 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 			 (type_ == AST::symbolFromStr("yesno")) ? MB_YESNO :
 			 (type_ == AST::symbolFromStr("retrycancel")) ? MB_RETRYCANCEL :
 			 (type_ == AST::symbolFromStr("canceltrycontinue")) ? MB_CANCELTRYCONTINUE : 0;
-	AST::Node* modality = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("modality:"));
+	AST::NodeT modality = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("modality:"));
 	cType |= (modality == AST::symbolFromStr("appl")) ? MB_APPLMODAL :
 		(modality == AST::symbolFromStr("system")) ? MB_SYSTEMMODAL : 
 		(modality == AST::symbolFromStr("task")) ? MB_TASKMODAL : 
 		0;
-	AST::Node* icon = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("icon:"));
+	AST::NodeT icon = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("icon:"));
 	cType |= (icon == AST::symbolFromStr("information")) ? MB_ICONINFORMATION :
 		(icon == AST::symbolFromStr("exclamation")) ? MB_ICONEXCLAMATION : 
 		(icon == AST::symbolFromStr("hand")) ? MB_ICONHAND : 
@@ -43,8 +43,8 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	cText = FromUTF8(Evaluators::get_string(iter->second));
 	++iter;
-	AST::Node* world = iter->second;
-	AST::Node* caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
+	AST::NodeT world = iter->second;
+	AST::NodeT caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
 	cCaption = caption ? FromUTF8(Evaluators::get_string(caption)) : _T("");
 	int cResult = MessageBoxW(cParentWindow, cText.c_str(), cCaption.c_str(), cType);
 	AST::Symbol* result;

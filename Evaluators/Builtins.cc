@@ -28,14 +28,14 @@
 namespace Evaluators {
 
 using namespace AST;
-AST::Node* churchTrue = Evaluators::annotate(AST::makeAbstraction(AST::symbolFromStr("t"), AST::makeAbstraction(AST::symbolFromStr("f"), AST::symbolFromStr("t"))));
+AST::NodeT churchTrue = Evaluators::annotate(AST::makeAbstraction(AST::symbolFromStr("t"), AST::makeAbstraction(AST::symbolFromStr("f"), AST::symbolFromStr("t"))));
 //Scanners::MathParser::parse_simple("(\\t (\\f t))", NULL));
-AST::Node* churchFalse = Evaluators::annotate(AST::makeAbstraction(AST::symbolFromStr("t"), AST::makeAbstraction(AST::symbolFromStr("f"), AST::symbolFromStr("f"))));
-//AST::Node* churchFalse = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f f))", NULL));
-AST::Node* internNative(bool value) {
+AST::NodeT churchFalse = Evaluators::annotate(AST::makeAbstraction(AST::symbolFromStr("t"), AST::makeAbstraction(AST::symbolFromStr("f"), AST::symbolFromStr("f"))));
+//AST::NodeT churchFalse = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f f))", NULL));
+AST::NodeT internNative(bool value) {
 	return(value ? churchTrue : churchFalse);
 }
-AST::Node* internNative(const char* value) {
+AST::NodeT internNative(const char* value) {
 	return(AST::makeStr(value));
 }
 
@@ -59,8 +59,8 @@ static BigUnsigned unsigneds[] = {
 	BigUnsigned(15),
 	BigUnsigned(16),
 };
-static std::map<AST::Symbol*, AST::Node*> cachedDynamicBuiltins;
-static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
+static std::map<AST::Symbol*, AST::NodeT> cachedDynamicBuiltins;
+static AST::NodeT get_dynamic_builtin(AST::Symbol* symbol) {
 	const char* name;
 	name = symbol->name;
 	if((name[0] >= '0' && name[0] <= '9') || name[0] == '-') { /* hello, number */
@@ -105,17 +105,17 @@ static AST::Node* get_dynamic_builtin(AST::Symbol* symbol) {
 	} else
 		return(NULL);
 }
-AST::Node* provide_dynamic_builtins_impl(AST::Node* body, std::set<AST::Symbol*>::const_iterator end_iter, std::set<AST::Symbol*>::const_iterator iter) {
+AST::NodeT provide_dynamic_builtins_impl(AST::NodeT body, std::set<AST::Symbol*>::const_iterator end_iter, std::set<AST::Symbol*>::const_iterator iter) {
 	if(iter == end_iter)
 		return(body);
 	else {
 		AST::Symbol* name = *iter;
-		AST::Node* value = get_dynamic_builtin(name);
+		AST::NodeT value = get_dynamic_builtin(name);
 		++iter;
 		return(value ? Evaluators::close(name, value, provide_dynamic_builtins_impl(body, end_iter, iter)) : provide_dynamic_builtins_impl(body, end_iter, iter));
 	}
 }
-AST::Node* provide_dynamic_builtins(AST::Node* body) {
+AST::NodeT provide_dynamic_builtins(AST::NodeT body) {
 	std::set<AST::Symbol*> freeNames;
 	std::set<AST::Symbol*>::const_iterator end_iter;
 	get_free_variables(body, freeNames);
@@ -145,7 +145,7 @@ Float promoteToFloat(const Integer& v) {
 static Integer* toHeap(const Integer& v) {
 	return(new Integer(v));
 }
-static AST::Node* toHeap(AST::Node* v) {
+static AST::NodeT toHeap(AST::NodeT v) {
 	return(v);
 }
 static Int* toHeap(const Int& v) {
@@ -157,12 +157,12 @@ static Float* toHeap(const Float& v) {
 static Real* toHeap(const Real& v) {
 	return(new Real(v));
 }
-static AST::Node* toHeap(bool v) {
+static AST::NodeT toHeap(bool v) {
 	return(internNative(v));
 }
 using namespace AST;
 
-static AST::Node* divremInt(const Numbers::Int& a, const Numbers::Int& b) {
+static AST::NodeT divremInt(const Numbers::Int& a, const Numbers::Int& b) {
 	if(b.value == 0)
 		throw EvaluationException("division by zero");
 	NativeInt q = a.value / b.value;
@@ -178,7 +178,7 @@ static AST::Node* divremInt(const Numbers::Int& a, const Numbers::Int& b) {
 static Integer integer00(0);
 static Int int01(1);
 static Int intM01(-1);
-static AST::Node* divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
+static AST::NodeT divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
 	if(b == integer00)
 		throw EvaluationException("division by zero");
 	Numbers::Integer r(a);
@@ -190,7 +190,7 @@ static AST::Node* divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
 	r.divideWithRemainder(b, q);
 	return(AST::makeCons(toHeap(q), AST::makeCons(toHeap(r), NULL)));
 }
-static AST::Node* divremFloat(const Numbers::Float& a, const Numbers::Float& b) {
+static AST::NodeT divremFloat(const Numbers::Float& a, const Numbers::Float& b) {
 	NativeFloat avalue = a.value;
 	NativeFloat bvalue = b.value;
 	NativeFloat sign = ((bvalue >= 0) ^ (avalue >= 0)) ? (-1.0) : 1.0;
@@ -296,7 +296,7 @@ StrRegistration* registerStr(StrRegistration* n) {
 	return(oldRoot);
 }
 // TODO move this into the language runtime
-std::string str(Node* node) {
+std::string str(NodeT node) {
 	if(node == NULL)
 		return("[]");
 	else if(root)
@@ -308,12 +308,12 @@ static bool bDidWorldRun = false;
 void resetWorld(void) {
 	bDidWorldRun = false;
 }
-static inline AST::Node* bug(AST::Node* f) {
+static inline AST::NodeT bug(AST::NodeT f) {
 	abort();
 	return(f);
 }
-static AST::Node* fetchValueAndWorld(AST::Node* n) {
-	AST::Cons* cons = dynamic_cast<AST::Cons*>(Evaluators::evaluateToCons(reduce(n)));
+static AST::NodeT fetchValueAndWorld(AST::NodeT n) {
+	AST::Cons* cons = Evaluators::evaluateToCons(reduce(n));
 	if(!cons)
 		return(FALLBACK); /* WTF */
 	// DO NOT REMOVE because it is possible that the monad only changes the world even though we don't care about the result.
@@ -322,13 +322,13 @@ static AST::Node* fetchValueAndWorld(AST::Node* n) {
 }
 #define WORLD Numbers::internNative((Numbers::NativeInt) 42)
 DEFINE_SIMPLE_OPERATION(IORunner, fetchValueAndWorld(makeApplication(argument, WORLD)))
-AST::Node* operator/(const Int& a, const Int& b) {
+AST::NodeT operator/(const Int& a, const Int& b) {
 	if((a.value % b.value) == 0)
 		return Numbers::internNative(a.value / b.value); // int
 	else
 	        return(Numbers::internNative((NativeFloat) a.value / (NativeFloat) b.value));
 }
-AST::Node* operator/(const Integer& a, const Integer& b) {
+AST::NodeT operator/(const Integer& a, const Integer& b) {
 	if (b.isZero()) throw Evaluators::EvaluationException("Integer::operator /: division by zero");
 	Integer q, r;
 	r = a;
@@ -340,14 +340,14 @@ AST::Node* operator/(const Integer& a, const Integer& b) {
 	}
 }
 
-static AST::Node* makeACons(AST::Node* h, AST::Node* t, AST::Node* fallback) {
+static AST::NodeT makeACons(AST::NodeT h, AST::NodeT t, AST::NodeT fallback) {
 	h = reduce(h);
 	//t = reduce(t);
 	return(makeCons(h, t));
 }
 /* make sure NOT to return a ratio here when it wasn't already one. The ratio constructor is divideARatio, not divideA. */
 #define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
-AST::Node* N(AST::Node* a, AST::Node* b, AST::Node* fallback) { \
+AST::NodeT N(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) { \
 	a = reduce(a); \
 	b = reduce(b); \
 	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a); \
@@ -386,8 +386,8 @@ AST::Node* N(AST::Node* a, AST::Node* b, AST::Node* fallback) { \
 	return(makeOperation(AST::symbolFromStr(#op), a, b)); \
 }
 
-static AST::Node* divremARatio(AST::Node* a, AST::Node* b, AST::Node* fallback);
-AST::Node* divremA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+static AST::NodeT divremARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
+AST::NodeT divremA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
@@ -424,29 +424,29 @@ AST::Node* divremA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 	}
 	return(makeOperation(Symbols::Sdivrem, a, b));
 }
-static AST::Node* compareAddrsLEA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+static AST::NodeT compareAddrsLEA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	return(internNative((void*) a <= (void*) b));
 }
-static AST::Node* addrsEqualA(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+static AST::NodeT addrsEqualA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	return(internNative((void*) a == (void*) b));
 }
 /*
 template<>
-class std::hash<AST::Node*> {
+class std::hash<AST::NodeT> {
 };
 */
-static AST::Node* mapGetFst2(AST::Node* fallback, AST::Cons* c) {
+static AST::NodeT mapGetFst2(AST::NodeT fallback, AST::Cons* c) {
 	if(c == NULL) {
-		AST::Node* tail = fallback ? reduce(AST::makeApplication(fallback, Symbols::Sexports)) : NULL;
+		AST::NodeT tail = fallback ? reduce(AST::makeApplication(fallback, Symbols::Sexports)) : NULL;
 		return(tail);
 	} else
 		return(AST::makeCons(reduce(evaluateToCons(reduce(c->head))->head), mapGetFst2(fallback, evaluateToCons(c->tail))));
 }
-static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
+static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 	/* parameters: <exports> <fallback> <key> 
 	               2         1          0*/
 	CXXArguments arguments = Evaluators::CXXfromArgumentsU(options, argument, 1);
@@ -459,26 +459,26 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 	printf("%s\n", v.c_str());*/
 	AST::Box* mBox = dynamic_cast<AST::Box*>(iter->second);
 	++iter;
-	AST::Node* fallback = iter->second;
+	AST::NodeT fallback = iter->second;
 	++iter;
-	AST::Node* key = iter->second;
+	AST::NodeT key = iter->second;
 	AST::HashTable* m;
 	if(!mBox) {
 		throw Evaluators::EvaluationException("invalid symbol table entry (*)");
 		return(NULL); // FIXME
 	}
-	if(dynamic_cast<AST::HashTable*>((AST::Node*) mBox->native) == NULL) {
-		//cons_P((AST::Node*) mBox->native)) {
+	if(dynamic_cast<AST::HashTable*>((AST::NodeT) mBox->native) == NULL) {
+		//cons_P((AST::NodeT) mBox->native)) {
 		m = new (UseGC) AST::HashTable;
 		for(AST::Cons* table = (AST::Cons*) mBox->native; table; table = Evaluators::evaluateToCons(table->tail)) {
 			AST::Cons* entry = evaluateToCons(reduce(table->head));
 			//std::string v = str(entry);
 			//printf("%s\n", v.c_str());
-			AST::Node* x_key = reduce(entry->head);
+			AST::NodeT x_key = reduce(entry->head);
 			AST::Cons* snd = evaluateToCons(entry->tail);
 			if(!snd)
 				throw Evaluators::EvaluationException("invalid symbol table entry");
-			AST::Node* value = reduce(snd->head);
+			AST::NodeT value = reduce(snd->head);
 			AST::Symbol* s = dynamic_cast<AST::Symbol*>(x_key);
 			if(!s)
 				throw Evaluators::EvaluationException("invalid symbol table entry");
@@ -516,14 +516,14 @@ static AST::Node* dispatchModule(AST::Node* options, AST::Node* argument) {
 		throw Evaluators::EvaluationException("not a symbol");
 	return(NULL);
 }
-AST::Node* leqA(AST::Node* a, AST::Node* b, AST::Node* fallback);
-static inline bool equalP(AST::Node* a, AST::Node* b) {
+AST::NodeT leqA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
+static inline bool equalP(AST::NodeT a, AST::NodeT b) {
 	return(Evaluators::get_boolean(leqA(a, b, NULL)) && Evaluators::get_boolean(leqA(b, a, NULL)));
 }
-static AST::Node* gcd(AST::Node* a, AST::Node* b) {
+static AST::NodeT gcd(AST::NodeT a, AST::NodeT b) {
 	while(!equalP(b, &integer00)) {
-		AST::Node* t = b;
-		AST::Node* c = divremA(a, b, NULL);
+		AST::NodeT t = b;
+		AST::NodeT c = divremA(a, b, NULL);
 		if(!c || !cons_P(c)) /* failed */
 			throw EvaluationException("could not find greatest common divisor");
 		b = AST::get_cons_head(Evaluators::evaluateToCons(AST::get_cons_tail(c))); // remainder
@@ -531,18 +531,18 @@ static AST::Node* gcd(AST::Node* a, AST::Node* b) {
 	}
 	return a;
 }
-AST::Node* addA(AST::Node* a, AST::Node* b, AST::Node* fallback);
-AST::Node* multiplyA(AST::Node* a, AST::Node* b, AST::Node* fallback);
-AST::Node* subtractA(AST::Node* a, AST::Node* b, AST::Node* fallback);
-AST::Node* divideA(AST::Node* a, AST::Node* b, AST::Node* fallback);
-static AST::Node* simplifyRatio(AST::Node* r) {
+AST::NodeT addA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
+AST::NodeT multiplyA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
+AST::NodeT subtractA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
+AST::NodeT divideA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
+static AST::NodeT simplifyRatio(AST::NodeT r) {
 	if(ratio_P(r)) {
 		if(equalP(&int01, Ratio_getB(r)))
 			return(Ratio_getA(r));
 		else {
-			AST::Node* a;
-			AST::Node* b;
-			AST::Node* g;
+			AST::NodeT a;
+			AST::NodeT b;
+			AST::NodeT g;
 			a = Ratio_getA(r);
 			b = Ratio_getB(r);
 			if(!a || !b)
@@ -566,7 +566,7 @@ static AST::Node* simplifyRatio(AST::Node* r) {
 		return(r);
 	}
 }
-static AST::Node* addARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+static AST::NodeT addARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	if(!ratio_P(a))
@@ -584,7 +584,7 @@ static AST::Node* addARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 			multiplyA(Ratio_getB(a), Ratio_getB(b), NULL)
 		)));
 }
-static AST::Node* subtractARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+static AST::NodeT subtractARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	if(!ratio_P(a))
@@ -602,7 +602,7 @@ static AST::Node* subtractARatio(AST::Node* a, AST::Node* b, AST::Node* fallback
 			multiplyA(Ratio_getB(a), Ratio_getB(b), NULL)
 		)));
 }
-static AST::Node* multiplyARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+static AST::NodeT multiplyARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	if(!ratio_P(a))
@@ -614,7 +614,7 @@ static AST::Node* multiplyARatio(AST::Node* a, AST::Node* b, AST::Node* fallback
 		multiplyA(Ratio_getB(a), Ratio_getB(b), NULL)
 	)));
 }
-static AST::Node* divideARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+static AST::NodeT divideARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	if(!ratio_P(a))
@@ -626,7 +626,7 @@ static AST::Node* divideARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) 
 		multiplyA(Ratio_getB(a), Ratio_getA(b), NULL)
 	)));
 }
-static AST::Node* leqARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+static AST::NodeT leqARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	if(!ratio_P(a))
 		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
@@ -637,16 +637,16 @@ static AST::Node* leqARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 		NULL
 	));
 }
-static AST::Node* divremARatio(AST::Node* a, AST::Node* b, AST::Node* fallback) {
-	AST::Node* q = divideARatio(a, b, NULL); // TODO fallback
+static AST::NodeT divremARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
+	AST::NodeT q = divideARatio(a, b, NULL); // TODO fallback
 	if(ratio_P(q)) {
-		AST::Node* b = divremA(Ratio_getA(q), Ratio_getB(q), NULL); // TODO fallback
+		AST::NodeT b = divremA(Ratio_getA(q), Ratio_getB(q), NULL); // TODO fallback
 		if(b)
 			q = get_cons_head(b);
 	}
 	// b*q + rem = a
 	// d = a - b*q
-	AST::Node* rem = subtractA(a, multiplyA(b, q, NULL), NULL); // TODO fallback
+	AST::NodeT rem = subtractA(a, multiplyA(b, q, NULL), NULL); // TODO fallback
 	return(AST::makeCons(q, AST::makeCons(rem, NULL)));
 }
 DEFINE_BINARY_OPERATION(Conser, makeACons)
@@ -675,33 +675,33 @@ DEFINE_BINARY_OPERATION(LEComparer, leqA)
 DEFINE_BINARY_OPERATION(AddrLEComparer, compareAddrsLEA)
 DEFINE_BINARY_OPERATION(SymbolEqualityChecker, addrsEqualA)
 DEFINE_FULL_OPERATION(ModuleDispatcher, return(dispatchModule(fn, argument));)
-static inline AST::Node* makeModuleBox(AST::Node* argument) {
+static inline AST::NodeT makeModuleBox(AST::NodeT argument) {
 	return AST::makeBox(argument, AST::makeApplication(&ModuleBoxMaker, argument));
 }
 DEFINE_SIMPLE_OPERATION(ModuleBoxMaker, makeModuleBox(reduce(argument)))
 
-static AST::Node* makeApplicationB(AST::Node* options, AST::Node* argument) {
+static AST::NodeT makeApplicationB(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
-	AST::Node* operator_ = iter->second;
+	AST::NodeT operator_ = iter->second;
 	++iter;
-	AST::Node* operand = iter->second;
+	AST::NodeT operand = iter->second;
 	//++iter;
 	return(AST::makeApplication(operator_, operand));
 }
-static AST::Node* makeAbstractionB(AST::Node* options, AST::Node* argument) {
+static AST::NodeT makeAbstractionB(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
-	AST::Node* parameter = iter->second;
+	AST::NodeT parameter = iter->second;
 	++iter;
-	AST::Node* body = iter->second;
+	AST::NodeT body = iter->second;
 	//++iter;
 	return(AST::makeAbstraction(parameter, body));
 }
 /* INTERNAL! */
-static AST::Node* parseMath(Scanners::OperatorPrecedenceList* OPL, FILE* inputFile, CXXArguments& arguments, CXXArguments::const_iterator& iter, const CXXArguments::const_iterator& endIter) {
+static AST::NodeT parseMath(Scanners::OperatorPrecedenceList* OPL, FILE* inputFile, CXXArguments& arguments, CXXArguments::const_iterator& iter, const CXXArguments::const_iterator& endIter) {
 	int position = 0; // FIXME size_t
-	AST::Node* name = NULL;
+	AST::NodeT name = NULL;
 	AST::Symbol* terminator = NULL;
 	for(++iter; iter != endIter; ++iter) {
 		if(iter->first) { // likely
@@ -724,18 +724,18 @@ static AST::Node* parseMath(Scanners::OperatorPrecedenceList* OPL, FILE* inputFi
 		return(NULL); // FIXME
 	}
 }
-static AST::Node* makeFileMathParserB(AST::Node* options, AST::Node* argument) {
+static AST::NodeT makeFileMathParserB(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	CXXArguments::const_iterator endIter = arguments.end();
 	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*)(Evaluators::get_pointer(iter->second));
 	++iter;
-	AST::Node* inputFile = iter->second;
+	AST::NodeT inputFile = iter->second;
 	++iter;
-	AST::Node* world = iter->second;
+	AST::NodeT world = iter->second;
 	return(Evaluators::makeIOMonad(parseMath(OPL, (FILE*) Evaluators::get_pointer(inputFile), arguments, iter, endIter), world));
 }
-static AST::Node* makeStrMathParserB(AST::Node* options, AST::Node* argument) {
+static AST::NodeT makeStrMathParserB(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	CXXArguments::const_iterator endIter = arguments.end();
@@ -745,7 +745,7 @@ static AST::Node* makeStrMathParserB(AST::Node* options, AST::Node* argument) {
 	FILE* inputFile = fmemopen((void*) command, strlen(command), "r");
 	// FIXME if !inputFile
 	try {
-		AST::Node* result = parseMath(OPL, inputFile, arguments, iter, endIter);
+		AST::NodeT result = parseMath(OPL, inputFile, arguments, iter, endIter);
 		fclose(inputFile);
 		return(result);
 	} catch(...) {
@@ -755,21 +755,21 @@ static AST::Node* makeStrMathParserB(AST::Node* options, AST::Node* argument) {
 }
 #if 0
 /* FIXME */
-static AST::Node* makeBorg(AST::Node* foreigner) {
-	AST::Node* OO = import_module(NULL, AST::makeStr("OO"));
-	AST::Node* List = import_module(NULL, AST::makeStr("List"));
-	AST::Node* Logic = import_module(NULL, AST::makeStr("Logic"));
+static AST::NodeT makeBorg(AST::NodeT foreigner) {
+	AST::NodeT OO = import_module(NULL, AST::makeStr("OO"));
+	AST::NodeT List = import_module(NULL, AST::makeStr("List"));
+	AST::NodeT Logic = import_module(NULL, AST::makeStr("Logic"));
 	// \name (\x  if (nil? x) ((requireModule "OO").Object name) x) (foreigner name)
 	return(AST::makeAbstraction(name, Evaluators::close(x, AST::makeApplication(foreigner, name), 
 	         AST::makeApplication(Symbols::Sif, ))));
 }
 #endif
-static inline AST::Node* ensureApplication(AST::Node* node) {
+static inline AST::NodeT ensureApplication(AST::NodeT node) {
 	if(!application_P(node))
 		throw EvaluationException("argument is not an application");
 	return(node);
 }
-static inline AST::Node* ensureAbstraction(AST::Node* node) {
+static inline AST::NodeT ensureAbstraction(AST::NodeT node) {
 	if(!abstraction_P(node))
 		throw EvaluationException("argument is not an abstraction");
 	return(node);
@@ -821,10 +821,10 @@ REGISTER_BUILTIN(RFileMathParser, (-3), 0, AST::symbolFromStr("parseMath!"))
 REGISTER_BUILTIN(RStrMathParser, (-2), 0, AST::symbolFromStr("parseMathStr"))
 
 // FIXME make this GCable.
-CXXArguments CXXfromArgumentsU(AST::Node* options, AST::Node* argument, int backwardsIndexOfArgumentNotToReduce) {
+CXXArguments CXXfromArgumentsU(AST::NodeT options, AST::NodeT argument, int backwardsIndexOfArgumentNotToReduce) {
 	CXXArguments result;
-	AST::Node* v;
-	AST::Node* p;
+	AST::NodeT v;
+	AST::NodeT p;
 	int i = 1;
 	bool B_pending_value = false;
 	assert(options);
@@ -839,22 +839,22 @@ CXXArguments CXXfromArgumentsU(AST::Node* options, AST::Node* argument, int back
 			B_pending_value = false;
 		} else {
 			if(B_pending_value)
-				result.push_front(std::pair<AST::Keyword*, AST::Node*>(NULL, p));
+				result.push_front(std::pair<AST::Keyword*, AST::NodeT>(NULL, p));
 			p = v;
 			B_pending_value = true;
 		}
 	}
 	if(B_pending_value) {
 		B_pending_value = false;
-		result.push_front(std::pair<AST::Keyword*, AST::Node*>(NULL, p));
+		result.push_front(std::pair<AST::Keyword*, AST::NodeT>(NULL, p));
 	}
 	return(result);
 }
-CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument) {
+CXXArguments CXXfromArguments(AST::NodeT options, AST::NodeT argument) {
 	return(CXXfromArgumentsU(options, argument, -1));
 }
-AST::Node* CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* key) {
-	for(std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator iter = list.begin(); iter != list.end(); ++iter)
+AST::NodeT CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* key) {
+	for(std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator iter = list.begin(); iter != list.end(); ++iter)
 		if(iter->first == key)
 			return(iter->second);
 	return(NULL);

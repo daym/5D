@@ -29,7 +29,7 @@ typedef long long long_long;
 typedef long double long_double;
 
 #define IMPLEMENT_NATIVE_INT_GETTER(typ) \
-typ get_##typ(AST::Node* root) { \
+typ get_##typ(AST::NodeT root) { \
 	NativeInt result2 = 0; \
 	typ result = 0; \
 	if(!Numbers::toNativeInt(root, result2) || (result = result2) != result2) \
@@ -38,7 +38,7 @@ typ get_##typ(AST::Node* root) { \
 }
 // TODO support Ratio - at least for the floats, maybe.
 #define IMPLEMENT_NATIVE_FLOAT_GETTER(typ) \
-typ get_##typ(AST::Node* root) { \
+typ get_##typ(AST::NodeT root) { \
 	NativeFloat result2 = 0.0; \
 	typ result = 0; \
 	if(Numbers::ratio_P(root)) \
@@ -47,7 +47,7 @@ typ get_##typ(AST::Node* root) { \
 		throw Evaluators::EvaluationException("value out of range for " #typ); \
 	return(result); \
 }
-int get_nearest_int(AST::Node* root) {
+int get_nearest_int(AST::NodeT root) {
 	NativeInt result2 = 0;
 	int result = 0;
 	if(!Numbers::toNearestNativeInt(root, result2))
@@ -66,7 +66,7 @@ IMPLEMENT_NATIVE_FLOAT_GETTER(float)
 IMPLEMENT_NATIVE_FLOAT_GETTER(double)
 IMPLEMENT_NATIVE_FLOAT_GETTER(long_double)
 
-void* get_pointer(AST::Node* root) {
+void* get_pointer(AST::NodeT root) {
 	Box* rootBox = dynamic_cast<Box*>(root);
 	if(rootBox)
 		return(rootBox->native);
@@ -79,13 +79,13 @@ void* get_pointer(AST::Node* root) {
 }
 static Int int01(1);
 static Int int00(0);
-bool get_boolean(AST::Node* root) {
-	AST::Node* result = Evaluators::reduce(AST::makeApplication(AST::makeApplication(root, &int01), &int00));
+bool get_boolean(AST::NodeT root) {
+	AST::NodeT result = Evaluators::reduce(AST::makeApplication(AST::makeApplication(root, &int01), &int00));
 	if(result == NULL)
 		throw Evaluators::EvaluationException("that cannot be reduced to a boolean");
 	return(result == &int01);
 }
-char* get_string(AST::Node* root) {
+char* get_string(AST::NodeT root) {
 	AST::Str* rootString = dynamic_cast<AST::Str*>(root);
 	if(rootString) {
 		// TODO maybe check terminating zero? Maybe not.
@@ -99,42 +99,36 @@ char* get_string(AST::Node* root) {
 		//return((char*) v->native);
 	}
 }
-static AST::Node* wrapWrite(AST::Node* options, AST::Node* argument) {
+static AST::NodeT wrapWrite(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
-	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
+	FILE* f = (FILE*) Evaluators::get_pointer(iter->second);
 	++iter;
 	char* text = iter->second ? get_string(iter->second) : NULL;
 	++iter;
-	if(!f)
-		throw Evaluators::EvaluationException("need file, but is missing");
-	AST::Node* world = iter->second;
-	size_t result = fwrite(text ? text : "", 1, text ? strlen(text) : 0, (FILE*) f->native);
+	AST::NodeT world = iter->second;
+	size_t result = fwrite(text ? text : "", 1, text ? strlen(text) : 0, f);
 	return(Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) result), world));
 }
-static AST::Node* wrapFlush(AST::Node* options, AST::Node* argument) {
+static AST::NodeT wrapFlush(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
-	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
+	FILE* f = (FILE*) Evaluators::get_pointer(iter->second);
 	++iter;
-	AST::Node* world = iter->second;
-	if(!f)
-		throw Evaluators::EvaluationException("need file, but is missing");
-	size_t result = fflush((FILE*) Evaluators::get_pointer(f));
+	AST::NodeT world = iter->second;
+	size_t result = fflush(f);
 	return(Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) result), world));
 }
 // FIXME unlimited length
-static AST::Node* wrapReadLine(AST::Node* options, AST::Node* argument) {
+static AST::NodeT wrapReadLine(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
-	AST::Box* f = dynamic_cast<AST::Box*>(iter->second);
+	FILE* f = (FILE*) Evaluators::get_pointer(iter->second);
 	++iter;
-	AST::Node* world = iter->second;
+	AST::NodeT world = iter->second;
 	char text[2049];
-	AST::Node* result = NULL;
-	if(!f)
-		throw Evaluators::EvaluationException("need file, but is missing");
-	if(fgets(text, 2048, (FILE*) f->native)) {
+	AST::NodeT result = NULL;
+	if(fgets(text, 2048, f)) {
 		result = Evaluators::internNative(text);
 	} else
 		result = NULL;

@@ -186,7 +186,7 @@ static inline bool machineNoneBigEndianP(void) /* TODO pure */{
 		for(; size2 > 0; --size2, ++b) \
 			sst << *b; \
 	}
-static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST::Node* headNode, std::stringstream& sst) {
+static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST::NodeT headNode, std::stringstream& sst) {
 	size_t size = getSize(byteOrder, formatC); 
 	uint64_t mask = ~0; 
 	uint64_t limit;
@@ -284,7 +284,7 @@ static void Record_skip_format(size_t& position /* in format Str */, AST::Str* f
 		}
 	}
 }
-void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::Node* data, std::stringstream& sst, std::vector<size_t>& offsets) {
+void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::NodeT data, std::stringstream& sst, std::vector<size_t>& offsets) {
 	size_t new_offset = 0;
 	if(formatStr == NULL)
 		return;
@@ -313,7 +313,7 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 		}
 		if(consNode == NULL)
 			throw Evaluators::EvaluationException("packRecord: not enough data for format.");
-		AST::Node* headNode = Evaluators::reduce(consNode->head);
+		AST::NodeT headNode = Evaluators::reduce(consNode->head);
 		consNode = Evaluators::evaluateToCons(consNode->tail);
 		if(formatC == '[') {
 			++position;
@@ -321,7 +321,7 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 			subPosition = position;
 			for(AST::Cons* consNode = Evaluators::evaluateToCons(headNode); consNode; consNode = Evaluators::evaluateToCons(Evaluators::reduce(consNode->tail))) {
 				subPosition = position;
-				AST::Node* headNode = Evaluators::reduce(consNode->head);
+				AST::NodeT headNode = Evaluators::reduce(consNode->head);
 				Record_pack(byteOrder, subPosition, offset, formatStr, headNode, sst, offsets);
 			}
 			if(subPosition == position) { /* didn't do anything, so we have to fake the advance in the format string. */
@@ -342,13 +342,13 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 			size_t size = pack_atom_value(byteOrder, formatC, headNode, sst);
 			offset += size;
 /*
-long long get_long_long(AST::Node* root);
-void* get_pointer(AST::Node* root);
-bool get_boolean(AST::Node* root);
-char* get_string(AST::Node* root);
-float get_float(AST::Node* root);
-long double get_long_double(AST::Node* root);
-double get_double(AST::Node* root);
+long long get_long_long(AST::NodeT root);
+void* get_pointer(AST::NodeT root);
+bool get_boolean(AST::NodeT root);
+char* get_string(AST::NodeT root);
+float get_float(AST::NodeT root);
+long double get_long_double(AST::NodeT root);
+double get_double(AST::NodeT root);
 */
 		}
 	}
@@ -363,7 +363,7 @@ double get_double(AST::Node* root);
 		for(; size > 0; --size, ++codedData, ++d) \
 			*d = *codedData;
 
-static AST::Node* skipApplications(AST::Node* app, size_t count) {
+static AST::NodeT skipApplications(AST::NodeT app, size_t count) {
 	for(; count > 0; --count) {
 		if(application_P(app))
 			app = get_application_operand(app);
@@ -373,7 +373,7 @@ static AST::Node* skipApplications(AST::Node* app, size_t count) {
 	}
 	return(app);
 }
-static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_t reprOffset, char formatC, const unsigned char* codedData, size_t size) {
+static inline AST::NodeT decode(enum ByteOrder byteOrder, AST::NodeT repr, size_t reprOffset, char formatC, const unsigned char* codedData, size_t size) {
 	switch(formatC) {
 	case 'b':
 		{
@@ -459,7 +459,7 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 			DECODE_BUF(None, value)
 			if(value == NULL)
 				throw Evaluators::EvaluationException("unpack: cannot decode NULL pointer (maybe use \"P\" ?)");
-			AST::Node* r = AST::makeApplication(AST::symbolFromStr("head"), skipApplications(repr, reprOffset));
+			AST::NodeT r = AST::makeApplication(AST::symbolFromStr("head"), skipApplications(repr, reprOffset));
 			return(AST::makeBox(value, r)); // this could also be made to reuse existing wrappers.
 		}
 	case 'P':
@@ -469,7 +469,7 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 			if(value == NULL)
 				return(NULL);
 			else {
-				AST::Node* r = AST::makeApplication(AST::symbolFromStr("head"), skipApplications(repr, reprOffset));
+				AST::NodeT r = AST::makeApplication(AST::symbolFromStr("head"), skipApplications(repr, reprOffset));
 				return(AST::makeBox(value, r));
 			}
 		}
@@ -502,7 +502,7 @@ static inline AST::Node* decode(enum ByteOrder byteOrder, AST::Node* repr, size_
 	}
 }
 /* builds (tail (tail (tail ... (tail suffix))))) with a total of #count tails. */
-static AST::Node* tailtailtail(AST::Node* suffix, size_t count) {
+static AST::NodeT tailtailtail(AST::NodeT suffix, size_t count) {
 	if(count == 0)
 		return(suffix);
 	else
@@ -510,10 +510,10 @@ static AST::Node* tailtailtail(AST::Node* suffix, size_t count) {
 }
 
 // TODO record unpacker for "[p]"
-AST::Node* Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box* dataStr) {
+AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box* dataStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("unpackRecord needs format string.");
-	AST::Node* repr = AST::makeApplication(AST::makeApplication(&RecordUnpacker, formatStr), dataStr);
+	AST::NodeT repr = AST::makeApplication(AST::makeApplication(&RecordUnpacker, formatStr), dataStr);
 	size_t resultOffset = 0;
 	size_t resultCount = 0;
 	size_t position = 0; // in format
@@ -633,7 +633,7 @@ AST::Str* Record_allocate(size_t size, bool bAtomicity) {
 	return(result);
 }
 using namespace Evaluators;
-static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+static AST::NodeT pack(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	std::stringstream sst;
@@ -646,7 +646,7 @@ static AST::Node* pack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
 }
 DEFINE_BINARY_OPERATION(RecordPacker, pack)
 REGISTER_BUILTIN(RecordPacker, 2, 0, AST::symbolFromStr("packRecord"))
-static AST::Node* unpack(AST::Node* a, AST::Node* b, AST::Node* fallback) {
+static AST::NodeT unpack(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	// TODO size
@@ -658,24 +658,24 @@ REGISTER_BUILTIN(RecordUnpacker, 2, 0, AST::symbolFromStr("unpackRecord"))
 DEFINE_SIMPLE_OPERATION(RecordSizeCalculator, Numbers::internNative((Numbers::NativeInt) Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, dynamic_cast<AST::Str*>(reduce(argument)))))
 REGISTER_BUILTIN(RecordSizeCalculator, 1, 0, AST::symbolFromStr("recordSize"))
 
-static AST::Node* wrapAllocateRecord(AST::Node* options, AST::Node* argument) {
+static AST::NodeT wrapAllocateRecord(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	AST::Str* format = dynamic_cast<AST::Str*>(iter->second);
 	++iter;
-	AST::Node* world = iter->second;
-	AST::Node* result = Record_allocate(Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, format), !Record_has_pointers(format));
+	AST::NodeT world = iter->second;
+	AST::NodeT result = Record_allocate(Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, format), !Record_has_pointers(format));
 	return(Evaluators::makeIOMonad(result, world));
 }
-static AST::Node* wrapAllocateMemory(AST::Node* options, AST::Node* argument) {
+static AST::NodeT wrapAllocateMemory(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	Numbers::NativeInt size = 0;
 	if(!Numbers::toNativeInt(iter->second, size))
 		throw Evaluators::EvaluationException("cannot allocate memory with unknown size");
 	++iter;
-	AST::Node* world = iter->second;
-	AST::Node* result = Record_allocate(size, false/*TODO atomic as an option*/);
+	AST::NodeT world = iter->second;
+	AST::NodeT result = Record_allocate(size, false/*TODO atomic as an option*/);
 	return(Evaluators::makeIOMonad(result, world));
 }
 DEFINE_FULL_OPERATION(RecordAllocator, {
@@ -686,12 +686,12 @@ DEFINE_FULL_OPERATION(MemoryAllocator, {
 })
 REGISTER_BUILTIN(RecordAllocator, 2, 0, AST::symbolFromStr("allocateRecord!"))
 REGISTER_BUILTIN(MemoryAllocator, (-2), 0, AST::symbolFromStr("allocateMemory!"))
-static AST::Node* wrapDuplicateRecord(AST::Node* options, AST::Node* argument) {
+static AST::NodeT wrapDuplicateRecord(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	AST::Str* record = dynamic_cast<AST::Str*>(iter->second);
 	++iter;
-	AST::Node* world = iter->second;
+	AST::NodeT world = iter->second;
 	AST::Str* result;
 	if(record == NULL)
 		result = NULL;
@@ -706,16 +706,16 @@ DEFINE_FULL_OPERATION(RecordDuplicator, {
 })
 REGISTER_BUILTIN(RecordDuplicator, 2, 0, AST::symbolFromStr("duplicateRecord!"))
 
-AST::Node* listFromCharS(const char* text, size_t remainder) {
+AST::NodeT listFromCharS(const char* text, size_t remainder) {
 	if(remainder == 0)
 		return(NULL);
 	else
 		return(makeCons(Numbers::internNative((Numbers::NativeInt) (unsigned char) *text), listFromCharS(text + 1, remainder - 1)));
 }
-AST::Node* listFromStr(AST::Str* node) {
+AST::NodeT listFromStr(AST::Str* node) {
 	return(listFromCharS((const char*) node->native, node->size));
 }
-AST::Node* strFromList(AST::Cons* node) {
+AST::NodeT strFromList(AST::Cons* node) {
 	std::stringstream sst;
 	Numbers::NativeInt c;
 	for(; node; node = evaluateToCons(node->tail)) {
@@ -728,7 +728,7 @@ AST::Node* strFromList(AST::Cons* node) {
 	memcpy(result->native, v.c_str(), result->size);
 	return(result);
 }
-static AST::Node* substr(AST::Node* options, AST::Node* argument) {
+static AST::NodeT substr(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	AST::Str* mBox = dynamic_cast<AST::Str*>(iter->second);

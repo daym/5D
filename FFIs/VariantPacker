@@ -14,15 +14,15 @@ You should have received a copy of the GNU General Public License along with thi
 #endif
 namespace FFIs {
 #ifdef WIN32
-void encodeVariant(AST::Node* source, VARIANT* value);
-AST::Node* decodeVariant(VARIANT* value);
-static inline VARIANT encodeVariantCXX(AST::Node* source) {
+void encodeVariant(AST::NodeT source, VARIANT* value);
+AST::NodeT decodeVariant(VARIANT* value);
+static inline VARIANT encodeVariantCXX(AST::NodeT source) {
 	VARIANT result;
 	VariantInit(&result);
 	encodeVariant(source, &result);
 	return(result);
 }
-static inline AST::Node* decodeVariantCXX(VARIANT value) {
+static inline AST::NodeT decodeVariantCXX(VARIANT value) {
 	return(decodeVariant(&value));
 }
 #else
@@ -31,11 +31,11 @@ typedef struct {
 	uint32_t vt;
 	char dummy[14];
 } VARIANT;
-static inline VARIANT encodeVariantCXX(AST::Node* source) {
+static inline VARIANT encodeVariantCXX(AST::NodeT source) {
 	VARIANT result = {0};
 	return(result);
 }
-static inline AST::Node* decodeVariantCXX(VARIANT value) {
+static inline AST::NodeT decodeVariantCXX(VARIANT value) {
 	return(NULL);
 }
 #endif

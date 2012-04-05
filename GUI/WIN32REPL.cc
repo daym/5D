@@ -32,7 +32,7 @@ bool interrupted_P(void) {
 };
 namespace REPLX {
 	static void REPL_init_builtins(struct REPL* self);
-	static AST::Node* REPL_close_environment(struct REPL* self, AST::Node* node);
+	static AST::NodeT REPL_close_environment(struct REPL* self, AST::NodeT node);
 	Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self);
 struct REPL : AST::Node {
 	HWND dialog;
@@ -43,9 +43,9 @@ struct REPL : AST::Node {
 	std::wstring fSearchTerm;
 	bool fBSearchUpwards;
 	bool fBSearchCaseSensitive;
-	AST::Node* fTailEnvironment;
-	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::Node* fTailUserEnvironmentFrontier;
+	AST::NodeT fTailEnvironment;
+	AST::NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::NodeT fTailUserEnvironmentFrontier;
 	WNDPROC oldEditBoxProc;
 	struct Completer* fCompleter;
 	AST::HashTable* fEnvironmentKeys;
@@ -55,7 +55,7 @@ struct REPL : AST::Node {
 };
 }; /* end namespace REPLX */
 namespace GUI {
-	int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::Node* value);
+	int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::NodeT value);
 	void REPL_set_file_modified(struct REPL* self, bool value);
 	void REPL_queue_scroll_down(struct REPL* self);
 };
@@ -497,7 +497,7 @@ void REPL_insert_error_message(struct REPL* self, int destination, const std::st
 	REPL_set_file_modified(self, true);
 	REPL_queue_scroll_down(self);
 }
-static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* result, int destination) {
+static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT result, int destination) {
 	// TODO LATEX
 	int position = 0; // TODO use actual horizontal position at the destination.
 	std::stringstream buffer;
@@ -518,7 +518,7 @@ static void REPL_handle_environment_row_activation(struct REPL* self, HWND list,
 		//command = ToUTF8(name);
 		//if(!command)
 		//	return;
-		AST::Node* body = REPL_get_definition(self, index);
+		AST::NodeT body = REPL_get_definition(self, index);
 		REPL_enqueue_LATEX(self, body, -1);
 		B_ok = true;
 	}
@@ -572,7 +572,7 @@ static void REPL_open_webpage(struct REPL* self, const std::wstring& path) {
 	ShellExecute(self->dialog, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 static void REPL_handle_execute(struct REPL* self, const char* text, int destination, bool B_from_entry) {
-	AST::Node* input;
+	AST::NodeT input;
 	try {
 		input = REPL_parse(self, text, destination);
 	} catch(Scanners::ParseException& e) {
@@ -951,7 +951,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 bool REPL_get_file_modified(struct REPL* self) {
 	return(self->B_file_modified);
 }
-int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::Node* value) {
+int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::NodeT value) {
 	//std::string bodyString = body->str();
 	if(self->fEnvironmentKeys->find(parameter->name) == self->fEnvironmentKeys->end()) {
 		/* index is the index of the item that is "just not as important as the new one" */
@@ -982,19 +982,19 @@ void REPL_clear(struct REPL* self) {
 	REPL_init_builtins(self);
 	REPL_set_file_modified(self, false);
 }
-static AST::Node* box_environment_elements(HWND dialog, int index, int count) {
+static AST::NodeT box_environment_elements(HWND dialog, int index, int count) {
 	if(index >= count)
 		return(NULL);
 	else {
 		// FIXME Ptr
 		HWND environmentList = GetDlgItem(dialog, IDC_ENVIRONMENT);
-		AST::Node* value = (AST::Node*) GetListViewItemUserData(environmentList, index);
+		AST::NodeT value = (AST::NodeT) GetListViewItemUserData(environmentList, index);
 		std::wstring name = GetListViewEntryStringCXX(environmentList, index);
 		AST::Symbol* nameSymbol = AST::symbolFromStr(ToUTF8(name));
 		return(makeEnvEntry(nameSymbol, value, box_environment_elements(dialog, index + 1, count)));
 	}
 }
-AST::Node* REPL_get_environment(struct REPL* self) {
+AST::NodeT REPL_get_environment(struct REPL* self) {
 	int count = SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LVM_GETITEMCOUNT, (WPARAM) 0, (LPARAM) 0);
 	return(box_environment_elements(self->dialog, 0, count));
 }

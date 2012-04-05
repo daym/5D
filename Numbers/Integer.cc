@@ -6,8 +6,8 @@
 #include "Numbers/Integer"
 
 namespace Evaluators {
-AST::Node* internNative(bool value);
-static inline AST::Node* internNative(AST::Node* value);
+AST::NodeT internNative(bool value);
+static inline AST::NodeT internNative(AST::NodeT value);
 };
 
 namespace Numbers {
@@ -685,12 +685,12 @@ static Int integers[256] = {
         Int(254),
         Int(255),
 }; /* TODO ptr */
-AST::Node* internNative(NativeInt value) {
+AST::NodeT internNative(NativeInt value) {
         if(value >= 0 && value < 256)
                 return(&integers[value]);
         return(new Int(value));
 }
-AST::Node* operator+(const Int& a, const Int& b) {
+AST::NodeT operator+(const Int& a, const Int& b) {
 	NativeInt truncatedResult = a.value + b.value;
 	Integer result = Integer(a.value) + Integer(b.value);
 	if(result == truncatedResult) // TOOD speed up.
@@ -698,7 +698,7 @@ AST::Node* operator+(const Int& a, const Int& b) {
 	else
 		return(new Integer(result));
 }
-AST::Node* operator-(const Int& a, const Int& b) {
+AST::NodeT operator-(const Int& a, const Int& b) {
 	NativeInt truncatedResult = a.value - b.value;
 	Integer result = Integer(a.value) - Integer(b.value);
 	if(result == truncatedResult) // TODO speed up.
@@ -706,7 +706,7 @@ AST::Node* operator-(const Int& a, const Int& b) {
 	else
 		return(new Integer(result));
 }
-AST::Node* operator*(const Int& a, const Int& b) {
+AST::NodeT operator*(const Int& a, const Int& b) {
 	NativeInt truncatedResult = a.value * b.value;
 	Integer result = Integer(a.value) * Integer(b.value);
 	if(result == truncatedResult) // TODO speed up.
@@ -731,11 +731,11 @@ Integer* operator/(const Integer& a, const Integer& b) {
 bool operator<=(const Int& a, const Int& b) {
         return(a.value <= b.value);
 }
-/*AST::Node* operator<=(const Integer& a, const Integer& b) {
+/*AST::NodeT operator<=(const Integer& a, const Integer& b) {
         return(Evaluators::internNative(a.compareTo(b) != Integer::greater));
 }*/
 static Integer xinteger1(1);
-static inline AST::Node* intASucc(AST::Node* argument) {
+static inline AST::NodeT intASucc(AST::NodeT argument) {
 	Int* int1 = dynamic_cast<Int*>(argument);
 	if(int1) {
 		NativeInt value = int1->value;
@@ -746,7 +746,7 @@ static inline AST::Node* intASucc(AST::Node* argument) {
 		return(FALLBACK);
 }
 DEFINE_SIMPLE_OPERATION(IntSucc, intASucc(argument))
-static inline AST::Node* integerASucc(AST::Node* argument) {
+static inline AST::NodeT integerASucc(AST::NodeT argument) {
 	Integer* integer1 = dynamic_cast<Integer*>(argument);
 	if(integer1) {
 		return(new Integer((*integer1) + xinteger1));
@@ -792,7 +792,7 @@ REGISTER_STR(Integer, {
 	return(strInteger(node));
 })
 
-bool toNativeInt(AST::Node* node, NativeInt& result) {
+bool toNativeInt(AST::NodeT node, NativeInt& result) {
 	Int* intNode;
 	Integer* integerNode;
 	result = 0;
@@ -812,7 +812,7 @@ bool toNativeInt(AST::Node* node, NativeInt& result) {
 	} else
 		return(false);
 }
-bool toNearestNativeInt(AST::Node* node, NativeInt& result) {
+bool toNearestNativeInt(AST::NodeT node, NativeInt& result) {
 	Int* intNode;
 	Integer* integerNode;
 	result = 0;
@@ -844,7 +844,7 @@ bool toNearestNativeInt(AST::Node* node, NativeInt& result) {
 	} else
 		return(false);
 }
-AST::Node* internUnsignedLongLong(unsigned long long value, bool B_negative) {
+AST::NodeT internUnsignedLongLong(unsigned long long value, bool B_negative) {
 	Integer result(0);
 	for(; value != 0; value <<= 1) {
 		result *= 2;
@@ -853,16 +853,16 @@ AST::Node* internUnsignedLongLong(unsigned long long value, bool B_negative) {
 	}
 	return new Integer(result);
 }
-AST::Node* internNativeU(NativeUInt value) {
+AST::NodeT internNativeU(NativeUInt value) {
         if(value >= 0 && value < 256)
                 return(&integers[value]);
 	return (value < 0) ? internUnsignedLongLong((unsigned long long) (-value), true) : internUnsignedLongLong((unsigned long long) value, false);
 }
 #ifdef INTERN_NATIVE_NEED_LONG_LONG
-AST::Node* internNative(long long value) {
+AST::NodeT internNative(long long value) {
 	return (value < 0) ? internUnsignedLongLong((unsigned long long) (-value), true) : internUnsignedLongLong((unsigned long long) value, false);
 }
-AST::Node* internNativeU(unsigned long long value) {
+AST::NodeT internNativeU(unsigned long long value) {
 	return internUnsignedLongLong(value, false);
 }
 #endif

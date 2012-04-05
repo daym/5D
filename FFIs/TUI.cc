@@ -8,15 +8,15 @@
 #include "Evaluators/Builtins"
 namespace FFIs {
 
-static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
+static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
 	char* cText;
 	char* cCaption;
 	const char* buttons;
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
-	//AST::Node* parent = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("parent:"));
-	AST::Node* type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("type:"));
-	//AST::Node* modality = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("modality:"));
-	AST::Node* icon = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("icon:"));
+	//AST::NodeT parent = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("parent:"));
+	AST::NodeT type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("type:"));
+	//AST::NodeT modality = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("modality:"));
+	AST::NodeT icon = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("icon:"));
 	const char* cIcon;
 	buttons = (type_ == AST::symbolFromStr("ok")) ? "ok" :
 		 (type_ == AST::symbolFromStr("okcancel")) ? "ok/cancel" :
@@ -38,8 +38,8 @@ static AST::Node* wrapMessageBox(AST::Node* options, AST::Node* argument) {
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	cText = Evaluators::get_string(iter->second);
 	++iter;
-	AST::Node* world = iter->second;
-	AST::Node* caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
+	AST::NodeT world = iter->second;
+	AST::NodeT caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
 	cCaption = caption ? Evaluators::get_string(caption) : NULL;
 	char buffer[21];
 	AST::Symbol* result = AST::symbolFromStr("close");

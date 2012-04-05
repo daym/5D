@@ -15,7 +15,7 @@ longNames = {
     "P": "void*", # or null
     "S": "char*", # or null
     "f": "float",
-    "R": "AST::Node*", # or null
+    "R": "AST::NodeT", # or null
     "V": "VARIANT",
 }
 
@@ -52,31 +52,31 @@ print("""
 namespace Trampolines {
 using namespace FFIs;
 
-static inline AST::Node* extr(const std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter) {
+static inline AST::NodeT extr(const std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter) {
   return(iter->second);
 }
 
-static inline void* getSomethingUseful(AST::Node* n) {
+static inline void* getSomethingUseful(AST::NodeT n) {
   void* result = Evaluators::get_pointer(n);
   if(result == NULL)
     throw Evaluators::EvaluationException("argument is required but empty");
   return(result);
 }
-static inline void* getSomethingUsefulOrNull(AST::Node* n) {
+static inline void* getSomethingUsefulOrNull(AST::NodeT n) {
   if(n == NULL)
      return(NULL);
   else
      return(getSomethingUseful(n));
 }
-static inline AST::Node* makeStrOrNil(const char* s) {
+static inline AST::NodeT makeStrOrNil(const char* s) {
   return(s ? AST::makeStr(s) : NULL);
 }
-static inline AST::Node* makeBox(AST::Node* repr, void* s) {
+static inline AST::NodeT makeBox(AST::NodeT repr, void* s) {
   if(s == NULL)
     throw Evaluators::EvaluationException("argument is required but empty");
   return(AST::makeBox(s, repr));
 }
-static inline AST::Node* makeBoxOrNil(AST::Node* repr, void* s) {
+static inline AST::NodeT makeBoxOrNil(AST::NodeT repr, void* s) {
   return(s ? makeBox(repr, s) : NULL);
 }
 static VARIANT variantEmpty = {0};
@@ -111,7 +111,7 @@ static VARIANT variantEmpty = {0};
 #define inV FFIs::decodeVariantCXX(
 /* FIXME do inL properly */
 
-//typedef AST::Node* (jumper_t)(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end, AST::Node* options, AST::Node* world);
+//typedef AST::NodeT (jumper_t)(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& end, AST::NodeT options, AST::NodeT world);
 
 static HashTable fMarshallers;
 
@@ -139,10 +139,10 @@ for combination in sys.stdin.readlines():
        return("")
     content = combination[1 : ]
     print("typedef %s %s (*proc_%s_t)(%s);" % (getLongName(content[0]), getCallingConvention(combination[0]), combination, ", ".join(map(getLongName, content[1:]))))
-    print("""static %(inliner)s AST::Node* jump%(combination)s(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, AST::Node* options, AST::Node* world) {
+    print("""static %(inliner)s AST::NodeT jump%(combination)s(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, AST::NodeT options, AST::NodeT world) {
         proc_%(combination)s_t proc = (proc_%(combination)s_t) p2->native;
         %(tempvariables)s
-        AST::Node* result = NULL;
+        AST::NodeT result = NULL;
         %(returner)s((*proc)(%(marshallers)s))%(fallback)s;
         return Evaluators::makeIOMonad(result, iter->second); }""" % {
         "combination": combination,
@@ -186,7 +186,7 @@ print("""
 } /* end initMarshallers */
 """)
 print("""
-static AST::Node* jumpT(Evaluators::CProcedure* proc, AST::Node* options, AST::Node* world) {
+static AST::NodeT jumpT(Evaluators::CProcedure* proc, AST::NodeT options, AST::NodeT world) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, world);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	Evaluators::CXXArguments::const_iterator endIter = arguments.end();

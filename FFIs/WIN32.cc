@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along with thi
 namespace FFIs {
 using namespace Evaluators;
 
-AST::Node* wrapAccessLibrary(AST::Node* options, AST::Node* argument) {
+AST::NodeT wrapAccessLibrary(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	Evaluators::CXXArguments::const_iterator endIter = arguments.end();
@@ -39,7 +39,7 @@ AST::Node* wrapAccessLibrary(AST::Node* options, AST::Node* argument) {
 	++iter;
 	assert(iter != endIter);
 	assert(iter->first == NULL);
-	AST::Node* fnName = iter->second;
+	AST::NodeT fnName = iter->second;
 	++iter;
 
 	void* nativeProc = body && fnName ? (void*) GetProcAddress((HMODULE) body, Evaluators::get_string(fnName)) : NULL; // FIXME
@@ -47,7 +47,7 @@ AST::Node* wrapAccessLibrary(AST::Node* options, AST::Node* argument) {
 	//return(Evaluators::reduce(AST::makeApplication(body, argument)));
 	return(new CProcedure(nativeProc, AST::makeApplication(AST::makeApplication(AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), libName), quote(signature)), fnName), strlen(signature->name) - 2 + 1/*monad*/, 0, signature));
 }
-AST::Node* wrapLoadLibraryC(AST::Node* nameS) {
+AST::NodeT wrapLoadLibraryC(AST::NodeT nameS) {
 	const char* name = Evaluators::get_string(nameS);
 	std::wstring nameW = FromUTF8(name);
 	void* clib = LoadLibraryW(nameW.c_str());
@@ -58,12 +58,12 @@ AST::Node* wrapLoadLibraryC(AST::Node* nameS) {
 	return(AST::makeBox(clib, AST::makeApplication(&SharedLibraryLoader, nameS)));
 	//return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 }
-static AST::Node* wrapLoadLibrary(AST::Node* options, AST::Node* filename) {
+static AST::NodeT wrapLoadLibrary(AST::NodeT options, AST::NodeT filename) {
 	filename = reduce(filename);
-	//std::list<std::pair<AST::Keyword*, AST::Node*> > arguments = Evaluators::CXXfromArguments(options, filename);
+	//std::list<std::pair<AST::Keyword*, AST::NodeT> > arguments = Evaluators::CXXfromArguments(options, filename);
 	// struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
 	//assert(self);
-	AST::Node* body = wrapLoadLibraryC(filename);
+	AST::NodeT body = wrapLoadLibraryC(filename);
 	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&SharedLibrary, body)), filename)));
 }
 

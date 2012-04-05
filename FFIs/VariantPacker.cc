@@ -174,18 +174,18 @@ typedef struct tagVARIANT {
 namespace FFIs {
 using namespace Numbers;
 
-/*static SAFEARRAY* marshalCArray(AST::Node* source) {
+/*static SAFEARRAY* marshalCArray(AST::NodeT source) {
 	SAFEARRAY* result = SafeArrayCreateVector(VT_BSTR, 0, (unsigned int) myPaths.size() );
 	return(result);
 }
-static AST::Node* demarshalCArray(SAFEARRAY* arr) {
+static AST::NodeT demarshalCArray(SAFEARRAY* arr) {
 	return(NULL);
 }*/
-static SAFEARRAY* marshalSafeArray(VARTYPE itemType, AST::Node* source) {
+static SAFEARRAY* marshalSafeArray(VARTYPE itemType, AST::NodeT source) {
 	// FIXME
 	return(NULL);
 }
-static AST::Node* demarshalSafeArray(VARTYPE itemType, SAFEARRAY* arr) {
+static AST::NodeT demarshalSafeArray(VARTYPE itemType, SAFEARRAY* arr) {
 	long lBound, uBound;
 	/*
 	VariantInit
@@ -231,11 +231,11 @@ typedef struct  tagSAFEARRAY {
 } SAFEARRAY;
 */
 }
-static void get_tuple_with_two_elements(AST::Node* tuple, AST::Node*& a, AST::Node*& b) {
+static void get_tuple_with_two_elements(AST::NodeT tuple, AST::NodeT& a, AST::NodeT& b) {
 	/* FIXME */
 }
 template<typename A>
-static inline void encodeNumber(AST::Node* source, A& destination) {
+static inline void encodeNumber(AST::NodeT source, A& destination) {
 	Numbers::NativeInt temp;
 	if(!Numbers::toNativeInt(source, temp))
 		throw Evaluators::EvaluationException("pack: number does not fit into slot");
@@ -246,7 +246,7 @@ static inline void encodeNumber(AST::Node* source, A& destination) {
 	}
 }
 static const ULONGLONG max64 = ~0ULL;
-static AST::Node* powersOf10[8] = {
+static AST::NodeT powersOf10[8] = {
 	new Int(1), // 0
 	new Int(10), // 1
 	new Int(100), // 2
@@ -257,12 +257,12 @@ static AST::Node* powersOf10[8] = {
 	new Int(10000000), // 7
 	// C++ has problems with literals up to 10**28
 };
-static void get_DECIMAL(AST::Node* source, DECIMAL* dest) {
+static void get_DECIMAL(AST::NodeT source, DECIMAL* dest) {
 	// dest->wReserved = 0; ???  we assume that the caller took care of that (ugh).
-	AST::Node* c = Evaluators::divremA(source, (Int*) powersOf10[0], NULL);
+	AST::NodeT c = Evaluators::divremA(source, (Int*) powersOf10[0], NULL);
 	if(!c || ! cons_P(c))
 		throw EvaluationException("cannot convert that to DECIMAL");
-	AST::Node* root = get_cons_head(c); // the integral part.
+	AST::NodeT root = get_cons_head(c); // the integral part.
 	NativeInt result2 = 0;
 	dest->scale = 0; // FIXME log10 root
 	dest->sign = 0; // FIXME DECIMAL_NEG if negative, otherwise 0.
@@ -274,10 +274,10 @@ static void get_DECIMAL(AST::Node* source, DECIMAL* dest) {
 		throw Evaluators::EvaluationException("value out of range for Variant");
 	}
 }
-AST::Node* internDECIMAL(DECIMAL* source) {
+AST::NodeT internDECIMAL(DECIMAL* source) {
 	//Given DECIMAL d, the number of decimal places is d.scale 
 	//and the value is (d.sign?-1:1) * (double(d.Lo64) + double(d.Hi32) * double(1UL<<32) * double(1UL<<32)) * pow(10, d.scale)
-	AST::Node* denominator;
+	AST::NodeT denominator;
 	if (source->scale < 8) // and >= 0
 		denominator = powersOf10[source->scale];
 	else {
@@ -292,11 +292,11 @@ AST::Node* internDECIMAL(DECIMAL* source) {
 		result = -result;
 	return(Numbers::makeRatio(new Integer(result), denominator));
 }
-void encodeVariant(AST::Node* both, VARIANT* value) {
-	AST::Node* vtNum;
-	AST::Node* source;
-	AST::Node* a;
-	AST::Node* b;
+void encodeVariant(AST::NodeT both, VARIANT* value) {
+	AST::NodeT vtNum;
+	AST::NodeT source;
+	AST::NodeT a;
+	AST::NodeT b;
 	VariantInit(value);
 	get_tuple_with_two_elements(both, vtNum, source);
 	encodeNumber(vtNum, value->vt);
@@ -437,7 +437,7 @@ void encodeVariant(AST::Node* both, VARIANT* value) {
 	}
 }
 #define MAKE_VTV(b) AST::makeCons(Numbers::internNative(value->vt), AST::makeCons(b, NULL))
-AST::Node* decodeVariant(VARIANT* value) {
+AST::NodeT decodeVariant(VARIANT* value) {
 	if(value->vt & VT_BYREF)
 		return(MAKE_VTV(AST::makeBox(value->byref, NULL/*TODO*/)));
 	if(value->vt & VT_ARRAY) {

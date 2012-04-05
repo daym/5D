@@ -25,13 +25,13 @@ const char* EvaluationException::what() const throw() {
 	return message; //message.c_str();
 };
 
-static void get_free_variables_impl(AST::Node* root, std::set<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& freeNames) {
+static void get_free_variables_impl(AST::NodeT root, std::set<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& freeNames) {
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(root);
 	if(abstraction_P(root)) {
-		AST::Node* parameterNode = get_abstraction_parameter(root);
+		AST::NodeT parameterNode = get_abstraction_parameter(root);
 		AST::Symbol* parameterSymbolNode = dynamic_cast<AST::Symbol*>(parameterNode);
 		assert(parameterSymbolNode);
-		AST::Node* body = get_abstraction_body(root);
+		AST::NodeT body = get_abstraction_body(root);
 		if(boundNames.find(symbolNode) == boundNames.end()) { // not bound yet
 			boundNames.insert(parameterSymbolNode);
 			get_free_variables_impl(body, boundNames, freeNames);
@@ -46,25 +46,25 @@ static void get_free_variables_impl(AST::Node* root, std::set<AST::Symbol*>& bou
 			freeNames.insert(symbolNode);
 	} // else other stuff.
 }
-void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames) {
+void get_free_variables(AST::NodeT root, std::set<AST::Symbol*>& freeNames) {
 	std::set<AST::Symbol*> boundNames;
 	get_free_variables_impl(root, boundNames, freeNames);
 }
-static AST::Symbol* get_variable_name(AST::Node* root) {
+static AST::Symbol* get_variable_name(AST::NodeT root) {
 	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
 	if(refNode)
 		return(refNode->symbol);
 	else
 		return(NULL);
 }
-static inline int get_variable_index(AST::Node* root) {
+static inline int get_variable_index(AST::NodeT root) {
 	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
 	if(refNode)
 		return(refNode->index);
 	else
 		return(-1);
 }
-bool quote_P(AST::Node* root) {
+bool quote_P(AST::NodeT root) {
 	if(root == Symbols::Squote || root == &Quoter)
 		return(true);
 	else {
@@ -72,16 +72,16 @@ bool quote_P(AST::Node* root) {
 		return(ref && ref->symbol == Symbols::Squote);
 	}
 }
-static inline bool quoted_P(AST::Node* root) {
+static inline bool quoted_P(AST::NodeT root) {
 	return(quote_P(root));
 }
-AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& boundNamesSet) {
+AST::NodeT annotate_impl(AST::NodeT root, std::deque<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& boundNamesSet) {
 	// TODO maybe traverse cons etc? maybe not.
 	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(root);
-	AST::Node* result;
+	AST::NodeT result;
 	if(abstraction_P(root)) {
-		AST::Node* parameterNode = get_abstraction_parameter(root);
-		AST::Node* body = get_abstraction_body(root);
+		AST::NodeT parameterNode = get_abstraction_parameter(root);
+		AST::NodeT body = get_abstraction_body(root);
 		AST::Symbol* parameterSymbolNode = dynamic_cast<AST::Symbol*>(parameterNode);
 		assert(parameterSymbolNode);
 		boundNames.push_front(parameterSymbolNode);
@@ -98,13 +98,13 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 		else
 			return(makeAbstraction(parameterNode, result));
 	} else if(application_P(root)) {
-		AST::Node* operator_ = get_application_operator(root);
-		AST::Node* operand = get_application_operand(root);
+		AST::NodeT operator_ = get_application_operator(root);
+		AST::NodeT operand = get_application_operand(root);
 		if(operator_ == &Reducer || operator_ == Symbols::Sinline) { // ideally this would be auto-detected, but it isn't right now.
 			return(annotate_impl(reduce1(operand), boundNames, boundNamesSet));
 		}
-		AST::Node* newOperatorNode = annotate_impl(operator_, boundNames, boundNamesSet);
-		AST::Node* newOperandNode = quoted_P(newOperatorNode) ? operand : annotate_impl(operand, boundNames, boundNamesSet);
+		AST::NodeT newOperatorNode = annotate_impl(operator_, boundNames, boundNamesSet);
+		AST::NodeT newOperandNode = quoted_P(newOperatorNode) ? operand : annotate_impl(operand, boundNames, boundNamesSet);
 		if(operator_ == newOperatorNode && operand == newOperandNode)
 			return(root);
 		else
@@ -128,12 +128,12 @@ AST::Node* annotate_impl(AST::Node* root, std::deque<AST::Symbol*>& boundNames, 
 	} // else other stuff.
 	return(root);
 }
-AST::Node* annotate(AST::Node* root) {
+AST::NodeT annotate(AST::NodeT root) {
 	std::deque<AST::Symbol*> boundNames;
 	std::set<AST::Symbol*> boundNamesSet;
 	return(annotate_impl(root, boundNames, boundNamesSet));
 }
-static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
+static AST::NodeT shift(AST::NodeT argument, int index, AST::NodeT term) {
 	int x_index;
 	x_index = get_variable_index(term);
 	if(x_index != -1) {
@@ -144,10 +144,10 @@ static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
 		else
 			return(term);
 	} else if(application_P(term)) {
-		AST::Node* x_fn;
-		AST::Node* x_argument;
-		AST::Node* new_fn;
-		AST::Node* new_argument;
+		AST::NodeT x_fn;
+		AST::NodeT x_argument;
+		AST::NodeT new_fn;
+		AST::NodeT new_argument;
 		x_fn = get_application_operator(term);
 		x_argument = get_application_operand(term);
 		new_fn = shift(argument, index, x_fn);
@@ -157,9 +157,9 @@ static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
 		else
 			return(makeApplication(new_fn, new_argument));
 	} else if(abstraction_P(term)) {
-		AST::Node* body;
-		AST::Node* parameter;
-		AST::Node* new_body;
+		AST::NodeT body;
+		AST::NodeT parameter;
+		AST::NodeT new_body;
 		body = get_abstraction_body(term);
 		if(body) {
 			parameter = get_abstraction_parameter(term);
@@ -175,7 +175,7 @@ static AST::Node* shift(AST::Node* argument, int index, AST::Node* term) {
 }
 DEFINE_SIMPLE_OPERATION(Reducer, reduce(argument))
 DEFINE_SIMPLE_OPERATION(Quoter, argument)
-static inline bool wants_its_argument_reduced_P(AST::Node* fn) {
+static inline bool wants_its_argument_reduced_P(AST::NodeT fn) {
 	return(false); /* FIXME check for reducer, quoter etc */
 }
 /* TODO static */
@@ -183,12 +183,12 @@ int recursionLevel = 0; /* anti-endless-loop */
 
 // caching results.
 int fGeneration = 1;
-static AST::Node* remember(AST::Node* app, AST::Node* result) {
+static AST::NodeT remember(AST::NodeT app, AST::NodeT result) {
 	((AST::Application*) app)->result = result;
 	((AST::Application*) app)->resultGeneration = fGeneration;
 	return(result);
 }
-AST::Node* get_application_result(AST::Node* n) {
+AST::NodeT get_application_result(AST::NodeT n) {
 	AST::Application* app = (AST::Application*) n;
 	if(app->resultGeneration != fGeneration) {
 		app->result = NULL;
@@ -202,24 +202,24 @@ int increaseGeneration(void) {
 		fGeneration = 0;
 	return(fGeneration);
 }
-static AST::Node* ensureApplication(AST::Node* term, AST::Node* fn, AST::Node* argument) {
+static AST::NodeT ensureApplication(AST::NodeT term, AST::NodeT fn, AST::NodeT argument) {
 	if(get_application_operator(term) == fn && get_application_operand(term) == argument)
 		return(term);
 	else
 		return(makeApplication(fn, argument));
 }
-typedef AST::Node* (replace_predicate_t)(void* userData, AST::Node* node);
-AST::Node* mapTree(void* userData, replace_predicate_t* replacer, AST::Node* term) {/* intended for builtins only */
+typedef AST::NodeT (replace_predicate_t)(void* userData, AST::NodeT node);
+AST::NodeT mapTree(void* userData, replace_predicate_t* replacer, AST::NodeT term) {/* intended for builtins only */
 	// TODO CurriedOperation ? 
 	if(term)
 		term = replacer(userData, term);
 	if(term == NULL) 
 		return(NULL);
 	else if(application_P(term)) {
-		AST::Node* fn = get_application_operand(term);
-		AST::Node* argument = get_application_operator(term);
-		AST::Node* new_fn;
-		AST::Node* new_argument;
+		AST::NodeT fn = get_application_operand(term);
+		AST::NodeT argument = get_application_operator(term);
+		AST::NodeT new_fn;
+		AST::NodeT new_argument;
 		new_fn = mapTree(userData, replacer, fn);
 		new_argument = mapTree(userData, replacer, argument);
 		if(new_fn == fn && new_argument == argument)
@@ -227,10 +227,10 @@ AST::Node* mapTree(void* userData, replace_predicate_t* replacer, AST::Node* ter
 		else
 			return(makeApplication(fn, argument));
 	} else if(abstraction_P(term)) {
-		AST::Node* body;
-		AST::Node* parameter;
-		AST::Node* new_body;
-		AST::Node* new_parameter;
+		AST::NodeT body;
+		AST::NodeT parameter;
+		AST::NodeT new_body;
+		AST::NodeT new_parameter;
 		new_body = body = get_abstraction_body(term);
 		parameter = get_abstraction_parameter(term);
 		new_body = mapTree(userData, replacer, body);
@@ -240,10 +240,10 @@ AST::Node* mapTree(void* userData, replace_predicate_t* replacer, AST::Node* ter
 		else
 			return(makeAbstraction(parameter, new_body));
 	} else if(curried_operation_P(term)) {
-		AST::Node* operator_ = Evaluators::get_curried_operation_operation(term);
-		AST::Node* operand = Evaluators::get_curried_operation_argument(term);
-		AST::Node* new_operator_ = mapTree(userData, replacer, operator_);
-		AST::Node* new_operand = mapTree(userData, replacer, operand);
+		AST::NodeT operator_ = Evaluators::get_curried_operation_operation(term);
+		AST::NodeT operand = Evaluators::get_curried_operation_argument(term);
+		AST::NodeT new_operator_ = mapTree(userData, replacer, operator_);
+		AST::NodeT new_operand = mapTree(userData, replacer, operand);
 		if(new_operator_ == operator_ && new_operand == operand)
 			return(term);
 		else
@@ -251,18 +251,18 @@ AST::Node* mapTree(void* userData, replace_predicate_t* replacer, AST::Node* ter
 	} else
 		return(term);
 }
-static AST::Node* replaceSingleNode(void* userData, AST::Node* node) {
+static AST::NodeT replaceSingleNode(void* userData, AST::NodeT node) {
 	AST::Cons* data = (AST::Cons*) userData;
 	if(node == data->head) {
 		return(Evaluators::evaluateToCons(data->tail)->head);
 	} else
 		return(node);
 }
-AST::Node* replace(AST::Node* needle /* not Symbol */, AST::Node* replacement, AST::Node* haystack) /* intended for builtins only */ {
-	AST::Node* data = AST::makeCons(needle, AST::makeCons(replacement, NULL));
+AST::NodeT replace(AST::NodeT needle /* not Symbol */, AST::NodeT replacement, AST::NodeT haystack) /* intended for builtins only */ {
+	AST::NodeT data = AST::makeCons(needle, AST::makeCons(replacement, NULL));
 	return(mapTree(data, replaceSingleNode, haystack));
 }
-AST::Node* reduce1(AST::Node* term) {
+AST::NodeT reduce1(AST::NodeT term) {
 	if(GUI::interrupted_P())
 		throw EvaluationException("evaluation was interrupted");
 	if(recursionLevel > 10000) {
@@ -273,8 +273,8 @@ AST::Node* reduce1(AST::Node* term) {
 		if(application_result_P(term))
 			return(((AST::Application*) term)->result);
 
-		AST::Node* fn;
-		AST::Node* argument;
+		AST::NodeT fn;
+		AST::NodeT argument;
 		++recursionLevel;
 		fn = reduce1(get_application_operator(term));
 		--recursionLevel;
@@ -285,7 +285,7 @@ AST::Node* reduce1(AST::Node* term) {
 			--recursionLevel;
 		}
 		if(abstraction_P(fn)) {
-			AST::Node* body;
+			AST::NodeT body;
 			body = get_abstraction_body(fn);
 			body = shift(argument, 1, body);
 			++recursionLevel;
@@ -295,7 +295,7 @@ AST::Node* reduce1(AST::Node* term) {
 		} else {
 			// most of the time, SymbolReference anyway: AST::Symbol* fnName = dynamic_cast<AST::Symbol*>(fn);
 			if(builtin_call_P(fn)) {
-				AST::Node* result;
+				AST::NodeT result;
 				result = call_builtin(fn, argument);
 				return(remember(term, result));
 			} else {
@@ -306,9 +306,9 @@ AST::Node* reduce1(AST::Node* term) {
 		}
 	} else if(abstraction_P(term)) {
 		/* this isn't strictly necessary, but nicer */
-		AST::Node* body;
-		AST::Node* parameter;
-		AST::Node* new_body;
+		AST::NodeT body;
+		AST::NodeT parameter;
+		AST::NodeT new_body;
 		new_body = body = get_abstraction_body(term);
 		parameter = get_abstraction_parameter(term);
 #if 0
@@ -327,26 +327,26 @@ AST::Node* reduce1(AST::Node* term) {
 	} else
 		return(term);
 }
-AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body) {
+AST::NodeT close(AST::Symbol* parameter, AST::NodeT argument, AST::NodeT body) {
 	return(makeApplication(makeAbstraction(parameter, body), argument));
 }
-AST::Node* makeError(const char* reason) {
+AST::NodeT makeError(const char* reason) {
 	// FIXME!!
 	return(AST::makeStr(reason));
 }
-bool define_P(AST::Node* input) {
+bool define_P(AST::NodeT input) {
 	return(input != NULL && application_P(input) && get_application_operator(input) == Symbols::Sdefine);
 }
-AST::Node* evaluate(AST::Node* computation) {
+AST::NodeT evaluate(AST::NodeT computation) {
 	if(application_P(computation))
 		return(get_application_result(computation));
 	else
 		return(computation);
 }
-AST::Cons* evaluateToCons(AST::Node* computation) {
+AST::Cons* evaluateToCons(AST::NodeT computation) {
 	return(dynamic_cast<AST::Cons*>(evaluate(computation))); // TODO error check
 }
-AST::Node* programFromSExpression(AST::Node* root) {
+AST::NodeT programFromSExpression(AST::NodeT root) {
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(root);
 	if(consNode) {
 		// application or abstraction
@@ -354,14 +354,14 @@ AST::Node* programFromSExpression(AST::Node* root) {
 			assert(consNode->tail);
 			assert(evaluateToCons(consNode->tail)->tail);
 			assert(evaluateToCons(evaluateToCons(consNode->tail)->tail)->tail == NULL);
-			AST::Node* parameter = evaluateToCons(consNode->tail)->head;
-			AST::Node* body = evaluateToCons(evaluateToCons(consNode->tail)->tail)->head;
+			AST::NodeT parameter = evaluateToCons(consNode->tail)->head;
+			AST::NodeT body = evaluateToCons(evaluateToCons(consNode->tail)->tail)->head;
 			return(makeAbstraction(programFromSExpression(parameter), programFromSExpression(body)));
 		} else { // application
 			assert(evaluateToCons(consNode->tail));
 			assert(evaluateToCons(evaluateToCons(consNode->tail)->tail) == NULL);
-			AST::Node* operator_ = consNode->head;
-			AST::Node* operand = evaluateToCons(consNode->tail)->head;
+			AST::NodeT operator_ = consNode->head;
+			AST::NodeT operand = evaluateToCons(consNode->tail)->head;
 			return(makeApplication(programFromSExpression(operator_), programFromSExpression(operand)));
 		}
 	} else
@@ -371,11 +371,11 @@ AST::Node* programFromSExpression(AST::Node* root) {
 REGISTER_BUILTIN(Reducer, 1, 0, Symbols::Sinline)
 REGISTER_BUILTIN(Quoter, 1, 0, Symbols::Squote)
 
-AST::Node* quote(AST::Node* value) {
+AST::NodeT quote(AST::NodeT value) {
 	return(makeApplication(&Quoter, value));
 }
 
-CurriedOperation* makeCurriedOperation(Node* operation, Node* argument) {
+CurriedOperation* makeCurriedOperation(NodeT operation, NodeT argument) {
 	CurriedOperation* result = new CurriedOperation;
 	result->fOperation  = operation;
 	result->fArgument = argument;

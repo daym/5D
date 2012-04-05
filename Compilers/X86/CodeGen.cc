@@ -1,11 +1,11 @@
 #include "Compilers/X86/CodeGen"
 namespace Compilers {
 namespace X86 {
-unsigned CodeGen::get_size_in_bits(AST::Node* source) {
+unsigned CodeGen::get_size_in_bits(AST::NodeT source) {
         /* FIXME */
         return(32);
 }
-void CodeGen::gen_push(AST::Node* source) {
+void CodeGen::gen_push(AST::NodeT source) {
         /* if source is a symbol, we assume it means a register. */
         AST::Symbol* sourceSymbol = dynamic_cast<AST::Symbol*>(source);
 		if(sourceSymbol) {
@@ -32,7 +32,7 @@ void CodeGen::gen_push(AST::Node* source) {
 			}
 		}
 }
-void CodeGen::gen_pop(AST::Node* source) {
+void CodeGen::gen_pop(AST::NodeT source) {
         /* if source is a symbol, we assume it means a register. */
         AST::Symbol* sourceSymbol = dynamic_cast<AST::Symbol*>(source);
 		if(sourceSymbol) {
@@ -54,7 +54,7 @@ void CodeGen::gen_pop(AST::Node* source) {
 void CodeGen::gen_stack_throwaway_bits(int bit_count) {
         /* FIXME add bit_count / 8, %esp */
 }
-void CodeGen::gen_call(AST::Node* destination) {
+void CodeGen::gen_call(AST::NodeT destination) {
         /* FIXME call destination */
 	/*
 *    call eax  FF D0
@@ -94,7 +94,7 @@ void CodeGen::gen_call(AST::Node* destination) {
 
 	*/
 }
-void CodeGen::gen_load_register(AST::Symbol* register_, AST::Node* value) {
+void CodeGen::gen_load_register(AST::Symbol* register_, AST::NodeT value) {
         /* FIXME load register with value */
 }
 void CodeGen::gen_enter_frame(void) {

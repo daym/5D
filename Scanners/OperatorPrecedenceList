@@ -39,7 +39,7 @@ struct OperatorPrecedenceList : AST::Node {
 		return(precedence_level >= MAX_PRECEDENCE_LEVELS || levels[precedence_level] == NULL);
 	}
 	/* for speed reasons, it can happen that the same operator is present multiple times on the same level. */
-	AST::Node* match_operator(int precedence_level, AST::Node* operator_, struct AST::Symbol*& associativity_out, bool& B_visible_operator) const {
+	AST::NodeT match_operator(int precedence_level, AST::NodeT operator_, struct AST::Symbol*& associativity_out, bool& B_visible_operator) const {
 		B_visible_operator = true;
 		if(precedence_level < 0 || precedence_level >= MAX_PRECEDENCE_LEVELS)
 			return(NULL);
@@ -61,7 +61,7 @@ struct OperatorPrecedenceList : AST::Node {
 		associativity_out = NULL;
 		return(NULL);
 	}
-	bool any_operator_P(AST::Node* thingie) const {
+	bool any_operator_P(AST::NodeT thingie) const {
 		if(!this) // if we don't have OperatorPrecedenceList, no point in checking it
 			return(false);
 		return(get_operator_precedence(dynamic_cast<AST::Symbol*>(thingie)) != -1);

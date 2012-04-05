@@ -18,7 +18,7 @@ namespace AST {
 Node::~Node() {
 }
 
-Cons* makeCons(Node* head, Node* tail) {
+Cons* makeCons(NodeT head, NodeT tail) {
 	Cons* result = new Cons;
 	result->head = head;
 	result->tail = tail;
@@ -46,11 +46,11 @@ Str* makeStrCXX(const std::string& text, bool bAtomic) {
 	memcpy(result, text.c_str(), text.length() + 1);
 	return(makeStrRaw(result, text.length(), bAtomic));
 }
-bool str_P(AST::Node* node) {
+bool str_P(AST::NodeT node) {
 	return(dynamic_cast<AST::Str*>(node) != NULL);
 }
 
-Application* makeApplication(Node* fn, Node* argument) {
+Application* makeApplication(NodeT fn, NodeT argument) {
 	Application* result = new Application;
 	result->operator_ = fn;
 	result->operand = argument;
@@ -58,13 +58,13 @@ Application* makeApplication(Node* fn, Node* argument) {
 	result->resultGeneration = 0;
 	return(result);
 }
-Abstraction* makeAbstraction(Node* parameter, Node* body) {
+Abstraction* makeAbstraction(NodeT parameter, NodeT body) {
 	Abstraction* result = new Abstraction;
 	result->parameter = parameter;
 	result->body = body;
 	return(result);
 }
-Application* makeOperation(Node* operator_, Node* operand_1, Node* operand_2) {
+Application* makeOperation(NodeT operator_, NodeT operand_1, NodeT operand_2) {
 	if(operator_ == NULL/* || operand_1 == NULL*//* || operand_2 == NULL*/) {
 		return(NULL);
 	} else if(operator_ == Symbols::Sspace) // apply

@@ -8,7 +8,7 @@
 #include "Evaluators/Operation"
 
 namespace Evaluators {
-AST::Node* internNative(bool value);   
+AST::NodeT internNative(bool value);   
 };
 namespace Numbers {
 using namespace Evaluators;
@@ -17,8 +17,8 @@ using namespace Evaluators;
 #if __SIZEOF_LONG_LONG__ != __SIZEOF_LONG__
 #define INTERN_NATIVE_NEED_LONG_LONG
 #error foo
-AST::Node* internNative(long long value);
-AST::Node* internNativeU(unsigned long long value);
+AST::NodeT internNative(long long value);
+AST::NodeT internNativeU(unsigned long long value);
 typedef long int NativeInt; /* register type */
 #else
 typedef long long int NativeInt; /* register type */
@@ -26,8 +26,8 @@ typedef long long int NativeInt; /* register type */
 #else
 #define INTERN_NATIVE_NEED_LONG_LONG
 typedef int NativeInt; /* register type */
-AST::Node* internNative(long long value);
-AST::Node* internNativeU(unsigned long long value);
+AST::NodeT internNative(long long value);
+AST::NodeT internNativeU(unsigned long long value);
 #endif
 
 
@@ -240,25 +240,25 @@ inline void Integer::flipSign() {
 DECLARE_SMALL_VALUE(Int, Numbers::NativeInt)
 DECLARE_SIMPLE_OPERATION(IntP)
 DECLARE_SIMPLE_OPERATION(IntegerP)
-AST::Node* internNative(NativeInt value);
-AST::Node* internNativeU(NativeUInt value);
+AST::NodeT internNative(NativeInt value);
+AST::NodeT internNativeU(NativeUInt value);
 DECLARE_SIMPLE_OPERATION(IntSucc)
 DECLARE_SIMPLE_OPERATION(IntegerSucc)
 
-AST::Node* operator+(const Int& a, const Int& b);
-AST::Node* operator-(const Int& a, const Int& b);
-AST::Node* operator*(const Int& a, const Int& b);
+AST::NodeT operator+(const Int& a, const Int& b);
+AST::NodeT operator-(const Int& a, const Int& b);
+AST::NodeT operator*(const Int& a, const Int& b);
 /*
 Integer* operator+(const Integer& a, const Integer& b);
 Integer* operator-(const Integer& a, const Integer& b);
 Integer* operator*(const Integer& a, const Integer& b);
 Integer* operator/(const Integer& a, const Integer& b);
-AST::Node* operator<=(const Integer& a, const Integer& b);
+AST::NodeT operator<=(const Integer& a, const Integer& b);
 */
 bool operator<=(const Int& a, const Int& b);
 
-bool toNativeInt(AST::Node* node, NativeInt& result);
-bool toNearestNativeInt(AST::Node* node, NativeInt& result);
+bool toNativeInt(AST::NodeT node, NativeInt& result);
+bool toNearestNativeInt(AST::NodeT node, NativeInt& result);
 
 }; /* namespace Numbers */
 #endif

@@ -22,27 +22,27 @@ Scanners::OperatorPrecedenceList* default_operator_precedence_list(void) {
 	// FIXME just reuse the same global all the time.
 	return(result);
 }
-static AST::Node* access_module(AST::Node* fn, AST::Node* argument) {
+static AST::NodeT access_module(AST::NodeT fn, AST::NodeT argument) {
 	Evaluators::CurriedOperation* o = dynamic_cast<Evaluators::CurriedOperation*>(fn);
 	Evaluators::CurriedOperation* o2 = dynamic_cast<Evaluators::CurriedOperation*>(o->fOperation);
-	AST::Node* body = o2->fArgument;
+	AST::NodeT body = o2->fArgument;
 	// filename is the second argument, so ignore.
 	std::string v = Evaluators::str(o->fArgument);
 	//fprintf(stderr, "accessing module %s\n", v.c_str());
-	AST::Node* result = Evaluators::reduce(AST::makeApplication(body, argument));
+	AST::NodeT result = Evaluators::reduce(AST::makeApplication(body, argument));
 	//fprintf(stderr, "end accessing module %s\n", v.c_str());
 	return(result);
 }
 
-AST::Node* prepare_module(AST::Node* input) {
-	AST::Node* result = Evaluators::provide_dynamic_builtins(input);
+AST::NodeT prepare_module(AST::NodeT input) {
+	AST::NodeT result = Evaluators::provide_dynamic_builtins(input);
 	result = Evaluators::annotate(result);
 	return(result);
 }
 
-static AST::Node* force_import_module(const char* filename) {
+static AST::NodeT force_import_module(const char* filename) {
 	int previousErrno = errno;
-	AST::Node* result = NULL;
+	AST::NodeT result = NULL;
 	if(FFIs::sharedLibraryFileP(filename)) {
 		return Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&FFIs::SharedLibraryLoader, AST::makeStr(filename))), NULL)), AST::makeStr("access5DModuleV1")));
 	}
@@ -53,7 +53,7 @@ static AST::Node* force_import_module(const char* filename) {
 			return(FALLBACK);
 		try {
 			parser.push(input_file, 0, filename);
-			AST::Node* result = NULL;
+			AST::NodeT result = NULL;
 			result = parser.parse(default_operator_precedence_list(), Symbols::SlessEOFgreater);
 			result = Evaluators::close(Symbols::Squote, &Evaluators::Quoter, result); // module needs that, so provide it.
 			result = Evaluators::close(Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb))), result); // TODO close
@@ -85,7 +85,7 @@ static AST::Node* force_import_module(const char* filename) {
 	return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 }
 static AST::HashTable* fModules = new AST::HashTable;
-AST::Node* require_module(const char* filename, const std::string& xmoduleKey) {
+AST::NodeT require_module(const char* filename, const std::string& xmoduleKey) {
 	if(fModules == NULL) { /* init order problems, sigh. */
 		fModules = new AST::HashTable;
 	}
@@ -108,7 +108,7 @@ static std::vector<std::string> get_module_search_path(void) {
 #endif
 	return(result);
 }
-AST::Node* import_module(AST::Node* options, AST::Node* fileNameNode) {
+AST::NodeT import_module(AST::NodeT options, AST::NodeT fileNameNode) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, fileNameNode);
 	std::vector<std::string> searchPaths = get_module_search_path();
 	std::vector<std::string>::const_iterator endSearchPaths = searchPaths.end();
@@ -131,7 +131,7 @@ AST::Node* import_module(AST::Node* options, AST::Node* fileNameNode) {
 		return(FALLBACK);
 	}
 	char* actualFilename = FFIs::get_absolute_path(realFilename.c_str());
-	AST::Node* body = Evaluators::require_module(actualFilename, moduleKey);
+	AST::NodeT body = Evaluators::require_module(actualFilename, moduleKey);
 	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&Module, body)), AST::makeStr(actualFilename))));
 }
 

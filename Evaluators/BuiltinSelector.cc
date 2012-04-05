@@ -32,11 +32,11 @@ namespace Evaluators {
 
 static AST::HashTable self;
 
-static void add_static_builtin_binding(AST::HashTable& self, AST::Symbol* name, AST::Node* value) {
+static void add_static_builtin_binding(AST::HashTable& self, AST::Symbol* name, AST::NodeT value) {
 	// TODO maybe dup name. Not really from the looks of it.
 	self[name->name] = value;
 }
-static void add_builtin_method(AST::HashTable& self, AST::Symbol* name, AST::Node* value) {
+static void add_builtin_method(AST::HashTable& self, AST::Symbol* name, AST::NodeT value) {
 	add_static_builtin_binding(self, name, value);
 }
 
@@ -132,7 +132,7 @@ void BuiltinSelector_init(void) {
 	self[Symbols::Sexports->name] = consFromKeys(self.begin(), self.end());
 }
 
-static AST::Node* getEntry(AST::Symbol* name) {
+static AST::NodeT getEntry(AST::Symbol* name) {
 	if(!name || !name->name)
 		return(NULL);
 	AST::HashTable::const_iterator iter = self.find(name->name);

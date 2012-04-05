@@ -33,12 +33,12 @@ struct ltstr {
 	}
 };
 
-////typedef std::unordered_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
-////typedef __gnu_cxx::hash_map<const char*, AST::Node*, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
-//typedef std::map<const char*, AST::Node*, ltstr, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
-//// has no allocator: typedef khmap_t<const char*, AST::Node*, khashf_t, khasheq_t, gc_allocator<std::pair<const char*, AST::Node*> > > RawHashTable;
+////typedef std::unordered_map<const char*, AST::NodeT, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::NodeT> > > RawHashTable;
+////typedef __gnu_cxx::hash_map<const char*, AST::NodeT, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::NodeT> > > RawHashTable;
+//typedef std::map<const char*, AST::NodeT, ltstr, gc_allocator<std::pair<const char*, AST::NodeT> > > RawHashTable;
+//// has no allocator: typedef khmap_t<const char*, AST::NodeT, khashf_t, khasheq_t, gc_allocator<std::pair<const char*, AST::NodeT> > > RawHashTable;
 /*
-static AST::Node* listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
+static AST::NodeT listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
 	if(iter == endIter)
 		return(NULL);
 	else {
@@ -226,7 +226,7 @@ public:
 	}
 	/* TODO (if we ever need that) deletion of entries */
 };
-typedef RawHashTable<const char*, AST::Node*, hashstr, eqstr> HashTable;
+typedef RawHashTable<const char*, AST::NodeT, hashstr, eqstr> HashTable;
 
 #ifdef CX11
 class HashTable : public RawHashTable, public AST::Node {

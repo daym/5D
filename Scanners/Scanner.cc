@@ -94,8 +94,8 @@ void Scanner::ensure_end(void) {
 		raise_error("<EOF>", str(input_value));
 }
 /* returns the PREVIOUS value */
-AST::Node* Scanner::consume(AST::Node* expected_value) {
-	AST::Node* previous_value;
+AST::NodeT Scanner::consume(AST::NodeT expected_value) {
+	AST::NodeT previous_value;
 	previous_value = input_value;
 	if(expected_value && expected_value != input_value)
 		raise_error(str(expected_value), str(input_value));
@@ -626,7 +626,7 @@ void Scanner::update_indentation() {
 		}
 	}
 }
-void Scanner::inject(AST::Node* value) {
+void Scanner::inject(AST::NodeT value) {
 	/* it is assumed that this is called while scanning whitespace - or right afterwards */
 	//input_value = &pending;
 	//std::string v = str(value);

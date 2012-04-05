@@ -83,9 +83,9 @@ protected:
 	void decrease_brace_level() {
 		--brace_level;
 	}
-	void inject(AST::Node* input_value);
+	void inject(AST::NodeT input_value);
 public:
-	AST::Node* input_value; // read-only
+	AST::NodeT input_value; // read-only
 	void push(FILE* input_file, int line_number, const char* input_name);
 	void pop(void);
 	int get_position(void) const {
@@ -102,14 +102,14 @@ public:
 	Scanner(void);
 	bool EOFP(void) const;
 	void ensure_end(void);
-	AST::Node* consume(AST::Node* expected_value = NULL);
+	AST::NodeT consume(AST::NodeT expected_value = NULL);
 	bool setHonorIndentation(bool value) {
 		bool result = B_honor_indentation;
 		B_honor_indentation = value;
 		return(result);
 	}
 private:
-	std::list<AST::Node*> injected_input_values;
+	std::list<AST::NodeT> injected_input_values;
 	bool deinject();
 	void parse_token(void);
 	void parse_optional_whitespace(void);

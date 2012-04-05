@@ -9,7 +9,7 @@ namespace Compilers {
 namespace X86 {
 struct BorlandFastCallGen : public PascalCallGen {
 	BorlandFastCallGen(CodeGen* code_gen);
-	virtual void build(AST::Node* call_destination);
+	virtual void build(AST::NodeT call_destination);
 };
 }; /* end namespace X86 */
 }; /* end namespace X86 */

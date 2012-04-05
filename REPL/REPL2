@@ -16,10 +16,10 @@ struct OperatorPrecedenceList;
 namespace REPL { // new interface
 OperatorPrecedenceList* getOperatorPrecedenceList(struct REPL* self);
 Environment* getEnvironment(struct REPL* self);
-AST::Node* describe(struct REPL* self, AST::Node* options, AST::Node* key);
-AST::Node* define(struct REPL* self, AST::Node* key, AST::Node* value);
-AST::Node* import(struct REPL* self, AST::Node* options, AST::Node* filename);
+AST::NodeT describe(struct REPL* self, AST::NodeT options, AST::NodeT key);
+AST::NodeT define(struct REPL* self, AST::NodeT key, AST::NodeT value);
+AST::NodeT import(struct REPL* self, AST::NodeT options, AST::NodeT filename);
 void purge(struct REPL* self);
-AST::Node* evaluate(struct REPL* self, AST::Node* node);
+AST::NodeT evaluate(struct REPL* self, AST::NodeT node);
 };
 #endif /*ndef __REPL_REPL2_H*/

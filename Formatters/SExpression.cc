@@ -27,7 +27,7 @@ static void print_indentation(std::ostream& output, int indentation) {
 	for(; indentation > 0; --indentation)
 		output << ' ';
 }
-void print_S_Expression_CXX(std::ostream& output, int& position, int indentation, AST::Node* node) {
+void print_S_Expression_CXX(std::ostream& output, int& position, int indentation, AST::NodeT node) {
 	bool B_split_cons_items = true;
 	node = repr(node);
 	AST::Cons* consNode = dynamic_cast<AST::Cons*>(node);
@@ -108,7 +108,7 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		print_text(output, position, value.c_str());
 	}
 }
-void print_S_Expression(FILE* output_file, int position, int indentation, AST::Node* node) {
+void print_S_Expression(FILE* output_file, int position, int indentation, AST::NodeT node) {
 	std::stringstream sst;
 	std::string value;
 	print_S_Expression_CXX(sst, position, indentation, node);

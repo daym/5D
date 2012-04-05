@@ -82,15 +82,15 @@ struct REPL : AST::Node {
 	char* fSearchTerm;
 	bool fBSearchUpwards;
 	bool fBSearchCaseSensitive;
-	AST::Node* fTailEnvironment;
-	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::Node* fTailUserEnvironmentFrontier;
+	AST::NodeT fTailEnvironment;
+	AST::NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::NodeT fTailUserEnvironmentFrontier;
 	AST::HashTable* fModules;
 	GtkTextIter fCursorPosition;
 };
 };
 namespace GUI {
-int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value);
+int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::NodeT value);
 void REPL_insert_into_output_buffer(struct REPL* self, GtkTextIter* destination, const char* text);
 void REPL_set_file_modified(struct REPL* self, bool value);
 void REPL_queue_scroll_down(struct REPL* self);
@@ -191,7 +191,7 @@ char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIte
 	/*g_utf8_pointer_to_offset(str, str+byte_index)*/
 	return(result);
 }
-static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* destination);
+static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, GtkTextIter* destination);
 static gboolean REPL_scroll_down(struct REPL* self) {
 	GtkTextIter iter;
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
@@ -210,7 +210,7 @@ void REPL_insert_error_message(struct REPL* self, GtkTextIter* destination, cons
 	REPL_set_file_modified(self, true);
 	REPL_queue_scroll_down(self);
 }
-/*bool REPL_execute_end(struct REPL* self, AST::Node* expression) {
+/*bool REPL_execute_end(struct REPL* self, AST::NodeT expression) {
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &self->fCursorPosition);
 	return REPL_execute(self, input, &end);
 }*/
@@ -219,7 +219,7 @@ static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 	GtkTextIter end;
 	gboolean B_from_entry = false;
 	gchar* text;
-	AST::Node* input;
+	AST::NodeT input;
 	if(!gtk_text_buffer_get_selection_bounds(self->fOutputBuffer, &beginning, &end)) {
 		gtk_text_buffer_get_start_iter(self->fOutputBuffer, &beginning);
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
@@ -268,7 +268,7 @@ static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePat
 		if(!command)
 			return;
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-		AST::Node* body = REPL_get_definition(self, *gtk_tree_path_get_indices(path));
+		AST::NodeT body = REPL_get_definition(self, *gtk_tree_path_get_indices(path));
 		REPL_enqueue_LATEX(self, body, &end);
 		B_ok = true;
 	}
@@ -464,7 +464,7 @@ void REPL_load_tips(struct REPL* self) {
 	input_file = fopen(d.c_str(), "r");
 	if(input_file) {
 		Scanners::SExpressionParser parser;
-		AST::Node* contents;
+		AST::NodeT contents;
 		parser.push(input_file, 0, "<stdin>");
 		contents = parser.parse_S_Expression();
 		fclose(input_file);
@@ -767,7 +767,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	if(Config_get_show_tips(self->fConfig))
 		REPL_show_tips(self);
 }
-int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::Node* value) {
+int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::NodeT value) {
 	GtkTreeIter iter;
 	GtkTreePath* path = NULL;
 	g_hash_table_replace(self->fEnvironmentKeys, g_strdup(name->name), gtk_tree_iter_copy(&iter));
@@ -796,7 +796,7 @@ int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST
 GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));
 }
-static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, GtkTextIter* destination) {
+static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, GtkTextIter* destination) {
 	//Formatters::Math::print(REPL_ensure_operator_precedence_list(self), stdout, 0, 0, node);
 	//Formatters::print_S_Expression(stdout, 0, 0, node);
 	//fprintf(stdout, "\n");
@@ -861,7 +861,7 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* o_text) {
 		} else {
 			FILE* input_file;
 			Scanners::SExpressionParser parser;
-			AST::Node* content;
+			AST::NodeT content;
 			next_text = image_match + 3;
 			*image_match = 0;
 			gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);

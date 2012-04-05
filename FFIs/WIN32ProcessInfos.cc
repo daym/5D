@@ -26,27 +26,27 @@ bool absolute_path_P(AST::Str* name) {
 		return(true);
 	return(false);
 }
-static AST::Node* internEnviron(WCHAR* envp) {
+static AST::NodeT internEnviron(WCHAR* envp) {
 	if(*envp) {
 		int count = wcslen(envp);
-		AST::Node* head = AST::makeStr(ToUTF8(envp));
+		AST::NodeT head = AST::makeStr(ToUTF8(envp));
 		envp += count + 1;
 		return(AST::makeCons(head, internEnviron(envp)));
 	}
 	else
 		return(NULL);
 }
-static AST::Node* wrapInternEnviron(AST::Node* argument) {
+static AST::NodeT wrapInternEnviron(AST::NodeT argument) {
 	AST::Box* envp = dynamic_cast<AST::Box*>(argument);
 	// TODO check whether it worked? No.
 	return internEnviron((WCHAR*) envp->native);
 }
-static AST::Box* environFromList(AST::Node* argument) {
+static AST::Box* environFromList(AST::NodeT argument) {
 	int count = 0;
 	WCHAR* resultC;
 	std::vector<std::wstring> result;
 	int i = 0;
-	AST::Node* listNode = Evaluators::reduce(argument);
+	AST::NodeT listNode = Evaluators::reduce(argument);
 	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
 		std::wstring v = FromUTF8(Evaluators::get_string(node->head));
 		result.push_back(v);
@@ -64,8 +64,8 @@ static AST::Box* environFromList(AST::Node* argument) {
 	resultC[i] = 0;
 	return(AST::makeBox(resultC, AST::makeApplication(&EnvironFromList, listNode/* or argument*/)));
 }
-static AST::Node* wrapGetEnviron(AST::Node* world) {
-	AST::Node* result;
+static AST::NodeT wrapGetEnviron(AST::NodeT world) {
+	AST::NodeT result;
 	LPWSTR env = GetEnvironmentStringsW();
 	result = Evaluators::makeIOMonad(internEnviron(env), world);
 	FreeEnvironmentStringsW(env);
@@ -82,12 +82,12 @@ char* get_absolute_path(const char* filename) {
 	} else
 		return(GCx_strdup(filename));
 }
-static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
+static AST::NodeT wrapGetAbsolutePath(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	char* text = iter->second ? Evaluators::get_string(iter->second) : NULL;
 	++iter;
-	AST::Node* world = iter->second;
+	AST::NodeT world = iter->second;
 	text = get_absolute_path(text);
 	return(Evaluators::makeIOMonad(AST::makeStr(text), world));
 }

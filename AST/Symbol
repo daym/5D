@@ -31,7 +31,7 @@ public:
 };
 Symbol* symbolFromStr(const char* name) G_5D_GNUC_PURE;
 
-static inline bool symbol_P(AST::Node* argument) {
+static inline bool symbol_P(AST::NodeT argument) {
 	return(dynamic_cast<Symbol*>(argument) != NULL || dynamic_cast<SymbolReference*>(argument) != NULL);
 }
 

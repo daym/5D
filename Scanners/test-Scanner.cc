@@ -11,7 +11,7 @@ namespace Evaluators {
 
 struct StrRegistration;
 
-std::string str(AST::Node* node) {
+std::string str(AST::NodeT node) {
 	return("none");
 }
 void registerStr(StrRegistration* r) {

@@ -4,7 +4,7 @@
 #include "Evaluators/Builtins"
 
 namespace Evaluators {
-AST::Node* internNative(bool value);
+AST::NodeT internNative(bool value);
 };
 
 namespace Numbers {
@@ -22,22 +22,22 @@ REGISTER_STR(Float, {
 
 REGISTER_STR(Real, return("FIXME");)
 
-AST::Node* internNative(NativeFloat value) {
+AST::NodeT internNative(NativeFloat value) {
 	return(new Float(value));
 }
 
 DEFINE_SIMPLE_OPERATION(FloatP, dynamic_cast<Float*>(reduce(argument)) != NULL)
 
-AST::Node* operator+(const Float& a, const Float& b) {
+AST::NodeT operator+(const Float& a, const Float& b) {
 	return(internNative(a.value + b.value)); /* FIXME */
 }
-AST::Node* operator-(const Float& a, const Float& b) {
+AST::NodeT operator-(const Float& a, const Float& b) {
 	return(internNative(a.value - b.value)); /* FIXME */
 }
-AST::Node* operator*(const Float& a, const Float& b) {
+AST::NodeT operator*(const Float& a, const Float& b) {
 	return(internNative(a.value * b.value)); /* FIXME */
 }
-AST::Node* operator/(const Float& a, const Float& b) {
+AST::NodeT operator/(const Float& a, const Float& b) {
 	return(internNative(a.value / b.value)); /* FIXME */
 }
 Real* operator+(const Real& a, const Real& b) {
@@ -52,16 +52,16 @@ Real* operator*(const Real& a, const Real& b) {
 Real* operator/(const Real& a, const Real& b) {
 	return(NULL); /* FIXME */
 }
-AST::Node* operator<=(const Float& a, const Float& b) {
+AST::NodeT operator<=(const Float& a, const Float& b) {
 	return(Evaluators::internNative(a.value <= b.value));
 }
-AST::Node* operator<=(const Real& a, const Real& b) {
+AST::NodeT operator<=(const Real& a, const Real& b) {
 	return(Evaluators::internNative(false)); /* FIXME */
 }
 
 REGISTER_BUILTIN(FloatP, 1, 0, AST::symbolFromStr("float?"))
 
-bool toNativeFloat(AST::Node* node, NativeFloat& result) {
+bool toNativeFloat(AST::NodeT node, NativeFloat& result) {
 	Float* floatNode;
 	Real* realNode;
 	result = 0.0;

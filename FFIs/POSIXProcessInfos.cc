@@ -34,24 +34,24 @@ bool absolute_path_P(AST::Str* name) {
 	char* c = (char*) name->native;
 	return(*c == '/');
 }
-static AST::Node* internEnviron(const char** envp) {
+static AST::NodeT internEnviron(const char** envp) {
 	if(*envp) {
-		AST::Node* head = AST::makeStr(*envp++);
+		AST::NodeT head = AST::makeStr(*envp++);
 		return(AST::makeCons(head, internEnviron(envp)));
 	}
 	else
 		return(NULL);
 }
-static AST::Node* wrapInternEnviron(AST::Node* argument) {
+static AST::NodeT wrapInternEnviron(AST::NodeT argument) {
 	AST::Box* envp = dynamic_cast<AST::Box*>(argument);
 	// TODO check whether it worked? No.
 	return internEnviron((const char**) envp->native);
 }
-static AST::Box* environFromList(AST::Node* argument) {
+static AST::Box* environFromList(AST::NodeT argument) {
 	int count = 0;
 	char** result;
 	int i = 0;
-	AST::Node* listNode = Evaluators::reduce(argument);
+	AST::NodeT listNode = Evaluators::reduce(argument);
 	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
 		++count;
 		// FIXME handle overflow
@@ -81,12 +81,12 @@ char* get_absolute_path(const char* filename) {
 		return(GCx_strdup(v.c_str()));
 	}
 }
-static AST::Node* wrapGetAbsolutePath(AST::Node* options, AST::Node* argument) {
+static AST::NodeT wrapGetAbsolutePath(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	char* text = iter->second ? Evaluators::get_string(iter->second) : NULL;
 	++iter;
-	AST::Node* world = iter->second;
+	AST::NodeT world = iter->second;
 	text = get_absolute_path(text);
 	return(Evaluators::makeIOMonad(AST::makeStr(text), world));
 }

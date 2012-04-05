@@ -21,7 +21,7 @@ struct Keyword : Node {
 };
 
 Keyword* keywordFromStr(const char* name) G_5D_GNUC_PURE;
-static inline bool keyword_P(AST::Node* argument) {
+static inline bool keyword_P(AST::NodeT argument) {
 	return(dynamic_cast<Keyword*>(argument) != NULL);
 }
 void debugKeywords(void);

@@ -19,27 +19,28 @@ struct Node : public gc {
 	//virtual std::string str(void) const;
 	virtual ~Node(void);
 };
+typedef struct Node* NodeT;
 struct Cons : Node {
-	Node* head;
-	Node* tail; /* Cons or Application */
+	NodeT head;
+	NodeT tail; /* Cons or Application */
 	// FIXME virtual std::string str(void) const;
 };
 struct Application : Node {
-	Node* operator_;
-	Node* operand;
-	Node* result;
+	NodeT operator_;
+	NodeT operand;
+	NodeT result;
 	int resultGeneration;
 	//virtual std::string str(void) const;
 };
 struct Abstraction : Node {
-	Node* parameter;
-	Node* body;
+	NodeT parameter;
+	NodeT body;
 	//virtual std::string str(void) const;
 };
 struct Box : Node {
 	void* native;
-	AST::Node* fRepr;
-	Box(void* native, AST::Node* repr) {
+	AST::NodeT fRepr;
+	Box(void* native, AST::NodeT repr) {
 		this->native = native;
 		this->fRepr = repr;
 	}
@@ -56,46 +57,46 @@ struct Str : Box {
 	//virtual std::string str(void) const;
 };
 
-Cons* makeCons(Node* head, Node* tail);
+Cons* makeCons(NodeT head, NodeT tail);
 Str* makeStr(const char* text); // this can contain no pointers
 Str* makeStrCXX(const std::string& text, bool bAtomic = false); // this can contain pointers
 Str* makeStrRaw(char* mutableText, size_t size, bool bAtomic);
 AST::Str* makeStrSlice(AST::Str* s, int offset);
-static inline Box* makeBox(void* native, AST::Node* fRepr) {
+static inline Box* makeBox(void* native, AST::NodeT fRepr) {
 	return new Box(native, fRepr);
 }
-bool str_P(AST::Node* node);
-static inline bool abstraction_P(Node* root) {
+bool str_P(AST::NodeT node);
+static inline bool abstraction_P(NodeT root) {
 	return(dynamic_cast<Abstraction*>(root) != NULL);
 }
-static inline bool application_P(Node* root) {
+static inline bool application_P(NodeT root) {
 	return(dynamic_cast<Application*>(root) != NULL);
 }
-static inline Node* get_application_operator(Node* app) {
+static inline NodeT get_application_operator(NodeT app) {
 	return(((Application*)app)->operator_);
 }
-static inline Node* get_application_operand(Node* app) {
+static inline NodeT get_application_operand(NodeT app) {
 	return(((Application*)app)->operand);
 }
-static inline Node* get_abstraction_body(Node* abstraction) {
+static inline NodeT get_abstraction_body(NodeT abstraction) {
 	return(((Abstraction*)abstraction)->body);
 }
-static inline Node* get_abstraction_parameter(Node* abstraction) {
+static inline NodeT get_abstraction_parameter(NodeT abstraction) {
 	return(((Abstraction*)abstraction)->parameter);
 }
-static inline Node* get_cons_head(Node* cons) {
+static inline NodeT get_cons_head(NodeT cons) {
 	return(((Cons*) cons)->head);
 }
-static inline Node* get_cons_tail(Node* cons) {
+static inline NodeT get_cons_tail(NodeT cons) {
 	return(((Cons*) cons)->tail);
 }
-Application* makeApplication(Node* fn, Node* argument);
-Abstraction* makeAbstraction(Node* parameter, Node* body);
-Application* makeOperation(Node* operator_, Node* operand_1, Node* operand_2);
-static inline bool cons_P(AST::Node* node) {
+Application* makeApplication(NodeT fn, NodeT argument);
+Abstraction* makeAbstraction(NodeT parameter, NodeT body);
+Application* makeOperation(NodeT operator_, NodeT operand_1, NodeT operand_2);
+static inline bool cons_P(AST::NodeT node) {
 	return(dynamic_cast<Cons*>(node) != NULL);
 }
-static inline bool nil_P(AST::Node* node) {
+static inline bool nil_P(AST::NodeT node) {
 	return(node == NULL);
 }
 

@@ -16,7 +16,7 @@ namespace Formatters {
 namespace LATEX {
 using namespace Evaluators;
 
-static inline bool maybe_print_opening_paren(std::ostream& output, int& position, AST::Node* operator_, int precedence, int precedence_limit, bool B_brace_equal_levels) {
+static inline bool maybe_print_opening_paren(std::ostream& output, int& position, AST::NodeT operator_, int precedence, int precedence_limit, bool B_brace_equal_levels) {
 	if(operator_ == Symbols::Sslash) {
 		output << "\\frac{";
 		return(true);
@@ -38,7 +38,7 @@ static inline bool maybe_print_opening_paren(std::ostream& output, int& position
 	} else
 		return(false);
 }
-static inline void maybe_print_closing_paren(std::ostream& output, int& position, AST::Node* operator_, bool B_parend) {
+static inline void maybe_print_closing_paren(std::ostream& output, int& position, AST::NodeT operator_, bool B_parend) {
 	if(operator_ == Symbols::Sslash) {
 		output << "}"; // of frac
 		return;
@@ -137,13 +137,13 @@ static void print_text_raw(std::ostream& output, int& visible_position, const st
 			++visible_position;
 	}
 }
-static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::Node* node, int precedence_limit, bool B_paren_equal_levels) {
+static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::NodeT node, int precedence_limit, bool B_paren_equal_levels) {
 	int precedence = 0;
 	bool B_parend = maybe_print_opening_paren(output, position, NULL, precedence, precedence_limit, B_paren_equal_levels);
 	output << "\\frac{";
 	while(abstraction_P(node)) {
-		AST::Node* parameter = get_abstraction_parameter(node);
-		AST::Node* body = get_abstraction_body(node);
+		AST::NodeT parameter = get_abstraction_parameter(node);
+		AST::NodeT body = get_abstraction_body(node);
 		print_text_LATEX(output, "\\");
 		print_text_raw(output, position, str(parameter), false);
 		++position, output << ' ';

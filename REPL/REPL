@@ -9,10 +9,7 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #include <stdio.h>
 #include <string>
-namespace AST {
-struct Cons;
-struct Node;
-}; /* end namespace */
+#include "AST/AST"
 namespace REPLX {
 struct REPL;
 };
@@ -20,8 +17,8 @@ namespace GUI {
 using namespace REPLX;
 bool REPL_save_contents_to(struct REPL* self, FILE* output_file);
 bool REPL_load_contents_from(struct REPL* self, const char* name);
-AST::Node* REPL_get_environment(struct REPL* self);
-void REPL_add_to_environment(struct REPL* self, AST::Node* name, AST::Node* body);
+AST::NodeT REPL_get_environment(struct REPL* self);
+void REPL_add_to_environment(struct REPL* self, AST::NodeT name, AST::NodeT body);
 
 }; /* end namespace */
 

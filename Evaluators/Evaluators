@@ -14,25 +14,25 @@ public:
 	virtual const char* what() const throw();
 };
 
-static inline AST::Node* throwFallback(const char* text) {
+static inline AST::NodeT throwFallback(const char* text) {
 	throw Evaluators::EvaluationException(text);
 	return(NULL);
 }
 #define FALLBACK Evaluators::throwFallback("could not reduce")
-/* (AST::Node*) reduce(makeOperation(Symbols::Sspace, fallback, argument))*/
+/* (AST::NodeT) reduce(makeOperation(Symbols::Sspace, fallback, argument))*/
 
-void get_free_variables(AST::Node* root, std::set<AST::Symbol*>& freeNames);
-AST::Node* annotate(AST::Node* root);
+void get_free_variables(AST::NodeT root, std::set<AST::Symbol*>& freeNames);
+AST::NodeT annotate(AST::NodeT root);
 extern int fGeneration;
-static inline bool application_result_P(AST::Node* app) {
+static inline bool application_result_P(AST::NodeT app) {
 	return(((AST::Application*) app)->resultGeneration == fGeneration);
 }
-bool quote_P(AST::Node* root);
+bool quote_P(AST::NodeT root);
 extern int recursionLevel;
-AST::Node* reduce1(AST::Node* term);
-static inline AST::Node* reduce(AST::Node* term) {
+AST::NodeT reduce1(AST::NodeT term);
+static inline AST::NodeT reduce(AST::NodeT term) {
 	AST::Application* a;
-	AST::Node* result;
+	AST::NodeT result;
 	//std::string tv = Evaluators::str(term);
 	//fprintf(stderr, "DEBUG: (%d) reducing %s\n", recursionLevel, tv.c_str());
 	if((a = dynamic_cast<AST::Application*>(term)) == NULL)
@@ -47,45 +47,45 @@ static inline AST::Node* reduce(AST::Node* term) {
 	//fprintf(stderr, "=> result %s\n", rv.c_str());
 	return(result);
 }
-AST::Node* close(AST::Symbol* parameter, AST::Node* argument, AST::Node* body);
-AST::Node* makeError(const char* reason);
-bool define_P(AST::Node* input);
-AST::Node* programFromSExpression(AST::Node* root);
-AST::Node* evaluate(AST::Node* input);
-AST::Cons* evaluateToCons(AST::Node* input);
-AST::Node* quote(AST::Node* node);
+AST::NodeT close(AST::Symbol* parameter, AST::NodeT argument, AST::NodeT body);
+AST::NodeT makeError(const char* reason);
+bool define_P(AST::NodeT input);
+AST::NodeT programFromSExpression(AST::NodeT root);
+AST::NodeT evaluate(AST::NodeT input);
+AST::Cons* evaluateToCons(AST::NodeT input);
+AST::NodeT quote(AST::NodeT node);
 int increaseGeneration(void);
 
-AST::Node* replace(AST::Node* needle /* not Symbol */, AST::Node* replacement, AST::Node* haystack);/* intended for builtins only */
-typedef AST::Node* (replace_predicate_t)(void* userData, AST::Node* node);
-AST::Node* mapTree(void* userData, replace_predicate_t* replacer, AST::Node* term);
+AST::NodeT replace(AST::NodeT needle /* not Symbol */, AST::NodeT replacement, AST::NodeT haystack);/* intended for builtins only */
+typedef AST::NodeT (replace_predicate_t)(void* userData, AST::NodeT node);
+AST::NodeT mapTree(void* userData, replace_predicate_t* replacer, AST::NodeT term);
 
 DECLARE_SIMPLE_OPERATION(Reducer)
 DECLARE_SIMPLE_OPERATION(Quoter)
 /* BEGIN Curried Operations */
 
 struct CurriedOperation : AST::Node {
-	AST::Node* fOperation; /* either CurriedOperation* or CProcedure* */
-	AST::Node* fArgument;
-	//CurriedOperation(AST::Node* operation, AST::Node* argument) : fOperation(operation), fArgument(argument) {}
+	AST::NodeT fOperation; /* either CurriedOperation* or CProcedure* */
+	AST::NodeT fArgument;
+	//CurriedOperation(AST::NodeT operation, AST::NodeT argument) : fOperation(operation), fArgument(argument) {}
 };
-static inline AST::Node* get_curried_operation_operation(AST::Node* operation) {
+static inline AST::NodeT get_curried_operation_operation(AST::NodeT operation) {
 	return(((CurriedOperation*)operation)->fOperation);
 }
-static inline AST::Node* get_curried_operation_argument(AST::Node* operation) {
+static inline AST::NodeT get_curried_operation_argument(AST::NodeT operation) {
 	return(((CurriedOperation*)operation)->fArgument);
 }
-CurriedOperation* makeCurriedOperation(AST::Node* operation, AST::Node* argument);
-static inline bool curried_operation_P(AST::Node* root) {
+CurriedOperation* makeCurriedOperation(AST::NodeT operation, AST::NodeT argument);
+static inline bool curried_operation_P(AST::NodeT root) {
 	return(dynamic_cast<CurriedOperation*>(root) != NULL);
 }
 
 /* END Curried Operations */
 
-static inline AST::Node* uncurried(AST::Node* actualOperation, AST::Node* fallback) {
+static inline AST::NodeT uncurried(AST::NodeT actualOperation, AST::NodeT fallback) {
 	return(AST::makeApplication(&Evaluators::Reducer, AST::makeApplication(actualOperation, fallback)));
 }
-static inline AST::Node* makeIOMonad(AST::Node* result, AST::Node* world) {
+static inline AST::NodeT makeIOMonad(AST::NodeT result, AST::NodeT world) {
 	return(AST::makeCons(result, AST::makeCons(world, NULL)));
 }
 

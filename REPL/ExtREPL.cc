@@ -11,7 +11,7 @@ DECLARE_SIMPLE_OPERATION(ROperatorPrecedenceListGetter)
 DECLARE_SIMPLE_OPERATION(RPurger)
 DECLARE_SIMPLE_OPERATION(RExecutor)
 
-static AST::Node* getMethod(AST::Node* name) {
+static AST::NodeT getMethod(AST::NodeT name) {
 	if(name == Symbols::SgetOperatorPrecedenceListexclam)
 		return(&REPLX::ROperatorPrecedenceListGetter);
 	//else if(name == Symbols::SgetEnvironment)

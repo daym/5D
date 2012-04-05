@@ -4,15 +4,15 @@
 #include "Evaluators/Operation"
 namespace Numbers {
 	struct Ratio : AST::Node {
-		AST::Node* a; /* numerator */
-		AST::Node* b; /* denominator */
+		AST::NodeT a; /* numerator */
+		AST::NodeT b; /* denominator */
 	};
-	Ratio* makeRatio(AST::Node* aa, AST::Node* bb);
-	bool ratio_P(AST::Node* n);
-	inline AST::Node* Ratio_getA(AST::Node* n) {
+	Ratio* makeRatio(AST::NodeT aa, AST::NodeT bb);
+	bool ratio_P(AST::NodeT n);
+	inline AST::NodeT Ratio_getA(AST::NodeT n) {
 		return(((Ratio*)n)->a);
 	}
-	inline AST::Node* Ratio_getB(AST::Node* n) {
+	inline AST::NodeT Ratio_getB(AST::NodeT n) {
 		return(((Ratio*)n)->b);
 	}
 DECLARE_SIMPLE_OPERATION(RatioMaker)

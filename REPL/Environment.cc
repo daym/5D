@@ -13,13 +13,13 @@ static Environment* cloneEnvironment(Environment* original) {
 	}
 	return(result);
 }
-Environment* addToEnvironment(Environment* orignal, AST::Symbol* key, AST::Node* value) {
+Environment* addToEnvironment(Environment* orignal, AST::Symbol* key, AST::NodeT value) {
 	Environment* result = cloneEnvironment(original);
 	// FIXME what if key == NULL ?
 	(*result)[key->name] = AST::makeCons(value, (*result)[key->name]);
 	return(result);
 }
-AST::Node* getFromEnvironment(Environment* environment, AST::Symbol* key, bool& B_found) {
+AST::NodeT getFromEnvironment(Environment* environment, AST::Symbol* key, bool& B_found) {
 	B_found = false;
 	if(environment && key) {
 		Environment::const_iterator iter = environment->find(key->name);

@@ -6,11 +6,11 @@ BorlandFastCallGen::BorlandFastCallGen(CodeGen* code_gen) :
 	PascalCallGen(code_gen)
 {
 }
-void BorlandFastCallGen::build(AST::Node* call_destination) {
-	std::vector<AST::Node*>::const_iterator end_iter = arguments.end();
+void BorlandFastCallGen::build(AST::NodeT call_destination) {
+	std::vector<AST::NodeT>::const_iterator end_iter = arguments.end();
 	int index = 0;
-	for(std::vector<AST::Node*>::const_iterator iter = arguments.begin(); iter != end_iter; ++iter, ++index) {
-		AST::Node* argument = *iter;
+	for(std::vector<AST::NodeT>::const_iterator iter = arguments.begin(); iter != end_iter; ++iter, ++index) {
+		AST::NodeT argument = *iter;
 		if(index == 0)
 			code_gen->gen_load_register(AST::symbolFromStr("%eax"), argument);
 		else if(index == 1)

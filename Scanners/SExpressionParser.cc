@@ -33,11 +33,11 @@ SExpressionParser::SExpressionParser(void) {
 	AST::Symbol* op1 = fOperators.back(); \
 	if(fOperands.empty()) \
 		scanner->raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
-	AST::Node* b = fOperands.back(); \
+	AST::NodeT b = fOperands.back(); \
 	fOperands.pop_back(); \
 	if(fOperands.empty()) \
 		scanner->raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
-	AST::Node* a = fOperands.back(); \
+	AST::NodeT a = fOperands.back(); \
 	fOperands.pop_back(); \
 	fOperands.push_back(AST::makeOperation(op1, a, b)); \
 	fOperators.pop_back(); }
@@ -45,7 +45,7 @@ AST::Cons* SExpressionParser::parse_S_list_body(void) {
 	if(scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::SlessEOFgreater)
 		return(NULL);
 	else {
-		AST::Node* head;
+		AST::NodeT head;
 		head = parse_S_Expression();
 		return(makeCons(head, parse_S_list_body()));
 	}
@@ -62,9 +62,9 @@ AST::Cons* SExpressionParser::parse_S_list(bool B_consume_closing_brace) {
 		throw;
 	}
 }
-AST::Node* SExpressionParser::parse_S_Expression(void) {
+AST::NodeT SExpressionParser::parse_S_Expression(void) {
 	try {
-		AST::Node* result;
+		AST::NodeT result;
 		/* TODO do this without tokenizing? How? */
 		if(scanner->input_value == Symbols::Sleftparen) {
 			result = parse_S_list(true);
@@ -84,8 +84,8 @@ AST::Node* SExpressionParser::parse_S_Expression(void) {
 		throw;
 	}
 }
-AST::Node* SExpressionParser::parse(AST::Symbol* terminator) {
-	AST::Node* result = parse_S_Expression();
+AST::NodeT SExpressionParser::parse(AST::Symbol* terminator) {
+	AST::NodeT result = parse_S_Expression();
 	if(scanner->input_value != terminator)
 		scanner->raise_error(str(terminator), str(scanner->input_value));
 	return(result);

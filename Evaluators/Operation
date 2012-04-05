@@ -7,15 +7,15 @@
 
 namespace Evaluators {
 
-static inline AST::Node* internNative(AST::Node* n) {
+static inline AST::NodeT internNative(AST::NodeT n) {
 	return(n);
 }
 
 /* BEGIN str() */
 
-std::string str(AST::Node* cons);
+std::string str(AST::NodeT cons);
 struct StrRegistration {
-	virtual std::string call(AST::Node* node) const = 0;
+	virtual std::string call(AST::NodeT node) const = 0;
 };
 StrRegistration* registerStr(StrRegistration* n);
 #define REGISTER_STR(typ, body) \
@@ -24,7 +24,7 @@ struct StrRegistration##typ : Evaluators::StrRegistration { \
 	StrRegistration##typ(void) { \
 		next = Evaluators::registerStr(this); \
 	} \
-	virtual std::string call(AST::Node* xxxnode) const { \
+	virtual std::string call(AST::NodeT xxxnode) const { \
 		typ* node; \
 		if((node = dynamic_cast<typ*>(xxxnode)) != NULL) { \
 			body \
@@ -42,7 +42,7 @@ struct CProcedure : AST::Box {
 	int fArgumentCount; // sigh. <0: can also do keyword arguments.
 	int fReservedArgumentCount; // how many not to repr.
 	AST::Symbol* fSignature;
-        CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int aReservedArgumentCount, AST::Symbol* aSignature);
+        CProcedure(void* native, AST::NodeT aRepr, int aArgumentCount, int aReservedArgumentCount, AST::Symbol* aSignature);
 };
 #define DECLARE_SIMPLE_OPERATION(P) \
 extern Evaluators::CProcedure P;
@@ -52,21 +52,21 @@ extern Evaluators::CProcedure P;
 
 #define DEFINE_SIMPLE_OPERATION(P, B) \
 extern Evaluators::CProcedure P; \
-static AST::Node* P##_execute(AST::Node* fn, AST::Node* argument) { \
+static AST::NodeT P##_execute(AST::NodeT fn, AST::NodeT argument) { \
 	return(Evaluators::internNative(B)); \
 }
 
 #define DECLARE_FULL_OPERATION(P) DECLARE_SIMPLE_OPERATION(P)
 #define DEFINE_FULL_OPERATION(P, B) \
 extern Evaluators::CProcedure P; \
-static AST::Node* P##_execute(AST::Node* fn, AST::Node* argument) { \
+static AST::NodeT P##_execute(AST::NodeT fn, AST::NodeT argument) { \
 	B; \
 }
 
 #define DECLARE_BINARY_OPERATION(P) DECLARE_SIMPLE_OPERATION(P)
 #define DEFINE_BINARY_OPERATION(P, B) \
 extern Evaluators::CProcedure P; \
-static AST::Node* P##_execute(AST::Node* fn, AST::Node* argument) { \
+static AST::NodeT P##_execute(AST::NodeT fn, AST::NodeT argument) { \
 	Evaluators::CurriedOperation* c = dynamic_cast<Evaluators::CurriedOperation*>(fn); \
 	assert(c); \
 	return(B(c->fArgument, argument, c->fOperation)); \
@@ -75,11 +75,11 @@ static AST::Node* P##_execute(AST::Node* fn, AST::Node* argument) { \
 
 /* BEGIN Binary Operations */
 
-bool builtin_call_P(AST::Node* node);
-AST::Node* call_builtin(AST::Node* fn, AST::Node* argument);
+bool builtin_call_P(AST::NodeT node);
+AST::NodeT call_builtin(AST::NodeT fn, AST::NodeT argument);
 
 /* END Binary Operations */
 
-struct AST::Node* repr(AST::Node*);
+AST::NodeT repr(AST::NodeT);
 }; /* end namespace Evaluators */
 #endif /* ndef __EVALUATORS_OPERATION_H */

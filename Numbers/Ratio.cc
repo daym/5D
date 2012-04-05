@@ -3,25 +3,25 @@
 #include "Numbers/Ratio"
 #include "Evaluators/Builtins"
 namespace Numbers {
-Ratio* makeRatio(AST::Node* aa, AST::Node* bb) {
+Ratio* makeRatio(AST::NodeT aa, AST::NodeT bb) {
 	Ratio* result = new Ratio;
 	result->a = aa;
 	result->b = bb;
 	return(result);
 }
-bool ratio_P(AST::Node* n) {
+bool ratio_P(AST::NodeT n) {
 	return(dynamic_cast<Ratio*>(n) != NULL);
 }
-static AST::Node* makeRatioB(AST::Node* options, AST::Node* argument) {
+static AST::NodeT makeRatioB(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
-	AST::Node* a = iter->second;
+	AST::NodeT a = iter->second;
 	++iter;
-	AST::Node* b = iter->second;
+	AST::NodeT b = iter->second;
 	//++iter;
 	return(makeRatio(a, b));
 }
-static inline AST::Node* ensureRatio(AST::Node* node) {
+static inline AST::NodeT ensureRatio(AST::NodeT node) {
 	if(!ratio_P(node))
 		throw EvaluationException("argument is not a Ratio");
 	return(node);

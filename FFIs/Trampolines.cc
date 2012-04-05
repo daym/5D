@@ -34,17 +34,17 @@ static inline ffi_type* ffiTypeFromChar(char t) {
 	      t == 'g' ? &ffi_type_longdouble : 
 	      &ffi_type_void;
 }
-static AST::Node* buildList(std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& endIter) {
+static AST::NodeT buildList(std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& endIter) {
 	if(iter == endIter)
 		return(NULL);
 	else {
-		AST::Node* v = iter->second;
+		AST::NodeT v = iter->second;
 		++iter;
 		return(AST::makeCons(v, buildList(iter, endIter)));
 	}
 }
 /* note that the caller did (--endIter) so it now points to the World. */
-AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& endIter, AST::Node* options, AST::Node* world) {
+AST::NodeT jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& endIter, AST::NodeT options, AST::NodeT world) {
 	ffi_cif cif;
 	ffi_abi abi = FFI_DEFAULT_ABI;
 	ffi_type** argTypes;
@@ -64,7 +64,7 @@ AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keywor
 		size_t offset = 0;
 		std::stringstream sst;
 		std::vector<size_t> offsets;
-		AST::Node* returnValue = (ffiTypeFromChar(sig[0]) == &ffi_type_pointer) ? NULL : Numbers::internNative(0);
+		AST::NodeT returnValue = (ffiTypeFromChar(sig[0]) == &ffi_type_pointer) ? NULL : Numbers::internNative(0);
 		Record_pack(FFIs::MACHINE_BYTE_ORDER, position, offset, formatString, AST::makeCons(returnValue, buildList(iter, endIter)), sst, offsets);
 		assert(offsets.size() == argCount);
 		dataStd = sst.str();
@@ -82,10 +82,10 @@ AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keywor
 	}
 	if(argCount > 0 && ffi_prep_cif(&cif, abi, argCount - 1, argTypes[0], argTypes + 1) == FFI_OK) {
 		ffi_call(&cif, (void (*)(void)) proc->native, args[0], args + 1);
-		AST::Node* results;
+		AST::NodeT results;
 		char returnSig[2] = {*sig, 0};
 		results = Record_unpack(FFIs::MACHINE_BYTE_ORDER, AST::makeStr(returnSig), AST::makeBox(args[0], NULL));
-		AST::Node* result = (cons_P(results) ? get_cons_head(results) : NULL);
+		AST::NodeT result = (cons_P(results) ? get_cons_head(results) : NULL);
 		return Evaluators::makeIOMonad(result, endIter->second);
 	}
 	fprintf(stderr, "warning: could not find marshaller for %s\n", signature->name);

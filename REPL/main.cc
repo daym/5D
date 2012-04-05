@@ -28,16 +28,16 @@ namespace REPLX {
 using namespace Evaluators;
 
 struct REPL : AST::Node {
-	AST::Node* fTailEnvironment;
-	AST::Node* fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::Node* fTailUserEnvironmentFrontier;
+	AST::NodeT fTailEnvironment;
+	AST::NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	AST::NodeT fTailUserEnvironmentFrontier;
 	int fEnvironmentCount;
 	int fCursorPosition;
 	bool fBModified;
 	AST::HashTable* fModules;
 };
 
-int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::Node* value) {
+int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::NodeT value) {
 	return(self->fEnvironmentCount++);
 }
 
@@ -61,7 +61,7 @@ void REPL_insert_into_output_buffer(struct REPL* self, int destination, char con
 }
 void REPL_append_to_output_buffer(struct REPL* self, char const* text) {
 }
-static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, int destination) {
+static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, int destination) {
 }
 
 };
@@ -108,19 +108,19 @@ int main(int argc, char* argv[]) {
 				parser.parse_closing_brace();
 			if(parser.EOFP())
 				break;
-			AST::Node* source = parser.parse_S_list(false);
+			AST::NodeT source = parser.parse_S_list(false);
 			source = Evaluators::programFromSExpression(source);
 			// TODO parse left-over ")"
 			REPL_execute(REPL, source, 0);
 		} catch(Scanners::ParseException exception) {
-			AST::Node* err = Evaluators::makeError(exception.what());
+			AST::NodeT err = Evaluators::makeError(exception.what());
 			std::string errStr = str(err);
 			fprintf(stderr, "%s\n", errStr.c_str());
 			status = 1;
 			break;
 			//parser.consume();
 		} catch(Evaluators::EvaluationException exception) {
-			AST::Node* err = Evaluators::makeError(exception.what());
+			AST::NodeT err = Evaluators::makeError(exception.what());
 			std::string errStr = str(err);
 			fprintf(stderr, "%s\n", errStr.c_str());
 			status = 2;

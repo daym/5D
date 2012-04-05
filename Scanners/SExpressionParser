@@ -19,15 +19,15 @@ class SExpressionParser {
 private:
 	Scanner* scanner;
 	AST::Cons* parse_S_list_body(void);
-	inline AST::Node* parse_value(void) {
+	inline AST::NodeT parse_value(void) {
 		return(scanner->consume());
 	}
 public:
 	SExpressionParser(void);
-	AST::Node* parse(AST::Symbol* terminator);
+	AST::NodeT parse(AST::Symbol* terminator);
 	AST::Cons* parse_S_list(bool B_consume_closing_brace);
 	void parse_closing_brace(void);
-	AST::Node* parse_S_Expression(void);
+	AST::NodeT parse_S_Expression(void);
 public:
 	void push(FILE* input_file, int line_number, const char* input_name);
 	void pop(void);
@@ -37,7 +37,7 @@ public:
 	int get_position(void) const;
 };
 
-bool macro_operator_P(AST::Node* operator_);
+bool macro_operator_P(AST::NodeT operator_);
 
 }; /* end namespace */
 

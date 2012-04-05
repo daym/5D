@@ -16,17 +16,17 @@
 
 namespace Evaluators {
 
-AST::Node* operator/(const Numbers::Integer& a, const Numbers::Integer& b);
-AST::Node* operator/(const Numbers::Int& a, const Numbers::Int& b);
-AST::Node* internNative(bool value);
-AST::Node* internNative(const char* value);
+AST::NodeT operator/(const Numbers::Integer& a, const Numbers::Integer& b);
+AST::NodeT operator/(const Numbers::Int& a, const Numbers::Int& b);
+AST::NodeT internNative(bool value);
+AST::NodeT internNative(const char* value);
 
 void resetWorld(void);
 
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
-AST::Node* provide_dynamic_builtins(AST::Node* body);
-extern AST::Node* churchFalse;
-extern AST::Node* churchTrue;
+AST::NodeT provide_dynamic_builtins(AST::NodeT body);
+extern AST::NodeT churchFalse;
+extern AST::NodeT churchTrue;
 
 DECLARE_BINARY_OPERATION(Conser)
 DECLARE_SIMPLE_OPERATION(ConsP)
@@ -67,14 +67,14 @@ DECLARE_SIMPLE_OPERATION(AbstractionBodyGetter)
 DECLARE_SIMPLE_OPERATION(RFileMathParser)
 DECLARE_SIMPLE_OPERATION(RStrMathParser)
 
-typedef std::list<std::pair<AST::Keyword*, AST::Node*>, gc_allocator<std::pair<AST::Keyword*, AST::Node*> > > CXXArguments;
+typedef std::list<std::pair<AST::Keyword*, AST::NodeT>, gc_allocator<std::pair<AST::Keyword*, AST::NodeT> > > CXXArguments;
 /* WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
-CXXArguments CXXfromArguments(AST::Node* options, AST::Node* argument); /* non-keyword arguments will be at the FRONT */
+CXXArguments CXXfromArguments(AST::NodeT options, AST::NodeT argument); /* non-keyword arguments will be at the FRONT */
 
-CXXArguments CXXfromArgumentsU(AST::Node* options, AST::Node* argument, int backwardsIndexOfArgumentNotToReduce); /* non-keyword arguments will be at the FRONT */
-AST::Node* CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* key);
-AST::Node* divideA(AST::Node* a, AST::Node* b, AST::Node* fallback);
-AST::Node* divremA(AST::Node* a, AST::Node* b, AST::Node* fallback);
+CXXArguments CXXfromArgumentsU(AST::NodeT options, AST::NodeT argument, int backwardsIndexOfArgumentNotToReduce); /* non-keyword arguments will be at the FRONT */
+AST::NodeT CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* key);
+AST::NodeT divideA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
+AST::NodeT divremA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
 
 };
 

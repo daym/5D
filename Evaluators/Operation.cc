@@ -16,12 +16,12 @@
 
 namespace Trampolines {
 
-typedef AST::Node* (jumper_t)(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end, AST::Node* options, AST::Node* world);
-AST::Node* jumpFFI(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& end, AST::Node* options, AST::Node* world); 
+typedef AST::NodeT (jumper_t)(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& end, AST::NodeT options, AST::NodeT world);
+AST::NodeT jumpFFI(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& end, AST::NodeT options, AST::NodeT world); 
 // do NOT gc_allocate the following since it seems to have a bug:
 typedef AST::RawHashTable<const char*, jumper_t*, AST::hashstr, AST::eqstr> HashTable;
 #ifdef WIN32
-AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::Node*> >::const_iterator& endIter, AST::Node* options, AST::Node* world) {
+AST::NodeT jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& endIter, AST::NodeT options, AST::NodeT world) {
 	fprintf(stderr, "warning: could not find marshaller for %s\n", proc->fSignature->name);
 	return Evaluators::makeIOMonad(NULL, endIter->second);
 }
@@ -32,7 +32,7 @@ AST::Node* jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keywor
 
 namespace Evaluators {
 
-CProcedure::CProcedure(void* native, AST::Node* aRepr, int aArgumentCount, int aReservedArgumentCount, AST::Symbol* aSignature) : 
+CProcedure::CProcedure(void* native, AST::NodeT aRepr, int aArgumentCount, int aReservedArgumentCount, AST::Symbol* aSignature) : 
 	AST::Box(native, aRepr),
 	fArgumentCount(aArgumentCount),
 	fReservedArgumentCount(aReservedArgumentCount),
@@ -50,14 +50,14 @@ REGISTER_STR(CurriedOperation, {
 	return(sst.str());
 })
 
-bool builtin_call_done_P(AST::Node* node) {
+bool builtin_call_done_P(AST::NodeT node) {
 	return(true);
 }
-bool builtin_call_P(AST::Node* node) {
+bool builtin_call_P(AST::NodeT node) {
 	return(dynamic_cast<CProcedure*>(node) || dynamic_cast<CurriedOperation*>(node));
 }
-AST::Node* call_builtin(AST::Node* fn, AST::Node* argument) {
-	AST::Node* proc1 = fn;
+AST::NodeT call_builtin(AST::NodeT fn, AST::NodeT argument) {
+	AST::NodeT proc1 = fn;
 	CProcedure* proc2;
 	CurriedOperation* c;
 	bool inKV = false;
@@ -87,13 +87,13 @@ AST::Node* call_builtin(AST::Node* fn, AST::Node* argument) {
 	}
 	//printf("call %p\n", proc2->native);
 	if(proc2->fSignature == NULL) { // probably wants the arguments unevaluated, so stop messing with them.
-		AST::Node* (*proc3)(AST::Node*, AST::Node*) = (AST::Node* (*)(AST::Node*, AST::Node*)) proc2->native;
+		AST::NodeT (*proc3)(AST::NodeT, AST::NodeT) = (AST::NodeT (*)(AST::NodeT, AST::NodeT)) proc2->native;
 		return((*proc3)(fn, argument));
 	} else
 		return(Trampolines::jumpT(proc2, fn, argument));
 }
 
-AST::Node* repr(AST::Node* node) {
+AST::NodeT repr(AST::NodeT node) {
 	Evaluators::CProcedure* operation;
 	Evaluators::CurriedOperation* c;
 	if((operation = dynamic_cast<Evaluators::CProcedure*>(node)) != NULL) {
@@ -106,13 +106,13 @@ AST::Node* repr(AST::Node* node) {
 		else
 			return(AST::makeApplication(repr(c->fOperation), repr(c->fArgument)));
 	} else if(application_P(node)) {
-		AST::Node* fn = get_application_operator(node);
-		AST::Node* argument = get_application_operand(node);
+		AST::NodeT fn = get_application_operator(node);
+		AST::NodeT argument = get_application_operand(node);
 		//if(fn == &Evaluators::Reducer && application_P(argument)) { // special case to get rid of implicit repl FIXME FIXME dangerous
 		//	return(repr(get_application_operator(argument)));
 		//}
-		AST::Node* new_fn = repr(fn);
-		AST::Node* new_argument = repr(argument);
+		AST::NodeT new_fn = repr(fn);
+		AST::NodeT new_argument = repr(argument);
 		if(new_fn == fn && new_argument == argument)
 			return(node);
 		else

@@ -18,17 +18,17 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace Evaluators {
 
-int get_int(AST::Node* root);
-int get_nearest_int(AST::Node* root);
-long get_long(AST::Node* root);
-long long get_long_long(AST::Node* root);
-short get_short(AST::Node* root);
-void* get_pointer(AST::Node* root);
-bool get_boolean(AST::Node* root);
-char* get_string(AST::Node* root);
-float get_float(AST::Node* root);
-long double get_long_double(AST::Node* root);
-double get_double(AST::Node* root);
+int get_int(AST::NodeT root);
+int get_nearest_int(AST::NodeT root);
+long get_long(AST::NodeT root);
+long long get_long_long(AST::NodeT root);
+short get_short(AST::NodeT root);
+void* get_pointer(AST::NodeT root);
+bool get_boolean(AST::NodeT root);
+char* get_string(AST::NodeT root);
+float get_float(AST::NodeT root);
+long double get_long_double(AST::NodeT root);
+double get_double(AST::NodeT root);
 
 DECLARE_FULL_OPERATION(Writer)
 DECLARE_FULL_OPERATION(Flusher)
