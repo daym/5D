@@ -757,18 +757,18 @@ static AST::NodeT substr(AST::NodeT options, AST::NodeT argument) {
 	p += beginning;
 	return(AST::makeStrRaw(p, len, mBox->bAtomicity)); // TODO maybe copy.
 }
-AST::Str* str_until_zero(AST::Box* value) {
+AST::Str* str_until_zero(AST::NodeT value) {
 	AST::Str* result;
 	if(value == NULL)
 		return(NULL);
-	result = AST::makeStrRaw((char*) value->native, strlen((char*) value->native), true); // TODO copy?
+	char* n = (char*) Evaluators::get_pointer(value);
+	result = AST::makeStrRaw((char*) n, strlen((char*) n), true); // TODO copy?
 	return(result);
 }
-
 DEFINE_SIMPLE_OPERATION(ListFromStrGetter, (argument = reduce(argument), str_P(argument) ? listFromStr(dynamic_cast<AST::Str*>(argument)) : nil_P(argument) ? argument : FALLBACK))
 DEFINE_SIMPLE_OPERATION(StrFromListGetter, (argument = reduce(argument), (cons_P(argument) || nil_P(argument)) ? strFromList(dynamic_cast<AST::Cons*>(argument)) : FALLBACK))
 DEFINE_FULL_OPERATION(SubstrGetter, return(substr(fn, argument));)
-DEFINE_SIMPLE_OPERATION(StrUntilZeroGetter, str_until_zero(dynamic_cast<AST::Box*>(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(StrUntilZeroGetter, str_until_zero(reduce(argument)))
 REGISTER_BUILTIN(ListFromStrGetter, 1, 0, AST::symbolFromStr("listFromStr"))
 REGISTER_BUILTIN(StrFromListGetter, 1, 0, AST::symbolFromStr("strFromList"))
 REGISTER_BUILTIN(SubstrGetter, 3, 0, AST::symbolFromStr("substr"))
