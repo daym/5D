@@ -14,7 +14,6 @@ let flush! = Builtins.flush! in
 let stderr = Builtins.stderr in 
 let stdin = Builtins.stdin in 
 let stdout = Builtins.stdout in 
-let runIO = Builtins.runIO in 
 let readline! = Builtins.readline! in 
 let write! = Builtins.write! in 
 let errno! = Builtins.errno! in 
@@ -26,7 +25,6 @@ dispatch [['ioValue ioValue]
 ['stderr stderr]
 ['stdin stdin]
 ['stdout stdout]
-['runIO runIO]
 ['readline! readline!]
 ['(;) (;)]
 ['write! write!]
