@@ -276,7 +276,7 @@ static void Record_skip_format(size_t& position /* in format Str */, AST::Str* f
 			break;
 		if(formatC == '[') {
 			++position;
-			size_t subPosition;
+			//size_t subPosition;
 			Record_skip_format(position, formatStr);
 			format = ((const char*) formatStr->native) + position;
 			if(*format != ']')
@@ -510,7 +510,7 @@ static AST::NodeT tailtailtail(AST::NodeT suffix, size_t count) {
 }
 
 // TODO record unpacker for "[p]"
-AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box* dataStr) {
+AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::NodeT dataStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("unpackRecord needs format string.");
 	AST::NodeT repr = AST::makeApplication(AST::makeApplication(&RecordUnpacker, formatStr), dataStr);
@@ -529,8 +529,8 @@ AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box
 			return(NULL);
 		throw Evaluators::EvaluationException("unpackRecord needs data string.");
 	}
-	const unsigned char* codedData = (const unsigned char*) dataStr->native;
-	size_t remainderLen = dynamic_cast<AST::Str*>(dataStr) ? ((AST::Str*) dataStr)->size : 9999999; // FIXME
+	const unsigned char* codedData = (const unsigned char*) Evaluators::get_pointer(dataStr);
+	size_t remainderLen = AST::str_P(dataStr) ? AST::get_str_size(dataStr) : 9999999; // FIXME
 	size_t offset = 0;
 	size_t new_offset = 0;
 	AST::Cons* result = NULL;
@@ -606,10 +606,9 @@ size_t Record_get_size(enum ByteOrder byteOrder, AST::Str* formatStr) {
 	return(offset);
 }
 // this doesn't work with record packers like "[p]" which have dynamic length.
-bool Record_has_pointers(AST::Str* formatStr) {
+bool Record_has_pointers(size_t& position, AST::Str* formatStr) {
 	if(formatStr == NULL)
 		throw Evaluators::EvaluationException("recordSize needs format string.");
-	size_t position = 0; // in format
 	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=' || *format == '@')
 			continue;
@@ -621,6 +620,15 @@ bool Record_has_pointers(AST::Str* formatStr) {
 		case 'z':
 		case 'Z':
 			return(true);
+		}
+		if(*format == '[') {
+			++position;
+			size_t subPosition;
+			if(Record_has_pointers(position, formatStr))
+				return(true);
+			format = ((const char*) formatStr->native) + position;
+			if(*format != ']')
+				throw Evaluators::EvaluationException("packRecord: format Str is invalid");
 		}
 	}
 	return(false);
@@ -664,7 +672,8 @@ static AST::NodeT wrapAllocateRecord(AST::NodeT options, AST::NodeT argument) {
 	AST::Str* format = dynamic_cast<AST::Str*>(iter->second);
 	++iter;
 	AST::NodeT world = iter->second;
-	AST::NodeT result = Record_allocate(Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, format), !Record_has_pointers(format));
+	size_t position = 0;
+	AST::NodeT result = Record_allocate(Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, format), !Record_has_pointers(position, format));
 	return(Evaluators::makeIOMonad(result, world));
 }
 static AST::NodeT wrapAllocateMemory(AST::NodeT options, AST::NodeT argument) {

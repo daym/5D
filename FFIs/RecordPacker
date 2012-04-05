@@ -15,7 +15,7 @@ enum ByteOrder {
 
 /* uses C packing alignment */
 void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::NodeT data, std::stringstream& sst, std::vector<size_t>& offsets);
-AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Box* dataStr);
+AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::NodeT dataStr);
 AST::Str* Record_allocate(size_t size, bool bAtomicity);
 size_t Record_get_size(enum ByteOrder byteOrder, AST::Str* formatStr);
 
