@@ -67,7 +67,7 @@ DECLARE_SIMPLE_OPERATION(AbstractionBodyGetter)
 DECLARE_SIMPLE_OPERATION(RFileMathParser)
 DECLARE_SIMPLE_OPERATION(RStrMathParser)
 
-typedef std::list<std::pair<AST::Keyword*, AST::NodeT>, gc_allocator<std::pair<AST::Keyword*, AST::NodeT> > > CXXArguments;
+typedef std::list<std::pair<AST::NodeT /*keyword*/, AST::NodeT>, gc_allocator<std::pair<AST::NodeT, AST::NodeT> > > CXXArguments;
 /* WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
 CXXArguments CXXfromArguments(AST::NodeT options, AST::NodeT argument); /* non-keyword arguments will be at the FRONT */
 

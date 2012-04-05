@@ -6,6 +6,7 @@
 #include "AST/Symbol"
 
 namespace Evaluators {
+typedef std::list<std::pair<AST::NodeT /*keyword*/, AST::NodeT>, gc_allocator<std::pair<AST::NodeT, AST::NodeT> > > CXXArguments;
 
 static inline AST::NodeT internNative(AST::NodeT n) {
 	return(n);

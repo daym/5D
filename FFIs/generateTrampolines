@@ -52,7 +52,7 @@ print("""
 namespace Trampolines {
 using namespace FFIs;
 
-static inline AST::NodeT extr(const std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter) {
+static inline AST::NodeT extr(const Evaluators::CXXArguments::const_iterator& iter) {
   return(iter->second);
 }
 
@@ -111,7 +111,7 @@ static VARIANT variantEmpty = {0};
 #define inV FFIs::decodeVariantCXX(
 /* FIXME do inL properly */
 
-//typedef AST::NodeT (jumper_t)(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& end, AST::NodeT options, AST::NodeT world);
+//typedef AST::NodeT (jumper_t)(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, AST::NodeT options, AST::NodeT world);
 
 static HashTable fMarshallers;
 

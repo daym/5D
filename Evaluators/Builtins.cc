@@ -814,7 +814,6 @@ REGISTER_BUILTIN(AbstractionBodyGetter, 1, 0, AST::symbolFromStr("fnBody"))
 REGISTER_BUILTIN(RFileMathParser, (-3), 0, AST::symbolFromStr("parseMath!"))
 REGISTER_BUILTIN(RStrMathParser, (-2), 0, AST::symbolFromStr("parseMathStr"))
 
-// FIXME make this GCable.
 CXXArguments CXXfromArgumentsU(AST::NodeT options, AST::NodeT argument, int backwardsIndexOfArgumentNotToReduce) {
 	CXXArguments result;
 	AST::NodeT v;
@@ -824,11 +823,12 @@ CXXArguments CXXfromArgumentsU(AST::NodeT options, AST::NodeT argument, int back
 	assert(options);
 	p = backwardsIndexOfArgumentNotToReduce == 0 ? argument : reduce(argument);
 	B_pending_value = true;
-	Evaluators::CurriedOperation* self;
-	for(self = dynamic_cast<Evaluators::CurriedOperation*>(options); self; self = dynamic_cast<Evaluators::CurriedOperation*>(self->fOperation), ++i) {
-		v = i == backwardsIndexOfArgumentNotToReduce ? self->fArgument : reduce(self->fArgument); // backwards...
+	AST::NodeT self;
+	for(self = options; curried_operation_P(self); self = get_curried_operation_operation(self), ++i) {
+		AST::NodeT arg = get_curried_operation_argument(self);
+		v = i == backwardsIndexOfArgumentNotToReduce ? arg : reduce(arg); // backwards...
 		if(B_pending_value && keyword_P(v)) {
-			result.push_back(std::make_pair(dynamic_cast<AST::Keyword*>(v), p));
+			result.push_back(std::make_pair(v, p));
 			p = NULL;
 			B_pending_value = false;
 		} else {
@@ -848,7 +848,7 @@ CXXArguments CXXfromArguments(AST::NodeT options, AST::NodeT argument) {
 	return(CXXfromArgumentsU(options, argument, -1));
 }
 AST::NodeT CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* key) {
-	for(std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator iter = list.begin(); iter != list.end(); ++iter)
+	for(CXXArguments::const_iterator iter = list.begin(); iter != list.end(); ++iter)
 		if(iter->first == key)
 			return(iter->second);
 	return(NULL);

@@ -34,7 +34,7 @@ static inline ffi_type* ffiTypeFromChar(char t) {
 	      t == 'g' ? &ffi_type_longdouble : 
 	      &ffi_type_void;
 }
-static AST::NodeT buildList(std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& endIter) {
+static AST::NodeT buildList(Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& endIter) {
 	if(iter == endIter)
 		return(NULL);
 	else {
@@ -44,7 +44,7 @@ static AST::NodeT buildList(std::list<std::pair<AST::Keyword*, AST::NodeT> >::co
 	}
 }
 /* note that the caller did (--endIter) so it now points to the World. */
-AST::NodeT jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& endIter, AST::NodeT options, AST::NodeT world) {
+AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& endIter, AST::NodeT options, AST::NodeT world) {
 	ffi_cif cif;
 	ffi_abi abi = FFI_DEFAULT_ABI;
 	ffi_type** argTypes;

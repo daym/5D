@@ -13,15 +13,16 @@
 #include "Evaluators/Operation"
 #include "Evaluators/Evaluators"
 #include "FFIs/VariantPacker"
+#include "Evaluators/Builtins"
 
 namespace Trampolines {
 
-typedef AST::NodeT (jumper_t)(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& end, AST::NodeT options, AST::NodeT world);
-AST::NodeT jumpFFI(Evaluators::CProcedure* p2, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& end, AST::NodeT options, AST::NodeT world); 
+typedef AST::NodeT (jumper_t)(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, AST::NodeT options, AST::NodeT world);
+AST::NodeT jumpFFI(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, AST::NodeT options, AST::NodeT world); 
 // do NOT gc_allocate the following since it seems to have a bug:
 typedef AST::RawHashTable<const char*, jumper_t*, AST::hashstr, AST::eqstr> HashTable;
 #ifdef WIN32
-AST::NodeT jumpFFI(Evaluators::CProcedure* proc, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& iter, std::list<std::pair<AST::Keyword*, AST::NodeT> >::const_iterator& endIter, AST::NodeT options, AST::NodeT world) {
+AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& endIter, AST::NodeT options, AST::NodeT world) {
 	std::string v = Evaluators::str(proc->fSignature);
 	fprintf(stderr, "warning: could not find marshaller for %s\n", v.c_str());
 	return Evaluators::makeIOMonad(NULL, endIter->second);
