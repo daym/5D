@@ -28,6 +28,15 @@ static AST::Node* getMethod(AST::Node* name) {
 		return(&REPLX::RPurger);
 	else if(name == Symbols::Sexecuteexclam)
 		return(&REPLX::RExecutor);
+	else if(name == Symbols::Sexports)
+		return(AST::makeCons(Symbols::SgetOperatorPrecedenceListexclam,
+		       AST::makeCons(Symbols::Sdescribeexclam,
+		       AST::makeCons(Symbols::Sdefineexcam,
+		       AST::makeCons(Symbols::Simportexclam,
+		       AST::makeCons(Symbols::Spurgeexclam,
+		       AST::makeCons(Symbols::Sexecuteexclam,
+		       AST::makeCons(Symbols::Sexports,
+		       NULL))))))));
 	else
 		return(NULL); // TODO
 }
