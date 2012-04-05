@@ -223,16 +223,16 @@ bool ShuntingYardParser::any_operator_P(AST::NodeT node) {
 	else
 		return(OPL->any_operator_P(node));
 }
-int ShuntingYardParser::get_operator_precedence_and_associativity(AST::NodeT node, AST::Symbol*& outAssociativity) {
+int ShuntingYardParser::get_operator_precedence_and_associativity(AST::NodeT node, AST::NodeT& outAssociativity) {
 	AST::Cons* c = Evaluators::evaluateToCons(node);
 	if(c) // macro-like operators have their operator symbol as the head
 		node = c->head;
 	assert(AST::get_symbol1_name(node) != NULL);
 	outAssociativity = Symbols::Sright;
-	return(OPL->get_operator_precedence_and_associativity((AST::Symbol*) node, outAssociativity));
+	return(OPL->get_operator_precedence_and_associativity(node, outAssociativity));
 }
 int ShuntingYardParser::get_operator_precedence(AST::NodeT node) {
-	AST::Symbol* associativity = NULL;
+	AST::NodeT associativity = NULL;
 	return(get_operator_precedence_and_associativity(node, associativity));
 }
 #define SCOPERANDS \
@@ -247,7 +247,7 @@ int ShuntingYardParser::get_operator_precedence(AST::NodeT node) {
 		fOperators.pop(); \
 	} else \
 
-AST::NodeT ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST::Symbol* terminator) {
+AST::NodeT ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, NodeT terminator) {
 	bool oldIndentationHonoring = false;
 	try {
 		oldIndentationHonoring = scanner->setHonorIndentation(true);
@@ -304,7 +304,7 @@ AST::NodeT ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 			fOperators.push(value);
 			fOperandCounts.push(fOperands.size());
 		} else if(any_operator_P(value) && (fOperators.empty() || 1 /*|| macro_standin_operator(fOperators.top()) != Symbols::Squote */ || value == Symbols::Sspace)) { /* operator */
-			AST::Symbol* currentAssociativity = Symbols::Sright; // TODO
+			NodeT currentAssociativity = Symbols::Sright; // TODO
 			// note that prefix associativity is right associativity.
 			int currentPrecedence = get_operator_precedence_and_associativity(value, currentAssociativity);
 			SCOPERANDS while(!fOperators.empty() && currentPrecedence <= get_operator_precedence(fOperators.top())) {
@@ -337,13 +337,13 @@ AST::NodeT ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, AST
 		throw;
 	}
 }
-AST::NodeT ShuntingYardParser::parse(OperatorPrecedenceList* OPL, AST::Symbol* terminator) {
+AST::NodeT ShuntingYardParser::parse(OperatorPrecedenceList* OPL, NodeT terminator) {
 	return(parse_expression(OPL, terminator));
 }
-void ShuntingYardParser::enter_abstraction(AST::Symbol* name) {
+void ShuntingYardParser::enter_abstraction(NodeT name) {
 	bound_symbols = AST::makeCons(name, bound_symbols);
 }
-void ShuntingYardParser::leave_abstraction(AST::Symbol* name) {
+void ShuntingYardParser::leave_abstraction(NodeT name) {
 	assert(bound_symbols && bound_symbols->head == name);
 	AST::NodeT n = bound_symbols->tail;
 	bound_symbols->tail = NULL;

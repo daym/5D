@@ -18,16 +18,14 @@ namespace AST {
 
 struct Symbol : Node {
 	const char* name;
-public:
-	virtual std::string str(void) const;
 };
 
 struct SymbolReference : Node {
-	struct Symbol* symbol;
+	//struct Symbol* symbol;
+	NodeT symbol;
 	int index;
 public:
-	SymbolReference(struct Symbol* symbol, int index);
-	virtual std::string str(void) const;
+	SymbolReference(NodeT symbol, int index);
 };
 Symbol* symbolFromStr(const char* name) G_5D_GNUC_PURE;
 
@@ -37,7 +35,7 @@ static inline bool symbol_P(AST::NodeT argument) {
 /* will return NULL if not a Symbol. */
 static inline const char* get_symbol_name(AST::NodeT argument) {
 	SymbolReference* r = dynamic_cast<SymbolReference*>(argument);
-	Symbol* s = r ? r->symbol : dynamic_cast<Symbol*>(argument);
+	Symbol* s = dynamic_cast<Symbol*>(r ? r->symbol : argument);
 	return s ? s->name : NULL;
 }
 /* will return NULL if not a Symbol. */
@@ -45,7 +43,7 @@ static inline const char* get_symbol1_name(AST::NodeT argument) {
 	Symbol* s = dynamic_cast<Symbol*>(argument);
 	return s ? s->name : NULL;
 }
-static inline AST::Symbol* get_symbol_reference_name(AST::NodeT root) {
+static inline AST::NodeT get_symbol_reference_name(AST::NodeT root) {
 	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
 	if(refNode)
 		return(refNode->symbol);

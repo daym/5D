@@ -63,7 +63,6 @@ static inline bool quoted_P(AST::NodeT root) {
 // TODO GC-proof deque
 AST::NodeT annotate_impl(AST::NodeT root, std::deque<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& boundNamesSet) {
 	// TODO maybe traverse cons etc? maybe not.
-	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(root);
 	AST::NodeT result;
 	if(abstraction_P(root)) {
 		AST::NodeT parameterNode = get_abstraction_parameter(root);
@@ -95,19 +94,19 @@ AST::NodeT annotate_impl(AST::NodeT root, std::deque<AST::Symbol*>& boundNames, 
 			return(root);
 		else
 			return(makeApplication(newOperatorNode, newOperandNode));
-	} else if(symbolNode) {
+	} else if(get_symbol1_name(root)) {
 		int size = boundNames.size();
 		int i;
 		for(i = 0; i < size; ++i)
-			if(boundNames[i] == symbolNode)
+			if(boundNames[i] == root)
 				break;
 		if(i < size) { /* found */
 			//std::distance(boundNames.begin(), std::find(boundNames.begin(), boundNames.end(), symbolNode));
-			SymbolReference* ref = new SymbolReference(symbolNode, i + 1);
+			SymbolReference* ref = new SymbolReference(root, i + 1);
 			return(ref);
 		} else {
 			std::stringstream sst;
-			sst << "(" << str(symbolNode) << ") is not bound";
+			sst << "(" << get_symbol1_name(root) << ") is not bound";
 			std::string v = sst.str();
 			throw EvaluationException(v.c_str()); // TODO line info...
 		}

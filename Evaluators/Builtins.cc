@@ -285,7 +285,7 @@ REGISTER_STR(Abstraction, {
 })
 REGISTER_STR(Keyword, return(std::string("@") + (node->name));)
 REGISTER_STR(Symbol, return(node->name);)
-REGISTER_STR(SymbolReference, return(node->symbol->name);)
+REGISTER_STR(SymbolReference, return(Evaluators::str(node->symbol));)
 static StrRegistration* root;
 StrRegistration* registerStr(StrRegistration* n) {
 	StrRegistration* oldRoot = root;
@@ -696,7 +696,7 @@ static AST::NodeT makeAbstractionB(AST::NodeT options, AST::NodeT argument) {
 static AST::NodeT parseMath(Scanners::OperatorPrecedenceList* OPL, FILE* inputFile, CXXArguments& arguments, CXXArguments::const_iterator& iter, const CXXArguments::const_iterator& endIter) {
 	int position = 0; // FIXME size_t
 	AST::NodeT name = NULL;
-	AST::Symbol* terminator = NULL;
+	AST::NodeT terminator = NULL;
 	for(++iter; iter != endIter; ++iter) {
 		if(iter->first) { // likely
 			if(iter->first == AST::keywordFromStr("position:")) {
@@ -704,7 +704,7 @@ static AST::NodeT parseMath(Scanners::OperatorPrecedenceList* OPL, FILE* inputFi
 			} else if(iter->first == AST::keywordFromStr("name:")) {
 				name = iter->second;
 			} else if(iter->first == AST::keywordFromStr("terminator:")) {
-				terminator = dynamic_cast<AST::Symbol*>(iter->second);
+				terminator = iter->second; // should be Symbol
 			}
 		}
 	}

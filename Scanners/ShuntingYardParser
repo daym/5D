@@ -31,7 +31,7 @@ private:
 	OperatorPrecedenceList* OPL;
 	AST::Cons* bound_symbols;
 	AST::NodeT parse_abstraction_parameter(void);
-	int get_operator_precedence_and_associativity(AST::NodeT node, AST::Symbol*& outAssociativity);
+	int get_operator_precedence_and_associativity(AST::NodeT node, AST::NodeT& outAssociativity);
 	int get_operator_precedence(AST::NodeT node);
 	AST::NodeT expand_macro(AST::NodeT op1, AST::NodeT suffix);
 	bool macro_standin_P(AST::NodeT op1);
@@ -46,8 +46,8 @@ protected:
 	AST::NodeT parse_quote_macro(void);
 public:
 	ShuntingYardParser(void);
-	AST::NodeT parse_expression(OperatorPrecedenceList* OPL, AST::Symbol* terminator);
-	AST::NodeT parse(OperatorPrecedenceList* operator_precedence_list, AST::Symbol* terminator);
+	AST::NodeT parse_expression(OperatorPrecedenceList* OPL, AST::NodeT terminator);
+	AST::NodeT parse(OperatorPrecedenceList* operator_precedence_list, AST::NodeT terminator);
 	bool any_operator_P(AST::NodeT node);
 public: 
 	inline bool EOFP(void) const {
@@ -59,8 +59,8 @@ public:
 
 protected:
 	AST::NodeT handle_unary_operator(AST::NodeT operator_);
-	void enter_abstraction(AST::Symbol* name);
-	void leave_abstraction(AST::Symbol* name);
+	void enter_abstraction(AST::NodeT name);
+	void leave_abstraction(AST::NodeT name);
 };
 
 }; /* end namespace */

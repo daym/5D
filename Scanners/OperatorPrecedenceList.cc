@@ -18,7 +18,7 @@ using namespace AST;
 
 // NO REGISTER_STR(OperatorPrecedenceList, return("operatorPrecedenceList");)
 // TODO REGISTER_STR(OperatorPrecedenceItem, return(...);)
-int OperatorPrecedenceList::get_operator_precedence_and_associativity(AST::Symbol* symbol, AST::Symbol*& associativity_out) const {
+int OperatorPrecedenceList::get_operator_precedence_and_associativity(NodeT symbol, NodeT& associativity_out) const {
 	if(symbol != NULL)
 		for(int i = 0; i < MAX_PRECEDENCE_LEVELS; ++i) {
 			for(struct OperatorPrecedenceItem* item = levels[i]; item; item = item->next)
@@ -30,32 +30,34 @@ int OperatorPrecedenceList::get_operator_precedence_and_associativity(AST::Symbo
 	associativity_out = NULL;
 	return(-1);
 }
-int OperatorPrecedenceList::get_operator_precedence(AST::Symbol* symbol) const {
-	AST::Symbol* assoc;
+int OperatorPrecedenceList::get_operator_precedence(NodeT symbol) const {
+	NodeT assoc;
 	return(get_operator_precedence_and_associativity(symbol, assoc));
 }
-void OperatorPrecedenceList::cons(int precedence_level, struct AST::Symbol* operator_, struct AST::Symbol* associativity) {
+void OperatorPrecedenceList::cons(int precedence_level, NodeT operator_, NodeT associativity) {
 	assert(precedence_level >= 0 && precedence_level < MAX_PRECEDENCE_LEVELS);
-	if(prefix_usages[(unsigned char) operator_->name[0]] > 0) { /* someone has something like this in use, maybe hapless caller */
+	std::string opname = Evaluators::str(operator_);
+	if(prefix_usages[(unsigned char) opname.c_str()[0]] > 0) { /* someone has something like this in use, maybe hapless caller */
 		int level = get_operator_precedence(operator_);
 		while(level != -1) {
-			fprintf(stderr, "warning: the same operator \"%s\" previously had precedence level %d, defusing it.\n", operator_->name, level);
+			fprintf(stderr, "warning: the same operator \"%s\" previously had precedence level %d, defusing it.\n", opname.c_str(), level);
 			for(struct OperatorPrecedenceItem* item = levels[level]; item; item = item->next)
 				if(item->operator_ == operator_)
 					item->operator_ = NULL; // XXX
 			level = get_operator_precedence(operator_);
 		}
 	}
-	++prefix_usages[(unsigned char) operator_->name[0]];
+	++prefix_usages[(unsigned char) opname.c_str()[0]];
 	levels[precedence_level] = new OperatorPrecedenceItem(levels[precedence_level], operator_, associativity);
 	if(operator_ == symbolFromStr("-"))
 		minus_level = precedence_level;
 }
-void OperatorPrecedenceList::uncons(int precedence_level, struct AST::Symbol* operator_, struct AST::Symbol* associativity) {
+void OperatorPrecedenceList::uncons(int precedence_level, NodeT operator_, NodeT associativity) {
 	struct OperatorPrecedenceItem* item;
 	assert(precedence_level >= 0 && precedence_level < MAX_PRECEDENCE_LEVELS);
 	assert(levels[precedence_level] && levels[precedence_level]->operator_ == operator_);
-	--prefix_usages[(unsigned char) operator_->name[0]];
+	std::string opname = Evaluators::str(operator_);
+	--prefix_usages[(unsigned char) opname.c_str()[0]];
 	item = levels[precedence_level]->next;
 	levels[precedence_level]->next = NULL;
 	levels[precedence_level] = item;

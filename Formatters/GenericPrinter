@@ -3,13 +3,12 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 	   The precedence level of the atoms is just very high. 
 	   The reason it is not explicitly programmed that way is that there are a lot of temporary variables that are used in both precedence level detection and recursion and that would be much code duplication to do two. */
 	node = repr(node);
-	AST::Symbol* symbolNode = dynamic_cast<AST::Symbol*>(node);	
 	if(node == NULL)
 		print_text(output, position, "[]", false);
-	else if(symbolNode) {
-		AST::Symbol* fAssociativity = NULL;
-		int pl = OPL->get_operator_precedence_and_associativity(symbolNode, fAssociativity);
-		print_text(output, position, symbolNode->name, pl != -1 && fAssociativity != Symbols::Sprefix);
+	else if(symbol_P(node)) {
+		AST::NodeT fAssociativity = NULL;
+		int pl = OPL->get_operator_precedence_and_associativity(node, fAssociativity);
+		print_text(output, position, AST::get_symbol1_name(node), pl != -1 && fAssociativity != Symbols::Sprefix);
 	} else if(abstraction_P(node)) { /* abstraction */
 		process_abstraction(OPL, output, position, node, precedence_limit, B_paren_equal_levels);
 	} else if(application_P(node)) { /* application */
@@ -19,12 +18,12 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 		//if(operator_ && application_P(operator_)) // 2 for binary ops.
 		AST::NodeT operator_ = envelope ? get_application_operator(envelope) : NULL;
 		AST::Symbol* operatorSymbol = dynamic_cast<AST::Symbol*>(repr(operator_)); 
-		AST::Symbol* operatorAssociativity = NULL;
+		AST::NodeT operatorAssociativity = NULL;
 		int precedence = operatorSymbol ? OPL->get_operator_precedence_and_associativity(operatorSymbol, operatorAssociativity) : -1;
 		if(precedence != -1 && application_P(envelope)) { // is a (binary) operator and the envelope is not a builtin (i.e. (+))
 			bool B_parend = maybe_print_opening_paren(output, position, operator_, precedence, precedence_limit, B_paren_equal_levels);
 			print_CXX(OPL, output, position, get_application_operand(envelope), precedence, operatorAssociativity != Symbols::Sleft);
-			print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
+			print_text_raw(output, position, Evaluators::str(operatorSymbol), precedence < OPL->apply_level);
 			////print_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
 			AST::NodeT operand = get_application_operand(node);
 			if(operatorSymbol == Symbols::Sdot && application_P(operand) && Evaluators::quote_P(get_application_operator(operand))) {
@@ -41,11 +40,11 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 			bool B_parend = maybe_print_opening_paren(output, position, operator_, precedence, precedence_limit, B_paren_equal_levels);
 			operator_ = get_application_operator(node);
 			operatorSymbol = dynamic_cast<AST::Symbol*>(operator_);
-			AST::Symbol* xoperatorAssociativity = NULL;
+			AST::NodeT xoperatorAssociativity = NULL;
 			int xprecedence = operatorSymbol ? OPL->get_operator_precedence_and_associativity(operatorSymbol, xoperatorAssociativity) : -1;
 			if(xprecedence != -1 && xoperatorAssociativity != Symbols::Sprefix) { // incomplete binary operation
 				++position, output << '(';
-                                print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
+				print_text_raw(output, position, Evaluators::str(operatorSymbol), precedence < OPL->apply_level);
 				++position, output << ')';
 			} else
 				print_CXX(OPL, output, position, operator_, precedence, operatorAssociativity != Symbols::Sleft);
@@ -65,19 +64,19 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 	} else if(Numbers::ratio_P(node)) { /* copied from the application_P() case. */
 		AST::Symbol* operatorSymbol = Symbols::Sslash;
 		AST::NodeT operator_ = operatorSymbol;
-		AST::Symbol* operatorAssociativity = NULL;
+		AST::NodeT operatorAssociativity = NULL;
 		int precedence = operatorSymbol ? OPL->get_operator_precedence_and_associativity(operatorSymbol, operatorAssociativity) : -1;
 		assert(precedence != -1);
 		bool B_parend = maybe_print_opening_paren(output, position, operator_, precedence, precedence_limit, B_paren_equal_levels);
 		print_CXX(OPL, output, position, Numbers::Ratio_getA(node), precedence, operatorAssociativity != Symbols::Sleft);
-		print_text_raw(output, position, operatorSymbol->str(), precedence < OPL->apply_level);
+		print_text_raw(output, position, Evaluators::str(operatorSymbol), precedence < OPL->apply_level);
 		////print_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
 		print_CXX(OPL, output, position, Numbers::Ratio_getB(node), precedence, operatorAssociativity != Symbols::Sright);
 		maybe_print_closing_paren(output, position, operator_, B_parend);
 	} else { /* literal etc */
 		/* this especially matches BuiltinOperators which will return their builtin name */
 		std::string value = str(node);
-		AST::Symbol* fAssociativity = NULL;
+		AST::NodeT fAssociativity = NULL;
 		int pl = OPL->get_operator_precedence_and_associativity(AST::symbolFromStr(value.c_str()), fAssociativity);
 		print_text(output, position, value.c_str(), pl != -1 && fAssociativity != Symbols::Sprefix); // , pl < OPL->apply_level && pl != -1);
 	}

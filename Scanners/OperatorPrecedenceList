@@ -18,9 +18,9 @@ namespace Scanners {
 /* DIY cons for no good reason. TODO change? */
 struct OperatorPrecedenceItem : AST::Node {
 	struct OperatorPrecedenceItem* next;
-	struct AST::Symbol* operator_;
-	struct AST::Symbol* associativity;
-	OperatorPrecedenceItem(struct OperatorPrecedenceItem* next, struct AST::Symbol* operator_, struct AST::Symbol* associativity) {
+	AST::NodeT operator_;
+	AST::NodeT associativity;
+	OperatorPrecedenceItem(struct OperatorPrecedenceItem* next, AST::NodeT operator_, AST::NodeT associativity) {
 		this->next = next;
 		this->operator_ = operator_;
 		this->associativity = associativity;
@@ -33,13 +33,13 @@ struct OperatorPrecedenceList : AST::Node {
 	short prefix_usages[256];
 	struct OperatorPrecedenceItem* levels[MAX_PRECEDENCE_LEVELS];
 	OperatorPrecedenceList(bool bInitDefaults = true);
-	int get_operator_precedence(AST::Symbol* symbol) const;
-	int get_operator_precedence_and_associativity(AST::Symbol* symbol, struct AST::Symbol*& associativity_out) const;
+	int get_operator_precedence(AST::NodeT symbol) const;
+	int get_operator_precedence_and_associativity(AST::NodeT symbol, AST::NodeT& associativity_out) const;
 	int empty_P(int precedence_level) {
 		return(precedence_level >= MAX_PRECEDENCE_LEVELS || levels[precedence_level] == NULL);
 	}
 	/* for speed reasons, it can happen that the same operator is present multiple times on the same level. */
-	AST::NodeT match_operator(int precedence_level, AST::NodeT operator_, struct AST::Symbol*& associativity_out, bool& B_visible_operator) const {
+	AST::NodeT match_operator(int precedence_level, AST::NodeT operator_, AST::NodeT& associativity_out, bool& B_visible_operator) const {
 		B_visible_operator = true;
 		if(precedence_level < 0 || precedence_level >= MAX_PRECEDENCE_LEVELS)
 			return(NULL);
@@ -64,7 +64,7 @@ struct OperatorPrecedenceList : AST::Node {
 	bool any_operator_P(AST::NodeT thingie) const {
 		if(!this) // if we don't have OperatorPrecedenceList, no point in checking it
 			return(false);
-		return(get_operator_precedence(dynamic_cast<AST::Symbol*>(thingie)) != -1);
+		return(symbol_P(thingie) && get_operator_precedence(thingie) != -1);
 	}
 	int next_precedence_level(int precedence_level) const {
 		++precedence_level;
@@ -73,8 +73,8 @@ struct OperatorPrecedenceList : AST::Node {
 			++precedence_level;
 		return(precedence_level);
 	}
-	void cons(int precedence_level, struct AST::Symbol* operator_, struct AST::Symbol* associativity);
-	void uncons(int precedence_level, struct AST::Symbol* operator_, struct AST::Symbol* associativity);
+	void cons(int precedence_level, AST::NodeT operator_, AST::NodeT associativity);
+	void uncons(int precedence_level, AST::NodeT operator_, AST::NodeT associativity);
 	AST::Cons* get_all_operators(int precedence_level) const;
 };
 

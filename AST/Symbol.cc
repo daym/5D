@@ -11,6 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/Symbol"
 #include "AST/HashTable"
 #include "FFIs/Allocators"
+#include "Evaluators/Operation"
 
 namespace AST {
 
@@ -34,15 +35,7 @@ Symbol* symbolFromStr(const char* name) {
 	}
 }
 
-std::string Symbol::str(void) const {
-	return(name);
-}
-
-std::string SymbolReference::str(void) const {
-	return(symbol->str());
-}
-
-SymbolReference::SymbolReference(struct Symbol* symbol, int index) {
+SymbolReference::SymbolReference(NodeT symbol, int index) {
 	this->symbol = symbol;
 	this->index = index;
 }
