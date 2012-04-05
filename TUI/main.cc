@@ -44,10 +44,11 @@ struct REPL : AST::Node {
 	AST::HashTable* fModules;
 	int fCursorPosition;
 };
-int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::NodeT value) {
-	if(self->fEnvironmentTable.find(name->name) == self->fEnvironmentTable.end()) {
-		self->fEnvironmentTable[name->name] = value;
-		self->fEnvironmentNames = AST::makeCons(name, self->fEnvironmentNames);
+int REPL_add_to_environment_simple_GUI(REPL* self, AST::NodeT sym, AST::NodeT value) {
+	const char* name = AST::get_symbol1_name(sym);
+	if(self->fEnvironmentTable.find(name) == self->fEnvironmentTable.end()) {
+		self->fEnvironmentTable[name] = value;
+		self->fEnvironmentNames = AST::makeCons(sym, self->fEnvironmentNames);
 	}
 	return(self->fEnvironmentCount++); // FIXME
 }

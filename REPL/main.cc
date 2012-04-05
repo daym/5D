@@ -37,7 +37,7 @@ struct REPL : AST::Node {
 	AST::HashTable* fModules;
 };
 
-int REPL_add_to_environment_simple_GUI(REPL* self, AST::Symbol* name, AST::NodeT value) {
+int REPL_add_to_environment_simple_GUI(REPL* self, AST::NodeT name, AST::NodeT value) {
 	return(self->fEnvironmentCount++);
 }
 

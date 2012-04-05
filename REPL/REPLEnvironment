@@ -65,7 +65,7 @@ static AST::NodeT envEntryGetTail(AST::NodeT node) {
 	assert(abstraction_P(op));
 	return(get_abstraction_body(op));
 }
-static AST::NodeT makeEnvEntry(AST::Symbol* name, AST::NodeT body, AST::NodeT next) {
+static AST::NodeT makeEnvEntry(AST::NodeT /* symbol */ name, AST::NodeT body, AST::NodeT next) {
 	return(makeApplication(makeAbstraction(name, next), body));
 }
 static void getEnvEntry(AST::NodeT entry, AST::NodeT& name, AST::NodeT& body, AST::NodeT& next) {
@@ -314,8 +314,8 @@ static AST::NodeT REPL_execute1(AST::NodeT options, AST::NodeT argument) {
 //fTailEnvironment
 //fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */
 //fTailUserEnvironmentFrontier
-void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::NodeT value);
-static void REPL_add_static_builtin_binding(struct REPL* self, AST::Symbol* name, AST::NodeT value) {
+void REPL_add_to_environment_simple(struct REPL* self, AST::NodeT name, AST::NodeT value);
+static void REPL_add_static_builtin_binding(struct REPL* self, AST::NodeT name, AST::NodeT value) {
 	REPL_add_to_environment_simple(self, name, value);
 }
 using namespace Evaluators;
@@ -371,9 +371,9 @@ static void REPL_init_builtins(struct REPL* self) {
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }
-//int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::NodeT value);
+//int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::NodeT name, AST::NodeT value);
 /* returns: whether we just inserted something after endIter, ostensibly moving stuff */
-bool REPL_add_to_environment_simple_end(struct REPL* self, AST::Symbol* name, AST::NodeT value, AST::NodeT endIter) {
+bool REPL_add_to_environment_simple_end(struct REPL* self, AST::NodeT name, AST::NodeT value, AST::NodeT endIter) {
 	using namespace AST;
 	using namespace Evaluators;
 	int index = REPL_add_to_environment_simple_GUI(self, name, value);
@@ -392,7 +392,7 @@ bool REPL_add_to_environment_simple_end(struct REPL* self, AST::Symbol* name, AS
 	envEntrySetTail(prevNode, newNode);
 	return(prevNode == endIter);
 }
-void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::NodeT value) {
+void REPL_add_to_environment_simple(struct REPL* self, AST::NodeT name, AST::NodeT value) {
 	if(REPL_add_to_environment_simple_end(self, name, value, self->fTailUserEnvironmentFrontier))
 		self->fTailUserEnvironmentFrontier = envEntryGetTail(self->fTailUserEnvironmentFrontier);
 }
@@ -418,7 +418,7 @@ static void REPL_unfilter_environment(struct REPL* self, AST::NodeT environment)
 	}
 	for(; environment; environment = next) {
 		getEnvEntry(environment, name, body, next);
-		REPL_add_to_environment_simple_GUI(self, dynamic_cast<AST::Symbol*>(name), body);
+		REPL_add_to_environment_simple_GUI(self, name, body);
 		if(next == NULL || next == Symbols::Snil) { // used as a tail marker
 			self->fTailUserEnvironmentFrontier = environment;
 			envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL);

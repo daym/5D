@@ -24,7 +24,7 @@ namespace REPLX {
 struct REPL;
 void REPL_set_environment(struct REPL* self, AST::NodeT environment);
 AST::NodeT REPL_get_user_environment(struct REPL* self);
-void REPL_add_to_environment_simple(struct REPL* self, AST::Symbol* name, AST::NodeT value);
+void REPL_add_to_environment_simple(struct REPL* self, AST::NodeT name, AST::NodeT value);
 };
 namespace GUI {
 using namespace REPLX;
@@ -155,9 +155,8 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 /* caller needs to make sure it would actually work...*/
 void REPL_add_to_environment(struct REPL* self, AST::NodeT name, AST::NodeT body) {
 	using namespace AST;
-	AST::Symbol* nameSymbol = dynamic_cast<AST::Symbol*>(name);
-	if(nameSymbol)
-		REPL_add_to_environment_simple(self, nameSymbol, body);
+	if(AST::get_symbol1_name(name))
+		REPL_add_to_environment_simple(self, name, body);
 }
 
 

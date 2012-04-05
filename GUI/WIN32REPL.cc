@@ -55,7 +55,7 @@ struct REPL : AST::Node {
 };
 }; /* end namespace REPLX */
 namespace GUI {
-	int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::NodeT value);
+	int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::NodeT parameter, struct AST::NodeT value);
 	void REPL_set_file_modified(struct REPL* self, bool value);
 	void REPL_queue_scroll_down(struct REPL* self);
 };
@@ -951,7 +951,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 bool REPL_get_file_modified(struct REPL* self) {
 	return(self->B_file_modified);
 }
-int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::Symbol* parameter, struct AST::NodeT value) {
+int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::NodeT parameter, struct AST::NodeT value) {
 	//std::string bodyString = body->str();
 	if(self->fEnvironmentKeys->find(parameter->name) == self->fEnvironmentKeys->end()) {
 		/* index is the index of the item that is "just not as important as the new one" */
@@ -990,7 +990,7 @@ static AST::NodeT box_environment_elements(HWND dialog, int index, int count) {
 		HWND environmentList = GetDlgItem(dialog, IDC_ENVIRONMENT);
 		AST::NodeT value = (AST::NodeT) GetListViewItemUserData(environmentList, index);
 		std::wstring name = GetListViewEntryStringCXX(environmentList, index);
-		AST::Symbol* nameSymbol = AST::symbolFromStr(ToUTF8(name));
+		AST::NodeT nameSymbol = AST::symbolFromStr(ToUTF8(name));
 		return(makeEnvEntry(nameSymbol, value, box_environment_elements(dialog, index + 1, count)));
 	}
 }

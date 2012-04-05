@@ -90,7 +90,7 @@ struct REPL : AST::Node {
 };
 };
 namespace GUI {
-int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::NodeT value);
+int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::NodeT name, AST::NodeT value);
 void REPL_insert_into_output_buffer(struct REPL* self, GtkTextIter* destination, const char* text);
 void REPL_set_file_modified(struct REPL* self, bool value);
 void REPL_queue_scroll_down(struct REPL* self);
@@ -767,10 +767,11 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	if(Config_get_show_tips(self->fConfig))
 		REPL_show_tips(self);
 }
-int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST::NodeT value) {
+int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::NodeT sym, AST::NodeT value) {
 	GtkTreeIter iter;
 	GtkTreePath* path = NULL;
-	g_hash_table_replace(self->fEnvironmentKeys, g_strdup(name->name), gtk_tree_iter_copy(&iter));
+	const char* name = AST::get_symbol1_name(sym);
+	g_hash_table_replace(self->fEnvironmentKeys, g_strdup(name), gtk_tree_iter_copy(&iter));
 	gtk_tree_view_get_cursor(self->fEnvironmentView, &path, NULL);
 	if(path) {
 		gint* indices;
@@ -778,7 +779,7 @@ int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::Symbol* name, AST
 		gtk_list_store_insert(self->fEnvironmentStore2, &iter, indices[0]);
 	} else
 		gtk_list_store_append(self->fEnvironmentStore2, &iter);
-	gtk_list_store_set(self->fEnvironmentStore2, &iter, 0, name->name, -1);
+	gtk_list_store_set(self->fEnvironmentStore2, &iter, 0, name, -1);
 	REPL_set_file_modified(self, true);
 	path = gtk_tree_model_get_path(GTK_TREE_MODEL(self->fEnvironmentStore2), &iter);
 	gtk_tree_view_scroll_to_cell(self->fEnvironmentView, path, NULL, FALSE, 0.0f, 0.0f);
