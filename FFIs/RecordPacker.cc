@@ -267,10 +267,11 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 	}
 	return(size);
 }
-static void Record_skip_format(size_t& position /* in format Str */, AST::Str* formatStr) {
-	if(position > formatStr->size)
-		position = formatStr->size;
-	for(const char* format = ((const char*) formatStr->native) + position; position < formatStr->size; ++format, ++position) {
+static void Record_skip_format(size_t& position /* in format Str */, AST::NodeT formatStr) {
+	size_t formatSize = AST::get_str_size(formatStr);
+	if(position > formatSize)
+		position = formatSize;
+	for(const char* format = AST::get_str_buffer(formatStr) + position; position < formatSize; ++format, ++position) {
 		char formatC = *format;
 		if(formatC == ']')
 			break;
@@ -278,20 +279,21 @@ static void Record_skip_format(size_t& position /* in format Str */, AST::Str* f
 			++position;
 			//size_t subPosition;
 			Record_skip_format(position, formatStr);
-			format = ((const char*) formatStr->native) + position;
+			format = ((const char*) AST::get_str_buffer(formatStr)) + position;
 			if(*format != ']')
 				throw Evaluators::EvaluationException("packRecord: format Str is invalid");
 		}
 	}
 }
-void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::Str* formatStr, AST::NodeT data, std::stringstream& sst, std::vector<size_t>& offsets) {
+void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::NodeT formatStr, AST::NodeT data, std::stringstream& sst, std::vector<size_t>& offsets) {
 	size_t new_offset = 0;
 	if(formatStr == NULL)
 		return;
 	AST::Cons* consNode = Evaluators::evaluateToCons(data);
-	if(position > formatStr->size)
-		position = formatStr->size;
-	for(const char* format = ((const char*) formatStr->native) + position; position < formatStr->size; ++format, ++position) {
+	size_t formatSize = AST::get_str_size(formatStr);
+	if(position > formatSize)
+		position = formatSize;
+	for(const char* format = ((const char*) AST::get_str_buffer(formatStr)) + position; position < formatSize; ++format, ++position) {
 		char formatC = *format;
 		if(formatC == ']')
 			break;
@@ -328,7 +330,7 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 				Record_skip_format(subPosition, formatStr);
 			}
 			position = subPosition;
-			format = ((const char*) formatStr->native) + position;
+			format = ((const char*) AST::get_str_buffer(formatStr)) + position;
 			if(*format != ']')
 				throw Evaluators::EvaluationException("packRecord: format Str is invalid");
 		} else {
@@ -510,14 +512,15 @@ static AST::NodeT tailtailtail(AST::NodeT suffix, size_t count) {
 }
 
 // TODO record unpacker for "[p]"
-AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::NodeT dataStr) {
-	if(formatStr == NULL)
+AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::NodeT formatStr, AST::NodeT dataStr) {
+	if(formatStr == NULL || !AST::str_P(formatStr))
 		throw Evaluators::EvaluationException("unpackRecord needs format string.");
 	AST::NodeT repr = AST::makeApplication(AST::makeApplication(&RecordUnpacker, formatStr), dataStr);
 	size_t resultOffset = 0;
 	size_t resultCount = 0;
 	size_t position = 0; // in format
-	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
+	size_t formatSize = AST::get_str_size(formatStr);
+	for(const char* format = (const char*) AST::get_str_buffer(formatStr); position < formatSize; ++format, ++position) {
 		char formatC = *format;
 		if(formatC == '<' || formatC == '>' || formatC == '=' || formatC == '@')
 			continue;
@@ -536,7 +539,7 @@ AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Nod
 	AST::Cons* result = NULL;
 	AST::Cons* tail = NULL;
 	repr = tailtailtail(repr, resultCount);
-	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
+	for(const char* format = (const char*) AST::get_str_buffer(formatStr); position < formatSize; ++format, ++position) {
 		char formatC = *format;
 		if(formatC == '<' || formatC == '>' || formatC == '=' || formatC == '@') {
 			if(formatC == '<')
@@ -576,13 +579,14 @@ AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::Str* formatStr, AST::Nod
 	return(result);
 }
 // this doesn't work with record packers like "[p]" which have dynamic length.
-size_t Record_get_size(enum ByteOrder byteOrder, AST::Str* formatStr) {
-	if(formatStr == NULL)
+size_t Record_get_size(enum ByteOrder byteOrder, AST::NodeT formatStr) {
+	if(formatStr == NULL || !AST::str_P(formatStr))
 		throw Evaluators::EvaluationException("recordSize needs format string.");
 	size_t offset = 0;
 	size_t new_offset = 0;
 	size_t position = 0; // in format
-	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
+	size_t formatSize = get_str_size(formatStr);
+	for(const char* format = get_str_buffer(formatStr); position < formatSize; ++format, ++position) {
 		char formatC = *format;
 		if(formatC == '<' || formatC == '>' || formatC == '=' || formatC == '@') {
 			if(formatC == '<')
@@ -606,10 +610,11 @@ size_t Record_get_size(enum ByteOrder byteOrder, AST::Str* formatStr) {
 	return(offset);
 }
 // this doesn't work with record packers like "[p]" which have dynamic length.
-bool Record_has_pointers(size_t& position, AST::Str* formatStr) {
-	if(formatStr == NULL)
+bool Record_has_pointers(size_t& position, AST::NodeT formatStr) {
+	if(formatStr == NULL || !AST::str_P(formatStr))
 		throw Evaluators::EvaluationException("recordSize needs format string.");
-	for(const char* format = (const char*) formatStr->native; position < formatStr->size; ++format, ++position) {
+	size_t formatSize = AST::get_str_size(formatStr);
+	for(const char* format = (const char*) AST::get_str_buffer(formatStr); position < formatSize; ++format, ++position) {
 		if(*format == '<' || *format == '>' || *format == '=' || *format == '@')
 			continue;
 		switch(*format) {
@@ -623,21 +628,21 @@ bool Record_has_pointers(size_t& position, AST::Str* formatStr) {
 		}
 		if(*format == '[') {
 			++position;
-			size_t subPosition;
+			//size_t subPosition;
 			if(Record_has_pointers(position, formatStr))
 				return(true);
-			format = ((const char*) formatStr->native) + position;
+			format = ((const char*) AST::get_str_buffer(formatStr)) + position;
 			if(*format != ']')
 				throw Evaluators::EvaluationException("packRecord: format Str is invalid");
 		}
 	}
 	return(false);
 }
-AST::Str* Record_allocate(size_t size, bool bAtomicity) {
+AST::NodeT Record_allocate(size_t size, bool bAtomicity) {
 	if(size < 1) // TODO
 		throw Evaluators::EvaluationException("cannot allocate record with unknown size");
 	char* buffer = new (UseGC) char[size];
-	AST::Str* result = AST::makeStrRaw(buffer, size, bAtomicity);
+	AST::NodeT result = AST::makeStrRaw(buffer, size, bAtomicity);
 	return(result);
 }
 using namespace Evaluators;
@@ -648,7 +653,7 @@ static AST::NodeT pack(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	size_t position = 0;
 	size_t offset = 0;
 	std::vector<size_t> offsets;
-	Record_pack(MACHINE_BYTE_ORDER_ALIGNED, position, offset, dynamic_cast<AST::Str*>(a), b, sst, offsets);
+	Record_pack(MACHINE_BYTE_ORDER_ALIGNED, position, offset, a, b, sst, offsets);
 	std::string v = sst.str();
 	return(AST::makeStrCXX(v));
 }
@@ -658,18 +663,18 @@ static AST::NodeT unpack(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	// TODO size
-	return(Record_unpack(MACHINE_BYTE_ORDER_ALIGNED, dynamic_cast<AST::Str*>(a), dynamic_cast<AST::Box*>(b)));
+	return(Record_unpack(MACHINE_BYTE_ORDER_ALIGNED, a, b));
 }
 DEFINE_BINARY_OPERATION(RecordUnpacker, unpack)
 REGISTER_BUILTIN(RecordUnpacker, 2, 0, AST::symbolFromStr("unpackRecord"))
 
-DEFINE_SIMPLE_OPERATION(RecordSizeCalculator, Numbers::internNative((Numbers::NativeInt) Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, dynamic_cast<AST::Str*>(reduce(argument)))))
+DEFINE_SIMPLE_OPERATION(RecordSizeCalculator, Numbers::internNative((Numbers::NativeInt) Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, reduce(argument))))
 REGISTER_BUILTIN(RecordSizeCalculator, 1, 0, AST::symbolFromStr("recordSize"))
 
 static AST::NodeT wrapAllocateRecord(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	AST::Str* format = dynamic_cast<AST::Str*>(iter->second);
+	AST::NodeT format = iter->second;
 	++iter;
 	AST::NodeT world = iter->second;
 	size_t position = 0;
@@ -698,15 +703,16 @@ REGISTER_BUILTIN(MemoryAllocator, (-2), 0, AST::symbolFromStr("allocateMemory!")
 static AST::NodeT wrapDuplicateRecord(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	AST::Str* record = dynamic_cast<AST::Str*>(iter->second);
+	AST::NodeT record = dynamic_cast<AST::Str*>(iter->second);
 	++iter;
 	AST::NodeT world = iter->second;
-	AST::Str* result;
-	if(record == NULL)
+	AST::NodeT result;
+	if(record == NULL || !AST::str_P(record))
 		result = NULL;
 	else {
-		result = Record_allocate(record->size, false); // since this is monadic, nothing stops the C runtime from putting pointers in there.
-		memcpy(result->native, record->native, record->size);
+		size_t formatSize = AST::get_str_size(record);
+		result = Record_allocate(formatSize, false); // since this is monadic, nothing stops the C runtime from putting pointers in there.
+		memcpy(Evaluators::get_pointer(result), get_str_buffer(record), formatSize);
 	}
 	return(Evaluators::makeIOMonad(result, world));
 }
@@ -735,8 +741,8 @@ AST::NodeT strFromList(AST::NodeT node) {
 		sst << (char) c;
 	}
 	std::string v = sst.str();
-	AST::Str* result = Record_allocate(v.length(), false/*chicken*/);
-	memcpy(result->native, v.c_str(), result->size);
+	AST::NodeT result = Record_allocate(v.length(), false/*chicken*/);
+	memcpy(Evaluators::get_pointer(result), v.c_str(), v.length());
 	return(result);
 }
 static AST::NodeT substr(AST::NodeT options, AST::NodeT argument) {
@@ -753,15 +759,15 @@ static AST::NodeT substr(AST::NodeT options, AST::NodeT argument) {
 	int end = Evaluators::get_nearest_int(iter->second);
 	++iter;
 	char* p = (char*) mBox->native;
-	size_t sz = mBox->size;
+	size_t formatSize = mBox->size;
 	if(beginning < 0)
-		beginning = sz + beginning;
+		beginning = formatSize + beginning;
 	if(end < 0)
-		end = sz + end;
+		end = formatSize + end;
 	if(beginning < 0)
 		beginning = 0;
-	if(end > sz)
-		end = sz;
+	if(end > formatSize)
+		end = formatSize;
 	int len = (end > beginning) ? end - beginning : 0;
 	if(len == 0)
 		return(NULL);
@@ -769,12 +775,10 @@ static AST::NodeT substr(AST::NodeT options, AST::NodeT argument) {
 	return(AST::makeStrRaw(p, len, mBox->bAtomicity)); // TODO maybe copy.
 }
 AST::Str* str_until_zero(AST::NodeT value) {
-	AST::Str* result;
 	if(value == NULL)
 		return(NULL);
 	char* n = (char*) Evaluators::get_pointer(value);
-	result = AST::makeStrRaw((char*) n, strlen((char*) n), true); // TODO copy?
-	return(result);
+	return AST::makeStrRaw((char*) n, strlen((char*) n), true); // TODO copy?
 }
 DEFINE_SIMPLE_OPERATION(ListFromStrGetter, (argument = reduce(argument), str_P(argument) ? listFromStr(argument) : nil_P(argument) ? argument : FALLBACK))
 DEFINE_SIMPLE_OPERATION(StrFromListGetter, (argument = reduce(argument), (cons_P(argument) || nil_P(argument)) ? strFromList(argument) : FALLBACK))
