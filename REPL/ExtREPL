@@ -1,0 +1,8 @@
+#ifndef __REPL_EXT_REPL_H
+#define __REPL_EXT_REPL_H
+#include "Evaluators/Operation"
+
+namespace REPL {
+DECLARE_SIMPLE_OPERATION(REPLMethodGetter)
+};
+#endif /* ndef __REPL_EXT_REPL_H */
