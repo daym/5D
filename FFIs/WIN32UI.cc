@@ -47,7 +47,7 @@ static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
 	AST::NodeT caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
 	cCaption = caption ? FromUTF8(Evaluators::get_string(caption)) : _T("");
 	int cResult = MessageBoxW(cParentWindow, cText.c_str(), cCaption.c_str(), cType);
-	AST::Symbol* result;
+	AST::NodeT result;
 	result = (cResult == IDOK) ? AST::symbolFromStr("ok") : 
 	         (cResult == IDCANCEL) ? AST::symbolFromStr("cancel") : 
 	         (cResult == IDYES) ? AST::symbolFromStr("yes") : 

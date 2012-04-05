@@ -32,11 +32,13 @@ namespace Evaluators {
 
 static AST::HashTable self;
 
-static void add_static_builtin_binding(AST::HashTable& self, AST::Symbol* name, AST::NodeT value) {
+static void add_static_builtin_binding(AST::HashTable& self, AST::NodeT name, AST::NodeT value) {
 	// TODO maybe dup name. Not really from the looks of it.
-	self[name->name] = value;
+	const char* n = get_symbol_name(name);
+	// TODO non-symbols?
+	self[n] = value;
 }
-static void add_builtin_method(AST::HashTable& self, AST::Symbol* name, AST::NodeT value) {
+static void add_builtin_method(AST::HashTable& self, AST::NodeT name, AST::NodeT value) {
 	add_static_builtin_binding(self, name, value);
 }
 
@@ -44,7 +46,7 @@ static AST::Cons* consFromKeys(AST::HashTable::const_iterator begin, AST::HashTa
 	if(begin == end)
 		return(NULL);
 	else {
-		AST::Symbol* name = AST::symbolFromStr(begin->first);
+		AST::NodeT name = AST::symbolFromStr(begin->first);
 		++begin;
 		return(AST::makeCons(name, consFromKeys(begin, end)));
 	}
@@ -129,7 +131,7 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, AST::symbolFromStr("dispatchModule"), &Evaluators::ModuleDispatcher);
 	add_builtin_method(self, AST::symbolFromStr("makeModuleBox"), &Evaluators::ModuleBoxMaker);
 	add_builtin_method(self, AST::symbolFromStr("REPLMethods"), &REPLX::REPLMethodGetter);
-	self[Symbols::Sexports->name] = consFromKeys(self.begin(), self.end());
+	self["exports"] = consFromKeys(self.begin(), self.end()); // see Sexports
 }
 
 static AST::NodeT getEntry(AST::NodeT sym) {

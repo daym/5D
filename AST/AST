@@ -66,6 +66,12 @@ static inline Box* makeBox(void* native, AST::NodeT fRepr) {
 	return new Box(native, fRepr);
 }
 bool str_P(AST::NodeT node);
+static inline char* get_str_buffer(AST::NodeT node) {
+	return (char*) (((AST::Str*) node)->native);
+}
+static inline size_t get_str_size(AST::NodeT node) {
+	return(((AST::Str*) node)->size);
+}
 static inline bool abstraction_P(NodeT root) {
 	return(dynamic_cast<Abstraction*>(root) != NULL);
 }

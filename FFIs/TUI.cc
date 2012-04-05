@@ -42,7 +42,7 @@ static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
 	AST::NodeT caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
 	cCaption = caption ? Evaluators::get_string(caption) : NULL;
 	char buffer[21];
-	AST::Symbol* result = AST::symbolFromStr("close");
+	AST::NodeT result = AST::symbolFromStr("close");
 	while(true) {
 		if(cCaption)
 			fprintf(stdout, "= %s =\n", cCaption);

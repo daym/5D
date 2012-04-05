@@ -26,5 +26,5 @@ namespace Trampolines {
 for combination in sys.stdin.readlines():
     combination = combination.rstrip("\n")
     for c in checks(combination):
-        print("AST::Symbol* S_%s = AST::symbolFromStr(\"%s\");" % (c, c))
+        print("AST::NodeT S_%s = AST::symbolFromStr(\"%s\");" % (c, c))
 print("};")

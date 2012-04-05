@@ -49,7 +49,7 @@ static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
 		gtk_window_set_title(GTK_WINDOW(dialog), cCaption);
 	int cResult = gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(GTK_WIDGET(dialog));
-	AST::Symbol* result;
+	AST::NodeT result;
 	result = (cResult == GTK_RESPONSE_NONE) ? AST::symbolFromStr("none") :
 	         (cResult == GTK_RESPONSE_REJECT) ? AST::symbolFromStr("reject") : 
 	         (cResult == GTK_RESPONSE_ACCEPT) ? AST::symbolFromStr("accept") : 

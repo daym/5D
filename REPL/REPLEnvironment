@@ -211,7 +211,7 @@ static AST::NodeT REPL_import(AST::NodeT options, AST::NodeT argument) {
 
 	AST::NodeT exports = Evaluators::reduce(AST::makeApplication(body, Symbols::Sexports));
 	AST::Cons* usedExports = NULL;
-	blacklist[Symbols::Sexports->name] = NULL;
+	blacklist["exports"] = NULL; // Sexports
 	for(AST::Cons* node = Evaluators::evaluateToCons(exports); node; node = Evaluators::evaluateToCons(node->tail)) {
 		AST::NodeT key = get_cons_head(node);
 		const char* xname = AST::get_symbol1_name(key);

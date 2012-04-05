@@ -21,16 +21,18 @@ struct Symbol : Node {
 };
 
 struct SymbolReference : Node {
-	//struct Symbol* symbol;
 	NodeT symbol;
 	int index;
 public:
 	SymbolReference(NodeT symbol, int index);
 };
-Symbol* symbolFromStr(const char* name) G_5D_GNUC_PURE;
+NodeT symbolFromStr(const char* name) G_5D_GNUC_PURE;
 
 static inline bool symbol_P(AST::NodeT argument) {
 	return(dynamic_cast<Symbol*>(argument) != NULL || dynamic_cast<SymbolReference*>(argument) != NULL);
+}
+static inline bool symbol1_P(AST::NodeT argument) {
+	return(dynamic_cast<Symbol*>(argument) != NULL);
 }
 /* will return NULL if not a Symbol. */
 static inline const char* get_symbol_name(AST::NodeT argument) {
