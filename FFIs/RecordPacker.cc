@@ -703,7 +703,7 @@ REGISTER_BUILTIN(MemoryAllocator, (-2), 0, AST::symbolFromStr("allocateMemory!")
 static AST::NodeT wrapDuplicateRecord(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	AST::NodeT record = dynamic_cast<AST::Str*>(iter->second);
+	AST::NodeT record = iter->second;
 	++iter;
 	AST::NodeT world = iter->second;
 	AST::NodeT result;
@@ -748,18 +748,18 @@ AST::NodeT strFromList(AST::NodeT node) {
 static AST::NodeT substr(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	AST::Str* mBox = dynamic_cast<AST::Str*>(iter->second);
+	AST::NodeT mBox = iter->second;
 	if(iter->second == NULL)
 		return(NULL);
 	++iter;
-	if(!mBox)
+	if(!AST::str_P(mBox))
 		throw Evaluators::EvaluationException("substr on non-string is undefined");
 	int beginning = Evaluators::get_nearest_int(iter->second);
 	++iter;
 	int end = Evaluators::get_nearest_int(iter->second);
 	++iter;
-	char* p = (char*) mBox->native;
-	size_t formatSize = mBox->size;
+	char* p = (char*) AST::get_str_buffer(mBox);
+	size_t formatSize = AST::get_str_size(mBox);
 	if(beginning < 0)
 		beginning = formatSize + beginning;
 	if(end < 0)
@@ -772,7 +772,7 @@ static AST::NodeT substr(AST::NodeT options, AST::NodeT argument) {
 	if(len == 0)
 		return(NULL);
 	p += beginning;
-	return(AST::makeStrRaw(p, len, mBox->bAtomicity)); // TODO maybe copy.
+	return(AST::makeStrRaw(p, len, get_str_atomic(mBox))); // TODO maybe copy.
 }
 AST::Str* str_until_zero(AST::NodeT value) {
 	if(value == NULL)
