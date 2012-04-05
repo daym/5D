@@ -41,7 +41,6 @@ AST::Node* prepare_module(AST::Node* input) {
 }
 
 static AST::Node* force_import_module(const char* filename) {
-	// FIXME push symbol table
 	int previousErrno = errno;
 	AST::Node* result = NULL;
 	if(FFIs::sharedLibraryFileP(filename)) {
@@ -60,7 +59,7 @@ static AST::Node* force_import_module(const char* filename) {
 			result = Evaluators::close(Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb))), result); // TODO close
 			result = Evaluators::close(Symbols::Scolon, &Evaluators::Conser, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::Snil, NULL, result); // dispatch [] needs that, so provide it.
-			result = Evaluators::close(Symbols::SrequireModule, &RModuleLoader, result); // module needs that, so provide it. // TODO maybe use Builtins.requireModule (not sure whether that's useful)
+			result = Evaluators::close(Symbols::SrequireModule, &ModuleLoader, result); // module needs that, so provide it. // TODO maybe use Builtins.requireModule (not sure whether that's useful)
 			result = Evaluators::close(Symbols::SBuiltins, &Evaluators::BuiltinGetter, result);
 			// ?? result = Evaluators::close(Symbols::SdispatchModule, AST::makeAbstraction(Symbols::Sexports, AST::makeApplication(&Evaluators::ModuleDispatcher, AST::makeApplication(&Evaluators::ModuleBoxMaker, Symbols::Sexports))), result);
 			result = prepare_module(result);
@@ -83,9 +82,7 @@ static AST::Node* force_import_module(const char* filename) {
 		std::string v = e.what() ? e.what() : "error";
 		fprintf(stderr, "%s\n", v.c_str());
 	}
-	// FIXME pop symbol table
 	return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
-	// FIXME return(uncurried(&RModule, AST::makeStr(filename)));
 }
 static AST::HashTable* fModules = new AST::HashTable;
 AST::Node* require_module(const char* filename, const std::string& xmoduleKey) {
@@ -135,18 +132,18 @@ AST::Node* import_module(AST::Node* options, AST::Node* fileNameNode) {
 	}
 	char* actualFilename = FFIs::get_absolute_path(realFilename.c_str());
 	AST::Node* body = Evaluators::require_module(actualFilename, moduleKey);
-	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&RModule, body)), AST::makeStr(actualFilename))));
+	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&Module, body)), AST::makeStr(actualFilename))));
 }
 
-DEFINE_FULL_OPERATION(RModule, {
+DEFINE_FULL_OPERATION(Module, {
 	return(access_module(fn, argument));
 })
-DEFINE_FULL_OPERATION(RModuleLoader, {
+DEFINE_FULL_OPERATION(ModuleLoader, {
 	return(import_module(fn, argument));
 })
 
-REGISTER_BUILTIN(RModule, 3, 1, AST::symbolFromStr("requireModule"));
-REGISTER_BUILTIN(RModuleLoader, 1, 1, AST::symbolFromStr("requireModule"));
+REGISTER_BUILTIN(Module, 3, 1, AST::symbolFromStr("requireModule"));
+REGISTER_BUILTIN(ModuleLoader, 1, 1, AST::symbolFromStr("requireModule"));
 
 static std::string sharedDir = PREFIX "/share/5D/"; // keep "/" suffix.
 std::string get_shared_dir(void) {

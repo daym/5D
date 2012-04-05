@@ -9,6 +9,7 @@ let ioValue = (\m head m) in
 let ioWorld = (\m head (tail m)) in 
 let (;) = (\m \ber \world (\r ber (ioValue r) (ioWorld r)) (m world)) in
 let liftIO! = (\v \world [v world]) in 
+let return! = liftIO! in 
 let flush! = Builtins.flush! in 
 let stderr = Builtins.stderr in 
 let stdin = Builtins.stdin in 
@@ -20,6 +21,7 @@ let errno! = Builtins.errno! in
 dispatch [['ioValue ioValue]
 ['ioWorld ioWorld]
 ['liftIO! liftIO!]
+['return! return!]
 ['flush! flush!]
 ['stderr stderr]
 ['stdin stdin]

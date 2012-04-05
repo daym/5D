@@ -113,6 +113,13 @@ extern AST::Symbol* Sa;
 extern AST::Symbol* Sb;
 extern AST::Symbol* SBuiltins;
 extern AST::Symbol* Scolonequal;
+extern AST::Symbol* SgetOperatorPrecedenceListexclam;
+extern AST::Symbol* Sdescribeexclam;
+extern AST::Symbol* Sdefineexcam;
+extern AST::Symbol* Simportexclam;
+extern AST::Symbol* Spurgeexclam;
+extern AST::Symbol* Sexecuteexclam;
+extern AST::Symbol* Sreturnexclam;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

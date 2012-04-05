@@ -12,6 +12,7 @@
 #include "Evaluators/ModuleLoader"
 #include "Evaluators/BuiltinSelector"
 #include "FFIs/ProcessInfos"
+#include "REPL/ExtREPL"
 
 namespace GUI {
 };
@@ -143,6 +144,7 @@ bool REPL_execute(struct REPL* self, AST::Node* input, T destination) {
 	try {
 		AST::Node* result = input;
 		Evaluators::resetWorld();
+		result = AST::makeApplication(&Evaluators::IORunner, result);
 		result = REPL_prepare(self, result);
 		result = Evaluators::reduce(result);
 		/*std::string v = result ? result->str() : "OK";
@@ -182,11 +184,14 @@ static AST::HashTable setFromList(AST::Node* listNode) {
 static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	struct REPL* self = dynamic_cast<struct REPL*>(iter->second);
+	struct REPL* self = (struct REPL*)(Evaluators::get_pointer(iter->second));
 	assert(self);
 	++iter;
 	assert(iter != arguments.end());
 	AST::Node* filename = iter->second;
+	++iter;
+	assert(iter != arguments.end());
+	AST::Node* world = iter->second;
 	if(!str_P(filename))
 		throw Evaluators::EvaluationException("import: expected Str filename");
 	AST::Node* body = Evaluators::import_module(options/*FIXME*/, filename);
@@ -220,42 +225,87 @@ static AST::Node* REPL_import(AST::Node* options, AST::Node* argument) {
 			usedExports = AST::makeCons(xname, usedExports);
 		}
 	}
-	return(usedExports);
+	return(Evaluators::makeIOMonad(usedExports, world));
 }
 static AST::Node* REPL_define(AST::Node* options, AST::Node* argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
-	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
-	assert(self);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	assert(iter != arguments.end());
+	struct REPL* self = (struct REPL*)(Evaluators::get_pointer(iter->second));
+	assert(self);
 	++iter;
 	assert(iter != arguments.end());
 	AST::Node* name = iter->second;
 	++iter;
 	assert(iter != arguments.end());
 	AST::Node* body = iter->second;
+	++iter;
+	assert(iter != arguments.end());
+	AST::Node* world = iter->second;
 	/* make sure it would actually work... (otherwise would throw exception) */
 	REPL_prepare(self, body);
 	REPL_add_to_environment(self, name, body);
-	return(body);
+	return(Evaluators::makeIOMonad(body, world));
 }
-
 static AST::Node* REPL_describe(AST::Node* options, AST::Node* argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
-	struct REPL* self = dynamic_cast<struct REPL*>(arguments.front().second);
+	struct REPL* self = (struct REPL*)(Evaluators::get_pointer(arguments.front().second));
 	assert(self);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	assert(iter != arguments.end());
 	++iter;
 	assert(iter != arguments.end());
 	argument = iter->second;
+	++iter;
+	assert(iter != arguments.end());
+	AST::Node* world = iter->second;
 	AST::Node* backOffsetNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("@backOffset:"));
 	int backOffset = backOffsetNode ? Evaluators::get_int(backOffsetNode) : 0;
 	if(dynamic_cast<AST::Symbol*>(argument) != NULL) {
 		AST::Node* body = REPL_get_definition_backwards(self, dynamic_cast<AST::Symbol*>(argument), backOffset);
-		return(body);
+		return(Evaluators::makeIOMonad(body, world));
 	} else
-		return(argument);
+		return(Evaluators::makeIOMonad(argument, world));
+}
+static AST::Node* REPL_purge(AST::Node* options, AST::Node* argument) {
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
+	assert(iter != arguments.end());
+	struct REPL* self = (struct REPL*)(Evaluators::get_pointer(iter->second));
+	assert(self);
+	++iter;
+	assert(iter != arguments.end());
+	AST::Node* world = iter->second;
+	// TODO actually purge
+	return(Evaluators::makeIOMonad(NULL, world));
+}
+static AST::Node* REPL_getOperatorPrecedenceList(AST::Node* options, AST::Node* argument) {
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
+	assert(iter != arguments.end());
+	struct REPL* self = (struct REPL*)(Evaluators::get_pointer(iter->second));
+	std::string v = Evaluators::str(iter->second);
+	assert(self);
+	++iter;
+	assert(iter != arguments.end());
+	AST::Node* world = iter->second;
+	return(Evaluators::makeIOMonad(REPL_ensure_operator_precedence_list(self), world));
+}
+using namespace GUI;
+static AST::Node* REPL_execute1(AST::Node* options, AST::Node* argument) {
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArgumentsU(options, argument, 1); /* FIXME without U ? */
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
+	assert(iter != arguments.end());
+	struct REPL* self = (struct REPL*)(Evaluators::get_pointer(iter->second));
+	assert(self);
+	++iter;
+	assert(iter != arguments.end());
+	AST::Node* expression = iter->second;
+	++iter;
+	assert(iter != arguments.end());
+	AST::Node* world = iter->second;
+	// FIXME return(Evaluators::makeIOMonad(internNative(REPL_execute(self, expression, 0)), world));
+	return(Evaluators::makeIOMonad(NULL, world));
 }
 
 //fTailEnvironment
@@ -279,7 +329,15 @@ DEFINE_REPL_OPERATION(RInformant, {
 DEFINE_REPL_OPERATION(RDefiner, {
 	return(REPL_define(fn, argument));
 })
-
+DEFINE_REPL_OPERATION(ROperatorPrecedenceListGetter, {
+	return(REPL_getOperatorPrecedenceList(fn, argument));
+})
+DEFINE_REPL_OPERATION(RPurger, {
+	return(REPL_purge(fn, argument));
+})
+DEFINE_REPL_OPERATION(RExecutor, {
+	return(REPL_execute1(fn, argument));
+})
 //#define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, uncurried((AST::Node*) v, (AST::Node*) AST::makeApplication(&Evaluators::Quoter, n)))
 #define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, v)
 static void REPL_init_builtins(struct REPL* self) {
@@ -298,20 +356,14 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
 	REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::Reducer);
 
-	REPL_add_static_builtin_binding(self, AST::symbolFromStr("REPL"), AST::makeBox(self, AST::symbolFromStr("REPL")));
-	REPL_add_static_builtin_binding(self, AST::symbolFromStr("operatorPrecedenceList"), AST::makeBox(REPL_ensure_operator_precedence_list(self), AST::symbolFromStr("operatorPrecedenceList")));
-	// TODO add get_all_operators
-	REPL_add_static_builtin_binding(self, AST::symbolFromStr("environment"), AST::makeBox(envEntryGetTail(self->fTailEnvironment), AST::symbolFromStr("environment"))); // TODO
-	REPL_add_static_builtin_binding(self, Symbols::Sdefine, uncurried(&RDefiner, self));
-	REPL_add_static_builtin_binding(self, Symbols::Sdefrec, &Evaluators::Quoter); // dummy
-	REPL_add_static_builtin_binding(self, Symbols::Simport, uncurried(&RImporter, self));
-	REPL_add_static_builtin_binding(self, Symbols::SrequireModule, &RModuleLoader);
-	//REPL_add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
-	REPL_add_builtin_method(self, Symbols::Sdescribe, uncurried(&RInformant, self));
-
-	//REPL_add_builtin_method(self, Symbols::SBuiltins, AST::makeAbstraction(Symbols::Sa, AST::makeApplication(&Evaluators::BuiltinGetter, Symbols::Sa))); // indirection in order to make cacheable.
+	REPL_add_static_builtin_binding(self, AST::symbolFromStr("REPL"), AST::makeAbstraction(Symbols::Sa, 
+		AST::makeApplication(AST::makeApplication(
+			&::REPL::REPLMethodGetter, // AST::makeApplication(&Evaluators::BuiltinGetter, AST::symbolFromStr("REPLMethods")), 
+			Symbols::Sa), AST::makeBox(self, AST::symbolFromStr("REPL")))));
+	REPL_add_static_builtin_binding(self, Symbols::SrequireModule, &ModuleLoader);
 	REPL_add_builtin_method(self, Symbols::SBuiltins, &Evaluators::BuiltinGetter);
 	REPL_add_builtin_method(self, Symbols::Scolon, &Evaluators::Conser); // module dispatch list needs that anyway
+	REPL_add_builtin_method(self, Symbols::Sreturnexclam, AST::makeApplication(AST::makeApplication(&ModuleLoader, AST::makeStr("IO")), Evaluators::quote(Symbols::Sreturnexclam)));
 
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
@@ -396,9 +448,12 @@ AST::Node* REPL_prepare(struct REPL* self, AST::Node* input) {
 	return(prepare_module(REPL_close_environment(self, input)));
 }
 
-REGISTER_BUILTIN(RImporter, (-2), 1, AST::symbolFromStr("import"))
-REGISTER_BUILTIN(RInformant, (-2), 1, AST::symbolFromStr("describe"));
-REGISTER_BUILTIN(RDefiner, (-3), 1, AST::symbolFromStr("define"));
+REGISTER_BUILTIN(RImporter, (-3), 1, AST::symbolFromStr("import!"))
+REGISTER_BUILTIN(RInformant, (-3), 1, AST::symbolFromStr("describe!"))
+REGISTER_BUILTIN(RDefiner, (-4), 1, AST::symbolFromStr("define!"))
+REGISTER_BUILTIN(ROperatorPrecedenceListGetter, (-2), 1, AST::symbolFromStr("getOperatorPrecedenceList!"))
+REGISTER_BUILTIN(RPurger, (-2), 1, AST::symbolFromStr("purge!"))
+REGISTER_BUILTIN(RExecutor, (-3), 1, AST::symbolFromStr("execute!"))
 REGISTER_STR(REPL, return("REPL");)
 
 }; /* end namespace */

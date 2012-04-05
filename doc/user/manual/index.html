@@ -1,0 +1,49 @@
+<!DOCTYPE html >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+pre { font-family: monospace; color: blue; }
+span.pre { font-family: monospace; color: blue; }
+/* nice normal tables: */
+table[border="1"] th, table[border="1"] td {
+        padding: 5px;
+        border: 1px;
+	border-color: gray;
+        border-style: solid;
+        white-space: nowrap;
+       /* text-align: right*/
+}
+
+table[border="1"] {
+	margin: 4px;
+        border: 1px; border-style: solid;
+        border-spacing: 0px;
+/*      background-color: ack; */
+        empty-cells: show;
+	border-collapse: collapse;
+}
+
+</style>
+
+</head>
+<body>
+<h1>5D User Manual</h1>
+<h2>REPL</h2>
+<p>REPL is the Read-Eval-Print loop.</p>
+<p>In order to import modules, use <span class="pre">import!</span>.</p>
+<h2>REPL.import! "&lt;name&gt;"</h2>
+<p><span class="pre">import!</span> will:</p>
+<ul>
+<li>ensure that the given module is loaded</li>
+<li>import the symbols of the module that are on the whitelist and not on the blacklist into the current namespace</li>
+</ul>
+<p>Keyword arguments are:</p>
+<ul>
+<li>@whitelist:['a 'b 'c]     in order to specify a whitelist. If not specified (or if empty), this means "all symbols of the module"</li>
+<li>@blacklist:['c 'd 'e]     in order to specify a blacklist.</li>
+<li>@prefix:"foo"             in order to prefix all defined symbols by the given Str.</li>
+</ul>
+<p>(In fact, <span class="pre">import!</span> is shorthand for a combination of define! (or let) and <span class="pre">requireModule</span>).</p>
+</body>
+</html>

@@ -57,7 +57,11 @@ char* REPL_get_output_buffer_text(struct REPL* self) {
 	return(NULL);
 }
 
+void REPL_insert_into_output_buffer(struct REPL* self, int destination, char const* text) {
+}
 void REPL_append_to_output_buffer(struct REPL* self, char const* text) {
+}
+static void REPL_enqueue_LATEX(struct REPL* self, AST::Node* node, int destination) {
 }
 
 };
@@ -76,34 +80,9 @@ void REPL_init(struct REPL* self) {
 	self->fModules = NULL;
 	REPL_clear(self);
 }
-bool REPL_execute(struct REPL* self, AST::Node* input) {
-	bool B_ok = false;
-	try {
-		AST::Node* result = input;
-		if(!Evaluators::define_P(input)) {
-			result = REPL_close_environment(self, result);
-			result = Evaluators::provide_dynamic_builtins(result);
-			result = Evaluators::annotate(result);
-			result = Evaluators::reduce(result);
-		}
-		/*std::string v = result ? result->str() : "OK";
-		v = " => " + v + "\n";
-		gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);*/
-		Formatters::print_S_Expression(stdout, 0, 0, result);
-		fprintf(stdout, "\n");
-		fflush(stdout);
-		/*REPL_enqueue_LATEX(self, result, destination);*/
-		B_ok = true;
-	} catch(Evaluators::EvaluationException e) {
-		std::string v = e.what() ? e.what() : "error";
-		v = " => " + v + "\n";
-		// FIXME gtk_text_buffer_insert(self->fOutputBuffer, destination, v.c_str(), -1);
-	}
-	return(B_ok);
-}
 struct REPL* REPL_new(void) {
 	struct REPL* result;
-	result = new REPL;
+	result = new REPLX::REPL;
 	REPL_init(result);
 	return(result);
 }
@@ -132,7 +111,7 @@ int main(int argc, char* argv[]) {
 			AST::Node* source = parser.parse_S_list(false);
 			source = Evaluators::programFromSExpression(source);
 			// TODO parse left-over ")"
-			REPL_execute(REPL, source);
+			REPL_execute(REPL, source, 0);
 		} catch(Scanners::ParseException exception) {
 			AST::Node* err = Evaluators::makeError(exception.what());
 			std::string errStr = str(err);

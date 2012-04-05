@@ -20,6 +20,7 @@
 #include "Numbers/Real"
 #include "Numbers/Ratio"
 #include "Evaluators/ModuleLoader"
+#include "REPL/ExtREPL"
 
 // for now, these are kept all in the main executable. After ensuring that GC actually works across DLL boundaries, we can also extract stuff into their own extension modules.
 namespace Evaluators {
@@ -50,7 +51,7 @@ void BuiltinSelector_init(void) {
 		return;
 	didInit = 1;
 	add_static_builtin_binding(self, Symbols::Squote, &Evaluators::Quoter); /* keep at the beginning */
-	add_static_builtin_binding(self, Symbols::SrequireModule, &RModuleLoader);
+	add_static_builtin_binding(self, Symbols::SrequireModule, &ModuleLoader);
 	add_static_builtin_binding(self, Symbols::Snil, NULL);
 	add_builtin_method(self, Symbols::Scolon, &Evaluators::Conser);
 	add_builtin_method(self, Symbols::SconsP, &Evaluators::ConsP);
@@ -122,6 +123,7 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, AST::symbolFromStr("parseMathStr"), &Evaluators::RStrMathParser);
 	add_builtin_method(self, AST::symbolFromStr("dispatchModule"), &Evaluators::ModuleDispatcher);
 	add_builtin_method(self, AST::symbolFromStr("makeModuleBox"), &Evaluators::ModuleBoxMaker);
+	add_builtin_method(self, AST::symbolFromStr("REPLMethods"), &REPL::REPLMethodGetter);
 	self[Symbols::Sexports->name] = consFromKeys(self.begin(), self.end());
 }
 

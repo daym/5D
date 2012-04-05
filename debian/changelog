@@ -1,3 +1,10 @@
+5d (0.6.0) unstable; urgency=low
+
+  * extract REPL into its own module
+  * remove import, define, defrec and def macros.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Thu, 05 Apr 2012 10:03:00 +0100
+
 5d (0.5.2) unstable; urgency=low
 
   * make cross product operator precedence less than product operator precedence (to make ∇⨯a⋅b = ∇⨯(a⋅b)).

@@ -200,7 +200,7 @@ void REPL_append_to_output_buffer(struct REPL* self, char const* text) {
 
 struct REPL* REPL_new(void) {
 	struct REPL* result;
-	result = new REPL;
+	result = new REPLX::REPL;
 	REPL_init(result);
 	return(result);
 }
@@ -326,7 +326,7 @@ int main(int argc, char* argv[]) {
 	install_SIGINT_handler();
 	initialize_readline();
 	operator_precedence_list = new Scanners::OperatorPrecedenceList();
-	while((line = readline("eval $ "))) {
+	while((line = readline("runIO $ "))) {
 		if(!line)
 			break;
 		if(!line[0])

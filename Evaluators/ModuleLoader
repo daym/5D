@@ -63,8 +63,8 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 	return(moduleKey);
 }
 
-DECLARE_FULL_OPERATION(RModule)
-DECLARE_FULL_OPERATION(RModuleLoader)
+DECLARE_FULL_OPERATION(Module)
+DECLARE_FULL_OPERATION(ModuleLoader)
 AST::Node* require_module(const char* filename, const std::string& xmoduleKey);
 AST::Node* prepare_module(AST::Node* input);
 AST::Node* import_module(AST::Node* options, AST::Node* fileNameNode);

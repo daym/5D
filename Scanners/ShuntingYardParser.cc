@@ -45,7 +45,7 @@ bool prefix_operator_P(AST::Node* operator_) {
 	       operator_ == Symbols::Sbackslash || 
 	       operator_ == Symbols::Sdash ||
 	       operator_ == Symbols::Sunarydash ||
-	       (macro_operator_P(operator_) && operator_ != Symbols::Sleftbracket && operator_ != Symbols::Sdefine && operator_ != Symbols::Sdef && operator_ != Symbols::Sdefrec));
+	       (macro_operator_P(operator_) && operator_ != Symbols::Sleftbracket));
 }
 ShuntingYardParser::ShuntingYardParser(void) {
 	bound_symbols = NULL;
@@ -138,12 +138,11 @@ AST::Node* ShuntingYardParser::parse_quote_macro(void) {
 	return(AST::makeApplication(Symbols::Squote, body));
 }
 inline bool simple_macro_P(AST::Node* value) {
-	return(value == Symbols::Sleftbracket || value == Symbols::Squote || value == Symbols::Sdefine || value == Symbols::Sdefrec || value == Symbols::Sdef);
+	return(value == Symbols::Sleftbracket || value == Symbols::Squote);
 }
 AST::Node* ShuntingYardParser::expand_simple_macro(AST::Node* value) {
 	return (value == Symbols::Sleftbracket) ? parse_list_macro() :
 	       (value == Symbols::Squote) ? parse_quote_macro() :
-	       (value == Symbols::Sdefine || value == Symbols::Sdefrec || value == Symbols::Sdef) ? parse_define_macro(value) :
 	       value;
 }
 AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
@@ -164,10 +163,6 @@ AST::Node* ShuntingYardParser::handle_unary_operator(AST::Node* operator_) {
 	} else if(operator_ == Symbols::Sunarydash) {
 		return(AST::makeCons(Symbols::Sunarydash, NULL));
 	}
-	//} else if(operator_ == Symbols::Sdefine || operator_ == Symbols::Sdefrec || operator_ == Symbols::Sdef) {
-	//	return(parse_define_macro(operator_));
-	// the remaining operators are:
-	//    (define and similar)
 	return(operator_);
 }
 static AST::Node* macro_standin_operator(AST::Node* op1) {

@@ -113,7 +113,7 @@ static gboolean handle_key_press(GtkWidget* widget, GdkEventKey* event, gpointer
 	}
 	return(FALSE);
 }
-static gboolean g_confirm_close(GtkWindow* dialog, GdkEvent* event, REPL* self) {
+static gboolean g_confirm_close(GtkWindow* dialog, GdkEvent* event, struct REPL* self) {
 	if(REPL_confirm_close(self)) {
 		{
 			gint width;
@@ -210,6 +210,10 @@ void REPL_insert_error_message(struct REPL* self, GtkTextIter* destination, cons
 	REPL_set_file_modified(self, true);
 	REPL_queue_scroll_down(self);
 }
+/*bool REPL_execute_end(struct REPL* self, AST::Node* expression) {
+	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &self->fCursorPosition);
+	return REPL_execute(self, input, &end);
+}*/
 static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 	GtkTextIter beginning;
 	GtkTextIter end;
@@ -1011,7 +1015,7 @@ bool REPL_confirm_close(struct REPL* self) {
 }
 struct REPL* REPL_new(GtkWindow* parent) {
 	struct REPL* result;
-	result = new (UseGC) REPL;
+	result = new (UseGC) REPLX::REPL;
 	REPL_init(result, parent);
 	return(result);
 }

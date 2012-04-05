@@ -753,6 +753,17 @@ static AST::Node* makeStrMathParserB(AST::Node* options, AST::Node* argument) {
 		return(NULL); // FIXME
 	}
 }
+#if 0
+/* FIXME */
+static AST::Node* makeBorg(AST::Node* foreigner) {
+	AST::Node* OO = import_module(NULL, AST::makeStr("OO"));
+	AST::Node* List = import_module(NULL, AST::makeStr("List"));
+	AST::Node* Logic = import_module(NULL, AST::makeStr("Logic"));
+	// \name (\x  if (nil? x) ((requireModule "OO").Object name) x) (foreigner name)
+	return(AST::makeAbstraction(name, Evaluators::close(x, AST::makeApplication(foreigner, name), 
+	         AST::makeApplication(Symbols::Sif, ))));
+}
+#endif
 static inline AST::Node* ensureApplication(AST::Node* node) {
 	if(!application_P(node))
 		throw EvaluationException("argument is not an application");

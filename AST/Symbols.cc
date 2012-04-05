@@ -109,5 +109,11 @@ AST::Symbol* Sa = AST::symbolFromStr("a");
 AST::Symbol* Sb = AST::symbolFromStr("b");
 AST::Symbol* SBuiltins = AST::symbolFromStr("Builtins");
 AST::Symbol* Scolonequal = AST::symbolFromStr(":=");
-
+AST::Symbol* SgetOperatorPrecedenceListexclam = AST::symbolFromStr("getOperatorPrecedenceList!");
+AST::Symbol* Sdescribeexclam = AST::symbolFromStr("describe!");
+AST::Symbol* Sdefineexcam = AST::symbolFromStr("define!");
+AST::Symbol* Simportexclam = AST::symbolFromStr("import!");
+AST::Symbol* Spurgeexclam = AST::symbolFromStr("purge!");
+AST::Symbol* Sexecuteexclam = AST::symbolFromStr("execute!");
+AST::Symbol* Sreturnexclam = AST::symbolFromStr("return!");
 };
