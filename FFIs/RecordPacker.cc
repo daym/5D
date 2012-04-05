@@ -712,14 +712,16 @@ AST::NodeT listFromCharS(const char* text, size_t remainder) {
 	else
 		return(makeCons(Numbers::internNative((Numbers::NativeInt) (unsigned char) *text), listFromCharS(text + 1, remainder - 1)));
 }
-AST::NodeT listFromStr(AST::Str* node) {
-	return(listFromCharS((const char*) node->native, node->size));
+AST::NodeT listFromStr(AST::NodeT node) {
+	// TODO optimize
+	return(listFromCharS((const char*) Evaluators::get_string(node), Evaluators::get_string_length(node)));
 }
-AST::NodeT strFromList(AST::Cons* node) {
+AST::NodeT strFromList(AST::NodeT node) {
 	std::stringstream sst;
 	Numbers::NativeInt c;
-	for(; node; node = evaluateToCons(node->tail)) {
-		if(!Numbers::toNativeInt(node->head, c) || c < 0 || c > 255) // oops
+	// TODO more error checking
+	for(; cons_P(node); node = evaluateToCons(get_cons_tail(node))) {
+		if(!Numbers::toNativeInt(get_cons_head(node), c) || c < 0 || c > 255) // oops
 			throw Evaluators::EvaluationException("list cannot be represented as a str.");
 		sst << (char) c;
 	}
@@ -765,8 +767,8 @@ AST::Str* str_until_zero(AST::NodeT value) {
 	result = AST::makeStrRaw((char*) n, strlen((char*) n), true); // TODO copy?
 	return(result);
 }
-DEFINE_SIMPLE_OPERATION(ListFromStrGetter, (argument = reduce(argument), str_P(argument) ? listFromStr(dynamic_cast<AST::Str*>(argument)) : nil_P(argument) ? argument : FALLBACK))
-DEFINE_SIMPLE_OPERATION(StrFromListGetter, (argument = reduce(argument), (cons_P(argument) || nil_P(argument)) ? strFromList(dynamic_cast<AST::Cons*>(argument)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(ListFromStrGetter, (argument = reduce(argument), str_P(argument) ? listFromStr(argument) : nil_P(argument) ? argument : FALLBACK))
+DEFINE_SIMPLE_OPERATION(StrFromListGetter, (argument = reduce(argument), (cons_P(argument) || nil_P(argument)) ? strFromList(argument) : FALLBACK))
 DEFINE_FULL_OPERATION(SubstrGetter, return(substr(fn, argument));)
 DEFINE_SIMPLE_OPERATION(StrUntilZeroGetter, str_until_zero(reduce(argument)))
 REGISTER_BUILTIN(ListFromStrGetter, 1, 0, AST::symbolFromStr("listFromStr"))

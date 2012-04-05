@@ -99,6 +99,19 @@ char* get_string(AST::NodeT root) {
 		//return((char*) v->native);
 	}
 }
+size_t get_string_length(AST::NodeT root) {
+	AST::Str* rootString = dynamic_cast<AST::Str*>(root);
+	if(rootString) {
+		return(rootString->size);
+	} else {
+		std::stringstream sst;
+		sst << "cannot get string length of " << str(root);
+		std::string v = sst.str();
+		throw Evaluators::EvaluationException(v.c_str());
+		//AST::Str* v = AST::makeStrCXX(str(root));
+		//return((char*) v->native);
+	}
+}
 static AST::NodeT wrapWrite(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
