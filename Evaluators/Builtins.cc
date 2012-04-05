@@ -479,10 +479,7 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 			if(!snd)
 				throw Evaluators::EvaluationException("invalid symbol table entry");
 			AST::NodeT value = reduce(snd->head);
-			AST::Symbol* s = dynamic_cast<AST::Symbol*>(x_key);
-			if(!s)
-				throw Evaluators::EvaluationException("invalid symbol table entry");
-			const char* name = s->name;
+			const char* name = AST::get_symbol1_name(x_key);
 			if(m->find(name) == m->end())
 				(*m)[name] = value;
 		}
@@ -491,15 +488,15 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 		(*m)["exports"] = AST::makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
 	}
 	m = (AST::HashTable*) mBox->native;
-	AST::Symbol* s = dynamic_cast<AST::Symbol*>(key);
-	if(s) {
+	const char* name = AST::get_symbol1_name(key); 
+	if(name) {
 		/*HashTable::const_iterator b = m->begin();
 		HashTable::const_iterator e = m->end();
 		for(; b != e; ++b) {
 			printf("%s<\n", b->first);
 		}
 		printf("searching \"%s\"\n", s->name);*/
-		AST::HashTable::const_iterator iter = m->find(s->name);
+		AST::HashTable::const_iterator iter = m->find(name);
 		if(iter != m->end())
 			return(iter->second);
 		else {
@@ -507,7 +504,7 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 				return(reduce(AST::makeApplication(fallback, key)));
 			} else { // this is a leftover
 				std::stringstream sst;
-				sst << "library does not contain '" << s->name;
+				sst << "library does not contain '" << name;
 				std::string v = sst.str();
 				throw Evaluators::EvaluationException(GCx_strdup(v.c_str()));
 			}

@@ -497,7 +497,7 @@ void Scanner::parse_special_coding(int input) {
 			// allow these to be overridden input_value = Numbers::internNative((Numbers::NativeInt) input);
 			std::stringstream sst;
 			const char* n;
-			if((n = AST::get_symbol_name(input_value)) != NULL) {
+			if((n = AST::get_symbol1_name(input_value)) != NULL) {
 				if(n[0] && !n[1])
 					sst << (unsigned int) (unsigned char) n[0];
 				else { /* more complicated character, i.e. control character... */
