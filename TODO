@@ -83,6 +83,7 @@ make AST::Symbol const everywhere (best to introduce a Symbol_t or something)
 maybe delay and force
 tail recursion elimination.
 cache numbers for some time?
+http://en.wikipedia.org/wiki/Lehmer%27s_GCD_algorithm
 
 = Parser =
 

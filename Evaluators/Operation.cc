@@ -98,16 +98,16 @@ AST::NodeT call_builtin(AST::NodeT fn, AST::NodeT argument) {
 
 AST::NodeT repr(AST::NodeT node) {
 	Evaluators::CProcedure* operation;
-	Evaluators::CurriedOperation* c;
 	if((operation = dynamic_cast<Evaluators::CProcedure*>(node)) != NULL) {
 		return(operation->fRepr);
 	} else if(Evaluators::curried_operation_P(node)) {
 		// this is a special case and really should be generalized. FIXME.
-		CProcedure* p = dynamic_cast<CProcedure*>(Evaluators::get_curried_operation_operation(node));
+		AST::NodeT operation_ = Evaluators::get_curried_operation_operation(node);
+		CProcedure* p = dynamic_cast<CProcedure*>(operation_);
 		if(p && p->fReservedArgumentCount > 0)
-			return(repr(c->fOperation));
+			return(repr(operation_));
 		else
-			return(AST::makeApplication(repr(c->fOperation), repr(c->fArgument)));
+			return(AST::makeApplication(repr(operation_), repr(Evaluators::get_curried_operation_argument(node))));
 	} else if(application_P(node)) {
 		AST::NodeT fn = get_application_operator(node);
 		AST::NodeT argument = get_application_operand(node);
