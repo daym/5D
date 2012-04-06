@@ -24,6 +24,9 @@ Keyword* keywordFromStr(const char* name) G_5D_GNUC_PURE;
 static inline bool keyword_P(AST::NodeT argument) {
 	return(dynamic_cast<Keyword*>(argument) != NULL);
 }
+static inline const char* get_keyword_name(AST::NodeT argument) {
+	return(((Keyword*) argument)->name);
+}
 void debugKeywords(void);
 
 };
