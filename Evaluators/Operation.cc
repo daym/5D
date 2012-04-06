@@ -56,17 +56,18 @@ bool builtin_call_done_P(AST::NodeT node) {
 	return(true);
 }
 bool builtin_call_P(AST::NodeT node) {
-	return(dynamic_cast<CProcedure*>(node) || dynamic_cast<CurriedOperation*>(node));
+	return(dynamic_cast<CProcedure*>(node) || curried_operation_P(node));
 }
 AST::NodeT call_builtin(AST::NodeT fn, AST::NodeT argument) {
 	AST::NodeT proc1 = fn;
 	CProcedure* proc2;
-	CurriedOperation* c;
+	AST::NodeT c;
 	bool inKV = false;
 	int argumentCount = !keyword_P(argument) ? 1 : (-1); // number of non-keyword arguments.
 	bool B_had_keyword_arguments = false;
-	while((c = dynamic_cast<CurriedOperation*>(proc1)) != NULL) {
-		if(!inKV && keyword_P(c->fArgument)) {
+	while(Evaluators::curried_operation_P(proc1)) {
+		c = proc1;
+		if(!inKV && keyword_P(Evaluators::get_curried_operation_argument(c))) {
 			inKV = true;
 			--argumentCount;
 			B_had_keyword_arguments = true;
@@ -74,7 +75,7 @@ AST::NodeT call_builtin(AST::NodeT fn, AST::NodeT argument) {
 			inKV = false;
 			++argumentCount;
 		}
-		proc1 = c->fOperation;
+		proc1 = Evaluators::get_curried_operation_operation(c);
 	}
 	if(argumentCount < 0)
 		argumentCount = 0;
@@ -100,9 +101,9 @@ AST::NodeT repr(AST::NodeT node) {
 	Evaluators::CurriedOperation* c;
 	if((operation = dynamic_cast<Evaluators::CProcedure*>(node)) != NULL) {
 		return(operation->fRepr);
-	} else if((c = dynamic_cast<Evaluators::CurriedOperation*>(node)) != NULL) {
+	} else if(Evaluators::curried_operation_P(node)) {
 		// this is a special case and really should be generalized. FIXME.
-		CProcedure* p = dynamic_cast<CProcedure*>(c->fOperation);
+		CProcedure* p = dynamic_cast<CProcedure*>(Evaluators::get_curried_operation_operation(node));
 		if(p && p->fReservedArgumentCount > 0)
 			return(repr(c->fOperation));
 		else
