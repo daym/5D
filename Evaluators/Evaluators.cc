@@ -61,13 +61,13 @@ static inline bool quoted_P(AST::NodeT root) {
 	return(quote_P(root));
 }
 // TODO GC-proof deque
-AST::NodeT annotate_impl(AST::NodeT root, std::deque<AST::Symbol*>& boundNames, std::set<AST::Symbol*>& boundNamesSet) {
+AST::NodeT annotate_impl(AST::NodeT root, std::deque<AST::NodeT>& boundNames, std::set<AST::NodeT>& boundNamesSet) {
 	// TODO maybe traverse cons etc? maybe not.
 	AST::NodeT result;
 	if(abstraction_P(root)) {
 		AST::NodeT parameterNode = get_abstraction_parameter(root);
 		AST::NodeT body = get_abstraction_body(root);
-		AST::Symbol* parameterSymbolNode = dynamic_cast<AST::Symbol*>(parameterNode);
+		AST::NodeT parameterSymbolNode = parameterNode;
 		assert(parameterSymbolNode);
 		boundNames.push_front(parameterSymbolNode);
 		if(boundNamesSet.find(parameterSymbolNode) == boundNamesSet.end()) { // not bound yet
@@ -114,8 +114,8 @@ AST::NodeT annotate_impl(AST::NodeT root, std::deque<AST::Symbol*>& boundNames, 
 	return(root);
 }
 AST::NodeT annotate(AST::NodeT root) {
-	std::deque<AST::Symbol*> boundNames;
-	std::set<AST::Symbol*> boundNamesSet;
+	std::deque<AST::NodeT> boundNames;
+	std::set<AST::NodeT> boundNamesSet;
 	return(annotate_impl(root, boundNames, boundNamesSet));
 }
 static AST::NodeT shift(AST::NodeT argument, int index, AST::NodeT term) {
