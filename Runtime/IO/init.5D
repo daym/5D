@@ -1,13 +1,18 @@
 let List = requireModule "List" in 
 let Error = requireModule "Error" in 
 let Composition = requireModule "Composition" in
+let Logic = requireModule "Logic" in 
 let dispatch = Composition.dispatch in
 let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
 let head = List.head in 
 let tail = List.tail in 
+let rec = Composition.rec in 
 let ioValue = (\m head m) in 
 let ioWorld = (\m head (tail m)) in 
 let (;) = (\m \ber \world (\r ber (ioValue r) (ioWorld r)) (m world)) in
+let ($) = Composition.($) in 
+let if = Logic.if in 
+let else = Logic.else in 
 let liftIO! = (\v \world [v world]) in 
 let return! = liftIO! in 
 let flush! = Builtins.flush! in 
@@ -17,6 +22,22 @@ let stdout = Builtins.stdout in
 let readline! = Builtins.readline! in 
 let write! = Builtins.write! in 
 let errno! = Builtins.errno! in 
+let until! = (\condition \body rec\until! 
+	\world
+		let result = body world in 
+		if (condition (ioValue result))
+			result
+		$else
+			until! (ioWorld result)
+) in 
+let while! = (\condition \body rec\until! 
+	\world
+		let result = body world in 
+		if (condition (ioValue result))
+			until! (ioWorld result)
+		$else
+			result
+) in 
 dispatch [['ioValue ioValue]
 ['ioWorld ioWorld]
 ['liftIO! liftIO!]
@@ -28,5 +49,7 @@ dispatch [['ioValue ioValue]
 ['readline! readline!]
 ['(;) (;)]
 ['write! write!]
-['errno! errno!]]
+['errno! errno!]
+['until! until!]
+['while! while!]]
 raiseMissingSymbolError
