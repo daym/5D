@@ -444,11 +444,11 @@ runIO readFile
 define toBool \v if v 't 'f
 </pre>
 <hr/>
-<h3>intern \s</h3>
+<h3>symbolFromStr \s</h3>
 <p>Given a String <span class="pre">s</span>, results in a Symbol of that name.</p>
 <p>Example:</p>
 <pre>
-intern "x" =&gt; x
+symbolFromStr "x" =&gt; x
 </pre>
 <hr/>
 <h3>keyword? \v</h3>
@@ -505,6 +505,12 @@ keywordStr @mode: =&gt; "mode:"
 <p><span class="pre">operatorPrecedenceList</span> is the operator precedence list to use. This is <em>not</em> optional. If in doubt, just pass <span class="pre">operatorPrecedenceList</span> from a REPL.</p>
 <p>Note that this function otherwise does no I/O.</p>
 </a>
+<p>Example:</p>
+<pre>
+REPL.getOperatorPrecedenceList! ;\OPL 
+let Reflection = requireModule "Reflection" in 
+REPL.execute! (Reflection.makeApp return! (Reflection.parseMathStr OPL "1 + 2⋅3\n"))
+</pre>
 
 <a name="FFI"><h2>Module "FFI": Foreign Function Interface</h2>
 <h3>requireSharedLibrary \libraryName \procSignature \procName</h3>
