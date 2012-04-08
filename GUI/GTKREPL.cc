@@ -96,6 +96,10 @@ void REPL_set_file_modified(struct REPL* self, bool value);
 void REPL_queue_scroll_down(struct REPL* self);
 };
 using namespace GUI;
+#define FILL_END_ITER \
+	GtkTextIter end; \
+	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
+#define END_ITER &end
 #include "REPL/REPLEnvironment"
 namespace GUI {
 using namespace Evaluators;

@@ -296,7 +296,7 @@ static AST::NodeT REPL_getOperatorPrecedenceList(AST::NodeT options, AST::NodeT 
 }
 using namespace GUI;
 static AST::NodeT REPL_execute1(AST::NodeT options, AST::NodeT argument) {
-	Evaluators::CXXArguments arguments = Evaluators::CXXfromArgumentsU(options, argument, 1); /* FIXME without U ? */
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	assert(iter != arguments.end());
 	struct REPL* self = (struct REPL*)(Evaluators::get_pointer(iter->second));
@@ -307,8 +307,10 @@ static AST::NodeT REPL_execute1(AST::NodeT options, AST::NodeT argument) {
 	++iter;
 	assert(iter != arguments.end());
 	AST::NodeT world = iter->second;
-	// FIXME return(Evaluators::makeIOMonad(internNative(REPL_execute(self, expression, 0)), world));
-	return(Evaluators::makeIOMonad(NULL, world));
+	{
+		FILL_END_ITER
+		return(Evaluators::makeIOMonad(Evaluators::internNative(REPL_execute(self, expression, END_ITER)), world));
+	}
 }
 
 //fTailEnvironment

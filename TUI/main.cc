@@ -79,6 +79,8 @@ namespace GUI {
 void REPL_set_file_modified(struct REPL* self, bool value);
 };
 using namespace GUI;
+#define FILL_END_ITER 
+#define END_ITER 0
 #include "REPL/REPLEnvironment"
 
 namespace GUI {

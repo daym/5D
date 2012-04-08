@@ -66,7 +66,8 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, int destinati
 
 };
 using namespace GUI;
-
+#define FILL_END_ITER 
+#define END_ITER 0
 #include "REPL/REPLEnvironment"
 
 namespace GUI {
