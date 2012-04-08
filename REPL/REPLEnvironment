@@ -292,7 +292,7 @@ static AST::NodeT REPL_getOperatorPrecedenceList(AST::NodeT options, AST::NodeT 
 	++iter;
 	assert(iter != arguments.end());
 	AST::NodeT world = iter->second;
-	return(Evaluators::makeIOMonad(REPL_ensure_operator_precedence_list(self), world));
+	return(Evaluators::makeIOMonad(AST::makeBox(REPL_ensure_operator_precedence_list(self), NULL/*TODO*/), world));
 }
 using namespace GUI;
 static AST::NodeT REPL_execute1(AST::NodeT options, AST::NodeT argument) {
