@@ -1,19 +1,19 @@
-let Error = requireModule "Error" in 
-let Composition = requireModule "Composition" in 
-let dispatch = Composition.dispatch in 
-let raiseMissingSymbolError = Composition.raiseMissingSymbolError in 
-let allocateRecord! = Builtins.allocateRecord! in 
-let allocateMemory! = Builtins.allocateMemory! in 
-let duplicateRecord! = Builtins.duplicateRecord! in 
-let packRecord = Builtins.packRecord in 
-let recordSize = Builtins.recordSize in 
-let unpackRecord = Builtins.unpackRecord in 
-let archDepLibName = Builtins.archDepLibName in 
-let strUntilZero = Builtins.strUntilZero in 
-let allocatePointer! = allocateMemory! (recordSize "p") in 
-let environFromList = Builtins.environFromList in 
-let listFromEnviron = Builtins.listFromEnviron in 
-let requireSharedLibrary = Builtins.requireSharedLibrary in 
+let Error := requireModule "Error" in 
+let Composition := requireModule "Composition" in 
+let dispatch := Composition.dispatch in 
+let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
+let allocateRecord! := Builtins.allocateRecord! in 
+let allocateMemory! := Builtins.allocateMemory! in 
+let duplicateRecord! := Builtins.duplicateRecord! in 
+let packRecord := Builtins.packRecord in 
+let recordSize := Builtins.recordSize in 
+let unpackRecord := Builtins.unpackRecord in 
+let archDepLibName := Builtins.archDepLibName in 
+let strUntilZero := Builtins.strUntilZero in 
+let allocatePointer! := allocateMemory! (recordSize "p") in 
+let environFromList := Builtins.environFromList in 
+let listFromEnviron := Builtins.listFromEnviron in 
+let requireSharedLibrary := Builtins.requireSharedLibrary in 
 dispatch [['allocateRecord! allocateRecord!]
 ['allocateMemory! allocateMemory!]
 ['duplicateRecord! duplicateRecord!]

@@ -1,20 +1,20 @@
-let List = requireModule "List" in 
-let Error = requireModule "Error" in
-let Composition = requireModule "Composition" in
-let tail = List.tail in 
-let foldr = List.foldr in 
-let map = List.map in 
-let dispatch = Composition.dispatch in 
-let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
-let listFromStr = Builtins.listFromStr in 
-let str? = Builtins.str? in 
-let strFromKeyword = Builtins.strFromKeyword in 
-let strFromList = Builtins.strFromList in 
-let substr = Builtins.substr in 
-let (++) = List.(++) in 
-let strcat = \a \b strFromList ((listFromStr a) ++ (listFromStr b)) in 
-let strjoinp = \sep \l strFromList (let sepl = (listFromStr sep) in let parts = (map (\x sepl ++ listFromStr x) l) in foldr (++) "" parts) in 
-let strjoin = \sep \l tail (strjoinp sep l) in 
+let List := requireModule "List" in 
+let Error := requireModule "Error" in
+let Composition := requireModule "Composition" in
+let tail := List.tail in 
+let foldr := List.foldr in 
+let map := List.map in 
+let dispatch := Composition.dispatch in 
+let raiseMissingSymbolError := Composition.raiseMissingSymbolError in
+let listFromStr := Builtins.listFromStr in 
+let str? := Builtins.str? in 
+let strFromKeyword := Builtins.strFromKeyword in 
+let strFromList := Builtins.strFromList in 
+let substr := Builtins.substr in 
+let (++) := List.(++) in 
+let strcat := \a \b strFromList ((listFromStr a) ++ (listFromStr b)) in 
+let strjoinp := \sep \l strFromList (let sepl := (listFromStr sep) in let parts := (map (\x sepl ++ listFromStr x) l) in foldr (++) "" parts) in 
+let strjoin := \sep \l tail (strjoinp sep l) in 
 dispatch [['listFromStr listFromStr]
 ['str? str?]
 ['strFromKeyword strFromKeyword]

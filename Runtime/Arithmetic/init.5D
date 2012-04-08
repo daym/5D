@@ -1,53 +1,53 @@
-let Logic = requireModule "Logic" in 
-let Composition = requireModule "Composition" in 
-let dispatch = Composition.dispatch in 
-let raiseMissingSymbolError = Composition.raiseMissingSymbolError in 
-let rec = Composition.rec in 
-let head = Builtins.head in 
-let tail = Builtins.tail in 
-let (:) = Builtins.(:) in 
-let flip = Composition.flip in 
-let not = Logic.not in 
-let (&&) = Logic.(&&) in 
-let (||) = Logic.(||) in 
-let if = Logic.if in 
-let else = Logic.else in 
-let (-) = Builtins.(-) in 
-let (*) = Builtins.(*) in 
-let (/) = Builtins.(/) in 
-let (+) = Builtins.(+) in 
-let ($) = Composition.($) in 
-let (<=) = Builtins.(<=) in 
-let (≤) = (<=) in 
-let (<) = (\a \b a <= b && not (b <= a)) in 
-let (=) = (\a \b a <= b && b <= a) in 
-let (>=) = flip (<=) in 
-let (≥) = (>=) in 
-let (>) = flip (<) in 
-let (/=) = \a \b not (a = b) in 
-let abs = (\x if (x <= 0) (0 - x) x) in 
-let divrem = Builtins.divrem in 
-let divide = (\a \b head (divrem a b)) in 
-let remainder = (\a \b head (tail (divrem a b))) in 
-let modulo = (\a \b remainder (b + remainder a b) b) in 
-let (%) = remainder in 
-let pi = 3.141592653589793 in 
-let π = pi in 
-let cos = (\xx (\x (\cos if (x >= pi) (0 - cos (modulo x pi)) (cos x)) (\x 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720)) (modulo xx 2*pi)) in 
-let sin = (\xx (\sin (\x if (x >= pi) (0 - sin (modulo x pi)) (sin x)) (modulo xx 2*pi)) (\x x - x*x*x/6 + x*x*x*x*x/120 - x*x*x*x*x*x*x/(120*6*7))) in 
-let tan = (\x (sin x)/(cos x)) in 
-let next = (\N \x (x + N/x)/2) in 
-let within = (\eps rec (\within \list (\a (\b if (abs (a - b) <= eps) b (within b:(tail (tail list)))) (head (tail list))) (head list))) in 
-let repeat = (\f rec (\repeat \a a:(repeat (f a)))) in 
-let sqrtEps = (\a0 \eps \N within eps (repeat (next N) a0)) in 
-let sqrt = sqrtEps 1 0.001 in 
-let √ = sqrt in 
-let factorial = (rec (\fac \v if (v = 0) 1 v*(fac (v - 1)))) in 
-let ground = (\v divide v 1) in 
-let round1 = (\v if (0 <= v) (ground (v + 1/2)) (ground (v - 1/2))) in 
-let max = (\a \b if (a <= b) b a) in 
-let min = (\a \b if (a <= b) a b) in 
-let gcd = (rec\gcd \a \b if (b = 0) a $else (gcd b (a % b))) in 
+let Logic := requireModule "Logic" in 
+let Composition := requireModule "Composition" in 
+let dispatch := Composition.dispatch in 
+let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
+let rec := Composition.rec in 
+let head := Builtins.head in 
+let tail := Builtins.tail in 
+let (:) := Builtins.(:) in 
+let flip := Composition.flip in 
+let not := Logic.not in 
+let (&&) := Logic.(&&) in 
+let (||) := Logic.(||) in 
+let if := Logic.if in 
+let else := Logic.else in 
+let (-) := Builtins.(-) in 
+let (*) := Builtins.(*) in 
+let (/) := Builtins.(/) in 
+let (+) := Builtins.(+) in 
+let ($) := Composition.($) in 
+let (<=) := Builtins.(<=) in 
+let (≤) := (<=) in 
+let (<) := (\a \b a <= b && not (b <= a)) in 
+let (=) := (\a \b a <= b && b <= a) in 
+let (>=) := flip (<=) in 
+let (≥) := (>=) in 
+let (>) := flip (<) in 
+let (/=) := \a \b not (a = b) in 
+let abs := (\x if (x <= 0) (0 - x) x) in 
+let divrem := Builtins.divrem in 
+let divide := (\a \b head (divrem a b)) in 
+let remainder := (\a \b head (tail (divrem a b))) in 
+let modulo := (\a \b remainder (b + remainder a b) b) in 
+let (%) := remainder in 
+let pi := 3.141592653589793 in 
+let π := pi in 
+let cos := (\xx (\x (\cos if (x >= pi) (0 - cos (modulo x pi)) (cos x)) (\x 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720)) (modulo xx 2*pi)) in 
+let sin := (\xx (\sin (\x if (x >= pi) (0 - sin (modulo x pi)) (sin x)) (modulo xx 2*pi)) (\x x - x*x*x/6 + x*x*x*x*x/120 - x*x*x*x*x*x*x/(120*6*7))) in 
+let tan := (\x (sin x)/(cos x)) in 
+let next := (\N \x (x + N/x)/2) in 
+let within := (\eps rec (\within \list (\a (\b if (abs (a - b) <= eps) b (within b:(tail (tail list)))) (head (tail list))) (head list))) in 
+let repeat := (\f rec (\repeat \a a:(repeat (f a)))) in 
+let sqrtEps := (\a0 \eps \N within eps (repeat (next N) a0)) in 
+let sqrt := sqrtEps 1 0.001 in 
+let √ := sqrt in 
+let factorial := (rec (\fac \v if (v = 0) 1 v*(fac (v - 1)))) in 
+let ground := (\v divide v 1) in 
+let round1 := (\v if (0 <= v) (ground (v + 1/2)) (ground (v - 1/2))) in 
+let max := (\a \b if (a <= b) b a) in 
+let min := (\a \b if (a <= b) a b) in 
+let gcd := (rec\gcd \a \b if (b = 0) a $else (gcd b (a % b))) in 
 dispatch [['(-) (-)]
 ['(*) (*)]
 ['(/) (/)]

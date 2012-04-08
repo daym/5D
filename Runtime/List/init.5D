@@ -1,62 +1,62 @@
-let Composition = requireModule "Composition" in 
-let Logic = requireModule "Logic" in 
-let Arithmetic = requireModule "Arithmetic" in 
-let Error = requireModule "Error" in 
-let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
-let dispatch = Composition.dispatch in
-let ($) = Composition.($) in 
-let compose = Composition.compose in 
-let flip = Composition.flip in 
-let if = Logic.if in 
-let (||) = Logic.(||) in 
-let (&&) = Logic.(&&) in 
-let (#t) = Logic.(#t) in 
-let (#f) = Logic.(#f) in 
-let not = Logic.not in 
-let (<=) = Arithmetic.(<=) in 
-let (>=) = Arithmetic.(>=) in 
-let (=) = Arithmetic.(=) in 
-let (/=) = Arithmetic.(/=) in 
-let (+) = Arithmetic.(+) in 
-let (-) = Arithmetic.(-) in 
-let (*) = Arithmetic.(*) in 
-let divide = Arithmetic.divide in 
-let else = Logic.else in 
-let rec = Composition.rec in 
-let max = Arithmetic.max in 
-let nil = [] in 
-let nil? = Builtins.nil? in 
-let cons? = Builtins.cons? in 
-let list? = (\a nil? a || cons? a) in 
-let head = Builtins.head in 
-let tail = Builtins.tail in 
-let (:) = Builtins.(:) in 
-let foldl = (\f rec (\foldl \v \list if (nil? list) v $ else foldl (f v (head list)) (tail list))) in 
-let foldr = (\f \v rec (\foldr \list if (nil? list) v $ else f (head list) (foldr (tail list)))) in 
-let (++) = (\a \b foldr (:) b a) in 
-let drop = (rec (\drop \count \list if (count <= 0 || nil? list) list (drop (count - 1) (tail list)))) in 
-let take = (rec (\take \count \list if (count <= 0 || nil? list) nil (head list):(take (count - 1) (tail list)))) in 
-let map = (\f \list foldr (compose (:) f) nil list) in 
-let mergeBy = (\lessEqualComparator rec (\mergeBy \l1 \l2 if (nil? l1 && nil? l2) nil $ else if (nil? l2) (head l1):(mergeBy (tail l1) l2) $ else if (not (nil? l1) && lessEqualComparator (head l1) (head l2)) (head l1):(mergeBy (tail l1) l2) $ else (head l2):(mergeBy l1 (tail l2)))) in 
-let merge = (mergeBy (<=)) in 
-let length = (rec (\length \list if (nil? list) 0 (1 + length (tail list)))) in 
-let mergeSortBy = (\lessEqualComparator rec (\mergeSortBy \list if (nil? list || nil? (tail list)) list $ else mergeBy lessEqualComparator (mergeSortBy (take (divide (length list) 2) list)) (mergeSortBy (drop (divide (length list) 2) list)))) in 
-let mergeSort = (mergeSortBy (<=)) in 
-let extremum = (\fn \l foldr fn (head l) l) in 
-let filter = (\f rec (\filter \list if (nil? list) nil $ else if (f (head list)) (head list):(filter (tail list)) (filter (tail list)))) in 
-let reverse = (\list foldl (flip (:)) nil list) in 
-let rangeLL = (\step \end rec (\rangeLL \beginning if (step <= 0 - 1) (if (beginning <= end) nil beginning:(rangeLL (beginning + step))) (if (beginning >= end) nil beginning:(rangeLL (beginning + step))))) in 
-let range1 = (\beginning \end rangeLL 1 end beginning) in 
-let range = (\beginning \end \step rangeLL step end beginning) in 
-let zipBy = (\zipper rec (\zipBy \l1 \l2 if (nil? l1 || nil? l2) nil $ else (zipper (head l1) (head l2)):(zipBy (tail l1) (tail l2)))) in 
-let zip = (zipBy (\x \y [x y])) in 
-let repeatEndlessly = (rec\repeatEndlessly \v v:(repeatEndlessly v)) in 
-let transpose = (\matrix foldr (zipBy (:)) (repeatEndlessly nil) matrix) in 
-let enumerate = (\list zip (range 0 (length list) 1) list) in 
-let sum = (\list foldr (+) 0 list) in 
-let product = (\list foldr (*) 1 list) in 
-let anyTrue? = (\list foldr (||) #f list) in 
-let allTrue? = (\list foldr (&&) #t list) in 
+let Composition := requireModule "Composition" in 
+let Logic := requireModule "Logic" in 
+let Arithmetic := requireModule "Arithmetic" in 
+let Error := requireModule "Error" in 
+let raiseMissingSymbolError := Composition.raiseMissingSymbolError in
+let dispatch := Composition.dispatch in
+let ($) := Composition.($) in 
+let compose := Composition.compose in 
+let flip := Composition.flip in 
+let if := Logic.if in 
+let (||) := Logic.(||) in 
+let (&&) := Logic.(&&) in 
+let (#t) := Logic.(#t) in 
+let (#f) := Logic.(#f) in 
+let not := Logic.not in 
+let (<=) := Arithmetic.(<=) in 
+let (>=) := Arithmetic.(>=) in 
+let (=) := Arithmetic.(=) in 
+let (/=) := Arithmetic.(/=) in 
+let (+) := Arithmetic.(+) in 
+let (-) := Arithmetic.(-) in 
+let (*) := Arithmetic.(*) in 
+let divide := Arithmetic.divide in 
+let else := Logic.else in 
+let rec := Composition.rec in 
+let max := Arithmetic.max in 
+let nil := [] in 
+let nil? := Builtins.nil? in 
+let cons? := Builtins.cons? in 
+let list? := (\a nil? a || cons? a) in 
+let head := Builtins.head in 
+let tail := Builtins.tail in 
+let (:) := Builtins.(:) in 
+let foldl := (\f rec (\foldl \v \list if (nil? list) v $ else foldl (f v (head list)) (tail list))) in 
+let foldr := (\f \v rec (\foldr \list if (nil? list) v $ else f (head list) (foldr (tail list)))) in 
+let (++) := (\a \b foldr (:) b a) in 
+let drop := (rec (\drop \count \list if (count <= 0 || nil? list) list (drop (count - 1) (tail list)))) in 
+let take := (rec (\take \count \list if (count <= 0 || nil? list) nil (head list):(take (count - 1) (tail list)))) in 
+let map := (\f \list foldr (compose (:) f) nil list) in 
+let mergeBy := (\lessEqualComparator rec (\mergeBy \l1 \l2 if (nil? l1 && nil? l2) nil $ else if (nil? l2) (head l1):(mergeBy (tail l1) l2) $ else if (not (nil? l1) && lessEqualComparator (head l1) (head l2)) (head l1):(mergeBy (tail l1) l2) $ else (head l2):(mergeBy l1 (tail l2)))) in 
+let merge := (mergeBy (<=)) in 
+let length := (rec (\length \list if (nil? list) 0 (1 + length (tail list)))) in 
+let mergeSortBy := (\lessEqualComparator rec (\mergeSortBy \list if (nil? list || nil? (tail list)) list $ else mergeBy lessEqualComparator (mergeSortBy (take (divide (length list) 2) list)) (mergeSortBy (drop (divide (length list) 2) list)))) in 
+let mergeSort := (mergeSortBy (<=)) in 
+let extremum := (\fn \l foldr fn (head l) l) in 
+let filter := (\f rec (\filter \list if (nil? list) nil $ else if (f (head list)) (head list):(filter (tail list)) (filter (tail list)))) in 
+let reverse := (\list foldl (flip (:)) nil list) in 
+let rangeLL := (\step \end rec (\rangeLL \beginning if (step <= 0 - 1) (if (beginning <= end) nil beginning:(rangeLL (beginning + step))) (if (beginning >= end) nil beginning:(rangeLL (beginning + step))))) in 
+let range1 := (\beginning \end rangeLL 1 end beginning) in 
+let range := (\beginning \end \step rangeLL step end beginning) in 
+let zipBy := (\zipper rec (\zipBy \l1 \l2 if (nil? l1 || nil? l2) nil $ else (zipper (head l1) (head l2)):(zipBy (tail l1) (tail l2)))) in 
+let zip := (zipBy (\x \y [x y])) in 
+let repeatEndlessly := (rec\repeatEndlessly \v v:(repeatEndlessly v)) in 
+let transpose := (\matrix foldr (zipBy (:)) (repeatEndlessly nil) matrix) in 
+let enumerate := (\list zip (range 0 (length list) 1) list) in 
+let sum := (\list foldr (+) 0 list) in 
+let product := (\list foldr (*) 1 list) in 
+let anyTrue? := (\list foldr (||) #f list) in 
+let allTrue? := (\list foldr (&&) #t list) in 
 dispatch [['nil nil]
 ['nil? nil?]
 ['cons? cons?]

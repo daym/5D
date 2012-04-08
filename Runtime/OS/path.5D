@@ -1,9 +1,9 @@
-let Error = requireModule "Error" in 
-let Composition = requireModule "Composition" in
-let dispatch = Composition.dispatch in
-let raiseMissingSymbolError = Composition.raiseMissingSymbolError in
-let absolutePath = Builtins.absolutePath in 
-let absolutePath? = Builtins.absolutePath? in 
+let Error := requireModule "Error" in 
+let Composition := requireModule "Composition" in
+let dispatch := Composition.dispatch in
+let raiseMissingSymbolError := Composition.raiseMissingSymbolError in
+let absolutePath := Builtins.absolutePath in 
+let absolutePath? := Builtins.absolutePath? in 
 dispatch [['absolutePath absolutePath]
 ['absolutePath? absolutePath?]
 ]
