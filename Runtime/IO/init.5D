@@ -38,6 +38,17 @@ let while! = (\condition \body rec\until!
 		$else
 			result
 ) in 
+let accum! = (\condition \connector \terminator \body rec\accum!
+	\world
+		let result = body world in 
+		let value = ioValue result in 
+		if (condition value)
+			[terminator (ioWorld result)]
+		$else
+			let t = (accum! (ioWorld result)) in 
+			let value2 = ioValue t in 
+			[(connector value value2) (ioWorld t)]
+) in 
 dispatch [['ioValue ioValue]
 ['ioWorld ioWorld]
 ['liftIO! liftIO!]
@@ -51,5 +62,6 @@ dispatch [['ioValue ioValue]
 ['write! write!]
 ['errno! errno!]
 ['until! until!]
-['while! while!]]
+['while! while!]
+['accum! accum!]]
 raiseMissingSymbolError
