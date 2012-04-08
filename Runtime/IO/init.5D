@@ -38,7 +38,7 @@ let while! := (\condition \body rec\until!
 		$else
 			result
 ) in 
-let accum! := (\condition \connector \terminator \body rec\accum!
+let accumUntil! := (\condition \connector \terminator \body rec\accum!
 	\world
 		let result := body world in 
 		let value := ioValue result in 
@@ -63,5 +63,5 @@ dispatch [['ioValue ioValue]
 ['errno! errno!]
 ['until! until!]
 ['while! while!]
-['accum! accum!]]
+['accumUntil! accumUntil!]]
 raiseMissingSymbolError
