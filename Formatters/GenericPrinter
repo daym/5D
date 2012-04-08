@@ -8,7 +8,7 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 	else if(symbol_P(node)) {
 		AST::NodeT fAssociativity = NULL;
 		int pl = OPL->get_operator_precedence_and_associativity(node, fAssociativity);
-		print_text(output, position, AST::get_symbol1_name(node), pl != -1 && fAssociativity != Symbols::Sprefix);
+		print_text(output, position, AST::get_symbol_name(node), pl != -1 && fAssociativity != Symbols::Sprefix);
 	} else if(abstraction_P(node)) { /* abstraction */
 		process_abstraction(OPL, output, position, node, precedence_limit, B_paren_equal_levels);
 	} else if(application_P(node)) { /* application */
