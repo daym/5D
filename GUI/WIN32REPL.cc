@@ -55,10 +55,12 @@ struct REPL : AST::Node {
 };
 }; /* end namespace REPLX */
 namespace GUI {
-	int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::NodeT parameter, struct AST::NodeT value);
+	int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::NodeT parameter, AST::NodeT value);
 	void REPL_set_file_modified(struct REPL* self, bool value);
 	void REPL_queue_scroll_down(struct REPL* self);
 };
+#define FILL_END_ITER
+#define END_ITER (-1)
 #include "REPL/REPLEnvironment"
 namespace GUI {
 	using namespace REPLX;
@@ -951,13 +953,14 @@ void REPL_init(struct REPL* self, HWND parent) {
 bool REPL_get_file_modified(struct REPL* self) {
 	return(self->B_file_modified);
 }
-int REPL_add_to_environment_simple_GUI(struct REPL* self, struct AST::NodeT parameter, struct AST::NodeT value) {
+int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::NodeT parameter, AST::NodeT value) {
 	//std::string bodyString = body->str();
-	if(self->fEnvironmentKeys->find(parameter->name) == self->fEnvironmentKeys->end()) {
+	const char* name = get_symbol_name(parameter);
+	if(self->fEnvironmentKeys->find(name) == self->fEnvironmentKeys->end()) {
 		/* index is the index of the item that is "just not as important as the new one" */
-		(*self->fEnvironmentKeys)[parameter->name] = NULL;
+		(*self->fEnvironmentKeys)[name] = NULL;
 	}
-	int index = EnsureInEnvironment(self->dialog, FromUTF8(parameter->name));
+	int index = EnsureInEnvironment(self->dialog, FromUTF8(name));
 	REPL_set_file_modified(self, true);
 	return(index);
 }

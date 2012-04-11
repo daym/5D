@@ -10,7 +10,7 @@ public:
 	virtual void gen_pop(AST::NodeT source) = 0;
 	virtual void gen_stack_throwaway_bits(int bit_count) = 0;
 	virtual void gen_call(AST::NodeT destination) = 0;
-	virtual void gen_load_register(AST::Symbol* register_, AST::NodeT value) = 0;
+	virtual void gen_load_register(AST::NodeT/*Symbol*/register_, AST::NodeT value) = 0;
 	virtual void gen_enter_frame(void) = 0;
 	virtual void gen_leave_frame(void) = 0;
 	virtual void gen_return(int bit_count) = 0;
