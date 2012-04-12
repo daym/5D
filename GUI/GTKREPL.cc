@@ -406,6 +406,7 @@ static void REPL_handle_add_environment_item(struct REPL* self, GtkAction* actio
 			continue;
 		}
 		g_free(text);
+		g_free(name);
 		break;
 	}
 	gtk_widget_hide(GTK_WIDGET(dialog));
