@@ -21,8 +21,8 @@ struct Node : public gc {
 };
 typedef struct Node* NodeT;
 struct Cons : Node {
+	NodeT tail; /* Cons or Application */ /* makes much more sense to keep pointers at the front for a future GC */
 	NodeT head;
-	NodeT tail; /* Cons or Application */
 	// FIXME virtual std::string str(void) const;
 };
 struct Application : Node {
@@ -40,7 +40,7 @@ struct Abstraction : Node {
 struct Box : Node {
 	void* native;
 	AST::NodeT fRepr;
-	Box(void* native, AST::NodeT repr) {
+	explicit Box(void* native, AST::NodeT repr) {
 		this->native = native;
 		this->fRepr = repr;
 	}
@@ -49,7 +49,7 @@ struct Box : Node {
 struct Str : Box {
 	bool bAtomicity;
 	size_t size;
-	Str(void* native) :
+	explicit Str(void* native) :
 		Box(native, NULL)
 	{
 		bAtomicity = false;

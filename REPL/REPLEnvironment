@@ -146,7 +146,8 @@ bool REPL_execute(struct REPL* self, AST::NodeT input, T destination) {
 	try {
 		AST::NodeT result = input;
 		Evaluators::resetWorld();
-		result = AST::makeApplication(&Evaluators::IORunner, result);
+		if(self->fBRunIO)
+			result = AST::makeApplication(&Evaluators::IORunner, result);
 		result = REPL_prepare(self, result);
 		result = Evaluators::reduce(result);
 		/*std::string v = result ? result->str() : "OK";

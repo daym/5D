@@ -35,6 +35,7 @@ struct REPL : AST::Node {
 	int fCursorPosition;
 	bool fBModified;
 	AST::HashTable* fModules;
+	bool fBRunIO;
 };
 
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::NodeT name, AST::NodeT value) {
@@ -79,6 +80,7 @@ void REPL_clear(struct REPL* self) {
 void REPL_init(struct REPL* self) {
 	self->fBModified = false;
 	self->fModules = NULL;
+	self->fBRunIO = true;
 	REPL_clear(self);
 }
 struct REPL* REPL_new(void) {

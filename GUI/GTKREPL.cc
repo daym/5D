@@ -87,6 +87,7 @@ struct REPL : AST::Node {
 	AST::NodeT fTailUserEnvironmentFrontier;
 	AST::HashTable* fModules;
 	GtkTextIter fCursorPosition;
+	bool fBRunIO;
 };
 };
 namespace GUI {
@@ -375,6 +376,43 @@ static void REPL_handle_delete_environment_item(struct REPL* self, GtkAction* ac
 		REPL_run_deletion_dialog(self);
 	}
 }
+static void REPL_handle_add_environment_item(struct REPL* self, GtkAction* action) {
+	GtkDialog* dialog;
+	int response;
+	dialog = (GtkDialog*) gtk_builder_get_object(self->UI_builder, "envitemCreationDialog");
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), self->fWidget);
+	/*g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(handle_search_response), NULL);*/
+	gtk_dialog_set_default_response(dialog, GTK_RESPONSE_OK);
+	// validate
+	while((response = gtk_dialog_run(dialog)) == GTK_RESPONSE_OK) {
+		char* name = g_strdup(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(self->UI_builder, "envitemCreationNameEntry"))));
+		if(!g_strstrip(name)[0]) /* empty name is bad */
+			continue;
+		GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(self->UI_builder, "envitemCreationBodyTextView")));
+		GtkTextIter beginning;
+		GtkTextIter end;
+		gtk_text_buffer_get_start_iter(buffer, &beginning);
+		gtk_text_buffer_get_end_iter(buffer, &end);
+		char* text = gtk_text_buffer_get_text(buffer, &beginning, &end, FALSE);
+		AST::NodeT value = NULL;
+		try {
+			GtkTextIter end2;
+			gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end2);
+			value = REPL_parse(self, text, &end2);
+			REPL_add_to_environment_simple(self, AST::symbolFromStr(name), value);
+		} catch(Scanners::ParseException& e) {
+			std::string v = e.what() ? e.what() : "error";
+			// TODO msgbox REPL_insert_error_message(self, &end, B_from_entry ? (std::string("\n") + text) : std::string(), v);
+			continue;
+		}
+		g_free(text);
+		break;
+	}
+	gtk_widget_hide(GTK_WIDGET(dialog));
+	if(response == GTK_RESPONSE_OK) {
+		// FIXME do useful stuff
+	}
+}
 
 /* Gtk 2 compat; TODO: remove */
 #define GTK_TEXT_SEARCH_CASE_INSENSITIVE ((GtkTextSearchFlags)(1<<2))
@@ -600,6 +638,8 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	GtkUIManager* UI_manager;
 	GError* error = NULL;
 	GtkMenuBar* menu_bar;
+	GtkBox* fEnvironmentVBox;
+	GtkButton* fEnvironmentAddButton;
 
 	self->fWidget = NULL;
 	self->fMainBox = NULL;
@@ -629,6 +669,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	self->fTailUserEnvironment = NULL;
 	self->fTailUserEnvironmentFrontier = NULL;
 	self->fModules = NULL;
+	self->fBRunIO = true;
 	//GtkTextIter fCursorPosition;
 
 	self->fModules = NULL;
@@ -703,7 +744,15 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	g_signal_connect_swapped(G_OBJECT(self->fOutputBuffer), "changed", G_CALLBACK(track_changes), self);
 	self->fEditorBox = (GtkBox*) gtk_hbox_new(FALSE, 0);
 	g_signal_connect(G_OBJECT(self->fOutputArea), "focus-out-event", G_CALLBACK(g_clear_output_selection), self->fOutputBuffer);
-	gtk_box_pack_start(GTK_BOX(self->fEditorBox), GTK_WIDGET(self->fEnvironmentScroller), FALSE, FALSE, 0); 
+	fEnvironmentVBox = GTK_BOX(gtk_vbox_new(FALSE, 7));
+	fEnvironmentAddButton = GTK_BUTTON(gtk_button_new_with_mnemonic("_Define..."));
+	gtk_action_connect_proxy(get_action(add_environment_item), GTK_WIDGET(fEnvironmentAddButton));
+	//gtk_button_set_use_stock(fEnvironmentAddButton, TRUE);
+	gtk_widget_show(GTK_WIDGET(fEnvironmentAddButton));
+	gtk_box_pack_start(fEnvironmentVBox, GTK_WIDGET(self->fEnvironmentScroller), TRUE, TRUE, 0);
+	gtk_box_pack_start(fEnvironmentVBox, GTK_WIDGET(fEnvironmentAddButton), FALSE, FALSE, 0);
+	gtk_widget_show(GTK_WIDGET(fEnvironmentVBox));
+	gtk_box_pack_start(GTK_BOX(self->fEditorBox), GTK_WIDGET(fEnvironmentVBox), FALSE, FALSE, 0); 
 	gtk_box_pack_start(GTK_BOX(self->fEditorBox), GTK_WIDGET(self->fOutputScroller), TRUE, TRUE, 7); 
 	gtk_widget_show(GTK_WIDGET(self->fEditorBox));
 	menu_bar = (GtkMenuBar*) gtk_ui_manager_get_widget(UI_manager, "/menubar1");
@@ -744,6 +793,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	add_action_handler(about);
 	add_action_handler(delete_environment_item);
 	add_action_handler(print_environment_item);
+	add_action_handler(add_environment_item);
 	connect_accelerator(GDK_F5, (GdkModifierType) 0, execute);
 	connect_accelerator(GDK_F3, (GdkModifierType) 0, open_file);
 	connect_accelerator(GDK_F2, (GdkModifierType) 0, save_file);

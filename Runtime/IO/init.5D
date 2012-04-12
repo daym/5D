@@ -30,11 +30,11 @@ let until! := (\condition \body rec\until!
 		$else
 			until! (ioWorld result)
 ) in 
-let while! := (\condition \body rec\until! 
+let while! := (\condition \body rec\r 
 	\world
 		let result := body world in 
 		if (condition (ioValue result))
-			until! (ioWorld result)
+			r (ioWorld result)
 		$else
 			result
 ) in 

@@ -12,6 +12,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <getopt.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <limits.h>
@@ -43,7 +44,11 @@ struct REPL : AST::Node {
 	AST::Cons* fEnvironmentNames;
 	AST::HashTable* fModules;
 	int fCursorPosition;
+	bool fBRunIO;
 };
+void REPL_set_IO(REPL* self, bool value) {
+	self->fBRunIO = value;
+}
 int REPL_add_to_environment_simple_GUI(REPL* self, AST::NodeT sym, AST::NodeT value) {
 	const char* name = AST::get_symbol1_name(sym);
 	if(self->fEnvironmentTable.find(name) == self->fEnvironmentTable.end()) {
@@ -161,6 +166,7 @@ void REPL_init(struct REPL* self) {
 	self->fEnvironmentName = NULL;
 	self->fEnvironmentCount = 0;
 	//self->fConfig = load_Config();
+	self->fBRunIO = true;
 	REPL_clear(self);
 }
 char* REPL_get_output_buffer_text(struct REPL* self) {
@@ -244,7 +250,7 @@ static void initialize_readline(void) {
 	//rl_sort_completion_matches = 1;
 }
 using namespace REPLX;
-static Scanners::OperatorPrecedenceList* operator_precedence_list;
+//static Scanners::OperatorPrecedenceList* operator_precedence_list;
 void run(struct REPL* REPL, const char* text) {
 	AST::NodeT result;
 	if(exit_P(text)) /* special case for computers which can't signal EOF. */
@@ -304,10 +310,15 @@ bool REPL_save(struct REPL* self, bool B_force_dialog) {
 	}
 	return(B_OK);
 }
+void print_usage(void) {
+	fprintf(stderr, "Usage: TUI [-i] [<environment>]\n");
+	fprintf(stderr, " -i | --IO  enable input/output processing\n");
+}
 int main(int argc, char* argv[]) {
 	struct REPL* REPL;
 	using namespace GUI;
 	const char* line;
+	int opt;
 	setlocale(LC_ALL, "");
 	Allocator_init();
 	//GC_disable();
@@ -315,7 +326,24 @@ int main(int argc, char* argv[]) {
 		Evaluators::set_shared_dir_by_executable(argv[0]);
 	REPL = REPL_new();
 	REPL1 = REPL;
-	if(argc > 1 && REPL_load_contents_by_name(REPL, argv[argc - 1])) {
+	const char* prompt = "eval $ ";
+	static struct option long_options[] = {
+		{"IO", no_argument, NULL, 'i'},
+		{"help", no_argument, NULL, 'h'},
+	};
+	REPL_set_IO(REPL, false);
+	while((opt = getopt_long(argc, argv, "ih", long_options, NULL)) != -1) {
+		switch(opt) {
+		case 'i':
+			REPL_set_IO(REPL, true);
+			prompt = "runIO $ ";
+			break;
+		case 'h':
+			print_usage();
+			exit(0);
+		}
+	}
+	if(argc > 1 && optind < argc && REPL_load_contents_by_name(REPL, argv[optind])) {
 	} else {
 		char* environment_name = REPL_ensure_default_environment_name(REPL);
 		struct stat stat_buf;
@@ -328,8 +356,8 @@ int main(int argc, char* argv[]) {
 	install_SIGQUIT_handler();
 	install_SIGINT_handler();
 	initialize_readline();
-	operator_precedence_list = new Scanners::OperatorPrecedenceList();
-	while((line = readline("runIO $ "))) {
+	//operator_precedence_list = new Scanners::OperatorPrecedenceList();
+	while((line = readline(prompt))) {
 		if(!line)
 			break;
 		if(!line[0])
