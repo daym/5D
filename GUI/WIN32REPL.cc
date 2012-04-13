@@ -39,6 +39,7 @@ struct REPL : AST::Node {
 	bool B_file_modified;
 	struct Config* fConfig;
 	HWND fSearchDialog;
+	HWND fDefinitionDialog;
 	//HACCEL accelerators;
 	std::wstring fSearchTerm;
 	bool fBSearchUpwards;
@@ -52,6 +53,7 @@ struct REPL : AST::Node {
 	HMENU fEnvironmentMenu;
 	AST::HashTable* fModules;
 	int fCursorPosition;
+	bool fBRunIO;
 };
 }; /* end namespace REPLX */
 namespace GUI {
@@ -354,6 +356,52 @@ static INT_PTR CALLBACK HandleConfirmDeleteMessages(HWND hDlg, UINT message, WPA
 	}
 	return (INT_PTR)FALSE;
 }
+static INT_PTR CALLBACK HandleDefinitionMessages(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	struct REPL* self;
+	self = (struct REPL*) GetWindowLongPtr(hDlg, GWLP_USERDATA);
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			if(LOWORD(wParam) == IDOK) {
+				std::wstring name = GetDlgItemTextCXX(hDlg, IDC_DEFINITION_NAME);
+				std::wstring textValue = GetDlgItemTextCXX(hDlg, IDC_DEFINITION_VALUE);
+				std::string UTF8_value = ToUTF8(textValue);
+				AST::NodeT value;
+				try {
+					int destination = -1;
+					value = REPL_parse(self, UTF8_value.c_str(), destination);
+					REPL_prepare(self, value);
+					REPL_add_to_environment(self, AST::symbolFromStr(ToUTF8(name)), value);
+				} catch(Scanners::ParseException& e) {
+					std::string v = e.what() ? e.what() : "error";
+					//REPL_insert_error_message(self, -1, B_from_entry ? (std::string("\n") + std::string(text) + std::string("\n=> ")) : std::string("=> "), v);
+					std::wstring vv = FromUTF8(v.c_str());
+					MessageBoxW(hDlg, vv.c_str(), _T("Definition"), MB_ICONERROR|MB_OK);
+					value = NULL;
+					return (INT_PTR)TRUE;
+				} catch(Evaluators::EvaluationException e) {
+					std::string v = e.what() ? e.what() : "error";
+					//REPL_insert_error_message(self, -1, B_from_entry ? (std::string("\n") + std::string(text) + std::string("\n=> ")) : std::string("=> "), v);
+					std::wstring vv = FromUTF8(v.c_str());
+					MessageBoxW(hDlg, vv.c_str(), _T("Definition"), MB_ICONERROR|MB_OK);
+					value = NULL;
+					return (INT_PTR)TRUE;
+				}
+			}
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
 static INT_PTR CALLBACK HandleAboutMessages(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -552,6 +600,10 @@ static LRESULT CALLBACK HandleEditTabMessage(HWND hwnd, UINT message, WPARAM wPa
 static void REPL_delete_environment_row(struct REPL* self, int index) {
 	DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_CONFIRM_DELETE), self->dialog, HandleConfirmDeleteMessages);
 }
+static void REPL_add_environment_row(struct REPL* self) {
+	//DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DEFINITION), self->dialog, HandleDefinitionMessages);
+	ShowWindow(self->fDefinitionDialog, SW_SHOWNORMAL);
+}
 #ifndef GET_X_LPARAM
 #define GET_X_LPARAM LOWORD
 #define GET_Y_LPARAM HIWORD
@@ -646,6 +698,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			RECT outputRect;
 			RECT commandEntryRect;
 			RECT environmentRect;
+			RECT environmentDefineButtonRect;
 			GetClientRect(dialog, &clientRect);
 			int cx = clientRect.right - clientRect.left;
 			int cy = clientRect.bottom - clientRect.top;
@@ -658,6 +711,9 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			ScreenToClientRect(dialog, commandEntryRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_ENVIRONMENT), &environmentRect);
 			ScreenToClientRect(dialog, environmentRect);
+			GetWindowRect(GetDlgItem(dialog, IDC_ENVIRONMENT_DEFINE_BUTTON), &environmentDefineButtonRect);
+			ScreenToClientRect(dialog, environmentRect);
+			int defineButtonHeight = environmentDefineButtonRect.bottom - environmentDefineButtonRect.top;
 			int commandEntryHeight = commandEntryRect.bottom - commandEntryRect.top;
 			int executeButtonWidth = executeButtonRect.right - executeButtonRect.left;
 			//cx -= outputRect.left + 10;
@@ -665,9 +721,11 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			//MoveWindow(,,,, , FALSE);
 			SetWindowPos(GetDlgItem(dialog, IDC_EXECUTE), NULL, cx - executeButtonWidth - 10, cy + 20, 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_OUTPUT), NULL, 0, 0, cx - outputRect.left - 10, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
-			SetWindowPos(GetDlgItem(dialog, IDC_ENVIRONMENT), NULL, 0, 0, environmentRect.right - environmentRect.left, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
+			SetWindowPos(GetDlgItem(dialog, IDC_ENVIRONMENT), NULL, 0, 0, environmentRect.right - environmentRect.left, cy - defineButtonHeight, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
+			SetWindowPos(GetDlgItem(dialog, IDC_ENVIRONMENT_DEFINE_BUTTON), NULL, 10, cy - defineButtonHeight + 15, environmentRect.right - environmentRect.left, defineButtonHeight, SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_COMMAND_ENTRY), NULL, 10, cy + 20, cx - 20 - executeButtonWidth, commandEntryRect.bottom - commandEntryRect.top, SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			//GetDlgItem(self->dialog, IDC_OUTPUT)
+			return (INT_PTR)FALSE;
 		}
 		break;
 		/*case WM_GETMINMAXINFO:
@@ -827,6 +885,11 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				REPL_open_webpage(self, get_doc_name(_T("programming\\manual\\index.html")));
 				break;
 			}
+		case IDC_ENVIRONMENT_DEFINE_BUTTON:
+			{
+				REPL_add_environment_row(self);
+				break;
+			}
 		}
 
 		/*if (LOWORD(wParam) == IDCLOSE)
@@ -905,6 +968,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 	self->fEnvironmentMenu = NULL;
 	self->fModules = NULL;
 	self->fCursorPosition = 0;
+	self->fBRunIO = false;
 
 	self->fEnvironmentMenu = GetSubMenu(LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDM_ENVIRONMENT)), 0); /* FIXME global? */ /* TODO DestroyMenu */
 	self->fEnvironmentKeys = new AST::HashTable;
@@ -933,6 +997,11 @@ void REPL_init(struct REPL* self, HWND parent) {
 		ShowWIN32Diagnostics();
 	}
 	SetWindowLongPtr(self->fSearchDialog, GWLP_USERDATA, (LONG) self);
+	self->fDefinitionDialog = CreateDialog(hinstance, MAKEINTRESOURCE(IDD_DEFINITION), self->dialog, HandleDefinitionMessages);
+	if(self->fDefinitionDialog == NULL) {
+		ShowWIN32Diagnostics();
+	}
+	SetWindowLongPtr(self->fDefinitionDialog, GWLP_USERDATA, (LONG) self);
 	//self->accelerators = LoadAccelerators(hinstance, MAKEINTRESOURCE(IDC_MY5D));
 	REPL_init_builtins(self);
 	REPL_set_file_modified(self, false);
