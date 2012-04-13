@@ -399,6 +399,7 @@ static void REPL_handle_add_environment_item(struct REPL* self, GtkAction* actio
 			GtkTextIter end2;
 			gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end2);
 			value = REPL_parse(self, text, &end2);
+			REPL_prepare(self, value);
 			REPL_add_to_environment_simple(self, AST::symbolFromStr(name), value);
 		} catch(Scanners::ParseException& e) {
 			std::string v = e.what() ? e.what() : "error";
