@@ -403,7 +403,15 @@ static void REPL_handle_add_environment_item(struct REPL* self, GtkAction* actio
 			REPL_add_to_environment_simple(self, AST::symbolFromStr(name), value);
 		} catch(Scanners::ParseException& e) {
 			std::string v = e.what() ? e.what() : "error";
-			// TODO msgbox REPL_insert_error_message(self, &end, B_from_entry ? (std::string("\n") + text) : std::string(), v);
+			GtkDialog* messageDialog = (GtkDialog*) gtk_message_dialog_new(GTK_WINDOW(dialog), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_CLOSE, "%s", v.c_str());
+			gtk_dialog_run(messageDialog);
+			gtk_widget_destroy(GTK_WIDGET(messageDialog));
+			continue;
+		} catch(Evaluators::EvaluationException& e) {
+			std::string v = e.what() ? e.what() : "error";
+			GtkDialog* messageDialog = (GtkDialog*) gtk_message_dialog_new(GTK_WINDOW(dialog), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_CLOSE, "%s", v.c_str());
+			gtk_dialog_run(messageDialog);
+			gtk_widget_destroy(GTK_WIDGET(messageDialog));
 			continue;
 		}
 		g_free(text);
