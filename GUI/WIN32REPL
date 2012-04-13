@@ -18,6 +18,7 @@ bool REPL_save(struct REPL* self, bool B_force_save_dialog);
 void REPL_load(struct REPL* self);
 HWND REPL_get_window(struct REPL* self);
 HWND REPL_get_search_window(struct REPL* self);
+HWND REPL_get_definition_window(struct REPL* self);
 PHANDLE REPL_get_waiting_handles(struct REPL* REPL, DWORD* handleCount);
 bool interrupted_P(void);
 bool REPL_load_contents_by_name(struct REPL* self, const char* name);

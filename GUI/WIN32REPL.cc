@@ -282,6 +282,9 @@ HWND REPL_get_window(struct REPL* self) {
 HWND REPL_get_search_window(struct REPL* self) {
 	return(self->fSearchDialog);
 }
+HWND REPL_get_definition_window(struct REPL* self) {
+	return(self->fDefinitionDialog);
+}
 char* REPL_get_absolute_pathw(const std::wstring& file_name) {
 	return FFIs::get_absolute_path(ToUTF8(file_name));
 }
@@ -364,8 +367,8 @@ static INT_PTR CALLBACK HandleDefinitionMessages(HWND hDlg, UINT message, WPARAM
 	switch (message)
 	{
 	case WM_INITDIALOG:
+		SetDialogFocus(hDlg, IDC_DEFINITION_NAME);
 		return (INT_PTR)TRUE;
-
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
@@ -603,6 +606,7 @@ static void REPL_delete_environment_row(struct REPL* self, int index) {
 static void REPL_add_environment_row(struct REPL* self) {
 	//DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DEFINITION), self->dialog, HandleDefinitionMessages);
 	ShowWindow(self->fDefinitionDialog, SW_SHOWNORMAL);
+	SetDialogFocus(self->fDefinitionDialog, IDC_DEFINITION_NAME);
 }
 #ifndef GET_X_LPARAM
 #define GET_X_LPARAM LOWORD

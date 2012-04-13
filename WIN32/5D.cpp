@@ -132,7 +132,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				// TODO IsWindow ? 
 				if (!REPL1 || 
 					((!TranslateAccelerator(REPL_get_window(REPL1), hAccelTable, &msg) && !IsDialogMessage(REPL_get_window(REPL1), &msg)) &&
-					(!TranslateAccelerator(REPL_get_search_window(REPL1), hAccelTable, &msg) && !IsDialogMessage(REPL_get_search_window(REPL1), &msg)))) {
+					(!TranslateAccelerator(REPL_get_search_window(REPL1), hAccelTable, &msg) && !IsDialogMessage(REPL_get_search_window(REPL1), &msg)) &&
+					(!TranslateAccelerator(REPL_get_definition_window(REPL1), hAccelTable, &msg) && !IsDialogMessage(REPL_get_definition_window(REPL1), &msg)) 
+				)) {
 					TranslateMessage(&msg);
 					DispatchMessage(&msg);
 				}
