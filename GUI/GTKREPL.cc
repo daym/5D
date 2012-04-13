@@ -404,12 +404,14 @@ static void REPL_handle_add_environment_item(struct REPL* self, GtkAction* actio
 		} catch(Scanners::ParseException& e) {
 			std::string v = e.what() ? e.what() : "error";
 			GtkDialog* messageDialog = (GtkDialog*) gtk_message_dialog_new(GTK_WINDOW(dialog), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_CLOSE, "%s", v.c_str());
+			gtk_window_set_title(GTK_WINDOW(messageDialog), gtk_window_get_title(GTK_WINDOW(dialog)));
 			gtk_dialog_run(messageDialog);
 			gtk_widget_destroy(GTK_WIDGET(messageDialog));
 			continue;
 		} catch(Evaluators::EvaluationException& e) {
 			std::string v = e.what() ? e.what() : "error";
 			GtkDialog* messageDialog = (GtkDialog*) gtk_message_dialog_new(GTK_WINDOW(dialog), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_CLOSE, "%s", v.c_str());
+			gtk_window_set_title(GTK_WINDOW(messageDialog), gtk_window_get_title(GTK_WINDOW(dialog)));
 			gtk_dialog_run(messageDialog);
 			gtk_widget_destroy(GTK_WIDGET(messageDialog));
 			continue;
