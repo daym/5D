@@ -116,7 +116,13 @@ static inline AST::NodeT uncacheNodeResult(void* userData, AST::NodeT node) {
 	} else
 		return(node);
 }
-
+#define nil NULL
+static inline AST::NodeT makePair(AST::NodeT a, AST::NodeT b) {
+	return(AST::makeCons(a, AST::makeCons(b, nil)));
+}
+static inline NodeT get_pair_first(NodeT p) {
+	return(get_cons_head(p));
+}
 
 }; /* namespace AST */
 #endif /* __AST_H */

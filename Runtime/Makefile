@@ -9,6 +9,7 @@ all:
 	$(MAKE) -C Logic all
 	$(MAKE) -C Composition all
 	$(MAKE) -C List all
+	$(MAKE) -C Tuple all
 	$(MAKE) -C OS all
 	$(MAKE) -C IO all
 	$(MAKE) -C UI all
@@ -24,6 +25,7 @@ clean:
 	$(MAKE) -C Logic clean
 	$(MAKE) -C Composition clean
 	$(MAKE) -C List clean
+	$(MAKE) -C Tuple clean
 	$(MAKE) -C OS clean
 	$(MAKE) -C IO clean
 	$(MAKE) -C UI clean
@@ -39,6 +41,7 @@ distclean:
 	$(MAKE) -C Logic distclean
 	$(MAKE) -C Composition distclean
 	$(MAKE) -C List distclean
+	$(MAKE) -C Tuple distclean
 	$(MAKE) -C OS distclean
 	$(MAKE) -C IO distclean
 	$(MAKE) -C UI distclean
@@ -54,6 +57,7 @@ install:
 	$(MAKE) -C Logic install
 	$(MAKE) -C Composition install
 	$(MAKE) -C List install
+	$(MAKE) -C Tuple install
 	$(MAKE) -C OS install
 	$(MAKE) -C IO install
 	$(MAKE) -C UI install

@@ -101,7 +101,7 @@ extern AST::NodeT SrequireModule;
 extern AST::NodeT Sunderline;
 extern AST::NodeT SmoduleKeys;
 extern AST::NodeT Sexports;
-extern AST::NodeT SdispatchModule;
+extern AST::NodeT Sdispatch;
 extern AST::NodeT Sprefix;
 extern AST::NodeT Sdot;
 extern AST::NodeT Sunarydash;
@@ -120,6 +120,8 @@ extern AST::NodeT Simportexclam;
 extern AST::NodeT Spurgeexclam;
 extern AST::NodeT Sexecuteexclam;
 extern AST::NodeT Sreturnexclam;
+extern AST::NodeT Shashexports;
+extern AST::NodeT Scomma;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

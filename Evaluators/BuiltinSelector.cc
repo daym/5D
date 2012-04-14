@@ -131,6 +131,7 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, AST::symbolFromStr("dispatchModule"), &Evaluators::ModuleDispatcher);
 	add_builtin_method(self, AST::symbolFromStr("makeModuleBox"), &Evaluators::ModuleBoxMaker);
 	add_builtin_method(self, AST::symbolFromStr("REPLMethods"), &REPLX::REPLMethodGetter);
+	add_builtin_method(self, AST::symbolFromStr(","), &Evaluators::Pairer);
 	self["exports"] = consFromKeys(self.begin(), self.end()); // see Sexports
 }
 

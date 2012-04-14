@@ -1,10 +1,6 @@
 let Composition := requireModule "Composition" in
-let dispatch := Composition.dispatch in
 let raiseErrorWithCode := (\part \code [part code]) in 
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
 let error? := (\a Builtins.cons? a) in 
-dispatch [['raiseErrorWithCode raiseErrorWithCode] 
-['raiseMissingSymbolError raiseMissingSymbolError]
-['error? error?]
-] 
+(requireModule "Composition").#exports [raiseErrorWithCode raiseMissingSymbolError error?]
 raiseMissingSymbolError

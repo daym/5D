@@ -17,9 +17,9 @@
 namespace Evaluators {
 
 Scanners::OperatorPrecedenceList* default_operator_precedence_list(void) {
-	Scanners::OperatorPrecedenceList* result;
-	result = new Scanners::OperatorPrecedenceList;
-	// FIXME just reuse the same global all the time.
+	static Scanners::OperatorPrecedenceList* result;
+	if(!result)
+		result = new Scanners::OperatorPrecedenceList;
 	return(result);
 }
 static AST::NodeT access_module(AST::NodeT fn, AST::NodeT argument) {
@@ -50,7 +50,7 @@ static AST::NodeT force_import_module(const char* filename) {
 			AST::NodeT result = NULL;
 			result = parser.parse(default_operator_precedence_list(), Symbols::SlessEOFgreater);
 			result = Evaluators::close(Symbols::Squote, &Evaluators::Quoter, result); // module needs that, so provide it.
-			result = Evaluators::close(Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb))), result); // TODO close
+			result = Evaluators::close(Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb))), result);
 			result = Evaluators::close(Symbols::Scolon, &Evaluators::Conser, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::Snil, NULL, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::SrequireModule, &ModuleLoader, result); // module needs that, so provide it. // TODO maybe use Builtins.requireModule (not sure whether that's useful)
@@ -158,5 +158,116 @@ void set_shared_dir_by_executable(const char* argv0) {
 		sharedDir = "";
 	}*/
 }
+
+static AST::NodeT mapGetFst2(AST::NodeT fallback, AST::Cons* c) {
+	if(c == NULL) {
+		AST::NodeT tail = fallback ? reduce(AST::makeApplication(fallback, Symbols::Sexports)) : NULL;
+		return(tail);
+	} else
+		return(AST::makeCons(AST::get_pair_first(reduce(evaluateToCons(reduce(c->head)))), mapGetFst2(fallback, evaluateToCons(c->tail))));
+}
+static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
+	/* parameters: <exports> <fallback> <key> 
+	               2         1          0*/
+	CXXArguments arguments = Evaluators::CXXfromArgumentsU(options, argument, 1);
+	CXXArguments::const_iterator iter = arguments.begin();
+	/*std::stringstream buffer;
+	std::string v;
+	int position = 0;
+	Formatters::Math::print_CXX(new Scanners::OperatorPrecedenceList(), buffer, position, iter->second, 0, false);
+	v = buffer.str();
+	printf("%s\n", v.c_str());*/
+	AST::Box* mBox = dynamic_cast<AST::Box*>(iter->second);
+	++iter;
+	AST::NodeT fallback = iter->second;
+	++iter;
+	AST::NodeT key = iter->second;
+	AST::HashTable* m;
+	if(!mBox) {
+		throw Evaluators::EvaluationException("invalid symbol table entry (*)");
+		return(NULL);
+	}
+	if(dynamic_cast<AST::HashTable*>((AST::NodeT) mBox->native) == NULL) {
+		//cons_P((AST::NodeT) mBox->native)) {
+		m = new (UseGC) AST::HashTable;
+		for(AST::Cons* table = (AST::Cons*) mBox->native; table; table = Evaluators::evaluateToCons(table->tail)) {
+			AST::Cons* entry = evaluateToCons(reduce(table->head));
+			//std::string v = str(entry);
+			//printf("%s\n", v.c_str());
+			AST::NodeT x_key = reduce(entry->head);
+			AST::Cons* snd = evaluateToCons(entry->tail);
+			if(!snd)
+				throw Evaluators::EvaluationException("invalid symbol table entry");
+			AST::NodeT value = reduce(snd->head);
+			const char* name = AST::get_symbol1_name(x_key);
+			if(m->find(name) == m->end())
+				(*m)[name] = value;
+		}
+		AST::Cons* table = (AST::Cons*) mBox->native;
+		mBox->native = m;
+		(*m)["exports"] = AST::makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
+	}
+	m = (AST::HashTable*) mBox->native;
+	const char* name = AST::get_symbol1_name(key); 
+	if(name) {
+		/*HashTable::const_iterator b = m->begin();
+		HashTable::const_iterator e = m->end();
+		for(; b != e; ++b) {
+			printf("%s<\n", b->first);
+		}
+		printf("searching \"%s\"\n", s->name);*/
+		AST::HashTable::const_iterator iter = m->find(name);
+		if(iter != m->end())
+			return(iter->second);
+		else {
+			if(fallback) { // this should always hold
+				return(reduce(AST::makeApplication(fallback, key)));
+			} else { // this is a leftover
+				std::stringstream sst;
+				sst << "library does not contain '" << name;
+				std::string v = sst.str();
+				throw Evaluators::EvaluationException(GCx_strdup(v.c_str()));
+			}
+		}
+	} else
+		throw Evaluators::EvaluationException("not a symbol");
+	return(NULL);
+}
+static AST::NodeT build_hash_exports(AST::NodeT node) {
+	if(node == Symbols::Snil)
+		return(node);
+	if(!AST::application_P(node) || !AST::application_P(AST::get_application_operator(node)))
+		return(nil); // XXX
+	AST::NodeT aoperation = AST::get_application_operator(node);
+	if(AST::get_application_operator(aoperation) != Symbols::Scolon)
+		return(nil);
+	AST::NodeT head = AST::get_application_operand(aoperation);
+	AST::NodeT tail = AST::get_application_operand(node);
+	std::string heads = Evaluators::str(head);
+	printf("%s\n", heads.c_str());
+	AST::NodeT result = AST::makeApplication(AST::makeApplication(&Evaluators::Pairer, AST::makeApplication(&Evaluators::Quoter, head)), head);
+	return AST::makeApplication(AST::makeApplication(Symbols::Scolon, result), build_hash_exports(tail));
+}
+/*
+better:
+
+parseExports! = (\world
+	parseValue! world ;\value
+	return! (map (\item ((quote item), item)) (eval value [('(:), (:)) ('nil, nil) ('(,), (,)]))
+) in 
+*/
+static AST::NodeT hashExports(AST::NodeT options, AST::NodeT argument) {
+	AST::NodeT result = argument; // DO NOT REDUCE
+	return(AST::makeApplication(Evaluators::get_module_entry_accessor("Composition", Symbols::Sdispatch), build_hash_exports(result)));
+}
+DEFINE_FULL_OPERATION(ModuleDispatcher, return(dispatchModule(fn, argument));)
+DEFINE_FULL_OPERATION(HashExporter, return(hashExports(fn, argument));)
+static inline AST::NodeT makeModuleBox(AST::NodeT argument) {
+	return AST::makeBox(argument, AST::makeApplication(&ModuleBoxMaker, argument));
+}
+DEFINE_SIMPLE_OPERATION(ModuleBoxMaker, makeModuleBox(reduce(argument)))
+REGISTER_BUILTIN(ModuleDispatcher, (-3), 1, AST::symbolFromStr("dispatchModule"))
+REGISTER_BUILTIN(ModuleBoxMaker, 1, 0, AST::symbolFromStr("makeModuleBox"))
+REGISTER_BUILTIN(HashExporter, 1, 0, AST::symbolFromStr("#exports"))
 
 };

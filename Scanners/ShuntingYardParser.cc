@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "AST/AST"
 #include "AST/Keyword"
 #include "Evaluators/Builtins"
+
 #ifdef _WIN32
 /* for fmemopen used in parse_simple... */
 #include "stdafx.h"
@@ -69,7 +70,6 @@ bool ShuntingYardParser::macro_standin_P(AST::NodeT op1) {
 	return(!AST::get_symbol1_name(op1));
 }
 AST::NodeT ShuntingYardParser::parse_value(void) {
-	// TODO maybe at least allow other macros?
 	if(scanner->input_value == Symbols::SlessEOFgreater) {
 		scanner->raise_error("<parameter>", "<nothing>");
 		return(NULL);
@@ -329,7 +329,10 @@ AST::NodeT ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, Nod
 		CONSUME_OPERATION
 	if(fOperands.empty())
 		scanner->raise_error("<something>", "<nothing>");
-	assert(fOperands.size() == 1);
+	if(fOperands.size() != 1) {
+		/* Example: [*2] */
+		scanner->raise_error("<nothing>", "<something>");
+	}
 	scanner->setHonorIndentation(oldIndentationHonoring);
 	return(fOperands.top());
 	} catch(...) {

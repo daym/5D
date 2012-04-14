@@ -14,16 +14,5 @@ let allocatePointer! := allocateMemory! (recordSize "p") in
 let environFromList := Builtins.environFromList in 
 let listFromEnviron := Builtins.listFromEnviron in 
 let requireSharedLibrary := Builtins.requireSharedLibrary in 
-dispatch [['allocateRecord! allocateRecord!]
-['allocateMemory! allocateMemory!]
-['duplicateRecord! duplicateRecord!]
-['packRecord packRecord]
-['recordSize recordSize]
-['unpackRecord unpackRecord]
-['archDepLibName archDepLibName]
-['strUntilZero strUntilZero]
-['allocatePointer! allocatePointer!]
-['environFromList environFromList]
-['listFromEnviron listFromEnviron]
-['requireSharedLibrary requireSharedLibrary]]
+(requireModule "Composition").#exports[allocateRecord! allocateMemory! duplicateRecord! packRecord recordSize unpackRecord archDepLibName strUntilZero allocatePointer! environFromList listFromEnviron requireSharedLibrary]
 raiseMissingSymbolError

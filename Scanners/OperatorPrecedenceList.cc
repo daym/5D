@@ -101,7 +101,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(9, I("≥"), N);
 		cons(8, I("&&"), L);
 		cons(7, I("||"), L);
-		cons(6, I(","), L), // FIXME R
+		cons(6, I(","), R);
 		cons(5, I("$"), R);
 		//cons(?, I(">>"), L);
 		//cons(?, I(">>="), L);

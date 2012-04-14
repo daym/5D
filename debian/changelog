@@ -1,6 +1,9 @@
 5d (0.6.1) unstable; urgency=low
 
   * add 'while!, 'until!
+  * add tuples (simple version).
+  * handle [*\s 1] in parser.
+  * add "#exports" to module "Composition".
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 08 Apr 2012 23:13:00 +0200
 

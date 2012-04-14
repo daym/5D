@@ -21,6 +21,8 @@ def getNames(n):
 			result.append(name)
 	return(sets.Set(result))
 
-l = ["['%s %s]" % (n, n) for n in getNames(sys.argv[1])]
-print "(requireModule \"Composition\").dispatch1 ",
+#l = ["('%s, %s)" % (n, n) for n in getNames(sys.argv[1])]
+l = [n for n in getNames(sys.argv[1])]
+#print "let (:) := (requireModule \"List\").(:) in "
+print "(requireModule \"Composition\").#exports ",
 print "[" + ("\n".join(l)) + "]"

@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include "Evaluators/Operation"
+#include "Evaluators/Evaluators"
 
 namespace Evaluators {
 
@@ -65,12 +66,22 @@ static inline std::string getModuleFileKey(const std::string& filename, std::str
 
 DECLARE_FULL_OPERATION(Module)
 DECLARE_FULL_OPERATION(ModuleLoader)
+DECLARE_SIMPLE_OPERATION(HashExporter)
 AST::NodeT require_module(const char* filename, const std::string& xmoduleKey);
 AST::NodeT prepare_module(AST::NodeT input);
 AST::NodeT import_module(AST::NodeT options, AST::NodeT fileNameNode);
 void set_shared_dir(const std::string& name);
 std::string get_shared_dir(void);
 void set_shared_dir_by_executable(const char* argv0 /* should be full path */);
+
+static inline AST::NodeT get_module_entry_accessor(const char* filename, AST::NodeT exportKey) {
+	return AST::makeApplication(AST::makeApplication(&ModuleLoader, AST::makeStr(filename)), Evaluators::quote(exportKey));
+}
+
+/* first arg is a Box with a list of [key value] */
+DECLARE_SIMPLE_OPERATION(ModuleDispatcher)
+
+DECLARE_SIMPLE_OPERATION(ModuleBoxMaker)
 
 }; /* end namespace */
 

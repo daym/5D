@@ -15,11 +15,5 @@ let (++) := List.(++) in
 let strcat := \a \b strFromList ((listFromStr a) ++ (listFromStr b)) in 
 let strjoinp := \sep \l strFromList (let sepl := (listFromStr sep) in let parts := (map (\x sepl ++ listFromStr x) l) in foldr (++) "" parts) in 
 let strjoin := \sep \l tail (strjoinp sep l) in 
-dispatch [['listFromStr listFromStr]
-['str? str?]
-['strFromKeyword strFromKeyword]
-['strFromList strFromList]
-['substr substr]
-['strcat strcat]
-['strjoin strjoin]]
+(requireModule "Composition").#exports [listFromStr str? strFromKeyword strFromList substr strcat strjoin]
 raiseMissingSymbolError

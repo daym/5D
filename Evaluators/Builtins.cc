@@ -342,6 +342,11 @@ static AST::NodeT makeACons(AST::NodeT h, AST::NodeT t, AST::NodeT fallback) {
 	//t = reduce(t);
 	return(makeCons(h, t));
 }
+static AST::NodeT makeAPair(AST::NodeT f, AST::NodeT s, AST::NodeT fallback) {
+	f = reduce(f);
+	s = reduce(s);
+	return(makePair(f, s));
+}
 /* make sure NOT to return a ratio here when it wasn't already one. The ratio constructor is divideARatio, not divideA. */
 #define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
 AST::NodeT N(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) { \
@@ -430,85 +435,6 @@ static AST::NodeT addrsEqualA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	return(internNative((void*) a == (void*) b));
-}
-/*
-template<>
-class std::hash<AST::NodeT> {
-};
-*/
-static AST::NodeT mapGetFst2(AST::NodeT fallback, AST::Cons* c) {
-	if(c == NULL) {
-		AST::NodeT tail = fallback ? reduce(AST::makeApplication(fallback, Symbols::Sexports)) : NULL;
-		return(tail);
-	} else
-		return(AST::makeCons(reduce(evaluateToCons(reduce(c->head))->head), mapGetFst2(fallback, evaluateToCons(c->tail))));
-}
-static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
-	/* parameters: <exports> <fallback> <key> 
-	               2         1          0*/
-	CXXArguments arguments = Evaluators::CXXfromArgumentsU(options, argument, 1);
-	CXXArguments::const_iterator iter = arguments.begin();
-	/*std::stringstream buffer;
-	std::string v;
-	int position = 0;
-	Formatters::Math::print_CXX(new Scanners::OperatorPrecedenceList(), buffer, position, iter->second, 0, false);
-	v = buffer.str();
-	printf("%s\n", v.c_str());*/
-	AST::Box* mBox = dynamic_cast<AST::Box*>(iter->second);
-	++iter;
-	AST::NodeT fallback = iter->second;
-	++iter;
-	AST::NodeT key = iter->second;
-	AST::HashTable* m;
-	if(!mBox) {
-		throw Evaluators::EvaluationException("invalid symbol table entry (*)");
-		return(NULL); // FIXME
-	}
-	if(dynamic_cast<AST::HashTable*>((AST::NodeT) mBox->native) == NULL) {
-		//cons_P((AST::NodeT) mBox->native)) {
-		m = new (UseGC) AST::HashTable;
-		for(AST::Cons* table = (AST::Cons*) mBox->native; table; table = Evaluators::evaluateToCons(table->tail)) {
-			AST::Cons* entry = evaluateToCons(reduce(table->head));
-			//std::string v = str(entry);
-			//printf("%s\n", v.c_str());
-			AST::NodeT x_key = reduce(entry->head);
-			AST::Cons* snd = evaluateToCons(entry->tail);
-			if(!snd)
-				throw Evaluators::EvaluationException("invalid symbol table entry");
-			AST::NodeT value = reduce(snd->head);
-			const char* name = AST::get_symbol1_name(x_key);
-			if(m->find(name) == m->end())
-				(*m)[name] = value;
-		}
-		AST::Cons* table = (AST::Cons*) mBox->native;
-		mBox->native = m;
-		(*m)["exports"] = AST::makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
-	}
-	m = (AST::HashTable*) mBox->native;
-	const char* name = AST::get_symbol1_name(key); 
-	if(name) {
-		/*HashTable::const_iterator b = m->begin();
-		HashTable::const_iterator e = m->end();
-		for(; b != e; ++b) {
-			printf("%s<\n", b->first);
-		}
-		printf("searching \"%s\"\n", s->name);*/
-		AST::HashTable::const_iterator iter = m->find(name);
-		if(iter != m->end())
-			return(iter->second);
-		else {
-			if(fallback) { // this should always hold
-				return(reduce(AST::makeApplication(fallback, key)));
-			} else { // this is a leftover
-				std::stringstream sst;
-				sst << "library does not contain '" << name;
-				std::string v = sst.str();
-				throw Evaluators::EvaluationException(GCx_strdup(v.c_str()));
-			}
-		}
-	} else
-		throw Evaluators::EvaluationException("not a symbol");
-	return(NULL);
 }
 AST::NodeT leqA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
 static inline bool equalP(AST::NodeT a, AST::NodeT b) {
@@ -644,6 +570,7 @@ static AST::NodeT divremARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) 
 	return(AST::makeCons(q, AST::makeCons(rem, NULL)));
 }
 DEFINE_BINARY_OPERATION(Conser, makeACons)
+DEFINE_BINARY_OPERATION(Pairer, makeAPair)
 DEFINE_SIMPLE_OPERATION(ConsP, cons_P(reduce(argument)))
 DEFINE_SIMPLE_OPERATION(NilP, nil_P(reduce(argument)))
 DEFINE_SIMPLE_OPERATION(HeadGetter, ((argument = reduce(argument), cons_P(argument)) ? (((AST::Cons*) argument)->head) : str_P(argument) ? Numbers::internNative((Numbers::NativeInt) *((unsigned char*) ((AST::Str*) argument)->native)) : FALLBACK))
@@ -668,11 +595,6 @@ IMPLEMENT_NUMERIC_BUILTIN(leqA, <=)
 DEFINE_BINARY_OPERATION(LEComparer, leqA)
 DEFINE_BINARY_OPERATION(AddrLEComparer, compareAddrsLEA)
 DEFINE_BINARY_OPERATION(SymbolEqualityChecker, addrsEqualA)
-DEFINE_FULL_OPERATION(ModuleDispatcher, return(dispatchModule(fn, argument));)
-static inline AST::NodeT makeModuleBox(AST::NodeT argument) {
-	return AST::makeBox(argument, AST::makeApplication(&ModuleBoxMaker, argument));
-}
-DEFINE_SIMPLE_OPERATION(ModuleBoxMaker, makeModuleBox(reduce(argument)))
 
 static AST::NodeT makeApplicationB(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
@@ -782,6 +704,7 @@ DEFINE_FULL_OPERATION(RFileMathParser, return(makeFileMathParserB(fn, argument))
 DEFINE_FULL_OPERATION(RStrMathParser, return(makeStrMathParserB(fn, argument)))
 
 REGISTER_BUILTIN(Conser, 2, 0, AST::symbolFromStr(":"))
+REGISTER_BUILTIN(Pairer, 2, 0, AST::symbolFromStr(","))
 REGISTER_BUILTIN(ConsP, 1, 0, AST::symbolFromStr("cons?"))
 REGISTER_BUILTIN(NilP, 1, 0, AST::symbolFromStr("nil?"))
 REGISTER_BUILTIN(HeadGetter, 1, 0, AST::symbolFromStr("head"))
@@ -801,8 +724,6 @@ REGISTER_BUILTIN(SymbolFromStrGetter, 1, 0, AST::symbolFromStr("symbolFromStr"))
 REGISTER_BUILTIN(KeywordFromStrGetter, 1, 0, AST::symbolFromStr("keywordFromStr"))
 REGISTER_BUILTIN(KeywordStr, 1, 0, AST::symbolFromStr("keywordStr"))
 REGISTER_BUILTIN(IORunner, 1, 0, AST::symbolFromStr("runIO"))
-REGISTER_BUILTIN(ModuleDispatcher, (-3), 1, AST::symbolFromStr("dispatchModule"))
-REGISTER_BUILTIN(ModuleBoxMaker, 1, 0, AST::symbolFromStr("makeModuleBox"))
 REGISTER_BUILTIN(ApplicationMaker, (-2), 0, AST::symbolFromStr("makeApp"))
 REGISTER_BUILTIN(ApplicationP, 1, 0, AST::symbolFromStr("app?"))
 REGISTER_BUILTIN(ApplicationOperatorGetter, 1, 0, AST::symbolFromStr("appOperator"))

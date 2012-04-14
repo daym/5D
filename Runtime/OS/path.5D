@@ -4,7 +4,5 @@ let dispatch := Composition.dispatch in
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in
 let absolutePath := Builtins.absolutePath in 
 let absolutePath? := Builtins.absolutePath? in 
-dispatch [['absolutePath absolutePath]
-['absolutePath? absolutePath?]
-]
+(requireModule "Composition").#exports [absolutePath absolutePath?]
 raiseMissingSymbolError
