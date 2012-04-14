@@ -3,5 +3,5 @@ let Composition := requireModule "Composition" in
 let dispatch := Composition.dispatch in
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
 let messageBox! := Builtins.messageBox! in 
-(requireModule "Composition").#exports [messageBox!]
+(requireModule "Composition").dispatch (#exports[messageBox!])
 raiseMissingSymbolError

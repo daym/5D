@@ -37,6 +37,8 @@ private:
 	bool macro_standin_P(AST::NodeT op1);
 	AST::NodeT expand_simple_macro(AST::NodeT value);
 protected:
+	AST::NodeT parse_exports_macro(void);
+	AST::NodeT parse_exports_macro_body(void);
 	AST::NodeT parse_list_macro(void);
 	AST::NodeT parse_list_macro_body(void);
 	AST::NodeT parse_value(void); /* what the macros think constitutes an atom */

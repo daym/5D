@@ -1,6 +1,10 @@
 let Composition := requireModule "Composition" in
+let Tuple := requireModule "Tuple" in 
 let raiseErrorWithCode := (\part \code [part code]) in 
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
 let error? := (\a Builtins.cons? a) in 
-(requireModule "Composition").#exports [raiseErrorWithCode raiseMissingSymbolError error?]
+(requireModule "Composition").dispatch [
+('raiseErrorWithCode, raiseErrorWithCode)
+('raiseMissingSymbolError, raiseMissingSymbolError)
+('error?, error?)]
 raiseMissingSymbolError

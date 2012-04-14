@@ -76,16 +76,16 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 	apply_level = 14;
 	cons(apply_level, I(" "), L); // apply
 	if(bInitDefaults) {
-		cons(20, I("."), L); // like quote
-		cons(19, I("_"), R);
-		cons(19, I("^"), R);
-		cons(18, I("**"), R);
-		cons(17, I("*"), L);
-		cons(17, I("/"), L);
-		cons(16, I("⨯"), R);
-		// TODO div rem quot 17 L
-		cons(15, I(":"), R);
-		cons(14, I("'"), P);
+		cons(22, I("."), L); // like quote
+		cons(21, I("_"), R);
+		cons(21, I("^"), R);
+		cons(20, I("**"), R);
+		cons(19, I("*"), L);
+		cons(19, I("/"), L);
+		cons(18, I("⨯"), R);
+		cons(17, I(":"), R);
+		cons(16, I("'"), P);
+		cons(15, I(","), R);
 		cons(13, I("++"), L);
 		cons(12, I("+"), L);
 		cons(12, I("unary-"), P);
@@ -101,7 +101,6 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(9, I("≥"), N);
 		cons(8, I("&&"), L);
 		cons(7, I("||"), L);
-		cons(6, I(","), R);
 		cons(5, I("$"), R);
 		//cons(?, I(">>"), L);
 		//cons(?, I(">>="), L);

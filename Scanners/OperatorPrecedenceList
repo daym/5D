@@ -26,7 +26,7 @@ struct OperatorPrecedenceItem : AST::Node {
 		this->associativity = associativity;
 	}
 };
-#define MAX_PRECEDENCE_LEVELS 22
+#define MAX_PRECEDENCE_LEVELS 25
 struct OperatorPrecedenceList : AST::Node {
 	int apply_level;
 	int minus_level;

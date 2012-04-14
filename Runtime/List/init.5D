@@ -57,5 +57,5 @@ let sum := (\list foldr (+) 0 list) in
 let product := (\list foldr (*) 1 list) in 
 let anyTrue? := (\list foldr (||) #f list) in 
 let allTrue? := (\list foldr (&&) #t list) in 
-(requireModule "Composition").#exports [nil nil? cons? list? (:) (++) map merge mergeBy mergeSort mergeSortBy extremum drop foldl foldr filter length head tail reverse enumerate range range1 take zip transpose zipBy sum product anyTrue? allTrue?]
+Composition.dispatch (#exports[nil nil? cons? list? (:) (++) map merge mergeBy mergeSort mergeSortBy extremum drop foldl foldr filter length head tail reverse enumerate range range1 take zip transpose zipBy sum product anyTrue? allTrue?])
 raiseMissingSymbolError

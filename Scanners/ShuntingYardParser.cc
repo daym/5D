@@ -129,6 +129,20 @@ AST::NodeT ShuntingYardParser::parse_list_macro(void) {
 	scanner->consume(Symbols::Srightbracket);
 	return(result);
 }
+AST::NodeT ShuntingYardParser::parse_exports_macro_body(void) {
+	if(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
+		AST::NodeT a = parse_value();
+		AST::NodeT hd = AST::makeApplication(AST::makeApplication(Symbols::Scomma, AST::makeApplication(Symbols::Squote, a)), a);
+		return(AST::makeApplication(AST::makeApplication(Symbols::Scolon, hd), parse_exports_macro_body()));
+	} else
+		return(Symbols::Snil);
+}
+AST::NodeT ShuntingYardParser::parse_exports_macro(void) {
+	scanner->consume(Symbols::Sleftbracket);
+	AST::NodeT result = parse_exports_macro_body();
+	scanner->consume(Symbols::Srightbracket);
+	return(result);
+}
 AST::NodeT ShuntingYardParser::parse_quote_macro(void) {
 	if(scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::Sautorightparen || scanner->input_value == Symbols::SlessEOFgreater) {
 		// this cannot be quoted, so just bail out, resulting in the quote function.
@@ -143,6 +157,7 @@ inline bool simple_macro_P(AST::NodeT value) {
 AST::NodeT ShuntingYardParser::expand_simple_macro(AST::NodeT value) {
 	return (value == Symbols::Sleftbracket) ? parse_list_macro() :
 	       (value == Symbols::Squote) ? parse_quote_macro() :
+	       (value == Symbols::Shashexports) ? parse_exports_macro() :
 	       value;
 }
 AST::NodeT ShuntingYardParser::handle_unary_operator(AST::NodeT operator_) {

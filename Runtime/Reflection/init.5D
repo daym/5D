@@ -28,5 +28,5 @@ let symbolsEqual? := Builtins.symbolsEqual? in
 let addrsLE? := Builtins.addrsLE? in 
 let parseMath! := Builtins.parseMath! in 
 let parseMathStr := Builtins.parseMathStr in 
-(requireModule "Composition").#exports [app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE? parseMath! parseMathStr ratio? ratioNum ratioDenom makeRatio]
+(requireModule "Composition").dispatch (#exports[app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE? parseMath! parseMathStr ratio? ratioNum ratioDenom makeRatio])
 raiseMissingSymbolError

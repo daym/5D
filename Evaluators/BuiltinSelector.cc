@@ -132,6 +132,7 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, AST::symbolFromStr("makeModuleBox"), &Evaluators::ModuleBoxMaker);
 	add_builtin_method(self, AST::symbolFromStr("REPLMethods"), &REPLX::REPLMethodGetter);
 	add_builtin_method(self, AST::symbolFromStr(","), &Evaluators::Pairer);
+	add_builtin_method(self, AST::symbolFromStr("#exports"), &Evaluators::HashExporter);
 	self["exports"] = consFromKeys(self.begin(), self.end()); // see Sexports
 }
 

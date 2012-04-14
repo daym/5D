@@ -28,5 +28,5 @@ let oldInproduct := (\a \b sum (zipBy (*) a b)) in
 let cartesianProduct := (\f \as \bs map (\a map (\b (f a b)) bs) as) in 
 let mmul := (\as \bs cartesianProduct oldInproduct as (transpose bs)) in 
 let madd := (rec\madd \as \bs if (list? as && list? bs) (zipBy (\a \b madd a b) as bs) $else (as + bs)) in 
-(requireModule "Composition").#exports [mmul madd]
+(requireModule "Composition").dispatch (#exports[mmul madd])
 raiseMissingSymbolError

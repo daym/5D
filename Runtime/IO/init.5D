@@ -49,5 +49,5 @@ let accumrUntil! := (\condition \connector \terminator \body rec\accum!
 			let value2 := ioValue t in 
 			[(connector value value2) (ioWorld t)]
 ) in 
-(requireModule "Composition").#exports [ioValue ioWorld liftIO! return! flush! stderr stdin stdout readline! (;) write! errno! until! while! accumrUntil!]
+(requireModule "Composition").dispatch (#exports[ioValue ioWorld liftIO! return! flush! stderr stdin stdout readline! (;) write! errno! until! while! accumrUntil!])
 raiseMissingSymbolError

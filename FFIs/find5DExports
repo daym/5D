@@ -24,5 +24,4 @@ def getNames(n):
 #l = ["('%s, %s)" % (n, n) for n in getNames(sys.argv[1])]
 l = [n for n in getNames(sys.argv[1])]
 #print "let (:) := (requireModule \"List\").(:) in "
-print "(requireModule \"Composition\").#exports ",
-print "[" + ("\n".join(l)) + "]"
+print "(requireModule \"Composition\").dispatch #exports[\n" + ("\n".join(l)) + "]"

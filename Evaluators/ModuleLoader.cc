@@ -52,6 +52,7 @@ static AST::NodeT force_import_module(const char* filename) {
 			result = Evaluators::close(Symbols::Squote, &Evaluators::Quoter, result); // module needs that, so provide it.
 			result = Evaluators::close(Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb))), result);
 			result = Evaluators::close(Symbols::Scolon, &Evaluators::Conser, result); // dispatch [] needs that, so provide it.
+			result = Evaluators::close(Symbols::Scomma, &Evaluators::Pairer, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::Snil, NULL, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::SrequireModule, &ModuleLoader, result); // module needs that, so provide it. // TODO maybe use Builtins.requireModule (not sure whether that's useful)
 			result = Evaluators::close(Symbols::SBuiltins, &Evaluators::BuiltinGetter, result);
@@ -191,10 +192,14 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 		//cons_P((AST::NodeT) mBox->native)) {
 		m = new (UseGC) AST::HashTable;
 		for(AST::Cons* table = (AST::Cons*) mBox->native; table; table = Evaluators::evaluateToCons(table->tail)) {
+			//std::string irv = Evaluators::str(table->head);
+			//printf("irv %s\n", irv.c_str());
 			AST::Cons* entry = evaluateToCons(reduce(table->head));
 			//std::string v = str(entry);
-			//printf("%s\n", v.c_str());
+			//printf("=irv> %s\n", v.c_str());
 			AST::NodeT x_key = reduce(entry->head);
+			//std::string vkey = Evaluators::str(x_key);
+			//printf("=key> %s\n", vkey.c_str());
 			AST::Cons* snd = evaluateToCons(entry->tail);
 			if(!snd)
 				throw Evaluators::EvaluationException("invalid symbol table entry");
@@ -208,7 +213,9 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 		(*m)["exports"] = AST::makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
 	}
 	m = (AST::HashTable*) mBox->native;
-	const char* name = AST::get_symbol1_name(key); 
+	//std::string vkey = Evaluators::str(key);
+	//printf("%s\n", vkey.c_str());
+	const char* name = AST::get_symbol_name(key); 
 	if(name) {
 		/*HashTable::const_iterator b = m->begin();
 		HashTable::const_iterator e = m->end();
@@ -234,19 +241,12 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 	return(NULL);
 }
 static AST::NodeT build_hash_exports(AST::NodeT node) {
-	if(node == Symbols::Snil)
+	if(AST::nil_P(node))
 		return(node);
-	if(!AST::application_P(node) || !AST::application_P(AST::get_application_operator(node)))
-		return(nil); // XXX
-	AST::NodeT aoperation = AST::get_application_operator(node);
-	if(AST::get_application_operator(aoperation) != Symbols::Scolon)
-		return(nil);
-	AST::NodeT head = AST::get_application_operand(aoperation);
-	AST::NodeT tail = AST::get_application_operand(node);
-	std::string heads = Evaluators::str(head);
-	printf("%s\n", heads.c_str());
+	AST::NodeT head = AST::get_cons_head(node);
+	AST::NodeT tail = Evaluators::evaluateToCons(AST::get_cons_tail(node));
 	AST::NodeT result = AST::makeApplication(AST::makeApplication(&Evaluators::Pairer, AST::makeApplication(&Evaluators::Quoter, head)), head);
-	return AST::makeApplication(AST::makeApplication(Symbols::Scolon, result), build_hash_exports(tail));
+	return AST::makeCons(result, build_hash_exports(tail));
 }
 /*
 better:
@@ -257,7 +257,9 @@ parseExports! = (\world
 ) in 
 */
 static AST::NodeT hashExports(AST::NodeT options, AST::NodeT argument) {
-	AST::NodeT result = argument; // DO NOT REDUCE
+	AST::NodeT result = Evaluators::reduce(argument);
+	std::string s = Evaluators::str(result);
+	printf("%s\n", s.c_str());
 	return(AST::makeApplication(Evaluators::get_module_entry_accessor("Composition", Symbols::Sdispatch), build_hash_exports(result)));
 }
 DEFINE_FULL_OPERATION(ModuleDispatcher, return(dispatchModule(fn, argument));)
