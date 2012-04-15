@@ -1,10 +1,10 @@
 let Composition := requireModule "Composition" in 
 let List := requireModule "List" in 
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in
-let first := List.head in 
-let second := (\tuple List.head (List.tail tuple)) in 
+let fst := List.head in 
+let snd := (\tuple List.head (List.tail tuple)) in 
 Composition.dispatch [('(,), (,))
-('first, first)
-('second, second)
+('fst, fst)
+('snd, snd)
 ]
 raiseMissingSymbolError
