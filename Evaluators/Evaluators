@@ -81,6 +81,14 @@ static inline bool curried_operation_P(AST::NodeT root) {
 }
 
 /* END Curried Operations */
+static inline bool cons_P(AST::NodeT node) {
+	if(pair_P(node)) {
+		AST::NodeT snd = AST::get_pair_second(node);
+		snd = evaluate(snd);
+		return(nil_P(snd) || pair_P(snd));
+	} else
+		return(false);
+}
 
 static inline AST::NodeT uncurried(AST::NodeT actualOperation, AST::NodeT fallback) {
 	return(AST::makeApplication(&Evaluators::Reducer, AST::makeApplication(actualOperation, fallback)));

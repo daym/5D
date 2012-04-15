@@ -181,10 +181,10 @@ AST::NodeT ShuntingYardParser::handle_unary_operator(AST::NodeT operator_) {
 	return(operator_);
 }
 static AST::NodeT macro_standin_operator(AST::NodeT op1) {
-	return AST::cons_P(op1) ? AST::get_cons_head(op1) : NULL;
+	return Evaluators::cons_P(op1) ? AST::get_cons_head(op1) : NULL;
 }
 AST::NodeT ShuntingYardParser::expand_macro(AST::NodeT op1, AST::NodeT suffix) {
-	if(!AST::cons_P(op1))
+	if(!Evaluators::cons_P(op1))
 		abort();
 	AST::NodeT operator_ = get_cons_head(op1);
 	if(operator_ == Symbols::Sbackslash) {
@@ -362,9 +362,9 @@ void ShuntingYardParser::enter_abstraction(NodeT name) {
 	bound_symbols = AST::makeCons(name, bound_symbols);
 }
 void ShuntingYardParser::leave_abstraction(NodeT name) {
-	assert(bound_symbols && bound_symbols->head == name);
-	AST::NodeT n = bound_symbols->tail;
-	bound_symbols->tail = NULL;
+	assert(!AST::nil_P(bound_symbols) && AST::get_cons_head(bound_symbols) == name);
+	AST::NodeT n = AST::get_cons_tail(bound_symbols);
+	AST::set_cons_tail(bound_symbols, NULL);
 	bound_symbols = (AST::Cons*) n;
 }
 void ShuntingYardParser::push(FILE* input_file, int line_number, const char* input_name) {

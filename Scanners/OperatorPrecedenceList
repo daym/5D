@@ -75,7 +75,7 @@ struct OperatorPrecedenceList : AST::Node {
 	}
 	void cons(int precedence_level, AST::NodeT operator_, AST::NodeT associativity);
 	void uncons(int precedence_level, AST::NodeT operator_, AST::NodeT associativity);
-	AST::Cons* get_all_operators(int precedence_level) const;
+	AST::NodeT get_all_operators(int precedence_level) const; // Cons
 };
 
 }; /* end namespace Scanners */

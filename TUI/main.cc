@@ -41,7 +41,7 @@ struct REPL : AST::Node {
 	char* fEnvironmentName;
 	//struct Config* fConfig;
 	AST::HashTable fEnvironmentTable;
-	AST::Cons* fEnvironmentNames;
+	AST::NodeT fEnvironmentNames; // Cons
 	AST::HashTable* fModules;
 	int fCursorPosition;
 	bool fBRunIO;
@@ -222,19 +222,19 @@ static char** completion_matches(const char* text, rl_compentry_func_t* callback
 static struct REPL* REPL1; // for completion. eew.
 static char* command_generator(const char* text, int state) {
 	static int len;
-	static AST::Cons* iter;
+	static AST::NodeT iter;
 	if(state == 0) {
 		iter = REPL1->fEnvironmentNames;
 		len = strlen(text);
 	}
 	while(iter) {
 		const char* name;
-		name = ((AST::Symbol*)iter->head)->name;
+		name = AST::get_symbol1_name(AST::get_cons_head(iter));
 		if(strncmp(name, text, len) == 0) {
-			iter = Evaluators::evaluateToCons(iter->tail);
+			iter = Evaluators::evaluateToCons(AST::get_cons_tail(iter));
 			return(strdup(name)); // XXX
 		} else
-			iter = Evaluators::evaluateToCons(iter->tail);
+			iter = Evaluators::evaluateToCons(AST::get_cons_tail(iter));
 	}
 	return(NULL);
 }

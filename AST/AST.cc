@@ -18,10 +18,10 @@ namespace AST {
 Node::~Node() {
 }
 
-Cons* makeCons(NodeT head, NodeT tail) {
+AST::NodeT makePair(NodeT fst, NodeT snd) {
 	Cons* result = new Cons;
-	result->head = head;
-	result->tail = tail;
+	result->head = fst;
+	result->tail = snd;
 	return(result);
 }
 Str* makeStrRaw(char* mutableText, size_t size, bool bAtomicity) {

@@ -41,7 +41,7 @@ SExpressionParser::SExpressionParser(void) {
 	fOperands.pop_back(); \
 	fOperands.push_back(AST::makeOperation(op1, a, b)); \
 	fOperators.pop_back(); }
-AST::Cons* SExpressionParser::parse_S_list_body(void) {
+AST::NodeT SExpressionParser::parse_S_list_body(void) {
 	if(scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::SlessEOFgreater)
 		return(NULL);
 	else {
@@ -50,9 +50,9 @@ AST::Cons* SExpressionParser::parse_S_list_body(void) {
 		return(makeCons(head, parse_S_list_body()));
 	}
 }
-AST::Cons* SExpressionParser::parse_S_list(bool B_consume_closing_brace) {
+AST::NodeT SExpressionParser::parse_S_list(bool B_consume_closing_brace) {
 	try {
-		AST::Cons* result = NULL;
+		AST::NodeT result = NULL;
 		scanner->consume(Symbols::Sleftparen);
 		result = parse_S_list_body();
 		if(B_consume_closing_brace)

@@ -29,7 +29,7 @@ class ShuntingYardParser {
 private:
 	Scanner* scanner;
 	OperatorPrecedenceList* OPL;
-	AST::Cons* bound_symbols;
+	AST::NodeT bound_symbols;
 	AST::NodeT parse_abstraction_parameter(void);
 	int get_operator_precedence_and_associativity(AST::NodeT node, AST::NodeT& outAssociativity);
 	int get_operator_precedence(AST::NodeT node);

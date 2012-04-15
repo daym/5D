@@ -211,7 +211,7 @@ static AST::NodeT REPL_import(AST::NodeT options, AST::NodeT argument) {
 	char* prefix = prefixN ? Evaluators::get_string(prefixN) : NULL;
 
 	AST::NodeT exports = Evaluators::reduce(AST::makeApplication(body, Symbols::Sexports));
-	AST::Cons* usedExports = NULL;
+	AST::NodeT usedExports = NULL;
 	blacklist["exports"] = NULL; // Sexports
 	for(AST::Cons* node = Evaluators::evaluateToCons(exports); node; node = Evaluators::evaluateToCons(node->tail)) {
 		AST::NodeT key = get_cons_head(node);

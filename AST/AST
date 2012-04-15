@@ -57,7 +57,6 @@ struct Str : Box {
 	//virtual std::string str(void) const;
 };
 
-Cons* makeCons(NodeT head, NodeT tail);
 Str* makeStr(const char* text); // this can contain no pointers
 Str* makeStrCXX(const std::string& text, bool bAtomic = false); // this can contain pointers
 Str* makeStrRaw(char* mutableText, size_t size, bool bAtomic);
@@ -102,11 +101,14 @@ static inline NodeT get_cons_tail(NodeT cons) {
 Application* makeApplication(NodeT fn, NodeT argument);
 Abstraction* makeAbstraction(NodeT parameter, NodeT body);
 Application* makeOperation(NodeT operator_, NodeT operand_1, NodeT operand_2);
-static inline bool cons_P(AST::NodeT node) {
-	return(dynamic_cast<Cons*>(node) != NULL);
-}
 static inline bool pair_P(NodeT node) {
 	return(dynamic_cast<Cons*>(node) != NULL);
+}
+static inline NodeT get_pair_first(NodeT p) {
+	return(get_cons_head(p));
+}
+static inline NodeT get_pair_second(NodeT p) {
+	return(((Cons*) p)->tail);
 }
 static inline bool nil_P(AST::NodeT node) {
 	return(node == NULL);
@@ -120,17 +122,13 @@ static inline AST::NodeT uncacheNodeResult(void* userData, AST::NodeT node) {
 		return(node);
 }
 #define nil NULL
-static inline AST::NodeT makePair(AST::NodeT a, AST::NodeT b) {
-	return(AST::makeCons(a, AST::makeCons(b, nil)));
+AST::NodeT makePair(AST::NodeT a, AST::NodeT b);
+static inline AST::NodeT makeCons(AST::NodeT a, AST::NodeT b) {
+	return(AST::makePair(a, b));
 }
-static inline NodeT get_pair_first(NodeT p) {
-	return(get_cons_head(p));
-}
-static inline NodeT get_pair_second(NodeT p) {
-	AST::Cons* snd = dynamic_cast<AST::Cons*>(get_cons_tail(p)); // TODO evaluateToCons
-	if(!snd)
-		return(NULL); // XXX
-	return(get_cons_head(snd));
+static void set_cons_tail(NodeT cons, NodeT value) {
+	// TODO check that value is nil or a pair
+	((Cons*) cons)->tail = value;
 }
 
 }; /* namespace AST */

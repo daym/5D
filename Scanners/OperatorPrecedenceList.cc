@@ -126,10 +126,10 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 #undef R
 #undef I
 }
-static AST::Cons* get_level_operators(struct OperatorPrecedenceItem* item) {
+static AST::NodeT get_level_operators(struct OperatorPrecedenceItem* item) {
 	return item ? AST::makeCons(item->operator_, get_level_operators(item->next)) : NULL;
 }
-AST::Cons* OperatorPrecedenceList::get_all_operators(int precedence_level) const {
+AST::NodeT OperatorPrecedenceList::get_all_operators(int precedence_level) const {
 	if(precedence_level >= 0 && precedence_level < MAX_PRECEDENCE_LEVELS) {
 		AST::NodeT h = get_level_operators(levels[precedence_level]);
 		return(AST::makeCons(h, get_all_operators(next_precedence_level(precedence_level))));

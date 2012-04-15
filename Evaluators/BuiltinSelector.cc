@@ -41,8 +41,7 @@ static void add_static_builtin_binding(AST::HashTable& self, AST::NodeT name, AS
 static void add_builtin_method(AST::HashTable& self, AST::NodeT name, AST::NodeT value) {
 	add_static_builtin_binding(self, name, value);
 }
-
-static AST::Cons* consFromKeys(AST::HashTable::const_iterator begin, AST::HashTable::const_iterator end) {
+static AST::NodeT consFromKeys(AST::HashTable::const_iterator begin, AST::HashTable::const_iterator end) {
 	if(begin == end)
 		return(NULL);
 	else {

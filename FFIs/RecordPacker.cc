@@ -536,8 +536,8 @@ AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::NodeT formatStr, AST::No
 	size_t remainderLen = AST::str_P(dataStr) ? AST::get_str_size(dataStr) : 9999999; // FIXME
 	size_t offset = 0;
 	size_t new_offset = 0;
-	AST::Cons* result = NULL;
-	AST::Cons* tail = NULL;
+	AST::NodeT result = NULL;
+	AST::NodeT tail = NULL;
 	repr = tailtailtail(repr, resultCount);
 	for(const char* format = (const char*) AST::get_str_buffer(formatStr); position < formatSize; ++format, ++position) {
 		char formatC = *format;
@@ -565,11 +565,11 @@ AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::NodeT formatStr, AST::No
 		offset = new_offset;
 		if(remainderLen < size)
 			throw Evaluators::EvaluationException("unpackRecord: not enough coded data for format.");
-		AST::Cons* n = AST::makeCons(decode(byteOrder, repr, resultCount - resultOffset, formatC, codedData, size), NULL);
+		AST::NodeT n = AST::makeCons(decode(byteOrder, repr, resultCount - resultOffset, formatC, codedData, size), NULL);
 		if(!tail)
 			result = n;
 		else
-			tail->tail = n;
+			AST::set_cons_tail(tail, n);
 		++resultOffset;
 		tail = n;
 		codedData += size;
