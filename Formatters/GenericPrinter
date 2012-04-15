@@ -58,19 +58,20 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 		output << "[";
 		print_CXX(OPL, output, position, AST::get_cons_head(node), 0, false);
 		AST::NodeT vnode;
-		for(vnode = AST::get_pair_second(node); vnode; vnode = AST::get_pair_second(vnode)) {
+		for(vnode = AST::get_cons_tail(node); vnode; vnode = AST::get_cons_tail(vnode)) {
 			vnode = Evaluators::evaluate(vnode);
-			if(!pair_P(vnode))
+			if(!cons_P(vnode))
 				break;
 			print_text_raw(output, position, " ", false);
-			print_CXX(OPL, output, position, AST::get_pair_first(vnode), 0, false);
+			print_CXX(OPL, output, position, AST::get_cons_head(vnode), 0, false);
 		}
-		// TODO certain malformed lists are possible - we kinda support them here since it's bad to lose data.
+		// TODO certain malformed lists are possible - we kinda support them here since it's bad to lose data, but please don't use them.
 		if(!nil_P(vnode)) {
 			print_text_raw(output, position, ",", false);
 			print_CXX(OPL, output, position, vnode, 0, false);
 		}
 		output << "]";
+#if 0
 	} else if(pair_P(node)) {
 		// comma precedence
 		AST::NodeT operator_ = Symbols::Scomma;
@@ -83,6 +84,7 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 		////print_CXX(OPL, output, position, operator_, precedence, true); // ignored precedence
 		print_CXX(OPL, output, position, AST::get_pair_second(node), precedence, operatorAssociativity != Symbols::Sright);
 		maybe_print_closing_paren(output, position, operator_, B_parend);
+#endif
 	} else if(Numbers::ratio_P(node)) { /* copied from the application_P() case. */
 		AST::NodeT operator_ = Symbols::Sslash;
 		AST::NodeT operatorAssociativity = NULL;

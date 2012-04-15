@@ -108,7 +108,8 @@ static inline NodeT get_pair_first(NodeT p) {
 	return(get_cons_head(p));
 }
 static inline NodeT get_pair_second(NodeT p) {
-	return(((Cons*) p)->tail);
+	// note: it is assumed that both are evaluated already (constructor evaluates them).
+	return(get_cons_head(get_cons_tail(p)));
 }
 static inline bool nil_P(AST::NodeT node) {
 	return(node == NULL);
@@ -122,12 +123,11 @@ static inline AST::NodeT uncacheNodeResult(void* userData, AST::NodeT node) {
 		return(node);
 }
 #define nil NULL
-AST::NodeT makePair(AST::NodeT a, AST::NodeT b);
-static inline AST::NodeT makeCons(AST::NodeT a, AST::NodeT b) {
-	return(AST::makePair(a, b));
+AST::NodeT makeCons(AST::NodeT a, AST::NodeT b);
+static inline AST::NodeT makePair(AST::NodeT a, AST::NodeT b) {
+	return(AST::makeCons(a, AST::makeCons(b, NULL)));
 }
 static void set_cons_tail(NodeT cons, NodeT value) {
-	// TODO check that value is nil or a pair
 	((Cons*) cons)->tail = value;
 }
 

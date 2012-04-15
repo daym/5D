@@ -18,7 +18,7 @@ namespace AST {
 Node::~Node() {
 }
 
-AST::NodeT makePair(NodeT fst, NodeT snd) {
+AST::NodeT makeCons(NodeT fst, NodeT snd) {
 	Cons* result = new Cons;
 	result->head = fst;
 	result->tail = snd;
