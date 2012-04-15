@@ -122,6 +122,8 @@ extern AST::NodeT Sexecuteexclam;
 extern AST::NodeT Sreturnexclam;
 extern AST::NodeT Shashexports;
 extern AST::NodeT Scomma;
+extern AST::NodeT Sfst;
+extern AST::NodeT Ssnd;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

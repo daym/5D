@@ -165,7 +165,7 @@ static AST::NodeT mapGetFst2(AST::NodeT fallback, AST::Cons* c) {
 		AST::NodeT tail = fallback ? reduce(AST::makeApplication(fallback, Symbols::Sexports)) : NULL;
 		return(tail);
 	} else
-		return(AST::makeCons(AST::get_pair_first(reduce(evaluateToCons(reduce(c->head)))), mapGetFst2(fallback, evaluateToCons(c->tail))));
+		return(AST::makeCons(AST::get_pair_first(reduce(evaluateToCons(reduce(AST::get_cons_head(c))))), mapGetFst2(fallback, evaluateToCons(AST::get_cons_tail(c)))));
 }
 static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 	/* parameters: <exports> <fallback> <key> 
@@ -194,16 +194,13 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 		for(AST::Cons* table = (AST::Cons*) mBox->native; table; table = Evaluators::evaluateToCons(table->tail)) {
 			//std::string irv = Evaluators::str(table->head);
 			//printf("irv %s\n", irv.c_str());
-			AST::Cons* entry = evaluateToCons(reduce(table->head));
+			AST::Cons* entry = evaluateToCons(reduce(AST::get_cons_head(table)));
 			//std::string v = str(entry);
 			//printf("=irv> %s\n", v.c_str());
-			AST::NodeT x_key = reduce(entry->head);
+			AST::NodeT x_key = reduce(AST::get_pair_first(entry));
 			//std::string vkey = Evaluators::str(x_key);
 			//printf("=key> %s\n", vkey.c_str());
-			AST::Cons* snd = evaluateToCons(entry->tail);
-			if(!snd)
-				throw Evaluators::EvaluationException("invalid symbol table entry");
-			AST::NodeT value = reduce(snd->head);
+			AST::NodeT value = reduce(AST::get_pair_second(entry));
 			const char* name = AST::get_symbol1_name(x_key);
 			if(m->find(name) == m->end())
 				(*m)[name] = value;

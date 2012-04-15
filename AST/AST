@@ -21,7 +21,7 @@ struct Node : public gc {
 };
 typedef struct Node* NodeT;
 struct Cons : Node {
-	NodeT tail; /* Cons or Application */ /* makes much more sense to keep pointers at the front for a future GC */
+	NodeT tail; /* Cons or Application or something else. */
 	NodeT head;
 	// FIXME virtual std::string str(void) const;
 };
@@ -105,6 +105,9 @@ Application* makeOperation(NodeT operator_, NodeT operand_1, NodeT operand_2);
 static inline bool cons_P(AST::NodeT node) {
 	return(dynamic_cast<Cons*>(node) != NULL);
 }
+static inline bool pair_P(NodeT node) {
+	return(dynamic_cast<Cons*>(node) != NULL);
+}
 static inline bool nil_P(AST::NodeT node) {
 	return(node == NULL);
 }
@@ -122,6 +125,12 @@ static inline AST::NodeT makePair(AST::NodeT a, AST::NodeT b) {
 }
 static inline NodeT get_pair_first(NodeT p) {
 	return(get_cons_head(p));
+}
+static inline NodeT get_pair_second(NodeT p) {
+	AST::Cons* snd = dynamic_cast<AST::Cons*>(get_cons_tail(p)); // TODO evaluateToCons
+	if(!snd)
+		return(NULL); // XXX
+	return(get_cons_head(snd));
 }
 
 }; /* namespace AST */

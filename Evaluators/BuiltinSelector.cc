@@ -65,6 +65,8 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, Symbols::SnilP, &Evaluators::NilP);
 	add_builtin_method(self, Symbols::Shead, &Evaluators::HeadGetter);
 	add_builtin_method(self, Symbols::Stail, &Evaluators::TailGetter);
+	add_builtin_method(self, Symbols::Sfst, &Evaluators::FstGetter);
+	add_builtin_method(self, Symbols::Ssnd, &Evaluators::SndGetter);
 	add_builtin_method(self, Symbols::SintP, &Numbers::IntP);
 	add_static_builtin_binding(self, Symbols::Sintzero, Numbers::internNative((Numbers::NativeInt) 0));
 	add_builtin_method(self, Symbols::SintSucc, &Numbers::IntSucc);
