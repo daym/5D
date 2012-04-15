@@ -62,6 +62,7 @@ void BuiltinSelector_init(void) {
 	add_static_builtin_binding(self, Symbols::Snil, NULL);
 	add_builtin_method(self, Symbols::Scolon, &Evaluators::Conser);
 	add_builtin_method(self, Symbols::SconsP, &Evaluators::ConsP);
+	add_builtin_method(self, Symbols::SpairP, &Evaluators::PairP);
 	add_builtin_method(self, Symbols::SnilP, &Evaluators::NilP);
 	add_builtin_method(self, Symbols::Shead, &Evaluators::HeadGetter);
 	add_builtin_method(self, Symbols::Stail, &Evaluators::TailGetter);

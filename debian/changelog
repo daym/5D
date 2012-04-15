@@ -1,3 +1,9 @@
+5d (0.6.2) unstable; urgency=low
+
+  * add pairs.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 15 Apr 2012 20:39:00 +0200
+
 5d (0.6.1) unstable; urgency=low
 
   * add 'while!, 'until!

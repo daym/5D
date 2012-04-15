@@ -120,4 +120,5 @@ AST::NodeT Shashexports = AST::symbolFromStr("#exports");
 AST::NodeT Scomma = AST::symbolFromStr(",");
 AST::NodeT Sfst = AST::symbolFromStr("fst");
 AST::NodeT Ssnd = AST::symbolFromStr("snd");
+AST::NodeT SpairP = AST::symbolFromStr("pair?");
 };
