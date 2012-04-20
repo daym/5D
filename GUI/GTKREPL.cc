@@ -68,7 +68,7 @@ struct REPL : AST::Node {
 	GtkTreeView* fEnvironmentView;
 	GtkListStore* fEnvironmentStore2;
 	GHashTable* fEnvironmentKeys;
-	GtkButton* fExecuteButton;
+	GtkButton* fEvaluateButton;
 	GtkBox* fEditorBox;
 	GtkScrolledWindow* fEnvironmentScroller;
 	GtkFileChooser* fSaveDialog;
@@ -219,12 +219,13 @@ void REPL_insert_error_message(struct REPL* self, GtkTextIter* destination, cons
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &self->fCursorPosition);
 	return REPL_execute(self, input, &end);
 }*/
-static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
+static void REPL_front_execute(struct REPL* self, gboolean B_IO) {
 	GtkTextIter beginning;
 	GtkTextIter end;
 	gboolean B_from_entry = false;
 	gchar* text;
 	AST::NodeT input;
+	self->fBRunIO = B_IO;
 	if(!gtk_text_buffer_get_selection_bounds(self->fOutputBuffer, &beginning, &end)) {
 		gtk_text_buffer_get_start_iter(self->fOutputBuffer, &beginning);
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
@@ -257,6 +258,12 @@ static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
 		if(B_from_entry && B_ok)
 			gtk_entry_set_text(self->fCommandEntry, "");
 	}
+}
+static void REPL_handle_execute(struct REPL* self, GtkAction* action) {
+	REPL_front_execute(self, true);
+}
+static void REPL_handle_evaluate(struct REPL* self, GtkAction* action) {
+	REPL_front_execute(self, false);
 }
 static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePath* path, GtkTreeViewColumn* column, GtkTreeView* view) {
 	using namespace AST;
@@ -663,7 +670,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	self->fEnvironmentView = NULL;
 	self->fEnvironmentStore2 = NULL;
 	self->fEnvironmentKeys = NULL;
-	self->fExecuteButton = NULL;
+	self->fEvaluateButton = NULL;
 	self->fEditorBox = NULL;
 	self->fEnvironmentScroller = NULL;
 	self->fSaveDialog = NULL;
@@ -725,14 +732,12 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	gtk_container_add(GTK_CONTAINER(self->fEnvironmentScroller), GTK_WIDGET(self->fEnvironmentView));
 	gtk_widget_show(GTK_WIDGET(self->fEnvironmentScroller));
 	//self->fShortcutBox = (GtkBox*) gtk_hbutton_box_new();
-	self->fExecuteButton = (GtkButton*) gtk_button_new_from_stock(GTK_STOCK_EXECUTE);
-	gtk_action_connect_proxy(get_action(execute), GTK_WIDGET(self->fExecuteButton));
-	gtk_button_set_use_stock(self->fExecuteButton, TRUE);
-	GTK_WIDGET_SET_FLAGS(self->fExecuteButton, GTK_CAN_DEFAULT);
-	gtk_window_set_default(self->fWidget, GTK_WIDGET(self->fExecuteButton));
-	gtk_widget_show(GTK_WIDGET(self->fExecuteButton));
-	//gtk_box_pack_start(self->fShortcutBox, GTK_WIDGET(self->fExecuteButton), TRUE, TRUE, 7);
-	//gtk_widget_show(GTK_WIDGET(self->fShortcutBox));
+	self->fEvaluateButton = (GtkButton*) gtk_button_new_from_stock(GTK_STOCK_EXECUTE);
+	gtk_action_connect_proxy(get_action(evaluate), GTK_WIDGET(self->fEvaluateButton));
+	gtk_button_set_use_stock(self->fEvaluateButton, TRUE);
+	GTK_WIDGET_SET_FLAGS(self->fEvaluateButton, GTK_CAN_DEFAULT);
+	gtk_window_set_default(self->fWidget, GTK_WIDGET(self->fEvaluateButton));
+	gtk_widget_show(GTK_WIDGET(self->fEvaluateButton));
 	self->fCommandBox = (GtkBox*) gtk_hbox_new(FALSE, 7);
 	gtk_widget_show(GTK_WIDGET(self->fCommandBox));
 	self->fCommandEntry = (GtkEntry*) gtk_entry_new();
@@ -773,7 +778,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	gtk_box_pack_start(GTK_BOX(self->fMainBox), GTK_WIDGET(self->fEditorBox), TRUE, TRUE, 0); 
 	gtk_box_pack_start(GTK_BOX(self->fMainBox), GTK_WIDGET(self->fCommandBox), FALSE, FALSE, 0); 
 	gtk_box_pack_start(GTK_BOX(self->fCommandBox), GTK_WIDGET(self->fCommandEntry), TRUE, TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(self->fCommandBox), GTK_WIDGET(self->fExecuteButton), FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(self->fCommandBox), GTK_WIDGET(self->fEvaluateButton), FALSE, FALSE, 0);
 	/*g_signal_connect_swapped(GTK_DIALOG(self->fWidget), "response", G_CALLBACK(REPL_handle_response), (void*) self);*/
 	gtk_window_set_focus(GTK_WINDOW(self->fWidget), GTK_WIDGET(self->fCommandEntry));
 	/*gtk_tree_view_column_set_sort_column_id(fNameColumn, 0);
@@ -793,6 +798,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	}
 	g_signal_connect(G_OBJECT(self->fWidget), "delete-event", G_CALLBACK(g_confirm_close), self);
 	//g_signal_connect(G_OBJECT(self->fWidget), "delete-event", G_CALLBACK(g_hide_window), NULL);
+	add_action_handler(evaluate);
 	add_action_handler(execute);
 	add_action_handler(open_file);
 	add_action_handler(save_file);
@@ -807,6 +813,7 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	add_action_handler(print_environment_item);
 	add_action_handler(add_environment_item);
 	connect_accelerator(GDK_F5, (GdkModifierType) 0, execute);
+	connect_accelerator(GDK_F9, (GdkModifierType) 0, evaluate);
 	connect_accelerator(GDK_F3, (GdkModifierType) 0, open_file);
 	connect_accelerator(GDK_F2, (GdkModifierType) 0, save_file);
 	connect_accelerator(GDK_x, GDK_CONTROL_MASK, cut);
