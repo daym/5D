@@ -1,3 +1,9 @@
+5d (0.6.3) unstable; urgency=low
+
+  * rename 'ground to 'floor in module "Arithmetic".
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Fri, 20 Apr 2012 23:12:00 +0200
+
 5d (0.6.2) unstable; urgency=low
 
   * add pairs.
