@@ -4,6 +4,7 @@ let Composition := requireModule "Composition" in
 let tail := List.tail in 
 let foldr := List.foldr in 
 let map := List.map in 
+let drop := List.drop in 
 let dispatch := Composition.dispatch in 
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in
 let listFromStr := Builtins.listFromStr in 
@@ -13,7 +14,14 @@ let strFromList := Builtins.strFromList in
 let substr := Builtins.substr in 
 let (++) := List.(++) in 
 let strcat := \a \b strFromList ((listFromStr a) ++ (listFromStr b)) in 
-let strjoinp := \sep \l strFromList (let sepl := (listFromStr sep) in let parts := (map (\x sepl ++ listFromStr x) l) in foldr (++) "" parts) in 
-let strjoin := \sep \l tail (strjoinp sep l) in 
+let strjoinp := (\sepl \strings 
+	let prefixSepl := (\x sepl ++ listFromStr x) in 
+	let parts := (map prefixSepl strings) in 
+	foldr (++) "" parts
+) in 
+let strjoin := (\sep \strings 
+	let sepl := (listFromStr sep) in 
+	strFromList (drop (List.length sepl) (strjoinp sepl strings))
+) in 
 (requireModule "Composition").dispatch (#exports[listFromStr str? strFromKeyword strFromList substr strcat strjoin])
 raiseMissingSymbolError

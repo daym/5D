@@ -1,5 +1,6 @@
 let Logic := requireModule "Logic" in 
 let Composition := requireModule "Composition" in 
+let Error := requireModule "Error" in 
 let dispatch := Composition.dispatch in 
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
 let rec := Composition.rec in 
@@ -42,11 +43,31 @@ let repeat := (\f rec (\repeat \a a:(repeat (f a)))) in
 let sqrtEps := (\a0 \eps \N within eps (repeat (next N) a0)) in 
 let sqrt := sqrtEps 1 0.001 in 
 let √ := sqrt in 
-let factorial := (rec (\fac \v if (v = 0) 1 v*(fac (v - 1)))) in 
-let ground := (\v divide v 1) in 
-let round1 := (\v if (0 <= v) (ground (v + 1/2)) (ground (v - 1/2))) in 
+let floor := (\v divide v 1) in 
+let factorial := (\v
+	if ((floor v) = v)
+		(rec\fac \v
+			if (v = 0)
+				1
+			$else
+				v*(fac (v - 1))
+		) v
+	$else
+		Error.raiseErrorWithCode "factorial only works for natural numbers - maybe you meant gamma" 500
+) in 
+let round1 := (\v 
+	if (0 <= v) 
+		floor (v + 1/2)
+	$else
+		floor (v - 1/2)
+) in 
 let max := (\a \b if (a <= b) b a) in 
 let min := (\a \b if (a <= b) a b) in 
-let gcd := (rec\gcd \a \b if (b = 0) a $else (gcd b (a % b))) in 
-(requireModule "Composition").dispatch (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs divide divrem remainder cos sin tan sqrt modulo within factorial ground round1 π pi max min gcd])
+let gcd := (rec\gcd \a \b
+	if (b = 0) 
+		a
+	$else
+		gcd b (a % b)
+) in 
+(requireModule "Composition").dispatch (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs divide divrem remainder cos sin tan sqrt modulo within factorial floor round1 π pi max min gcd])
 raiseMissingSymbolError

@@ -22,6 +22,7 @@ let (-) := Arithmetic.(-) in
 let (*) := Arithmetic.(*) in 
 let divide := Arithmetic.divide in 
 let else := Logic.else in 
+let elif := Logic.elif in 
 let rec := Composition.rec in 
 let max := Arithmetic.max in 
 let nil := [] in 
@@ -31,24 +32,94 @@ let list? := (\a nil? a || cons? a) in
 let head := Builtins.head in 
 let tail := Builtins.tail in 
 let (:) := Builtins.(:) in 
-let foldl := (\f rec (\foldl \v \list if (nil? list) v $ else foldl (f v (head list)) (tail list))) in 
-let foldr := (\f \v rec (\foldr \list if (nil? list) v $ else f (head list) (foldr (tail list)))) in 
+let foldl := (\f rec \foldl \v \list 
+	if (nil? list) 
+		v
+	$else 
+		foldl (f v (head list)) (tail list)
+) in 
+let foldr := (\f \v rec \foldr \list 
+	if (nil? list) 
+		v
+	$else
+		f (head list) (foldr (tail list))
+) in 
 let (++) := (\a \b foldr (:) b a) in 
-let drop := (rec (\drop \count \list if (count <= 0 || nil? list) list (drop (count - 1) (tail list)))) in 
-let take := (rec (\take \count \list if (count <= 0 || nil? list) nil (head list):(take (count - 1) (tail list)))) in 
+let drop := (rec \drop \count \list 
+	if (count <= 0 || nil? list) 
+		list 
+	$else 
+		drop (count - 1) (tail list)
+) in 
+let take := (rec \take \count \list 
+	if (count <= 0 || nil? list) 
+		nil 
+	$else
+		(head list):(take (count - 1) (tail list))
+) in 
 let map := (\f \list foldr (compose (:) f) nil list) in 
-let mergeBy := (\lessEqualComparator rec (\mergeBy \l1 \l2 if (nil? l1 && nil? l2) nil $ else if (nil? l2) (head l1):(mergeBy (tail l1) l2) $ else if (not (nil? l1) && lessEqualComparator (head l1) (head l2)) (head l1):(mergeBy (tail l1) l2) $ else (head l2):(mergeBy l1 (tail l2)))) in 
+let mergeBy := (\lessEqualComparator rec \mergeBy \l1 \l2 
+	if (nil? l1 && nil? l2) 
+		nil 
+	$elif (nil? l2) 
+		(head l1):(mergeBy (tail l1) l2) 
+	$elif (not (nil? l1) && lessEqualComparator (head l1) (head l2)) 
+		(head l1):(mergeBy (tail l1) l2)
+	$else 
+		(head l2):(mergeBy l1 (tail l2))
+) in 
 let merge := (mergeBy (<=)) in 
-let length := (rec (\length \list if (nil? list) 0 (1 + length (tail list)))) in 
-let mergeSortBy := (\lessEqualComparator rec (\mergeSortBy \list if (nil? list || nil? (tail list)) list $ else mergeBy lessEqualComparator (mergeSortBy (take (divide (length list) 2) list)) (mergeSortBy (drop (divide (length list) 2) list)))) in 
+let length2 := foldr (\x \y y + 1) 0 in 
+let length := (rec \length \list 
+	if (nil? list) 
+		0 
+	$else
+		(1 + length (tail list))
+) in 
+let mergeSortBy := (\lessEqualComparator 
+	let merge := mergeBy lessEqualComparator in 
+	rec \sort \list 
+		if (nil? list || nil? (tail list)) 
+			list 
+		$else 
+			let halfCount := divide (length list) 2 in 
+			let leftHalf := take halfCount list in 
+			let rightHalf := drop halfCount list in 
+			merge (sort leftHalf) (sort rightHalf)
+) in 
 let mergeSort := (mergeSortBy (<=)) in 
-let extremum := (\fn \l foldr fn (head l) l) in 
-let filter := (\f rec (\filter \list if (nil? list) nil $ else if (f (head list)) (head list):(filter (tail list)) (filter (tail list)))) in 
+let extremum := (\fn \values foldr fn (head values) values) in 
+let filter := (\f rec \filter \list 
+	if (nil? list) 
+		nil 
+	$elif (f (head list)) 
+		(head list):(filter (tail list)) 
+	$else
+		filter (tail list)
+) in 
 let reverse := (\list foldl (flip (:)) nil list) in 
-let rangeLL := (\step \end rec (\rangeLL \beginning if (step <= 0 - 1) (if (beginning <= end) nil beginning:(rangeLL (beginning + step))) (if (beginning >= end) nil beginning:(rangeLL (beginning + step))))) in 
+let rangeLL := (\step \end 
+	if (step <= 0 - 1)
+		rec \rangeLL \beginning
+			if (beginning <= end) 
+				nil 
+			$else
+				beginning:(rangeLL (beginning + step))
+	$else
+		rec \rangeLL \beginning
+			if (beginning >= end) 
+				nil 
+			$else
+				beginning:(rangeLL (beginning + step))
+) in 
 let range1 := (\beginning \end rangeLL 1 end beginning) in 
 let range := (\beginning \end \step rangeLL step end beginning) in 
-let zipBy := (\zipper rec (\zipBy \l1 \l2 if (nil? l1 || nil? l2) nil $ else (zipper (head l1) (head l2)):(zipBy (tail l1) (tail l2)))) in 
+let zipBy := (\zipper rec \zipBy \l1 \l2 
+	if (nil? l1 || nil? l2) 
+		nil 
+	$else 
+		(zipper (head l1) (head l2)):(zipBy (tail l1) (tail l2))
+) in 
 let zip := (zipBy (\x \y [x y])) in 
 let repeatEndlessly := (rec\repeatEndlessly \v v:(repeatEndlessly v)) in 
 let transpose := (\matrix foldr (zipBy (:)) (repeatEndlessly nil) matrix) in 
