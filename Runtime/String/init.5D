@@ -1,7 +1,13 @@
 let List := requireModule "List" in 
 let Error := requireModule "Error" in
 let Composition := requireModule "Composition" in
+let Logic := requireModule "Logic" in 
+let if := Logic.if in 
+let else := Logic.else in 
+let elif := Logic.elif in 
+let ($) := Composition.($) in 
 let tail := List.tail in 
+let nil? := List.nil? in 
 let foldr := List.foldr in 
 let map := List.map in 
 let drop := List.drop in 
@@ -21,7 +27,10 @@ let strjoinp := (\sepl \strings
 ) in 
 let strjoin := (\sep \strings 
 	let sepl := (listFromStr sep) in 
-	strFromList (drop (List.length sepl) (strjoinp sepl strings))
+	if (nil? strings)
+		""
+	$else
+		strFromList (drop (List.length sepl) (strjoinp sepl strings))
 ) in 
 (requireModule "Composition").dispatch (#exports[listFromStr str? strFromKeyword strFromList substr strcat strjoin])
 raiseMissingSymbolError
