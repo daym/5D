@@ -734,7 +734,8 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	//self->fShortcutBox = (GtkBox*) gtk_hbutton_box_new();
 	self->fEvaluateButton = (GtkButton*) gtk_button_new_from_stock(GTK_STOCK_EXECUTE);
 	gtk_action_connect_proxy(get_action(evaluate), GTK_WIDGET(self->fEvaluateButton));
-	gtk_button_set_use_stock(self->fEvaluateButton, TRUE);
+	gtk_button_set_label(self->fEvaluateButton, "Evaluate");
+	gtk_button_set_use_stock(self->fEvaluateButton, FALSE);
 	GTK_WIDGET_SET_FLAGS(self->fEvaluateButton, GTK_CAN_DEFAULT);
 	gtk_window_set_default(self->fWidget, GTK_WIDGET(self->fEvaluateButton));
 	gtk_widget_show(GTK_WIDGET(self->fEvaluateButton));
