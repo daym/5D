@@ -45,7 +45,8 @@ IDC_MY5D MENU
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&Execute\tF5",                IDM_FILE_EXECUTE
+        MENUITEM "&Evaluate\tF9",               IDM_FILE_EVALUATE
+        MENUITEM "Exe&cute\tF5",                IDM_FILE_EXECUTE
         MENUITEM "&Open...\tF3",                IDM_FILE_OPEN
         MENUITEM "&Save\tF2",                   IDM_FILE_SAVE
         MENUITEM "Save &as...",                 IDM_FILE_SAVE_AS
@@ -85,7 +86,8 @@ END
 
 IDC_MY5D ACCELERATORS 
 BEGIN
-    VK_RETURN,      IDC_EXECUTE,            VIRTKEY, CONTROL, NOINVERT
+    VK_F1,          ID_HELP_LIBRARYDOCUMENTATION, VIRTKEY, NOINVERT
+    VK_RETURN,      IDC_EVALUATE,           VIRTKEY, CONTROL, NOINVERT
     "/",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
     "?",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
     "C",            IDM_EDIT_COPY,          VIRTKEY, CONTROL, NOINVERT
@@ -97,7 +99,7 @@ BEGIN
     VK_F5,          IDM_FILE_EXECUTE,       VIRTKEY, NOINVERT
     VK_F3,          IDM_FILE_OPEN,          VIRTKEY, NOINVERT
     VK_F2,          IDM_FILE_SAVE,          VIRTKEY, NOINVERT
-    VK_F1,          ID_HELP_LIBRARYDOCUMENTATION, VIRTKEY, NOINVERT
+    VK_F9,          IDM_FILE_EVALUATE,      VIRTKEY, NOINVERT
 END
 
 
@@ -111,7 +113,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "About 5D"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    LTEXT           "5D, Version 0.1",IDC_STATIC,7,15,114,8,SS_NOPREFIX
+    LTEXT           "5D, Version 0.6.3",IDC_STATIC,7,15,114,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2011 Danny Milosavljevic",IDC_STATIC,7,25,154,8
     DEFPUSHBUTTON   "&Close",IDOK,283,83,50,14,WS_GROUP
     LTEXT           "This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3, or (at your option) any later version,see http://www.gnu.org/licenses",IDC_STATIC,7,42,326,25
@@ -207,7 +209,7 @@ BEGIN
     CONTROL         "",IDC_ENVIRONMENT,"SysListView32",LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER,7,7,99,132
     CONTROL         "",IDC_OUTPUT,"RichEdit20W",WS_BORDER | WS_VSCROLL | WS_TABSTOP | 0x1104,110,7,255,144
     EDITTEXT        IDC_COMMAND_ENTRY,7,153,306,26,ES_MULTILINE | ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "&Execute",IDC_EXECUTE,316,153,49,26
+    DEFPUSHBUTTON   "&Evaluate",IDC_EVALUATE,316,153,49,26
     PUSHBUTTON      "Defi&ne...",IDC_ENVIRONMENT_DEFINE_BUTTON,7,139,99,14
 END
 

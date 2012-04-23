@@ -629,7 +629,7 @@ static void REPL_open_webpage(struct REPL* self, const std::wstring& path) {
 	//MessageBox(NULL, path.c_str(), path.c_str(), MB_OK);
 	ShellExecute(self->dialog, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
-static void REPL_handle_execute(struct REPL* self, const char* text, int destination, bool B_from_entry) {
+static void REPL_handle_execute(struct REPL* self, const char* text, int destination, bool B_from_entry, bool B_IO) {
 	AST::NodeT input;
 	try {
 		input = REPL_parse(self, text, destination);
@@ -646,6 +646,7 @@ static void REPL_handle_execute(struct REPL* self, const char* text, int destina
 		}
 		destination = REPL_insert_into_output_buffer(self, destination, "\n=> ");
 		self->fCursorPosition = destination;
+		self->fBRunIO = B_IO;
 		bool B_ok = REPL_execute(self, input, destination);
 		if(B_from_entry && B_ok)
 			SetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY, _T(""));
@@ -697,7 +698,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 	case WM_SIZE:
 		{
 			RECT clientRect;
-			RECT executeButtonRect;
+			RECT evaluateButtonRect;
 			//RECT windowRect;
 			RECT outputRect;
 			RECT commandEntryRect;
@@ -707,8 +708,8 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			int cx = clientRect.right - clientRect.left;
 			int cy = clientRect.bottom - clientRect.top;
 			int cxtot = cx;
-			GetWindowRect(GetDlgItem(dialog, IDC_EXECUTE), &executeButtonRect);
-			ScreenToClientRect(dialog, executeButtonRect);
+			GetWindowRect(GetDlgItem(dialog, IDC_EVALUATE), &evaluateButtonRect);
+			ScreenToClientRect(dialog, evaluateButtonRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_OUTPUT), &outputRect);
 			ScreenToClientRect(dialog, outputRect);
 			GetWindowRect(GetDlgItem(dialog, IDC_COMMAND_ENTRY), &commandEntryRect);
@@ -719,11 +720,11 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 			ScreenToClientRect(dialog, environmentRect);
 			int defineButtonHeight = environmentDefineButtonRect.bottom - environmentDefineButtonRect.top;
 			int commandEntryHeight = commandEntryRect.bottom - commandEntryRect.top;
-			int executeButtonWidth = executeButtonRect.right - executeButtonRect.left;
+			int executeButtonWidth = evaluateButtonRect.right - evaluateButtonRect.left;
 			//cx -= outputRect.left + 10;
 			cy -= outputRect.top + commandEntryHeight + 14;
 			//MoveWindow(,,,, , FALSE);
-			SetWindowPos(GetDlgItem(dialog, IDC_EXECUTE), NULL, cx - executeButtonWidth - 10, cy + 20, 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
+			SetWindowPos(GetDlgItem(dialog, IDC_EVALUATE), NULL, cx - executeButtonWidth - 10, cy + 20, 0, 0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_OUTPUT), NULL, 0, 0, cx - outputRect.left - 10, cy, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_ENVIRONMENT), NULL, 0, 0, environmentRect.right - environmentRect.left, cy - defineButtonHeight, SWP_NOMOVE|SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
 			SetWindowPos(GetDlgItem(dialog, IDC_ENVIRONMENT_DEFINE_BUTTON), NULL, 10, cy - defineButtonHeight + 15, environmentRect.right - environmentRect.left, defineButtonHeight, SWP_NOACTIVATE|SWP_NOREPOSITION|SWP_NOZORDER);
@@ -819,7 +820,36 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 		case IDM_FILE_OPEN:
 				REPL_load(self);
 				break;
-		case IDC_EXECUTE:
+		case IDC_EVALUATE:
+		case IDM_FILE_EVALUATE:
+			{
+				std::wstring text;
+				bool B_used_entry = false;
+				HWND output;
+				output = GetDlgItem(self->dialog, IDC_OUTPUT);
+				text = GetRichTextSelectedText(output);
+				if(text.length() == 0) {
+					text = GetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY);
+					B_used_entry = true;
+					//REPL_append_to_output_buffer(self, ToUTF8(text));
+				} else { // for some reason, Windows Rich Text Control uses ONLY #13 as newline?!
+					int sz = text.length();
+					for(int i = 0; i < sz; ++i)
+						if(text[i] == 13)
+							text[i] = 10;
+				}
+				std::string UTF8_text = ToUTF8(text);
+				try {
+					REPL_handle_execute(self, UTF8_text.c_str(), -1, B_used_entry, false);
+					if(B_used_entry) {
+						SetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY, _T(""));
+					}
+				} catch(...) {
+					throw; // FIXME
+				}
+				SetDialogFocus(self->dialog, IDC_COMMAND_ENTRY);
+				break;
+			}
 		case IDM_FILE_EXECUTE:
 			{
 				std::wstring text;
@@ -839,7 +869,7 @@ INT_PTR CALLBACK HandleREPLMessage(HWND dialog, UINT message, WPARAM wParam, LPA
 				}
 				std::string UTF8_text = ToUTF8(text);
 				try {
-					REPL_handle_execute(self, UTF8_text.c_str(), -1, B_used_entry);
+					REPL_handle_execute(self, UTF8_text.c_str(), -1, B_used_entry, true);
 					if(B_used_entry) {
 						SetDlgItemTextCXX(self->dialog, IDC_COMMAND_ENTRY, _T(""));
 					}
