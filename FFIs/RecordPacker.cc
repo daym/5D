@@ -741,9 +741,13 @@ AST::NodeT strFromList(AST::NodeT node) {
 		sst << (char) c;
 	}
 	std::string v = sst.str();
-	AST::NodeT result = Record_allocate(v.length(), false/*chicken*/);
-	memcpy(Evaluators::get_pointer(result), v.c_str(), v.length());
-	return(result);
+	if(v.length() == 0)
+		return(nil);
+	else {
+		AST::NodeT result = Record_allocate(v.length(), false/*chicken*/);
+		memcpy(Evaluators::get_pointer(result), v.c_str(), v.length());
+		return(result);
+	}
 }
 static AST::NodeT substr(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);

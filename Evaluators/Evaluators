@@ -90,6 +90,13 @@ static inline bool cons_P(AST::NodeT node) {
 	//} else
 	//	return(false);
 }
+static inline AST::NodeT get_pair_first(AST::NodeT p) {
+	return(get_cons_head(p));
+}
+static inline AST::NodeT get_pair_second(AST::NodeT p) {
+	// note: we could assume that both are evaluated already (constructor evaluates them) but we don't in order not to surprise people.
+	return(get_cons_head(reduce(get_cons_tail(p))));
+}
 
 static inline AST::NodeT uncurried(AST::NodeT actualOperation, AST::NodeT fallback) {
 	return(AST::makeApplication(&Evaluators::Reducer, AST::makeApplication(actualOperation, fallback)));

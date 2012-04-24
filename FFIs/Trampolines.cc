@@ -84,7 +84,7 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 		AST::NodeT results;
 		char returnSig[2] = {*sig, 0};
 		results = Record_unpack(FFIs::MACHINE_BYTE_ORDER, AST::makeStr(returnSig), AST::makeBox(args[0], NULL));
-		AST::NodeT result = (pair_P(results) ? get_pair_first(results) : NULL);
+		AST::NodeT result = (pair_P(results) ? Evaluators::get_pair_first(results) : NULL);
 		return Evaluators::makeIOMonad(result, endIter->second);
 	}
 	fprintf(stderr, "warning: could not find marshaller for %s\n", sig);

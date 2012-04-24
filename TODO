@@ -62,6 +62,7 @@ TUI: if trying to pass a path to a file that does not exist, it doesn't create i
 
 = Beauty =
 
+allow REPL.remove! in order to remove a (usually the last) definition.
 Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).
 nested lists: line-break only for the second list if the first list is short enough.
@@ -97,6 +98,7 @@ make an extra "]" emit a nicer error message
 
 = Correctness =
 
+Don't reduce in REPL_execute. Instead make sure the printer etc evaluates thunks before using them. Note that a thunk isn't just an application node since then it wouldn't know how to reduce the arguments. Hence there's a need for storing the environment and the expression to evaluate for later use.
 Have the predicates check for non-SymbolReference non-quoted symbols or non-executed applications and if so, return "we can't do it"?
 Floats only work to 3E38, it seems. What about higher numbers? (there's no such limit for 3E-999999)
 It would be possible to make numbers like 3E3 mean 3000 and not 3000.0 - do we want that?
@@ -166,7 +168,6 @@ DECIMAL type (suffix m or M)
 
 `
 {
-,
 }
 ~
 

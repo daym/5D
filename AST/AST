@@ -104,13 +104,6 @@ Application* makeOperation(NodeT operator_, NodeT operand_1, NodeT operand_2);
 static inline bool pair_P(NodeT node) {
 	return(dynamic_cast<Cons*>(node) != NULL);
 }
-static inline NodeT get_pair_first(NodeT p) {
-	return(get_cons_head(p));
-}
-static inline NodeT get_pair_second(NodeT p) {
-	// note: it is assumed that both are evaluated already (constructor evaluates them).
-	return(get_cons_head(get_cons_tail(p)));
-}
 static inline bool nil_P(AST::NodeT node) {
 	return(node == NULL);
 }
