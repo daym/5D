@@ -54,11 +54,16 @@ ShuntingYardParser::ShuntingYardParser(void) {
 }
 AST::NodeT ShuntingYardParser::parse_abstraction_parameter(void) {
 	AST::NodeT parameter = scanner->input_value;
+	if(parameter == Symbols::Sleftparen) {
+		scanner->consume();
+		parameter = scanner->consume();
+		scanner->consume(Symbols::Srightparen);
+	} else
+		scanner->consume(); /* consume parameter */
 	if(!AST::get_symbol1_name(parameter)) {
-		scanner->raise_error("<symbol>", str(scanner->input_value));
+		scanner->raise_error("<symbol>", str(parameter));
 		return(NULL);
 	} else {
-		scanner->consume(); /* consume parameter */
 		if(scanner->input_value == Symbols::SlessEOFgreater || scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::Srightbracket || scanner->input_value == Symbols::Sautorightparen)
 			scanner->raise_error("<body>", str(scanner->input_value));
 		// TODO enter_abstraction(parameter);
