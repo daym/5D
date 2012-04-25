@@ -763,7 +763,10 @@ static inline AST::NodeT integerASucc(AST::NodeT argument) {
 DEFINE_SIMPLE_OPERATION(IntegerSucc, integerASucc(argument))
 REGISTER_STR(Int, {
         std::stringstream sst;
-        sst << node->value;
+	if(node->value < 0)
+		sst << '(' << node->value << ')';
+	else
+	        sst << node->value;
         return(sst.str());
 })
 static std::string strInteger(Integer* node) {
@@ -772,6 +775,8 @@ static std::string strInteger(Integer* node) {
 	BigUnsigned q(v.getMagnitude());
 	BigUnsigned divisor(10);
 	BigUnsigned r;
+	if (v.getSign() == Integer::negative)
+		sst << ')';
 	for(int i = 0; i < 10000; ++i) {
 		if(q.isZero())
 			break;
@@ -781,9 +786,9 @@ static std::string strInteger(Integer* node) {
 		sst << rf;
 	}
 	if(sst.str().empty())
-		sst << "0";
+		sst << '0';
 	if (v.getSign() == Integer::negative)
-		sst << "-";
+		sst << "-(";
 	std::string result = sst.str();
 	std::reverse(result.begin(), result.end());
 	return(result);
