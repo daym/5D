@@ -57,6 +57,12 @@ let take := (rec \take \count \list
 	$else
 		(head list):(take (count - 1) (tail list))
 ) in 
+let takeWhile := (\predicate rec \take \list 
+	if (nil? list || not (predicate (head list)))
+		nil 
+	$else
+		(head list):(take (tail list))
+) in 
 let map := (\f \list foldr (compose (:) f) nil list) in 
 let mergeBy := (\lessEqualComparator rec \mergeBy \l1 \l2 
 	if (nil? l1 && nil? l2) 
@@ -128,5 +134,5 @@ let sum := (\list foldr (+) 0 list) in
 let product := (\list foldr (*) 1 list) in 
 let anyTrue? := (\list foldr (||) #f list) in 
 let allTrue? := (\list foldr (&&) #t list) in 
-Composition.dispatch (#exports[nil nil? cons? list? (:) (++) map merge mergeBy mergeSort mergeSortBy extremum drop foldl foldr filter length head tail reverse enumerate range range1 take zip transpose zipBy sum product anyTrue? allTrue?])
+Composition.dispatch (#exports[nil nil? cons? list? (:) (++) map merge mergeBy mergeSort mergeSortBy extremum drop foldl foldr filter length head tail reverse enumerate range range1 take takeWhile zip transpose zipBy sum product anyTrue? allTrue?])
 raiseMissingSymbolError
