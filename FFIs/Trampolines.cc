@@ -64,7 +64,7 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 		std::stringstream sst;
 		std::vector<size_t> offsets;
 		AST::NodeT returnValue = (ffiTypeFromChar(sig[0]) == &ffi_type_pointer) ? NULL : Numbers::internNative(0);
-		Record_pack(FFIs::MACHINE_BYTE_ORDER, position, offset, formatString, AST::makeCons(returnValue, buildList(iter, endIter)), sst, offsets);
+		Record_pack(FFIs::MACHINE_BYTE_ORDER_ALIGNED, position, offset, formatString, AST::makeCons(returnValue, buildList(iter, endIter)), sst, offsets);
 		assert(offsets.size() == argCount);
 		dataStd = sst.str();
 		char* data = (char*) dataStd.c_str();
