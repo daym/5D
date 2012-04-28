@@ -19,7 +19,12 @@ DISTDIR = $(PACKAGE)-$(VERSION)
 #-fwrapv
 #-Werror=strict-overflow
 
-LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a -ldl -lgc -lpthread `pkg-config --libs glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP) -lffi
+ifeq ($(shell ls -1 /usr/lib/libreadline.a 2>/dev/null),/usr/lib/libreadline.a)
+LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a 
+else
+LDFLAGS += -lreadline
+endif
+LDFLAGS += -ldl -lgc -lpthread `pkg-config --libs glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP) -lffi
 GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
 GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
 FFIS = FFIs/TrampolineSymbols.o FFIs/Allocators.o
