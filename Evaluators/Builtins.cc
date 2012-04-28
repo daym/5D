@@ -214,18 +214,12 @@ REGISTER_STR(Cons, {
 
 static char hexdigits[17] = "0123456789abcdef";
 
-static std::string strStr(AST::Str* node) {
-	std::stringstream sst;
-	const char* item;
-	unsigned char c;
-	size_t len = node->size;
-	sst << "\"";
-	for(item = (const char*) node->native; (c = *item), len > 0; ++item, --len) {
+static inline void printStrChar(unsigned int frontier, std::stringstream& sst, unsigned char c) {
 		if(c == '"')
 			sst << "\\\"";
 		else if(c == '\\')
 			sst << "\\\\";
-		else if(c < 32) {
+		else if(c < 32 || c == 127 || c >= frontier) {
 			switch(c) {
 			case 7:
 				sst << "\\a";
@@ -256,9 +250,63 @@ static std::string strStr(AST::Str* node) {
 			}
 		} else
 			sst << c;
+}
+static inline std::string str1(AST::Str* node) {
+	std::stringstream sst;
+	const char* item;
+	unsigned char c;
+	size_t len = node->size;
+	sst << "\"";
+	for(item = (const char*) node->native; (c = *item), len > 0; ++item, --len) {
+		printStrChar(128, sst, c);
 	}
 	sst << "\"";
 	return(sst.str());
+}
+static std::string strStr(AST::Str* node) {
+	try {
+		std::stringstream sst;
+		const char* item;
+		unsigned char c;
+		int UTF8Count = (-1);
+		size_t len = node->size;
+		sst << "\"";
+		for(item = (const char*) node->native; (c = *item), len > 0; ++item, --len) {
+			if(UTF8Count == (-1)) {
+				if(c >= 0x80) {
+					if(c == 0xC0 || c == 0xC1 || c >= 0xF5) { // funny extra limits by RFC 3629
+						throw "invalid UTF-8";
+					}
+					UTF8Count = //(c >= 0xFC) ? 6 :
+					            //(c >= 0xF8) ? 5 : 
+					            (c >= 0xF0) ? 4 : 
+					            (c >= 0xE0) ? 3 :
+					            (c >= 0xC0) ? 2 :
+					            (-1);
+					if(UTF8Count == -1)
+						throw "invalid UTF-8";
+					--UTF8Count;
+				} // else handle normally
+			} else { // if(UTF8Count != -1) {
+				if(c >= 0x80 && c < 0xC0) { // continued UTF-8 sequence
+					--UTF8Count;
+					if(UTF8Count < 0)
+						throw "invalid UTF-8";
+					else if(UTF8Count == 0)
+						UTF8Count = (-1);
+					// else wait for the next
+				} else
+					throw "invalid UTF-8";
+			}
+			printStrChar(255, sst, c);
+		}
+		sst << "\"";
+		// TODO also detect some invalid or inconvenient codepoints? (invisible things etc)
+		return(sst.str());
+	} catch (const char* s) {
+		// if the string is not valid UTF-8, revert to printing it in ASCII with escapes only.
+		return(str1(node));
+	}
 }
 REGISTER_STR(Box, return(str(node->fRepr));)
 

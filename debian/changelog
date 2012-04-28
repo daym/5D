@@ -3,6 +3,7 @@
   * rename 'ground to 'floor in module "Arithmetic".
   * fix strFromList [] to return [].
   * fix formatting of negative numbers (i.e. [2 (-2)])
+  * handle invalid UTF-8 in str (when it's not a text string but a byte string, that's useful).
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Fri, 20 Apr 2012 23:12:00 +0200
 
