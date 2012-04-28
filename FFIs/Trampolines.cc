@@ -83,7 +83,7 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 		ffi_call(&cif, (void (*)(void)) proc->native, args[0], args + 1);
 		AST::NodeT results;
 		char returnSig[2] = {*sig, 0};
-		results = Record_unpack(FFIs::MACHINE_BYTE_ORDER, AST::makeStr(returnSig), AST::makeBox(args[0], NULL));
+		results = Record_unpack(FFIs::MACHINE_BYTE_ORDER_ALIGNED, AST::makeStr(returnSig), AST::makeBox(args[0], NULL));
 		AST::NodeT result = (pair_P(results) ? Evaluators::get_pair_first(results) : NULL);
 		return Evaluators::makeIOMonad(result, endIter->second);
 	}
