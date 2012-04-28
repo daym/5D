@@ -76,6 +76,7 @@ Indentation:
 
 = Performance =
 
+add reduction rule "rec e => e (rec e)"
 use hash table for dispatching FFI
 performance optimisation: use the lowest bit to signify pointers (1=it is one). This will have problems with native pointers maybe, so also override the native allocator.
 degrade from Integer to Int when possible.
