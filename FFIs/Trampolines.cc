@@ -57,6 +57,7 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 		return Evaluators::makeIOMonad(NULL, endIter->second);
 	AST::Str* formatString = AST::makeStr(sig);
 	std::string dataStd;
+	size_t returnValueSize;
 	void** args = (void**) alloca(argCount * sizeof(void*));
 	{
 		size_t position = 0;
@@ -67,6 +68,7 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 		Record_pack(FFIs::MACHINE_BYTE_ORDER_ALIGNED, position, offset, formatString, AST::makeCons(returnValue, buildList(iter, endIter)), sst, offsets);
 		assert(offsets.size() == argCount);
 		dataStd = sst.str();
+		returnValueSize = (argCount < 2) ? dataStd.length() : offsets[1]; // actually this could in principle be too much. Since it's the first entry, it's correct.
 		char* data = (char*) dataStd.c_str();
 		argTypes = (ffi_type**) GC_MALLOC(argCount * sizeof(ffi_type*));
 		for(size_t i = 0; i < argCount; ++i) {
@@ -83,7 +85,8 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 		ffi_call(&cif, (void (*)(void)) proc->native, args[0], args + 1);
 		AST::NodeT results;
 		char returnSig[2] = {*sig, 0};
-		results = Record_unpack(FFIs::MACHINE_BYTE_ORDER_ALIGNED, AST::makeStr(returnSig), AST::makeBox(args[0], NULL));
+		AST::NodeT rep = AST::makeStrCXX(dataStd.substr(0, returnValueSize));
+		results = Record_unpack(FFIs::MACHINE_BYTE_ORDER_ALIGNED, AST::makeStr(returnSig), AST::makeBox(args[0], rep));
 		AST::NodeT result = (pair_P(results) ? Evaluators::get_pair_first(results) : NULL);
 		return Evaluators::makeIOMonad(result, endIter->second);
 	}
