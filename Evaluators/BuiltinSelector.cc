@@ -135,6 +135,8 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, AST::symbolFromStr("REPLMethods"), &REPLX::REPLMethodGetter);
 	add_builtin_method(self, AST::symbolFromStr(","), &Evaluators::Pairer);
 	add_builtin_method(self, AST::symbolFromStr("#exports"), &Evaluators::HashExporter);
+	add_builtin_method(self, AST::symbolFromStr("mkgmtime!"), &Evaluators::GmtimeMaker);
+	add_builtin_method(self, AST::symbolFromStr("mktime!"), &Evaluators::TimeMaker);
 	self["exports"] = consFromKeys(self.begin(), self.end()); // see Sexports
 }
 

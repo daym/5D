@@ -73,9 +73,11 @@ static AST::NodeT force_import_module(const char* filename) {
 		std::string v = e.what() ? e.what() : "error";
 		v = " => " + v + "\n";
 		fprintf(stderr, "%s\n", v.c_str());
+		throw;
 	} catch(Scanners::ParseException& e) {
 		std::string v = e.what() ? e.what() : "error";
 		fprintf(stderr, "%s\n", v.c_str());
+		throw;
 	}
 	return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
 }
@@ -192,7 +194,7 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 		//cons_P((AST::NodeT) mBox->native)) {
 		m = new (UseGC) AST::HashTable;
 		for(AST::Cons* table = (AST::Cons*) mBox->native; table; table = Evaluators::evaluateToCons(table->tail)) {
-			//std::string irv = Evaluators::str(table->head);
+			std::string irv = Evaluators::str(table->head);
 			//printf("irv %s\n", irv.c_str());
 			AST::Cons* entry = evaluateToCons(reduce(AST::get_cons_head(table)));
 			//std::string v = str(entry);
