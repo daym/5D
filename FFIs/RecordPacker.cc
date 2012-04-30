@@ -150,6 +150,21 @@ static size_t getAlignment(char c) { /* note that this is only used for MACHINE_
 #define FALLBACK_IS_BIG_ENDIAN (*(uint16_t *)"\0\xff" < 0x100)
 
 static inline bool machineIntegerBigEndianP(void) /* TODO pure */ {
+#ifdef __BYTE_ORDER
+#if __BYTE_ORDER  == __BIG_ENDIAN
+#error oops
+	return(true);
+#elif __BYTE_ORDER__ == __LITTLE_ENDIAN
+	return(false);
+#else
+	return(FALLBACK_IS_BIG_ENDIAN);
+#endif
+#else
+	return(FALLBACK_IS_BIG_ENDIAN);
+#endif
+}
+static inline bool machineFloatingPointBigEndianP(void) /* TODO pure */ {
+#ifdef __BYTE_ORDER
 #if __BYTE_ORDER  == __BIG_ENDIAN
 	return(true);
 #elif __BYTE_ORDER__ == __LITTLE_ENDIAN
@@ -157,12 +172,6 @@ static inline bool machineIntegerBigEndianP(void) /* TODO pure */ {
 #else
 	return(FALLBACK_IS_BIG_ENDIAN);
 #endif
-}
-static inline bool machineFloatingPointBigEndianP(void) /* TODO pure */ {
-#if __BYTE_ORDER  == __BIG_ENDIAN
-	return(true);
-#elif __BYTE_ORDER__ == __LITTLE_ENDIAN
-	return(false);
 #else
 	return(FALLBACK_IS_BIG_ENDIAN);
 #endif
