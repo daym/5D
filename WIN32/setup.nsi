@@ -70,12 +70,18 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\share\String
     SetOverwrite on
     File ..\Runtime\String\init.5D
+    SetOutPath $INSTDIR\share\Pair
+    SetOverwrite on
+    File ..\Runtime\Pair\init.5D
     SetOutPath $INSTDIR\share\Reflection
     SetOverwrite on
     File ..\Runtime\Reflection\init.5D
     SetOutPath $INSTDIR\share\OS
     SetOverwrite on
     File ..\Runtime\OS\path.5D
+    SetOutPath $INSTDIR\share\OO
+    SetOverwrite on
+    File ..\Runtime\OO\init.5D
     SetOutPath $INSTDIR\share\Logic
     SetOverwrite on
     File ..\Runtime\Logic\init.5D
@@ -97,6 +103,9 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\share\LinearAlgebra
     SetOverwrite on
     File ..\Runtime\LinearAlgebra\init.5D
+    SetOutPath $INSTDIR\share\Error
+    SetOverwrite on
+    File ..\Runtime\Error\init.5D
 
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
     
