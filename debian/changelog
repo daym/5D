@@ -1,6 +1,8 @@
 5d (0.6.3) unstable; urgency=low
 
   * rename 'ground to 'floor in module "Arithmetic".
+  * rename 'while! to 'skipWhile! in module "IO".
+  * rename 'until! to 'skipUntil! in module "IO".
   * fix strFromList [] to return [].
   * fix formatting of negative numbers (i.e. [2 (-2)])
   * handle invalid UTF-8 in str (when it's not a text string but a byte string, that's useful).
