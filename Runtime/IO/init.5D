@@ -22,19 +22,19 @@ let stdout := Builtins.stdout in
 let readline! := Builtins.readline! in 
 let write! := Builtins.write! in 
 let errno! := Builtins.errno! in 
-let until! := (\condition \body rec\until! 
+let skipUntil! := (\condition \body rec\skipUntil! 
 	\world
 		let result := body world in 
 		if (condition (ioValue result))
 			result
 		$else
-			until! (ioWorld result)
+			skipUntil! (ioWorld result)
 ) in 
-let while! := (\condition \body rec\r 
+let skipWhile! := (\condition \body rec\skipWhile! 
 	\world
 		let result := body world in 
 		if (condition (ioValue result))
-			r (ioWorld result)
+			skipWhile! (ioWorld result)
 		$else
 			result
 ) in 
@@ -43,11 +43,11 @@ let accumrUntil! := (\condition \connector \terminator \body rec\accum!
 		let result := body world in 
 		let value := ioValue result in 
 		if (condition value)
-			[terminator (ioWorld result)]
+			liftIO! terminator (ioWorld result)
 		$else
 			let t := (accum! (ioWorld result)) in 
 			let value2 := ioValue t in 
-			[(connector value value2) (ioWorld t)]
+			liftIO! (connector value value2) (ioWorld t)
 ) in 
-(requireModule "Composition").dispatch (#exports[ioValue ioWorld liftIO! return! flush! stderr stdin stdout readline! (;) write! errno! until! while! accumrUntil!])
+(requireModule "Composition").dispatch (#exports[ioValue ioWorld liftIO! return! flush! stderr stdin stdout readline! (;) write! errno! skipUntil! skipWhile! accumrUntil!])
 raiseMissingSymbolError
