@@ -32,6 +32,7 @@ static inline ffi_type* ffiTypeFromChar(char t) {
 	      t == 'z' ? &ffi_type_pointer :
 	      t == 'Z' ? &ffi_type_pointer :
 	      t == 'g' ? &ffi_type_longdouble : 
+	      t == 'v' ? &ffi_type_void :
 	      &ffi_type_void;
 }
 static AST::NodeT buildList(Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& endIter) {
@@ -74,7 +75,7 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 		for(size_t i = 0; i < argCount; ++i) {
 			argTypes[i] = ffiTypeFromChar(sig[i]);
 			args[i] = data + offsets[i];
-			if(argTypes[i] == &ffi_type_void) {
+			if(argTypes[i] == &ffi_type_void && i > 0) {
 				// error
 				argCount = 0;
 				break;

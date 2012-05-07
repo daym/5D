@@ -61,6 +61,7 @@ static size_t getSize(enum ByteOrder byteOrder, char c) {
 #ifdef WIN32
 		case 'V': return(sizeof(int));
 #endif
+		case 'v': return(0);
 		default: return(0); /* FIXME */
 		}
 	} else { /* defaults */
@@ -88,6 +89,7 @@ static size_t getSize(enum ByteOrder byteOrder, char c) {
 #ifdef WIN32
 		case 'V': return(4);
 #endif
+		case 'v': return(0);
 		default: return(0); /* FIXME */
 		}
 	}
@@ -141,6 +143,7 @@ static size_t getAlignment(char c) { /* note that this is only used for MACHINE_
 #ifdef WIN32
 	case 'V': return(8);
 #endif
+	case 'v': return(1); /* void */
 	default: return(0); /* FIXME */
 	}
 }
@@ -249,6 +252,9 @@ static inline size_t pack_atom_value(enum ByteOrder byteOrder, char formatC, AST
 			void* result = headNode ? Evaluators::get_pointer(headNode) : NULL;
 			PACK_BUF(None, result)
 			return(size);
+		}
+		case 'v': {
+			return(0);
 		}
 		default: {
 			std::stringstream sst;
@@ -502,6 +508,10 @@ static inline AST::NodeT decode(enum ByteOrder byteOrder, AST::NodeT repr, size_
 				return(NULL);
 			else
 				return(AST::makeStr(value));
+		}
+	case 'v':
+		{
+			return(NULL);
 		}
 	default:
 		{
