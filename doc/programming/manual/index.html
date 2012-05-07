@@ -92,32 +92,34 @@ table[border="1"] {
 <h2>Module System</h2>
 <p>In order to access modules, use the <span class="pre">requireModule</span> function.</p>
 <p>Note that this automatically ensures that the module isn't loaded twice.</p>
-<p>Result is the module. By convention, you can check for exports by:</p>
+<p>Result is the module. By convention, you can check for exports by using the expression:</p>
 <pre>
 (requireModule "IO").exports
 </pre>
 <hr/>
 <h2>Foreign Function Interface</h2>
-<p>You can load functions of shared libraries:</p>
+<p>You can load and call procedures of shared libraries:</p>
 <p>Example:</p>
 <pre>
-import "FFI"
-define puts FFI.requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cip "puts"
-runIO (puts "Hello world")
+let FFI := requireModule "FFI" in 
+let requireSharedLibrary := FFI.requireSharedLibrary in 
+let puts! := FFI.requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cip "puts" in 
+puts! "Hello world"
 </pre>
 <p>What this does is:</p>
 <p>- load the library with the given file name.</p>
-<p>- give a function signature (usually as a Symbol).</p>
-<p>- give the name of the function to load (usually as a Str).</p>
+<p>- give a procedure signature (usually as a Symbol).</p>
+<p>- give the name of the procedure to load (usually as a Str).</p>
+<p>- result is a callable.</p>
 
-<p>The function signature is a symbol whose str consists of the following characters:</p>
+<p>The procedure signature is a Symbol whose str consists of the following characters:</p>
 <nl>
 <li>The calling convention, C.</li>
 <li>The type of the return value.</li>
-<li>The type of each of the parameters of the C function, in order.</li>
+<li>The type of each of the parameters of the C procedure, in order.</li>
 </nl>
 
-<p>Result is a function which can be run in a world.</p>
+<p>Result is a function which can be run in a World.</p>
 
 <p>Possible type specifiers:</p>
 <table border="1">

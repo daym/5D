@@ -80,11 +80,10 @@ REPL.import! "IO"
 write! stdout "Hello world"
 </pre>
 <p>What this does is:</p>
-<p><span class="pre">runIO</span> wraps IO.</p>
-<p><span class="pre">write! \file \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">runIO</span> or <span class="pre" title="World time sequencer">;</span>).</p>
+<p><span class="pre">write! \file \text</span> will write text, once a World is given (i.e. by calling the interpreter with <span class="pre" title="world starter">-i</span> or chaining actions with <span class="pre" title="World time sequencer">;</span>).</p>
 
 <h3>Mathematics</h3>
-<p>The usual calculator mathematics work, however, you have to display them:</p>
+<p>The usual calculator mathematics work, however, you have to return them:</p>
 <pre>
 REPL.import! "Arithmetic"
 return! (5 + 2) =&gt; 7
@@ -101,27 +100,27 @@ return! (5 + 2⋅3) =&gt; 11
 <pre>
 REPL.import! "Arithmetic"
 REPL.define! 'f \x x⋅x
-5 + 2⋅(f 3) =&gt; 23
-5 + 2⋅f 3 =&gt; ??????
+return! (5 + 2⋅(f 3)) =&gt; 23
+return! (5 + 2⋅f 3) =&gt; ??????
 </pre>
 <p>Here, the function f is defined to be a function of x, giving the square of x.</p>
 <p>Then the function f is called with the argument 3. The following works, too (although it has more parens for no reason):</p>
 <pre>
 REPL.import! "Arithmetic"
 REPL.define! 'f\x x⋅x
-5+2⋅(f(3)) =&gt; 23
+return! (5 + 2⋅(f(3))) =&gt; 23
 </pre>
 <p>Or if it's the first operand of multiplication:</p>
 <pre>
 REPL.import! "Arithmetic"
 REPL.define! 'f \x x⋅x
-5 + (f 3)⋅2 =&gt; 23
+return! (5 + (f 3)⋅2) =&gt; 23
 </pre>
 <p>Note that <span class="pre">*</span> works for multiplication as well (and is the same thing):</p>
 <pre>
 REPL.import! "Arithmetic"
 REPL.define! 'f \x x⋅x
-5 + (f 3)*2 =&gt; 23
+return! (5 + (f 3)*2) =&gt; 23
 </pre>
 <h3>Reflection</h3>
 <p>Sometimes you want to know how a function was originally defined (as opposed to how it was actually implemented).</p>
@@ -144,7 +143,7 @@ REPL.describe! @backOffset:1 'g =&gt; \x x*x
 REPL.import! "Logic"
 REPL.import! "Composition"
 REPL.define! 'abs \x if (x ≥ 0)  (x)
-                                 (-x)
+                     $else       (-x)
 </pre>
 <h3>Logical Operators and Logical Functions and Logical Values</h3>
 <pre>
@@ -177,12 +176,14 @@ REPL.define! 'f rec \f \x (f 1)      -- endless recursion, but it works
 REPL.import! "Composition"
 REPL.define! 'f rec \self \x (self 1)      -- endless recursion, but it works
 </pre>
+<!--
 <p>There's a more traditional way, too:</p>
 <pre>
 REPL.import! "Composition"
 REPL.defrec! 'f \x (f 1)      -- endless recursion, but it works
 </pre>
 <p><span class="pre">defrec</span> is a macro which expands to the former. Note that <span class="pre">defrec</span> only works (usefully) for function definitions.</p>
+-->
 <p>Note that the reason that <span class="pre">define! 'f</span> doesn't make f available within the body of f is that you can refer to previous definitions of f within the new definition of f.</p>
 <p>An example will make that clearer:</p>
 <pre>
@@ -238,25 +239,24 @@ fopen @mode:"w" "foo.INI.temp"        -- Keyword Arguments need to be before nor
 <p>If you want to see a short result on screen, use the following:</p>
 <pre>
 REPL.import! "Logic"
-#t&amp;&amp;#t =&gt; \t \f (\t \f t) ((\t \f t) t f) f
-if (#t&amp;&amp;#t) 't $else 'f =&gt; t
+#t &amp;&amp; #t =&gt; \t \f (\t \f t) ((\t \f t) t f) f
+if (#t &amp;&amp; #t) 't $else 'f =&gt; t
 </pre>
 <h3>I/O</h3>
 <pre>
 REPL.import! "IO"
-(write! stdout "What's your name? " ;\_
+write! stdout "What's your name? " ;\_
 flush! stdout ;\_
 readline! stdin ;\name
 write! stdout "Hello " ;\_
 write! stdout name ;\_
 flush! stdout ;\_
-return! name)
+return! name
 </pre>
 <p>What this does is:</p>
-<p><span class="pre">write! \file \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">runIO</span> or <span class="pre" title="World time sequencer">;</span>).</p>
+<p><span class="pre">write! \file \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">interpreter option -i</span> or <span class="pre" title="World time sequencer">;</span>).</p>
 <p><span class="pre">;</span> will sequence two operations so the left-hand-side operation will be done first and the right-hand-side operation will be done afterwards.</p>
 <p><span class="pre">_</span> is the traditional variable name for "don't care about the result".</p>
-<p>Note that the parens have been left out and replaced by indentation.</p>
 
 <h3>Indentation</h3>
 <p>If you want to spread your programs over multiple lines, you can. However, then, indentation rules come into effect.</p>
@@ -269,7 +269,8 @@ $elif (x = 1)
   2
 $elif (x = 2)
   3
-$else 4
+$else 
+  4
 </pre>
 <p>These work as follows:</p>
 <p>If the indentation (number of whitespace characters at the beginning of the line) increased compared to the previous line, then a "(" is inserted.</p>

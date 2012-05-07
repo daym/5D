@@ -35,14 +35,13 @@ hr { color: #808080;
 <p>Sometimes you just want to have a symbolic stand-in for things you <em>don't</em> define. Even <em>if</em> there is a definition, sometimes you don't want to substitute it in.</p>
 <p>If so, use quote to protect the symbol (or "create" the symbol).</p>
 <p>Note that <span class="pre" title="quote">'</span> prevents the evaluator from evaluating <span class="pre">a</span>.</p>
-<p>Note also that if you quote operators, you still have to put parenthesis around the operator in order for it not to have its normal precedence.</p>
+<p>Note also that if you quote operators, you still have to put parenthesis around the operator in order for them not to have their normal precedence.</p>
 <p>Example:</p>
 <pre>
-define x 2
+REPL.define! 'x 2
 x =&gt; 2
 'x =&gt; x
 '(i am not an application with function i) =&gt; (i am not an application with function i)
-
 '(+) =&gt; +
 </pre>
 </a>
@@ -75,7 +74,7 @@ define (&gt;) flip (&lt;)
 <p>Given a function f, results in a recursable function, i.e. rec f =&gt; f f.</p>
 <p>Example:</p>
 <pre>
-define factorial rec \factorial \n if (n=0) 1 n*(factorial (n - 1))
+define factorial rec \factorial \n if (n=0) 1 $else n*(factorial (n - 1))
 factorial 3 =&gt; 6
 factorial 20 =&gt; 2432902008176640000
 </pre>
@@ -95,13 +94,13 @@ factorial 20 =&gt; 2432902008176640000
 <p>Result is true if either <span class="pre">a</span> or <span class="pre">b</span> are true or both. Logical OR.</p>
 <p>Example:</p>
 <pre>
-if (2 &lt; 3 || 5 &lt; 3) 5 7 =&gt; 5
+if (2 &lt; 3 || 5 &lt; 3) 5 $else 7 =&gt; 5
 </pre>
 <hr/>
 <h3>(&amp;&amp;) \a \b</h3>
 <p>Result is true if both <span class="pre">a</span> and <span class="pre">b</span> are true. Logical AND.</p>
 <pre>
-if (2 &lt; 3 &amp;&amp; 1 &lt; 3) 5 7 =&gt; 5
+if (2 &lt; 3 &amp;&amp; 1 &lt; 3) 5 $else 7 =&gt; 5
 </pre>
 <hr/>
 <h3>equivalent? \a \b</h3>
@@ -117,7 +116,7 @@ if (2 &lt; 3 &amp;&amp; 1 &lt; 3) 5 7 =&gt; 5
 <p>Result is <span class="pre">T</span> if <span class="pre">c</span> is true, otherwise <span class="pre">F</span>.</p>
 <p>Example:</p>
 <pre>
-if (nil? nil) 'yes 'no =&gt; yes
+if (nil? nil) 'yes $else 'no =&gt; yes
 </pre>
 <hr/>
 </a>
@@ -166,7 +165,7 @@ divrem 5 3 =&gt; (1:2:nil)
 <p>Result is whether <span class="pre">a</span> is smaller than <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 &lt; 3) 'yes 'no =&gt; no
+if (5 &lt; 3) 'yes $else 'no =&gt; no
 </pre>
 <hr/>
 <h3>(&lt;=) \a \b</h3>
@@ -174,29 +173,29 @@ if (5 &lt; 3) 'yes 'no =&gt; no
 <p>Result is whether <span class="pre">a</span> is smaller than or equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 &lt;= 5) 'yes 'no =&gt; yes
-if (5 ≤ 5) 'yes 'no =&gt; yes
+if (5 &lt;= 5) 'yes $else 'no =&gt; yes
+if (5 ≤ 5) 'yes $else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>(=) \a \b</h3>
 <p>Result is whether <span class="pre">a</span> is equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 = 5) 'yes 'no =&gt; yes
+if (5 = 5) 'yes $else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>(/=) \a \b</h3>
 <p>Result is whether <span class="pre">a</span> is not equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 /= 5) 'yes 'no =&gt; no
+if (5 /= 5) 'yes $else 'no =&gt; no
 </pre>
 <hr/>
 <h3>(&gt;) \a \b</h3>
 <p>Result is whether <span class="pre">a</span> is greater than <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 &gt; 3) 'yes 'no =&gt; yes
+if (5 &gt; 3) 'yes $else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>(&gt;=) \a \b</h3>
@@ -204,8 +203,8 @@ if (5 &gt; 3) 'yes 'no =&gt; yes
 <p>Result is whether <span class="pre">a</span> is greater than or equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 &gt;= 5) 'yes 'no =&gt; yes
-if (5 ≥ 5) 'yes 'no =&gt; yes
+if (5 &gt;= 5) 'yes $else 'no =&gt; yes
+if (5 ≥ 5) 'yes $else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>abs \a</h3>
@@ -222,16 +221,16 @@ abs 0 =&gt; 0
 <p>Result is whether <span class="pre">a</span> is the number 0.</p>
 <p>Example:</p>
 <pre>
-if (zero? (-1)) 'yes 'no =&gt; no
-if (zero? 0) 'yes 'no =&gt; yes
-if (zero? (42)) 'yes 'no =&gt; no
+if (zero? (-1)) 'yes $else 'no =&gt; no
+if (zero? 0) 'yes $else 'no =&gt; yes
+if (zero? (42)) 'yes $else 'no =&gt; no
 </pre>
 <h3>negative? \a</h3>
 <p>Result is whether <span class="pre">a</span> is less than 0.</p>
 <p>Example:</p>
 <pre>
-if (negative? (-1)) 'yes 'no =&gt; yes
-if (negative? 0) 'yes 'no =&gt; no
+if (negative? (-1)) 'yes $else 'no =&gt; yes
+if (negative? 0) 'yes $else 'no =&gt; no
 </pre>
 <hr/>
 -->
@@ -249,14 +248,14 @@ nil
 <p>Result is whether <span class="pre">l</span> is the empty list (and any list at all).</p>
 <p>Example:</p>
 <pre>
-if (nil? nil) 'yes 'no =&gt; yes
+if (nil? nil) 'yes $else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>(:) \h \t</h3>
 <p>Result is a list with head <span class="pre">h</span> and tail <span class="pre">t</span>.</p>
 <p>Example:</p>
 <pre>
-if (list? (5:6:7:8:nil)) 'yes 'no =&gt; yes
+if (list? (5:6:7:8:nil)) 'yes $else 'no =&gt; yes
 head (5:6:7:8:nil) =&gt; 5
 tail (5:6:7:8:nil) =&gt; (6:7:8:nil)
 </pre>
@@ -265,7 +264,7 @@ tail (5:6:7:8:nil) =&gt; (6:7:8:nil)
 <p>Result is whether <span class="pre">l</span> is something constructed by <span class="pre">(:)</span> .</p>
 <p>Example:</p>
 <pre>
-if (cons? (5:6:7:8:nil)) 'yes 'no =&gt; yes
+if (cons? (5:6:7:8:nil)) 'yes $else 'no =&gt; yes
 if (cons? nil) 'yes 'no =&gt; no
 if (cons? 42) 'yes 'no =&gt; no
 </pre>
@@ -274,9 +273,9 @@ if (cons? 42) 'yes 'no =&gt; no
 <p>Result is whether <span class="pre">l</span> is a list, i.e. something constructed by <span class="pre">(:)</span> or <span class="pre">nil</span> .</p>
 <p>Example:</p>
 <pre>
-if (list? (5:6:7:8:nil)) 'yes 'no =&gt; yes
-if (list? nil) 'yes 'no =&gt; yes
-if (list? 42) 'yes 'no =&gt; no
+if (list? (5:6:7:8:nil)) 'yes $else 'no =&gt; yes
+if (list? nil) 'yes $else 'no =&gt; yes
+if (list? 42) 'yes $else 'no =&gt; no
 </pre>
 <hr/>
 <h3>head \l</h3>
@@ -441,7 +440,7 @@ runIO readFile
 <p>Given a statement <span class="eq">v</span>, results in the symbol <span class="pre">t</span> if v is true, otherwise the symbol <span class="pre">f</span>.</p>
 <p>Definition:</p>
 <pre>
-define toBool \v if v 't 'f
+REPL.define! 'toBool (\v if v 't $else 'f)
 </pre>
 <hr/>
 <h3>symbolFromStr \s</h3>
@@ -455,7 +454,7 @@ symbolFromStr "x" =&gt; x
 <p>Given <span class="pre">v</span>, results in whether it's a Keyword or not.</p>
 <p>Example:</p>
 <pre>
-if (keyword? @mode:) 'yes 'no =&gt; yes
+if (keyword? @mode:) 'yes $else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>keywordFromStr \s</h3>

@@ -38,12 +38,14 @@ table[border="1"] {
 <li>ensure that the given module is loaded</li>
 <li>import the symbols of the module that are on the whitelist and not on the blacklist into the current namespace</li>
 </ul>
-<p>Keyword arguments are:</p>
-<ul>
-<li>@whitelist:['a 'b 'c]     in order to specify a whitelist. If not specified (or if empty), this means "all symbols of the module"</li>
-<li>@blacklist:['c 'd 'e]     in order to specify a blacklist.</li>
-<li>@prefix:"foo"             in order to prefix all defined symbols by the given Str.</li>
-</ul>
 <p>(In fact, <span class="pre">import!</span> is shorthand for a combination of define! (or let) and <span class="pre">requireModule</span>).</p>
+<hr/>
+<p>In order to define some variable, use <span class="pre">define!</span>.</p>
+<h2>REPL.define! '&lt;name&gt; (&lt;body&gt;)"</h2>
+<p>Example:</p>
+<pre>
+REPL.define! 'f (\x x*x)
+return! (f 2) =&gt; 4
+</pre>
 </body>
 </html>
