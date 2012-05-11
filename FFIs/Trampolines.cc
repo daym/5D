@@ -11,6 +11,9 @@
 #include "Numbers/Integer"
 
 namespace Trampolines {
+#ifdef WIN32
+VARIANT variantEmpty = {0};
+#endif
 
 static inline ffi_type* ffiTypeFromChar(char t) {
 	return t == 'i' ? &ffi_type_sint : 

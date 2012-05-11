@@ -79,7 +79,9 @@ static inline AST::NodeT makeBox(AST::NodeT repr, void* s) {
 static inline AST::NodeT makeBoxOrNil(AST::NodeT repr, void* s) {
   return(s ? makeBox(repr, s) : NULL);
 }
-static VARIANT variantEmpty = {0};
+#ifdef WIN32
+extern VARIANT variantEmpty;
+#endif
 #define unproc iter == end ? NULL : dynamic_cast<Evaluators::CProcedure*>(extr(iter++))
 #define unp iter == end ? NULL : getSomethingUseful(extr(iter++))
 #define unP iter == end ? NULL : getSomethingUsefulOrNull(extr(iter++))
