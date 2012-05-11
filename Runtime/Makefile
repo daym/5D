@@ -12,6 +12,7 @@ all:
 	$(MAKE) -C Pair all
 	$(MAKE) -C OS all
 	$(MAKE) -C IO all
+	$(MAKE) -C Maybe all
 	$(MAKE) -C UI all
 	$(MAKE) -C FFI all
 	$(MAKE) -C String all
@@ -28,6 +29,7 @@ clean:
 	$(MAKE) -C Pair clean
 	$(MAKE) -C OS clean
 	$(MAKE) -C IO clean
+	$(MAKE) -C Maybe clean
 	$(MAKE) -C UI clean
 	$(MAKE) -C FFI clean
 	$(MAKE) -C String clean
@@ -44,6 +46,7 @@ distclean:
 	$(MAKE) -C Pair distclean
 	$(MAKE) -C OS distclean
 	$(MAKE) -C IO distclean
+	$(MAKE) -C Maybe distclean
 	$(MAKE) -C UI distclean
 	$(MAKE) -C FFI distclean
 	$(MAKE) -C String distclean
@@ -60,6 +63,7 @@ install:
 	$(MAKE) -C Pair install
 	$(MAKE) -C OS install
 	$(MAKE) -C IO install
+	$(MAKE) -C Maybe install
 	$(MAKE) -C UI install
 	$(MAKE) -C FFI install
 	$(MAKE) -C String install

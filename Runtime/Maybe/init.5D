@@ -1,0 +1,30 @@
+let List := requireModule "List" in 
+let Composition := requireModule "Composition" in 
+let Logic := requireModule "Logic" in 
+let rem := Composition.rem in 
+let ($) := Composition.($) in 
+let if := Logic.if in 
+let else := Logic.else in 
+let elif := Logic.elif in 
+let not := Logic.not in 
+let nil := List.nil in 
+let nil? := List.nil? in 
+rem "accessor for 'just part"
+rem "TODO check whether it's actually not nothing."
+let nothing := nil in 
+let nothing? := nil? in 
+let something := \m m in 
+let something? := \m (not (nothing? m)) in 
+let (?;) := (\m \f
+		if (something? m)
+			f (something m)
+		$else
+			nothing
+) in 
+let makeSomething := (\v
+	v
+) in 
+let return? := (\v
+	makeSomething v
+) in 
+(requireModule "Composition").dispatch1 (#exports [something something? nothing nothing? (?;) return?])

@@ -9,6 +9,7 @@ let tail := List.tail in
 let rec := Composition.rec in 
 let ioValue := (\m head m) in 
 let ioWorld := (\m head (tail m)) in 
+let (|) := Composition.(|) in 
 let (;) := (\m \ber \world (\r ber (ioValue r) (ioWorld r)) (m world)) in
 let ($) := Composition.($) in 
 let if := Logic.if in 
