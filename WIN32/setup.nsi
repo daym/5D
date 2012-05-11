@@ -91,6 +91,9 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\share\IO
     SetOverwrite on
     File ..\Runtime\IO\init.5D
+    SetOutPath $INSTDIR\share\Maybe
+    SetOverwrite on
+    File ..\Runtime\Maybe\init.5D
     SetOutPath $INSTDIR\share\FFI
     SetOverwrite on
     File ..\Runtime\FFI\init.5D
