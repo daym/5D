@@ -1,3 +1,10 @@
+5d (0.6.4) unstable; urgency=low
+
+  * add "Maybe" module.
+  * GTK LATEX bridge: make sure document is kept until it was actually used.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Fri, 11 May 2012 15:08:00 +0200
+
 5d (0.6.3) unstable; urgency=low
 
   * rename 'ground to 'floor in module "Arithmetic".
@@ -6,6 +13,8 @@
   * fix strFromList [] to return [].
   * fix formatting of negative numbers (i.e. [2 (-2)])
   * handle invalid UTF-8 in str (when it's not a text string but a byte string, that's useful).
+  * support "void" return value in FFI.
+  * disable C-prototype style FFI for UNIX.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Fri, 20 Apr 2012 23:12:00 +0200
 
