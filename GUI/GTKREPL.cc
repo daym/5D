@@ -887,7 +887,7 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, GtkTextIter* 
 		result << " $";
 		resultString = result.str();
 		//std::cout << "XXX " << resultString << std::endl;
-		nodeText = resultString.c_str();
+		nodeText = g_strdup(resultString.c_str()); /* otherwise will have memory corruption */
 	} catch(std::runtime_error e) {
 		nodeText = NULL;
 	}
