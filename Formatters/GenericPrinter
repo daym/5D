@@ -13,8 +13,23 @@ void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int&
 		process_abstraction(OPL, output, position, node, precedence_limit, B_paren_equal_levels);
 	} else if(application_P(node)) { /* application */
 		AST::NodeT envelope = get_application_operator(node);
-		if(!application_P(envelope))
+		if(!application_P(envelope)) {
+			if(abstraction_P(envelope)) { // detect let form.
+				AST::NodeT fAssociativity = NULL;
+				AST::NodeT operator_ = Symbols::Slet;
+				int pl = OPL->get_operator_precedence_and_associativity(operator_, fAssociativity);
+				bool B_parend = maybe_print_opening_paren(output, position, operator_, pl, precedence_limit, B_paren_equal_levels);
+				print_text_raw(output, position, "let ", false);
+				print_CXX(OPL, output, position, AST::get_abstraction_parameter(envelope), pl, false);
+				print_text_raw(output, position, " := ", false);
+				print_CXX(OPL, output, position, AST::get_application_operand(node), pl, false);
+				print_text_raw(output, position, " in ", false); // TODO add a nice-break-here
+				print_CXX(OPL, output, position, AST::get_abstraction_body(envelope), pl, false);
+				maybe_print_closing_paren(output, position, operator_, B_parend);
+				return;
+			}
 			envelope = NULL;
+		}
 		//if(operator_ && application_P(operator_)) // 2 for binary ops.
 		AST::NodeT operator_ = envelope ? get_application_operator(envelope) : NULL;
 		AST::NodeT operatorSymbol = repr(operator_);
