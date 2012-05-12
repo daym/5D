@@ -314,9 +314,17 @@ static int handle_readline_crlf(int x, int key) {
 	try {
 		// TODO if we wanted, we could remember this and just use it for the execute() later.
 		REPL_parse(REPL1, rl_line_buffer, strlen(rl_line_buffer), 0);
-	} catch (...) { /* FIXME just specific errors? */
-		rl_insert(x, '\n');
-		return(0);
+	} catch (const Scanners::ParseException& e) {
+		/* user interface niceness: only auto-line-continue on things where we believe it can actually be made better */
+		if(strstr(e.what(), "<(-operands>") || strstr(e.what(), "expected ]") || strstr(e.what(), "expected <body>")) {
+			rl_insert(x, '\n');
+			return(0);
+		}
+		// TODO maybe put the e.what() somewhere the user can read it (window title, next line, ???) !
+	} catch (...) {
+		// TODO maybe put the e.what() somewhere the user can read it (window title, next line, ???) !
+		//rl_insert(x, '\n');
+		//return(0);
 	}
 	rl_done = 1;
 	printf("\n");
