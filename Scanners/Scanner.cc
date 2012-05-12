@@ -113,6 +113,7 @@ void Scanner::parse_token(void) {
 		return;
 	}
 	parse_optional_whitespace();
+	previous_position = position; /* make sure it's not ON the whitespace */
 	if(!injected_input_values.empty()) {
 		input_value = injected_input_values.front();
 		injected_input_values.pop_front();
