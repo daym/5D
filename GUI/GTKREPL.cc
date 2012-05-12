@@ -237,7 +237,7 @@ static void REPL_front_execute(struct REPL* self, gboolean B_IO) {
 	}
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
 	try {
-		input = REPL_parse(self, text, &end);
+		input = REPL_parse(self, text, strlen(text), &end);
 	} catch(Scanners::ParseException& e) {
 		std::string v = e.what() ? e.what() : "error";
 		REPL_insert_error_message(self, &end, B_from_entry ? (std::string("\n") + text) : std::string(), v);
@@ -405,7 +405,7 @@ static void REPL_handle_add_environment_item(struct REPL* self, GtkAction* actio
 		try {
 			GtkTextIter end2;
 			gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end2);
-			value = REPL_parse(self, text, &end2);
+			value = REPL_parse(self, text, strlen(text), &end2);
 			REPL_prepare(self, value);
 			REPL_add_to_environment_simple(self, AST::symbolFromStr(name), value);
 		} catch(Scanners::ParseException& e) {
@@ -905,7 +905,7 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, GtkTextIter* 
 		}
 		if(alt_text && strchr(alt_text, '"')) /* contains string */
 			nodeText = NULL;
-		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText ? g_strdup(nodeText) : NULL, alt_text, destination);
+		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText, alt_text, destination);
 	}
 }
 void REPL_clear(struct REPL* self) {
