@@ -10,6 +10,7 @@
 #include <sys/errno.h>
 #include <list>
 #include <set>
+#include <stack>
 #include <map>
 #include <string>
 #include <getopt.h>
@@ -244,9 +245,97 @@ static char** complete(const char* text, int start, int end) {
 		matches = completion_matches(text, command_generator);
 	return(matches);
 }
+/* will match the wrong one on purpose. */
+static int lexForMatchingParen(const char* command, int commandLen, int position) {
+	std::stack<int> openParens;
+	Scanners::Scanner scanner;
+	int originalParen = command[position];
+	int direction = 1;
+	if(originalParen == '(' || originalParen == '{' || originalParen == '[')
+		direction = 1;
+	else {
+		direction = (-1);
+	}
+        FILE* inputFile = fmemopen((void*) command, commandLen, "r");
+	if(inputFile) {
+		try {
+			scanner.push(inputFile, 0, "<stdin>");
+			scanner.consume();
+			while(scanner.input_value != Symbols::SlessEOFgreater) {
+				if(scanner.input_value == Symbols::Sleftparen || scanner.input_value == Symbols::Sleftbracket || scanner.input_value == AST::symbolFromStr("{")) {
+					openParens.push(scanner.get_position());
+				} else if(scanner.input_value == Symbols::Srightparen || scanner.input_value == Symbols::Srightbracket || scanner.input_value == AST::symbolFromStr("}")) {
+					if(openParens.empty()) {
+						break; /* indicate that there should be one there. */
+					} else {
+						int prevParenPos = openParens.top();
+						openParens.pop();
+						if(direction == 1 && prevParenPos == position) {
+							fclose(inputFile);
+							return(scanner.get_position());
+						} else if(direction == (-1) && scanner.get_position() == position) {
+							fclose(inputFile);
+							return(prevParenPos);
+						}
+					}
+				}
+				scanner.consume();
+			}
+			fclose(inputFile);
+		} catch(...) {
+			fclose(inputFile);
+                }
+        }
+        return(-1);
+}
+static int handle_readline_paren(int x, int key) {
+	int otherParen;
+	int oldPoint = rl_point;
+	rl_insert(x, key);
+	otherParen = lexForMatchingParen(rl_line_buffer, strlen(rl_line_buffer), oldPoint);
+	if(otherParen != -1) {
+		struct timeval timeout;
+		fd_set readfds;
+		int oldPoint;
+		FD_ZERO(&readfds);
+		FD_SET(0, &readfds);
+		timeout.tv_sec = 0;
+		timeout.tv_usec = 500000; /* 0.5 sec */
+		oldPoint = rl_point;
+		rl_point = otherParen;
+		rl_redisplay();
+		select(0 + 1, &readfds, NULL, NULL, &timeout); /* sleep */
+		rl_point = oldPoint;
+	}
+	return(0);
+}
+static int handle_readline_crlf(int x, int key) {
+	/* check rl_point and rl_line_buffer[rl_point - 1] */
+	try {
+		// TODO if we wanted, we could remember this and just use it for the execute() later.
+		REPL_parse(REPL1, rl_line_buffer, strlen(rl_line_buffer), 0);
+	} catch (...) { /* FIXME just specific errors? */
+		return(0);
+	}
+	rl_done = 1;
+	printf("\n");
+	return(0); /* FIXME */
+}
+static int startup_readline(void) {
+	rl_bind_key('\n', handle_readline_crlf);
+	rl_bind_key('\r', handle_readline_crlf);
+	rl_bind_key('(', handle_readline_paren);
+	rl_bind_key('{', handle_readline_paren);
+	rl_bind_key(')', handle_readline_paren);
+	rl_bind_key('}', handle_readline_paren);
+	rl_bind_key('[', handle_readline_paren);
+	rl_bind_key(']', handle_readline_paren);
+	return(0); /* FIXME */
+}
 static void initialize_readline(void) {
 	rl_readline_name = "5D";
 	rl_attempted_completion_function = complete;
+	rl_startup_hook = startup_readline;
 	//rl_sort_completion_matches = 1;
 }
 using namespace REPLX;
@@ -256,7 +345,7 @@ void run(struct REPL* REPL, const char* text) {
 	if(exit_P(text)) /* special case for computers which can't signal EOF. */
 		exit(0);
 	try {
-		result = REPL_parse(REPL, text, 0);
+		result = REPL_parse(REPL, text, strlen(text), 0);
 		REPL_execute(REPL, result, 0);
 	} catch(Scanners::ParseException exception) {
 		AST::NodeT err = Evaluators::makeError(exception.what());

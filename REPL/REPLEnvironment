@@ -120,11 +120,11 @@ Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct RE
 	return(result);
 }
 template<typename T>
-AST::NodeT REPL_parse(struct REPL* self, const char* command, T destination/*for errors*/) {
+AST::NodeT REPL_parse(struct REPL* self, const char* command, int commandLen, T destination/*for errors*/) {
 	// TODO just call the builtin! RStrMathParser
 	/* is not allowed to both print stuff AND return non-null, except when it updates the destination iter */
 	Scanners::MathParser parser;
-	FILE* input_file = fmemopen((void*) command, strlen(command), "r");
+	FILE* input_file = fmemopen((void*) command, commandLen, "r");
 	if(input_file) {
 		try {
 			parser.push(input_file, 0, "<stdin>");

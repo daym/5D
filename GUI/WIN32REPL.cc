@@ -379,7 +379,8 @@ static INT_PTR CALLBACK HandleDefinitionMessages(HWND hDlg, UINT message, WPARAM
 				AST::NodeT value;
 				try {
 					int destination = -1;
-					value = REPL_parse(self, UTF8_value.c_str(), destination);
+					// FIXME what if UTF8_value is killed before we are done using it?
+					value = REPL_parse(self, UTF8_value.c_str(), UTF8_value.length(), destination);
 					REPL_prepare(self, value);
 					REPL_add_to_environment(self, AST::symbolFromStr(ToUTF8(name)), value);
 				} catch(Scanners::ParseException& e) {
@@ -632,7 +633,7 @@ static void REPL_open_webpage(struct REPL* self, const std::wstring& path) {
 static void REPL_handle_execute(struct REPL* self, const char* text, int destination, bool B_from_entry, bool B_IO) {
 	AST::NodeT input;
 	try {
-		input = REPL_parse(self, text, destination);
+		input = REPL_parse(self, text, strlen(text), destination);
 	} catch(Scanners::ParseException& e) {
 		std::string v = e.what() ? e.what() : "error";
 		REPL_insert_error_message(self, -1, B_from_entry ? (std::string("\n") + std::string(text) + std::string("\n=> ")) : std::string("=> "), v);
