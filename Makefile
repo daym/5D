@@ -1,6 +1,6 @@
 
 SUBDIRS = Config REPL Linear_Algebra Bugs WIN32 Tests FFIs Bootstrappers Compilers AST Evaluators TUI Numbers Formatters doc Runtime debian GUI Scanners
-SUBDIRS2 = $(SUBDIRS) doc/building doc/installation doc/interna doc/library doc/programming doc/programming/manual doc/programming/tutorial Tests/0* Runtime/Arithmetic Runtime/Logic Runtime/Composition Runtime/List Runtime/OS Runtime/IO Runtime/UI Runtime/FFI Runtime/String Runtime/Reflection Runtime/Error Examples Runtime/LinearAlgebra Runtime/OO Runtime/Pair
+SUBDIRS2 = $(SUBDIRS) doc/building doc/installation doc/interna doc/library doc/programming doc/programming/manual doc/programming/tutorial Tests/0* Runtime/Arithmetic Runtime/Logic Runtime/Composition Runtime/List Runtime/OS Runtime/IO Runtime/UI Runtime/FFI Runtime/String Runtime/Reflection Runtime/Error Examples Runtime/LinearAlgebra Runtime/OO Runtime/Pair Runtime/Maybe
 EXECUTABLES = REPL/5DREPL GUI/5D TUI/TUI Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol Scanners/test-MathParser Scanners/test-Scanner GUI/5D REPL/5DREPL TUI2/5DTUI
 GENERATEDS = FFIs/Trampolines FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols FFIs/Combinations
 
@@ -151,7 +151,8 @@ FFIs/TrampolineSymbols.o: FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols AST/S
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 FFIs/Combinations: FFIs/generateCombinations Makefile
-	FFIs/generateCombinations C > FFIs/Combinations.new && mv FFIs/Combinations.new FFIs/Combinations
+	# put "PC" here for Windows.
+	FFIs/generateCombinations "" > FFIs/Combinations.new && mv FFIs/Combinations.new FFIs/Combinations
 
 FFIs/Trampolines: FFIs/generateTrampolines FFIs/Combinations FFIs/TrampolineSymbols
 	FFIs/generateTrampolines < FFIs/Combinations > FFIs/Trampolines.new && mv FFIs/Trampolines.new FFIs/Trampolines
