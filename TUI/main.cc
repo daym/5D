@@ -309,14 +309,15 @@ static int handle_readline_paren(int x, int key) {
 	}
 	return(0);
 }
+static AST::NodeT inputNode;
 static int handle_readline_crlf(int x, int key) {
 	/* check rl_point and rl_line_buffer[rl_point - 1] */
 	try {
-		// TODO if we wanted, we could remember this and just use it for the execute() later.
-		REPL_parse(REPL1, rl_line_buffer, strlen(rl_line_buffer), 0);
+		// remember this and just use it for run() later.
+		inputNode = REPL_parse(REPL1, rl_line_buffer, strlen(rl_line_buffer), 0);
 	} catch (const Scanners::ParseException& e) {
 		/* user interface niceness: only auto-line-continue on things where we believe it can actually be made better */
-		if(strstr(e.what(), "<(-operands>") || strstr(e.what(), "expected ]") || strstr(e.what(), "expected <body>")) {
+		if(strstr(e.what(), "expected <(-operands>") || strstr(e.what(), "expected ]") || strstr(e.what(), "expected <body>")) {
 			rl_insert(x, '\n');
 			return(0);
 		}
@@ -349,12 +350,13 @@ static void initialize_readline(void) {
 }
 using namespace REPLX;
 //static Scanners::OperatorPrecedenceList* operator_precedence_list;
-void run(struct REPL* REPL, const char* text) {
+void run(struct REPL* REPL, AST::NodeT inputNode) {
+	//const char* text) {
 	AST::NodeT result;
-	if(exit_P(text)) /* special case for computers which can't signal EOF. */
-		exit(0);
+	//if(exit_P(text)) /* special case for computers which can't signal EOF. */
+	//	exit(0);
 	try {
-		result = REPL_parse(REPL, text, strlen(text), 0);
+		result = inputNode; // REPL_parse(REPL, text, strlen(text), 0);
 		REPL_execute(REPL, result, 0);
 	} catch(Scanners::ParseException exception) {
 		AST::NodeT err = Evaluators::makeError(exception.what());
@@ -477,7 +479,9 @@ int main(int argc, char* argv[]) {
 		if(!line[0])
 			continue;
 		add_history(line);
-		run(REPL, line);
+		// note that handle_readline_crlf remembered the result in #inputNode, so be sure to use it.
+		run(REPL, inputNode);
+		inputNode = NULL;
 	}
 	printf("\n");
 	fflush(stdout);
