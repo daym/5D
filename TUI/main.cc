@@ -315,6 +315,7 @@ static int handle_readline_crlf(int x, int key) {
 		// TODO if we wanted, we could remember this and just use it for the execute() later.
 		REPL_parse(REPL1, rl_line_buffer, strlen(rl_line_buffer), 0);
 	} catch (...) { /* FIXME just specific errors? */
+		rl_insert(x, '\n');
 		return(0);
 	}
 	rl_done = 1;
@@ -402,6 +403,13 @@ bool REPL_save(struct REPL* self, bool B_force_dialog) {
 void print_usage(void) {
 	fprintf(stderr, "Usage: TUI [-i] [<environment>]\n");
 	fprintf(stderr, " -i | --IO  enable input/output processing\n");
+	fprintf(stderr, " -t | --test  enable testing\n");
+	fprintf(stderr, " -v | --version  print version and return\n");
+}
+void print_version(void) {
+	printf("5D Version %s - Copyright (C) 2011 Danny Milosavljevic et al.\n", VERSION);
+	printf("This program comes with ABSOLUTELY NO WARRANTY.\n");
+	printf("This is free software, and you are welcome to redistribute it under certain conditions. See /usr/share/doc/5d/copyright for details.\n");
 }
 int main(int argc, char* argv[]) {
 	struct REPL* REPL;
@@ -419,6 +427,8 @@ int main(int argc, char* argv[]) {
 	static struct option long_options[] = {
 		{"IO", no_argument, NULL, 'i'},
 		{"help", no_argument, NULL, 'h'},
+		{"test", no_argument, NULL, 't'},
+		{"version", no_argument, NULL, 'v'},
 	};
 	REPL_set_IO(REPL, false);
 	while((opt = getopt_long(argc, argv, "ih", long_options, NULL)) != -1) {
@@ -430,6 +440,13 @@ int main(int argc, char* argv[]) {
 		case 'h':
 			print_usage();
 			exit(0);
+		case 'v':
+			print_version();
+			exit(0);
+		case 't':
+			/* TODO REPL_set_testing */
+			prompt = "runTest $ ";
+			break;
 		}
 	}
 	if(argc > 1 && optind < argc && REPL_load_contents_by_name(REPL, argv[optind])) {
@@ -443,7 +460,7 @@ int main(int argc, char* argv[]) {
 	printf("This program comes with ABSOLUTELY NO WARRANTY.\n");
 	printf("This is free software, and you are welcome to redistribute it under certain conditions. See /usr/share/doc/5d/copyright for details.\n");
 	install_SIGQUIT_handler();
-	install_SIGINT_handler();
+	//install_SIGINT_handler();
 	initialize_readline();
 	//operator_precedence_list = new Scanners::OperatorPrecedenceList();
 	while((line = readline(prompt))) {
