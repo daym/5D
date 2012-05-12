@@ -441,7 +441,7 @@ int main(int argc, char* argv[]) {
 		{"version", no_argument, NULL, 'v'},
 	};
 	REPL_set_IO(REPL, false);
-	while((opt = getopt_long(argc, argv, "ih", long_options, NULL)) != -1) {
+	while((opt = getopt_long(argc, argv, "itvh", long_options, NULL)) != -1) {
 		switch(opt) {
 		case 'i':
 			REPL_set_IO(REPL, true);
