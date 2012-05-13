@@ -880,6 +880,7 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, GtkTextIter* 
 	std::stringstream result;
 	result << "$ ";
 	std::string resultString;
+	std::string resultString2;
 	const char* nodeText = NULL;
 	try {
 		int position;
@@ -887,7 +888,7 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, GtkTextIter* 
 		result << " $";
 		resultString = result.str();
 		//std::cout << "XXX " << resultString << std::endl;
-		nodeText = g_strdup(resultString.c_str()); /* otherwise will have memory corruption */
+		nodeText = resultString.c_str(); /* otherwise will have memory corruption */
 	} catch(std::runtime_error e) {
 		nodeText = NULL;
 	}
@@ -898,11 +899,12 @@ static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, GtkTextIter* 
 			int position;
 			result.str("");
 			Formatters::Math::print_CXX(REPL_ensure_operator_precedence_list(self), result, position, node, 0, false);
-			resultString = result.str();
-			alt_text = g_strdup(resultString.c_str());
+			resultString2 = result.str();
 		} catch(...) {
+			resultString2 = str(node);
 			alt_text = g_strdup(str(node).c_str());
 		}
+		alt_text = g_strdup(resultString2.c_str());
 		if(alt_text && strchr(alt_text, '"')) /* contains string */
 			nodeText = NULL;
 		GTKLATEXGenerator_enqueue(self->fLATEXGenerator, nodeText, alt_text, destination);
