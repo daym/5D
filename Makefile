@@ -44,15 +44,6 @@ TARGETS += $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -
 all: $(TARGETS)
 	$(MAKE) -C Runtime all
 
-Linear_Algebra/test-Vector: Linear_Algebra/test-Vector.o
-	g++ -o Linear_Algebra/test-Vector Linear_Algebra/test-Vector.o
-
-Linear_Algebra/test-Matrix: Linear_Algebra/test-Matrix.o
-	g++ -o Linear_Algebra/test-Matrix Linear_Algebra/test-Matrix.o
-
-Linear_Algebra/test-Tensor: Linear_Algebra/test-Tensor.o
-	g++ -o Linear_Algebra/test-Tensor Linear_Algebra/test-Tensor.o
-
 Scanners/test-Scanner: Scanners/test-Scanner.o Scanners/Scanner.o AST/Symbol.o AST/HashTable.o AST/Symbols.o AST/AST.o AST/Keyword.o $(FFIS)
 	g++ -o $@ $^ $(LDFLAGS)
 
@@ -71,9 +62,6 @@ AST/test-Keyword: AST/test-Keyword.o AST/Keyword.o AST/HashTable.o AST/Symbols.o
 test-AST: test-AST.o
 	g++ -o test-AST test-AST.o
 	
-Linear_Algebra/test-Vector.o: Linear_Algebra/test-Vector.cc Linear_Algebra/Vector
-Linear_Algebra/test-Matrix.o: Linear_Algebra/test-Matrix.cc Linear_Algebra/Matrix
-Linear_Algebra/test-Tensor.o: Linear_Algebra/test-Tensor.cc Linear_Algebra/Tensor
 Formatters/LATEX.o: Formatters/LATEX.cc Formatters/LATEX AST/AST AST/Symbol AST/Symbols Scanners/MathParser Formatters/UTFStateMachine Scanners/OperatorPrecedenceList Evaluators/Builtins Numbers/Integer Numbers/Real Formatters/GenericPrinter Numbers/Ratio
 Formatters/SExpression.o: Formatters/SExpression.cc Formatters/SExpression AST/Symbol AST/AST Evaluators/Builtins Numbers/Integer Numbers/Real Numbers/Ratio
 Formatters/Math.o: Formatters/Math.cc Formatters/Math AST/Symbol AST/AST Evaluators/Builtins Numbers/Integer Numbers/Real Formatters/GenericPrinter Scanners/OperatorPrecedenceList Numbers/Ratio
@@ -107,10 +95,7 @@ FFIs/POSIX.o: FFIs/POSIX.cc Evaluators/Builtins FFIs/FFIs Evaluators/FFI AST/AST
 Config/GTKConfig.o: Config/GTKConfig.cc Config/Config FFIs/Allocators AST/AST
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-test: Linear_Algebra/test-Vector Linear_Algebra/test-Matrix Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol AST/test-Keyword Scanners/test-Scanner Scanners/test-MathParser
-	./Linear_Algebra/test-Vector
-	./Linear_Algebra/test-Matrix
-	./Linear_Algebra/test-Tensor
+test: AST/test-AST AST/test-Symbol AST/test-Keyword Scanners/test-Scanner Scanners/test-MathParser
 	./AST/test-Symbol
 	./AST/test-Keyword
 	./AST/test-AST
@@ -206,7 +191,6 @@ Numbers/Ratio.o: Numbers/Ratio.cc Numbers/Ratio Numbers/Small Evaluators/Operati
 REPL/ExtREPL.o: REPL/ExtREPL.cc REPL/ExtREPL AST/AST AST/Symbol Evaluators/Operation Evaluators/Evaluators
 Evaluators/BuiltinSelector.o: Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector Evaluators/Evaluators Evaluators/Operation AST/AST AST/Symbol Evaluators/ModuleLoader
 clean:
-	rm -f Linear_Algebra/*.o
 	rm -f AST/*.o
 	rm -f Scanners/*.o
 	rm -f Formatters/*.o

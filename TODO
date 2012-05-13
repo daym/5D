@@ -59,6 +59,7 @@ GUI: allow deletion environment nodes (includes usage check in the rest of the e
 GUI: allow moving of environment nodes.
 GUI: allow compacting of environment nodes.
 TUI: if trying to pass a path to a file that does not exist, it doesn't create it on exit. Should it?
+TUI: allow multi-line entry in history (maybe just use a global history used by everyone)
 
 = Beauty =
 
