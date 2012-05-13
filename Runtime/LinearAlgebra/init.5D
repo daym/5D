@@ -34,7 +34,7 @@ let madd := (rec\madd \as \bs
 	$else 
 		(as + bs)
 ) in 
-let cross := 
+let cross := (
 	let (_) := \l \i head (drop i l) in 
 	\a \b
 		[(a_1⋅b_2 - a_2⋅b_1) (a_2⋅b_0 - a_0⋅b_2) (a_0⋅b_1 - a_1⋅b_0)]
