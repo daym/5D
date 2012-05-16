@@ -165,6 +165,7 @@ Windows COM support (interfaces, refcounting, ...)
 Windows COM strings
 Full Unicode strings
 DECIMAL type (suffix m or M)
+Nicer Fortran Call-by-name support (i.e. allow creation of a temporary and pass a pointer to it to the Fortran subroutine)
 
 = Free Symbols =
 
