@@ -2,27 +2,15 @@ let List := requireModule "List" in
 let Error := requireModule "Error" in 
 let Composition := requireModule "Composition" in
 let Logic := requireModule "Logic" in 
-let dispatch := Composition.dispatch in
-let raiseMissingSymbolError := Composition.raiseMissingSymbolError in
-let head := List.head in 
-let tail := List.tail in 
-let rec := Composition.rec in 
+import [dispatch raiseMissingSymbolError rec (|) ($)] from Composition in 
+import [head tail] from List in 
+import [if else] from Logic in 
+import [flush! stderr stdin stdout readline! write! errno!] from Builtins in 
 let ioValue := (\m head m) in 
 let ioWorld := (\m head (tail m)) in 
-let (|) := Composition.(|) in 
 let (;) := (\m \ber \world (\r ber (ioValue r) (ioWorld r)) (m world)) in
-let ($) := Composition.($) in 
-let if := Logic.if in 
-let else := Logic.else in 
 let liftIO! := (\v \world [v world]) in 
 let return! := liftIO! in 
-let flush! := Builtins.flush! in 
-let stderr := Builtins.stderr in 
-let stdin := Builtins.stdin in 
-let stdout := Builtins.stdout in 
-let readline! := Builtins.readline! in 
-let write! := Builtins.write! in 
-let errno! := Builtins.errno! in 
 let skipUntil! := (\condition \body rec\skipUntil! 
 	\world
 		let result := body world in 

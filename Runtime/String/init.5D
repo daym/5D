@@ -2,23 +2,10 @@ let List := requireModule "List" in
 let Error := requireModule "Error" in
 let Composition := requireModule "Composition" in
 let Logic := requireModule "Logic" in 
-let if := Logic.if in 
-let else := Logic.else in 
-let elif := Logic.elif in 
-let ($) := Composition.($) in 
-let tail := List.tail in 
-let nil? := List.nil? in 
-let foldr := List.foldr in 
-let map := List.map in 
-let drop := List.drop in 
-let dispatch := Composition.dispatch in 
-let raiseMissingSymbolError := Composition.raiseMissingSymbolError in
-let listFromStr := Builtins.listFromStr in 
-let str? := Builtins.str? in 
-let strFromKeyword := Builtins.strFromKeyword in 
-let strFromList := Builtins.strFromList in 
-let substr := Builtins.substr in 
-let (++) := List.(++) in 
+import [if else elif] from Logic in 
+import [($)] from Composition in 
+import [tail nil? foldr map drop (++)] from List in 
+import [listFromStr str? strFromKeyword strFromList substr] from Builtins
 let strcat := \a \b strFromList ((listFromStr a) ++ (listFromStr b)) in 
 let strjoinp := (\sepl \strings 
 	let prefixSepl := (\x sepl ++ listFromStr x) in 
@@ -32,5 +19,4 @@ let strjoin := (\sep \strings
 	$else
 		strFromList (drop (List.length sepl) (strjoinp sepl strings))
 ) in 
-(requireModule "Composition").dispatch (#exports[listFromStr str? strFromKeyword strFromList substr strcat strjoin])
-raiseMissingSymbolError
+(requireModule "Composition").dispatch1 (#exports[listFromStr str? strFromKeyword strFromList substr strcat strjoin])

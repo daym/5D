@@ -22,7 +22,8 @@ inline bool macro_operator_P(AST::NodeT operator_) {
 	       operator_ == Symbols::Sdefrec || 
 	       operator_ == Symbols::Squote || 
 	       operator_ == Symbols::Sleftbracket || 
-	       operator_ == Symbols::Slet);
+	       operator_ == Symbols::Slet ||
+	       operator_ == Symbols::Simport);
 }
 
 class ShuntingYardParser {
@@ -39,10 +40,12 @@ private:
 protected:
 	AST::NodeT parse_exports_macro(void);
 	AST::NodeT parse_exports_macro_body(void);
+	AST::NodeT parse_imports_macro_body(void);
 	AST::NodeT parse_list_macro(void);
 	AST::NodeT parse_list_macro_body(void);
 	AST::NodeT parse_value(void); /* what the macros think constitutes an atom */
 	AST::NodeT parse_let_macro(void);
+	AST::NodeT parse_import_macro(void);
 	AST::NodeT parse_define_macro(AST::NodeT operator_);
 	AST::NodeT parse_macro(void);
 	AST::NodeT parse_quote_macro(void);

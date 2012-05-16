@@ -1,32 +1,4 @@
 let Error := requireModule "Error" in 
 let Composition := requireModule "Composition" in
-let dispatch := Composition.dispatch in
-let raiseMissingSymbolError := Composition.raiseMissingSymbolError in
-let app? := Builtins.app? in 
-let appOperand := Builtins.appOperand in 
-let appOperator := Builtins.appOperator in 
-let fn? := Builtins.fn? in 
-let fnBody := Builtins.fnBody in 
-let fnParam := Builtins.fnParam in 
-let float? := Builtins.float? in 
-let int? := Builtins.int? in 
-let int0 := Builtins.int0 in 
-let integer? := Builtins.integer? in 
-let ratio? := Builtins.ratio? in 
-let ratioNum := Builtins.ratioNum in 
-let ratioDenom := Builtins.ratioDenom in 
-let makeRatio := Builtins.makeRatio in 
-let integerSucc := Builtins.integerSucc in 
-let intSucc := Builtins.intSucc in 
-let keyword? := Builtins.keyword? in 
-let keywordFromStr := Builtins.keywordFromStr in 
-let makeApp := Builtins.makeApp in 
-let makeFn := Builtins.makeFn in 
-let symbol? := Builtins.symbol? in 
-let symbolFromStr := Builtins.symbolFromStr in 
-let symbolsEqual? := Builtins.symbolsEqual? in 
-let addrsLE? := Builtins.addrsLE? in 
-let parseMath! := Builtins.parseMath! in 
-let parseMathStr := Builtins.parseMathStr in 
-(requireModule "Composition").dispatch (#exports[app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE? parseMath! parseMathStr ratio? ratioNum ratioDenom makeRatio])
-raiseMissingSymbolError
+import [app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? ratio? ratioNum ratioDenom makeRatio integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE? parseMath! parseMathStr] from Builtins in 
+(requireModule "Composition").dispatch1 (#exports[app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE? parseMath! parseMathStr ratio? ratioNum ratioDenom makeRatio])

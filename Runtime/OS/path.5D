@@ -2,7 +2,7 @@ let Error := requireModule "Error" in
 let Composition := requireModule "Composition" in
 let dispatch := Composition.dispatch in
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in
-let absolutePath := Builtins.absolutePath in 
+let absolutePath! := Builtins.absolutePath! in 
 let absolutePath? := Builtins.absolutePath? in 
-(requireModule "Composition").dispatch (#exports[absolutePath absolutePath?])
+(requireModule "Composition").dispatch (#exports[absolutePath! absolutePath?])
 raiseMissingSymbolError

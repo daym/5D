@@ -122,6 +122,15 @@ AST::NodeT ShuntingYardParser::parse_let_macro(void) {
 	scanner->consume(Symbols::Sin);
 	return(AST::makeCons(Symbols::Slet, AST::makeCons(parameter, AST::makeCons(body, NULL))));
 }
+AST::NodeT ShuntingYardParser::parse_import_macro(void) {
+	scanner->consume(Symbols::Sleftbracket);
+	AST::NodeT exports = parse_imports_macro_body();
+	scanner->consume(Symbols::Srightbracket);
+	scanner->consume(Symbols::Sfrom);
+	AST::NodeT moduleR = parse_expression(OPL, Symbols::Sin);
+	scanner->consume(Symbols::Sin);
+	return(AST::makeCons(Symbols::Simport, AST::makeCons(exports, AST::makeCons(moduleR, NULL))));
+}
 AST::NodeT ShuntingYardParser::parse_list_macro_body(void) {
 	if(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
 		AST::NodeT hd = parse_value();
@@ -134,11 +143,18 @@ AST::NodeT ShuntingYardParser::parse_list_macro(void) {
 	scanner->consume(Symbols::Srightbracket);
 	return(result);
 }
-AST::NodeT ShuntingYardParser::parse_exports_macro_body(void) {
+AST::NodeT ShuntingYardParser::parse_exports_macro_body(void) { /* also used by parse_import_macro() */
 	if(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
 		AST::NodeT a = parse_value();
 		AST::NodeT hd = AST::makeApplication(AST::makeApplication(Symbols::Scomma, AST::makeApplication(Symbols::Squote, a)), a);
 		return(AST::makeApplication(AST::makeApplication(Symbols::Scolon, hd), parse_exports_macro_body()));
+	} else
+		return(Symbols::Snil);
+}
+AST::NodeT ShuntingYardParser::parse_imports_macro_body(void) {
+	if(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
+		AST::NodeT hd = parse_value(); // symbol, should be
+		return(AST::makeApplication(AST::makeApplication(Symbols::Scolon, hd), parse_imports_macro_body()));
 	} else
 		return(Symbols::Snil);
 }
@@ -180,6 +196,8 @@ AST::NodeT ShuntingYardParser::handle_unary_operator(AST::NodeT operator_) {
 			return(AST::makeCons(Symbols::Squote, NULL));
 	} else if(operator_ == Symbols::Slet) {
 		return(parse_let_macro());
+	} else if(operator_ == Symbols::Simport) {
+		return(parse_import_macro());
 	} else if(operator_ == Symbols::Sunarydash) {
 		return(AST::makeCons(Symbols::Sunarydash, NULL));
 	}
@@ -187,6 +205,23 @@ AST::NodeT ShuntingYardParser::handle_unary_operator(AST::NodeT operator_) {
 }
 static AST::NodeT macro_standin_operator(AST::NodeT op1) {
 	return Evaluators::cons_P(op1) ? AST::get_cons_head(op1) : NULL;
+}
+// [a b c d e f g], f, body => \a \b \c \d \e \f \g body) (f a) (f b) (f c) ...
+static AST::NodeT closeMany(AST::NodeT symbols, AST::NodeT dependency, AST::NodeT suffix) {
+	// note that #symbols in unevaluated (save for the macro expansions) as you would expect.
+	//return(Evaluators::close(parameter, replacement, suffix));
+	// (: a (: b (:c n))) => []
+	AST::NodeT t;
+	if(AST::application_P(symbols) && AST::application_P((t = AST::get_application_operator(symbols))) && AST::get_application_operator(t) == Symbols::Scolon) {
+		AST::NodeT a = AST::get_application_operand(t); // should be a symbol
+		assert(AST::get_symbol1_name(a));
+		AST::NodeT r = AST::get_application_operand(symbols);
+		// note: possible module access.
+		return(Evaluators::close(a, AST::makeApplication(dependency, Evaluators::quote(a)), closeMany(r, dependency, suffix)));
+	} else { /* assume nil. FIXME check. */
+		assert(symbols == Symbols::Snil);
+		return(suffix);
+	}
 }
 AST::NodeT ShuntingYardParser::expand_macro(AST::NodeT op1, AST::NodeT suffix) {
 	if(!Evaluators::cons_P(op1))
@@ -203,9 +238,21 @@ AST::NodeT ShuntingYardParser::expand_macro(AST::NodeT op1, AST::NodeT suffix) {
 		AST::NodeT parameter = AST::get_cons_head(c2);
 		assert(AST::get_symbol1_name(parameter));
 		assert(AST::get_cons_tail(c2));
-		AST::Cons* c3 = Evaluators::evaluateToCons(AST::get_cons_tail(c2));
+		AST::NodeT c3 = Evaluators::evaluateToCons(AST::get_cons_tail(c2));
 		AST::NodeT replacement = AST::get_cons_head(c3);
 		return(Evaluators::close(parameter, replacement, suffix));
+	} else if(operator_ == Symbols::Simport) {
+		assert(AST::get_cons_tail(op1));
+		AST::NodeT c2 = Evaluators::evaluateToCons(AST::get_cons_tail(op1));
+		AST::NodeT symbols = AST::get_cons_head(c2);
+		// TODO eval the list (using a very limited eval) assert(AST::get_symbol1_name(parameter));
+		assert(AST::get_cons_tail(c2));
+		AST::NodeT c3 = Evaluators::evaluateToCons(AST::get_cons_tail(c2));
+		AST::NodeT dependency = AST::get_cons_head(c3);
+		AST::NodeT r = closeMany(symbols, dependency, suffix);
+		std::string s;
+		s = Evaluators::str(r);
+		return(r);
 	} else if(operator_ == Symbols::Sunarydash) {
 		return(AST::makeOperation(Symbols::Sdash, Symbols::Szero, suffix));
 	} else {

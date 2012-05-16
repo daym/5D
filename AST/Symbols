@@ -95,7 +95,6 @@ extern AST::NodeT Snewline;
 extern AST::NodeT Sbackspace;
 extern AST::NodeT Sescape;
 extern AST::NodeT Sinfo;
-extern AST::NodeT Simport;
 extern AST::NodeT Sdescribe;
 extern AST::NodeT SrequireModule;
 extern AST::NodeT Sunderline;
@@ -125,6 +124,8 @@ extern AST::NodeT Scomma;
 extern AST::NodeT Sfst;
 extern AST::NodeT Ssnd;
 extern AST::NodeT SpairP;
+extern AST::NodeT Simport;
+extern AST::NodeT Sfrom;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

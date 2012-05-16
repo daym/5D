@@ -1,24 +1,10 @@
 let Logic := requireModule "Logic" in 
 let Composition := requireModule "Composition" in 
 let Error := requireModule "Error" in 
-let dispatch := Composition.dispatch in 
-let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
-let rec := Composition.rec in 
-let head := Builtins.head in 
-let tail := Builtins.tail in 
-let (:) := Builtins.(:) in 
-let flip := Composition.flip in 
-let not := Logic.not in 
-let (&&) := Logic.(&&) in 
-let (||) := Logic.(||) in 
-let if := Logic.if in 
-let else := Logic.else in 
-let (-) := Builtins.(-) in 
-let (*) := Builtins.(*) in 
-let (/) := Builtins.(/) in 
-let (+) := Builtins.(+) in 
-let ($) := Composition.($) in 
-let (<=) := Builtins.(<=) in 
+import [head tail (:)] from Builtins in 
+import [dispatch raiseMissingSymbolError rec flip ($)] from Composition in 
+import [not (&&) (||) if else] from Logic in 
+import [(-) (*) (/) (+) (<=) divrem] from Builtins in 
 let (≤) := (<=) in 
 let (<) := (\a \b a <= b && not (b <= a)) in 
 let (=) := (\a \b a <= b && b <= a) in 
@@ -27,7 +13,6 @@ let (≥) := (>=) in
 let (>) := flip (<) in 
 let (/=) := \a \b not (a = b) in 
 let abs := (\x if (x <= 0) (0 - x) x) in 
-let divrem := Builtins.divrem in 
 let divide := (\a \b head (divrem a b)) in 
 let remainder := (\a \b head (tail (divrem a b))) in 
 let modulo := (\a \b remainder (b + remainder a b) b) in 
