@@ -96,11 +96,11 @@ let rangeLL := \step \end
 in 
 let range1 := \beginning \end rangeLL 1 end beginning in 
 let range := \beginning \end \step rangeLL step end beginning in 
-let frangeLL := \step \end \beginning
+let frangeLL := \terminator \step \end \beginning
 	let n := ceiling (end - beginning)/step in 
 	let range := rec\range \i
 		if (i >= n) 
-			[] 
+			terminator 
 		$else 
 			(beginning + i⋅step):(range (i + 1))
 	in 
@@ -108,7 +108,7 @@ let frangeLL := \step \end \beginning
 in 
 let frange := \beginning \end \step 
 	rem "a version of (range) more suited to floating-point values: Errors don't accumulate that much on every step."
-	frangeLL step end beginning
+	frangeLL [] step end beginning
 in 
 let frange2 := \beginning \end \step 
 	rem "a version of (range) more suited to floating-point values: Errors don't accumulate that much on every step."
