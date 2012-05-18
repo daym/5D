@@ -9,8 +9,10 @@ static void handle_SIGQUIT(int s) { /* ctrl-backslash */
 	exit(1);
 }
 bool interrupted_P(void) { // mutable
+	bool o;
+	o = B_SIGINT_happened;
 	B_SIGINT_happened = false;
-	return(B_SIGINT_happened);
+	return(o);
 }
 static void handle_SIGINT(int s) {
 	signal(SIGINT, handle_SIGINT);
