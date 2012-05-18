@@ -80,22 +80,22 @@ let filter := \f rec \filter \list
 		filter (tail list)
 in 
 let reverse := \list foldl (flip (:)) nil list in 
-let rangeLL := \step \end 
+let rangeLL := \terminator \step \end 
 	if (step <= 0 - 1)
 		rec \rangeLL \beginning
 			if (beginning <= end) 
-				nil 
+				terminator 
 			$else
 				beginning:(rangeLL (beginning + step))
 	$else
 		rec \rangeLL \beginning
 			if (beginning >= end) 
-				nil 
+				terminator 
 			$else
 				beginning:(rangeLL (beginning + step))
 in 
-let range1 := \beginning \end rangeLL 1 end beginning in 
-let range := \beginning \end \step rangeLL step end beginning in 
+let range1 := \beginning \end rangeLL [] 1 end beginning in 
+let range := \beginning \end \step rangeLL [] step end beginning in 
 let frangeLL := \terminator \step \end \beginning
 	let n := ceiling (end - beginning)/step in 
 	let range := rec\range \i
