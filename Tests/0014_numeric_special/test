@@ -1,0 +1,19 @@
+assert$ zero? 0
+assert$ zero? (-0)
+assert$ not (zero? nan.0)
+assert$ positive? inf.0
+assert$ negative? (-inf.0)
+assert$ not (positive? nan.0)
+assert$ not (negative? nan.0)
+assert$ not (finite? inf.0)
+assert$ finite? 5
+assert$ not (infinite? 5.0)
+assert$ infinite? inf.0
+assert$ inf.0 = inf.0
+assert$ not ((-inf.0) = inf.0)
+assert$ (-inf.0) = (-inf.0)
+assert$ (-inf.0) < 5
+assert$ 5 < inf.0
+assert$ not (nan.0 = 5)
+assert$ not (nan.0 < 5)
+assert$ not (nan.0 > 5)
