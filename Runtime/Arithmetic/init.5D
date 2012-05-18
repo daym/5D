@@ -32,6 +32,10 @@ let divmod := \a \b
 		$else
 			[c r]
 in
+let zero? := (\a (a = 0)) in 
+let positive? := (\a a > 0) in 
+let negative? := (\a a < 0) in 
+rem "TODO odd even finite infinite nan (nan is not positive or negative or zero)"
 let div := (\a \b head (divmod a b)) in 
 let mod := (\a \b head (tail (divmod a b))) in 
 let (%) := mod0 in 
@@ -48,7 +52,7 @@ let sqrt := sqrtEps 1 0.001 in
 let √ := sqrt in 
 let ground := (\v div0 v 1) in 
 let floor := (\v div v 1) in 
-let ceil := \v
+let ceiling := \v
 	if ((ground v) = v)
 		v
 	$else
@@ -79,5 +83,5 @@ let gcd := (rec\gcd \a \b
 	$else
 		gcd b (a % b)
 ) in 
-(requireModule "Composition").dispatch (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt modulo within factorial ground floor round1 π pi max min gcd ceil])
+(requireModule "Composition").dispatch (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt modulo within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative?])
 raiseMissingSymbolError

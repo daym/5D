@@ -5,7 +5,7 @@ let Error := requireModule "Error" in
 import [nil? cons? head tail (:)] from Builtins in 
 import [raiseMissingSymbolError dispatch ($) compose flip rec rem] from Composition in 
 import [if else elif (||) (&&) (#t) (#f) not] from Logic in 
-import [(<=) (>=) (=) (/=) (+) (-) (*) (/) div0 max ceil] from Arithmetic in 
+import [(<=) (>=) (=) (/=) (+) (-) (*) (/) div0 max ceiling] from Arithmetic in 
 let nil := [] in 
 let list? := \a nil? a || cons? a in 
 let foldl := \f rec \foldl \v \list 
@@ -97,7 +97,7 @@ in
 let range1 := \beginning \end rangeLL 1 end beginning in 
 let range := \beginning \end \step rangeLL step end beginning in 
 let frangeLL := \step \end \beginning
-	let n := ceil (end - beginning)/step in 
+	let n := ceiling (end - beginning)/step in 
 	let range := rec\range \i
 		if (i >= n) 
 			[] 
@@ -112,7 +112,7 @@ let frange := \beginning \end \step
 in 
 let frange2 := \beginning \end \step 
 	rem "a version of (range) more suited to floating-point values: Errors don't accumulate that much on every step."
-	let count := ceil ((end - beginning)/step) in 
+	let count := ceiling ((end - beginning)/step) in 
 	map (\i i*step) (range 0 count 1)
 in 
 let zipBy := \zipper rec \zipBy \l1 \l2 
