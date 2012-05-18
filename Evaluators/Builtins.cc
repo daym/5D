@@ -159,12 +159,12 @@ static AST::NodeT toHeap(bool v) {
 }
 using namespace AST;
 
-static AST::NodeT divremInt(const Numbers::Int& a, const Numbers::Int& b) {
+static AST::NodeT divmod0Int(const Numbers::Int& a, const Numbers::Int& b) {
 	if(b.value == 0)
 		throw EvaluationException("division by zero");
 	NativeInt q = a.value / b.value;
 	NativeInt r = a.value % b.value;
-	// semantics for negative a or b are undefined, but in practise OK (gcc).
+	// semantics for negative a or b are undefined, but in practice OK (gcc).
 	// Nevertheless, be a little bit paranoid:
 	if(r < 0)
 		r = -r;
@@ -175,7 +175,7 @@ static AST::NodeT divremInt(const Numbers::Int& a, const Numbers::Int& b) {
 static Integer integer00(0);
 static Int int01(1);
 static Int intM01(-1);
-static AST::NodeT divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
+static AST::NodeT divmod0Integer(const Numbers::Integer& a, Numbers::Integer b) {
 	if(b == integer00)
 		throw EvaluationException("division by zero");
 	Numbers::Integer r(a);
@@ -187,7 +187,7 @@ static AST::NodeT divremInteger(const Numbers::Integer& a, Numbers::Integer b) {
 	r.divideWithRemainder(b, q);
 	return(AST::makeCons(toHeap(q), AST::makeCons(toHeap(r), NULL)));
 }
-static AST::NodeT divremFloat(const Numbers::Float& a, const Numbers::Float& b) {
+static AST::NodeT divmod0Float(const Numbers::Float& a, const Numbers::Float& b) {
 	NativeFloat avalue = a.value;
 	NativeFloat bvalue = b.value;
 	NativeFloat sign = ((bvalue >= 0) ^ (avalue >= 0)) ? (-1.0) : 1.0;
@@ -198,7 +198,7 @@ static AST::NodeT divremFloat(const Numbers::Float& a, const Numbers::Float& b) 
 	NativeFloat q = floor(avalue / bvalue) * sign;
 	NativeFloat r = a.value - q * b.value;
 	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
-	//return(makeOperation(Symbols::Sdivrem, toHeap(a), toHeap(b)));
+	//return(makeOperation(Symbols::Sdivmod0, toHeap(a), toHeap(b)));
 }
 
 REGISTER_STR(Cons, {
@@ -436,43 +436,43 @@ AST::NodeT N(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) { \
 	return(makeOperation(AST::symbolFromStr(#op), a, b)); \
 }
 
-static AST::NodeT divremARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
-AST::NodeT divremA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
+static AST::NodeT divmod0ARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
+AST::NodeT divmod0A(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
 	b = reduce(b);
 	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
 	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
 	if(aInt && bInt) {
-		return toHeap(divremInt(*aInt, *bInt));
+		return toHeap(divmod0Int(*aInt, *bInt));
 	} else {
 		Numbers::Integer* aInteger = dynamic_cast<Numbers::Integer*>(a);
 		Numbers::Integer* bInteger = dynamic_cast<Numbers::Integer*>(b);
 		if(aInteger && bInteger) {
-			return toHeap(divremInteger((*aInteger), (*bInteger)));
+			return toHeap(divmod0Integer((*aInteger), (*bInteger)));
 		} else {
 			Numbers::Ratio* aRatio = dynamic_cast<Numbers::Ratio*>(a); \
 			Numbers::Ratio* bRatio = dynamic_cast<Numbers::Ratio*>(b); \
 			if(aRatio || bRatio)
-				return(divremARatio(a, b, fallback));
+				return(divmod0ARatio(a, b, fallback));
 			else if(aInteger && bInt)
-				return toHeap(divremInteger((*aInteger), Integer(bInt->value)));
+				return toHeap(divmod0Integer((*aInteger), Integer(bInt->value)));
 			else if(aInt && bInteger)
-				return toHeap(divremInteger(Integer(aInt->value), (*bInteger)));
+				return toHeap(divmod0Integer(Integer(aInt->value), (*bInteger)));
 			Numbers::Float* aFloat = dynamic_cast<Numbers::Float*>(a);
 			Numbers::Float* bFloat = dynamic_cast<Numbers::Float*>(b);
 			if(aFloat && bFloat)
-				return toHeap(divremFloat(*aFloat, *bFloat));
+				return toHeap(divmod0Float(*aFloat, *bFloat));
 			else if(aFloat && bInt) \
-				return toHeap(divremFloat(*aFloat, promoteToFloat(*bInt)));
+				return toHeap(divmod0Float(*aFloat, promoteToFloat(*bInt)));
 			else if(aInt && bFloat) \
-				return toHeap(divremFloat(promoteToFloat(*aInt), *bFloat));
+				return toHeap(divmod0Float(promoteToFloat(*aInt), *bFloat));
 			else if(aFloat && bInteger) \
-				return toHeap(divremFloat(*aFloat, promoteToFloat(*bInteger)));
+				return toHeap(divmod0Float(*aFloat, promoteToFloat(*bInteger)));
 			else if(aInteger && bFloat) \
-				return toHeap(divremFloat(promoteToFloat(*aInteger), *bFloat));
+				return toHeap(divmod0Float(promoteToFloat(*aInteger), *bFloat));
 		}
 	}
-	return(makeOperation(Symbols::Sdivrem, a, b));
+	return(makeOperation(Symbols::Sdivmod0, a, b));
 }
 static AST::NodeT compareAddrsLEA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	a = reduce(a);
@@ -491,7 +491,7 @@ static inline bool equalP(AST::NodeT a, AST::NodeT b) {
 static AST::NodeT gcd(AST::NodeT a, AST::NodeT b) {
 	while(!equalP(b, &integer00)) {
 		AST::NodeT t = b;
-		AST::NodeT c = divremA(a, b, NULL);
+		AST::NodeT c = divmod0A(a, b, NULL);
 		if(!c || !cons_P(c)) /* failed */
 			throw EvaluationException("could not find greatest common divisor");
 		b = AST::get_cons_head(Evaluators::evaluateToCons(AST::get_cons_tail(c))); // remainder
@@ -605,10 +605,10 @@ static AST::NodeT leqARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 		NULL
 	));
 }
-static AST::NodeT divremARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
+static AST::NodeT divmod0ARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	AST::NodeT q = divideARatio(a, b, NULL); // TODO fallback
 	if(ratio_P(q)) {
-		AST::NodeT b = divremA(Ratio_getA(q), Ratio_getB(q), NULL); // TODO fallback
+		AST::NodeT b = divmod0A(Ratio_getA(q), Ratio_getB(q), NULL); // TODO fallback
 		if(b)
 			q = get_cons_head(b);
 	}
@@ -640,7 +640,7 @@ IMPLEMENT_NUMERIC_BUILTIN(multiplyA, *)
 DEFINE_BINARY_OPERATION(Multiplicator, multiplyA)
 IMPLEMENT_NUMERIC_BUILTIN(divideA, /)
 DEFINE_BINARY_OPERATION(Divider, divideARatio)
-DEFINE_BINARY_OPERATION(QModulator2, divremA)
+DEFINE_BINARY_OPERATION(QModulator2, divmod0A)
 /* TODO "non-numeric" comparison (i.e. strings) */
 IMPLEMENT_NUMERIC_BUILTIN(leqA, <=)
 DEFINE_BINARY_OPERATION(LEComparer, leqA)
@@ -767,7 +767,7 @@ REGISTER_BUILTIN(Adder, 2, 0, AST::symbolFromStr("+"))
 REGISTER_BUILTIN(Subtractor, 2, 0, AST::symbolFromStr("-"))
 REGISTER_BUILTIN(Multiplicator, 2, 0, AST::symbolFromStr("*"))
 REGISTER_BUILTIN(Divider, 2, 0, AST::symbolFromStr("/"))
-REGISTER_BUILTIN(QModulator2, 2, 0, AST::symbolFromStr("divrem"))
+REGISTER_BUILTIN(QModulator2, 2, 0, AST::symbolFromStr("divmod0"))
 REGISTER_BUILTIN(LEComparer, 2, 0, AST::symbolFromStr("<="))
 REGISTER_BUILTIN(StrP, 1, 0, AST::symbolFromStr("str?"))
 REGISTER_BUILTIN(SymbolP, 1, 0, AST::symbolFromStr("symbol?"))

@@ -76,7 +76,7 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, Symbols::Sdash, &Evaluators::Subtractor);
 	add_builtin_method(self, Symbols::Sasterisk, &Evaluators::Multiplicator);
 	add_builtin_method(self, Symbols::Sslash, &Evaluators::Divider);
-	add_builtin_method(self, Symbols::Sdivrem, &Evaluators::QModulator2);
+	add_builtin_method(self, Symbols::Sdivmod0, &Evaluators::QModulator2);
 	add_builtin_method(self, Symbols::Slessequal, &Evaluators::LEComparer);
 	add_builtin_method(self, Symbols::SfloatP, &Numbers::FloatP);
 	add_builtin_method(self, Symbols::SstrP, &Evaluators::StrP);

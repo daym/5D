@@ -17,7 +17,7 @@ extern AST::NodeT Snot;
 extern AST::NodeT Scircumflex;
 extern AST::NodeT SfloatP;
 extern AST::NodeT SsymbolFromStr;
-extern AST::NodeT Sdivrem;
+extern AST::NodeT Sdivmod0;
 extern AST::NodeT Sin;
 extern AST::NodeT Sapply;
 extern AST::NodeT Sgreater;

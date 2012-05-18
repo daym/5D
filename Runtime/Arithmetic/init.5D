@@ -2,9 +2,9 @@ let Logic := requireModule "Logic" in
 let Composition := requireModule "Composition" in 
 let Error := requireModule "Error" in 
 import [head tail (:)] from Builtins in 
-import [dispatch raiseMissingSymbolError rec flip ($)] from Composition in 
+import [dispatch raiseMissingSymbolError rem rec flip ($)] from Composition in 
 import [not (&&) (||) if else] from Logic in 
-import [(-) (*) (/) (+) (<=) divrem] from Builtins in 
+import [(-) (*) (/) (+) (<=) divmod0] from Builtins in 
 let (≤) := (<=) in 
 let (<) := (\a \b a <= b && not (b <= a)) in 
 let (=) := (\a \b a <= b && b <= a) in 
@@ -13,10 +13,28 @@ let (≥) := (>=) in
 let (>) := flip (<) in 
 let (/=) := \a \b not (a = b) in 
 let abs := (\x if (x <= 0) (0 - x) x) in 
-let divide := (\a \b head (divrem a b)) in 
-let remainder := (\a \b head (tail (divrem a b))) in 
-let modulo := (\a \b remainder (b + remainder a b) b) in 
-let (%) := remainder in 
+let div0 := (\a \b head (divmod0 a b)) in 
+let mod0 := (\a \b head (tail (divmod0 a b))) in 
+let modulo := (\a \b mod0 (b + mod0 a b) b) in 
+let divmod := \a \b
+	if (0 <= a)
+		divmod0 a b
+	$else
+		let ar := (divmod0 a b) in 
+		let c := head ar in 
+		let r := head (tail ar) in 
+		rem "sign of r is either negative or r is equal to zero."
+		if (r < 0)
+			if (b < 0)
+				[(c + 1) (r - b)]
+			$else
+				[(c - 1) (r + b)]
+		$else
+			[c r]
+in
+let div := (\a \b head (divmod a b)) in 
+let mod := (\a \b head (tail (divmod a b))) in 
+let (%) := mod0 in 
 let pi := 3.141592653589793 in 
 let π := pi in 
 let cos := (\xx (\x (\cos if (x >= pi) (0 - cos (modulo x pi)) (cos x)) (\x 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720)) (modulo xx 2*pi)) in 
@@ -28,9 +46,16 @@ let repeat := (\f rec (\repeat \a a:(repeat (f a)))) in
 let sqrtEps := (\a0 \eps \N within eps (repeat (next N) a0)) in 
 let sqrt := sqrtEps 1 0.001 in 
 let √ := sqrt in 
-let floor := (\v divide v 1) in 
+let ground := (\v div0 v 1) in 
+let floor := (\v div v 1) in 
+let ceil := \v
+	if ((ground v) = v)
+		v
+	$else
+		(floor v) + 1
+in 
 let factorial := (\v
-	if ((floor v) = v)
+	if ((ground v) = v)
 		(rec\fac \v
 			if (v = 0)
 				1
@@ -42,9 +67,9 @@ let factorial := (\v
 ) in 
 let round1 := (\v 
 	if (0 <= v) 
-		floor (v + 1/2)
+		ground (v + 1/2)
 	$else
-		floor (v - 1/2)
+		ground (v - 1/2)
 ) in 
 let max := (\a \b if (a <= b) b a) in 
 let min := (\a \b if (a <= b) a b) in 
@@ -54,5 +79,5 @@ let gcd := (rec\gcd \a \b
 	$else
 		gcd b (a % b)
 ) in 
-(requireModule "Composition").dispatch (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs divide divrem remainder cos sin tan sqrt modulo within factorial floor round1 π pi max min gcd])
+(requireModule "Composition").dispatch (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt modulo within factorial ground floor round1 π pi max min gcd ceil])
 raiseMissingSymbolError
