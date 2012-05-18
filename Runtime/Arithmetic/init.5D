@@ -1,10 +1,11 @@
 let Logic := requireModule "Logic" in 
 let Composition := requireModule "Composition" in 
 let Error := requireModule "Error" in 
-import [head tail (:)] from Builtins in 
+import [head tail (:) nan? infinite? nan infinity] from Builtins in 
 import [dispatch raiseMissingSymbolError rem rec flip ($)] from Composition in 
 import [not (&&) (||) if else] from Logic in 
 import [(-) (*) (/) (+) (<=) divmod0] from Builtins in 
+let infinity? := infinite? in 
 let (≤) := (<=) in 
 let (<) := (\a \b a <= b && not (b <= a)) in 
 let (=) := (\a \b a <= b && b <= a) in 
@@ -20,9 +21,9 @@ let divmod := \a \b
 	if (0 <= a)
 		divmod0 a b
 	$else
-		let ar := (divmod0 a b) in 
-		let c := head ar in 
-		let r := head (tail ar) in 
+		let cr := (divmod0 a b) in 
+		let c := head cr in 
+		let r := head (tail cr) in 
 		rem "sign of r is either negative or r is equal to zero. Note that resulting modulus must always be positive or zero."
 		if (r < 0)
 			if (b < 0)
@@ -37,7 +38,9 @@ let positive? := (\a a > 0) in
 let negative? := (\a a < 0) in 
 let even? := (\a mod0 a 2 = 0) in 
 let odd? := (\a not (even? a)) in 
-rem "TODO finite infinite nan (nan is not positive or negative or zero)"
+let finite? := \a 
+	not (infinite? a) && not (nan? a)
+in 
 let div := (\a \b head (divmod a b)) in 
 let mod := (\a \b head (tail (divmod a b))) in 
 let (%) := mod0 in 
@@ -85,5 +88,5 @@ let gcd := (rec\gcd \a \b
 	$else
 		gcd b (a % b)
 ) in 
-(requireModule "Composition").dispatch (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt modulo within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd?])
+(requireModule "Composition").dispatch (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt modulo within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity?])
 raiseMissingSymbolError

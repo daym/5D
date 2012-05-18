@@ -61,7 +61,7 @@ static BigUnsigned unsigneds[] = {
 };
 static std::map<AST::Symbol*, AST::NodeT> cachedDynamicBuiltins;
 static AST::NodeT get_dynamic_builtin(const char* name) {
-	if((name[0] >= '0' && name[0] <= '9') || name[0] == '-') { /* hello, number */
+	if((name[0] >= '0' && name[0] <= '9') || name[0] == '-' || ((name[0] == 'i' || name[0] == 'n') && name[1] && name[strlen(name) - 2] == '.')) { /* hello, number. The latter is to support strange things like 'inf.0' and 'nan.0' */
 		long int value;
 		char* endptr = NULL;
 		value = strtol(name, &endptr, 10);
@@ -642,6 +642,27 @@ IMPLEMENT_NUMERIC_BUILTIN(divideA, /)
 DEFINE_BINARY_OPERATION(Divider, divideARatio)
 DEFINE_BINARY_OPERATION(QModulator2, divmod0A)
 /* TODO "non-numeric" comparison (i.e. strings) */
+/* FIXME
+These procedures [should] return #t if their arguments are (respectively): equal, monotonically increasing, monotonically decreasing, monotonically nondecreasing, or monotonically nonincreasing, and #f otherwise.
+
+(= +inf.0 +inf.0)                   ⇒  #t
+(= -inf.0 +inf.0)                   ⇒  #f
+(= -inf.0 -inf.0)                   ⇒  #t
+
+For any real number object x that is neither infinite nor NaN:
+
+(< -inf.0 x +inf.0))                ⇒  #t
+(> +inf.0 x -inf.0))                ⇒  #t
+
+For any number object z:
+(= +nan.0 z)                       ⇒  #f
+
+For any real number object x:
+(< +nan.0 x)                       ⇒  #f
+(> +nan.0 x)                       ⇒  #f
+
+These predicates must be transitive.
+*/
 IMPLEMENT_NUMERIC_BUILTIN(leqA, <=)
 DEFINE_BINARY_OPERATION(LEComparer, leqA)
 DEFINE_BINARY_OPERATION(AddrLEComparer, compareAddrsLEA)
@@ -751,6 +772,17 @@ DEFINE_SIMPLE_OPERATION(AbstractionP, AST::abstraction_P(reduce(argument)))
 DEFINE_SIMPLE_OPERATION(AbstractionParameterGetter, AST::get_abstraction_parameter(ensureAbstraction(reduce(argument))))
 DEFINE_SIMPLE_OPERATION(AbstractionBodyGetter, AST::get_abstraction_body(ensureAbstraction(reduce(argument))))
 
+static Numbers::NativeFloat specialFloatValueOrZeroA(AST::NodeT node) {
+	Numbers::NativeFloat result;
+	node = reduce(node);
+	if(Numbers::float_P(node) && Numbers::toNativeFloat(node, result))
+		return(result);
+	else
+		return(0.0);
+}
+DEFINE_SIMPLE_OPERATION(InfinityChecker, Evaluators::internNative(isinf(specialFloatValueOrZeroA(argument))))
+DEFINE_SIMPLE_OPERATION(NanChecker, Evaluators::internNative(isnan(specialFloatValueOrZeroA(argument)) != 0))
+
 DEFINE_FULL_OPERATION(RFileMathParser, return(makeFileMathParserB(fn, argument)))
 DEFINE_FULL_OPERATION(RStrMathParser, return(makeStrMathParserB(fn, argument)))
 
@@ -788,6 +820,9 @@ REGISTER_BUILTIN(AbstractionParameterGetter, 1, 0, AST::symbolFromStr("fnParam")
 REGISTER_BUILTIN(AbstractionBodyGetter, 1, 0, AST::symbolFromStr("fnBody"))
 REGISTER_BUILTIN(RFileMathParser, (-3), 0, AST::symbolFromStr("parseMath!"))
 REGISTER_BUILTIN(RStrMathParser, (-2), 0, AST::symbolFromStr("parseMathStr"))
+/* Numeric Mathematics */
+REGISTER_BUILTIN(InfinityChecker, 1, 0, AST::symbolFromStr("infinite?"))
+REGISTER_BUILTIN(NanChecker, 1, 0, AST::symbolFromStr("nan?"))
 
 CXXArguments CXXfromArgumentsU(AST::NodeT options, AST::NodeT argument, int backwardsIndexOfArgumentNotToReduce) {
 	CXXArguments result;

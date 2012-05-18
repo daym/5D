@@ -37,6 +37,9 @@ AST::NodeT operator<=(const Float& a, const Float& b);
 AST::NodeT operator<=(const Real& a, const Real& b);
 
 bool toNativeFloat(AST::NodeT node, NativeFloat& result);
+bool float_P(AST::NodeT node);
+AST::NodeT nan(void);
+AST::NodeT infinity(void);
 
 };
 

@@ -137,6 +137,10 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, AST::symbolFromStr("#exports"), &Evaluators::HashExporter);
 	add_builtin_method(self, AST::symbolFromStr("mkgmtime!"), &Evaluators::GmtimeMaker);
 	add_builtin_method(self, AST::symbolFromStr("mktime!"), &Evaluators::TimeMaker);
+	add_builtin_method(self, AST::symbolFromStr("infinite?"), &Evaluators::InfinityChecker);
+	add_builtin_method(self, AST::symbolFromStr("nan?"), &Evaluators::NanChecker);
+	add_static_builtin_binding(self, AST::symbolFromStr("nan"), Numbers::nan());
+	add_static_builtin_binding(self, AST::symbolFromStr("infinity"), Numbers::infinity());
 	self["exports"] = consFromKeys(self.begin(), self.end()); // see Sexports
 }
 

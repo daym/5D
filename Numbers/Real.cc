@@ -26,7 +26,10 @@ AST::NodeT internNative(NativeFloat value) {
 	return(new Float(value));
 }
 
-DEFINE_SIMPLE_OPERATION(FloatP, dynamic_cast<Float*>(reduce(argument)) != NULL)
+bool float_P(AST::NodeT node) {
+	return(dynamic_cast<Float*>(node) != NULL);
+}
+DEFINE_SIMPLE_OPERATION(FloatP, float_P(reduce(argument)))
 
 AST::NodeT operator+(const Float& a, const Float& b) {
 	return(internNative(a.value + b.value)); /* FIXME */
@@ -82,6 +85,15 @@ bool toNativeFloat(AST::NodeT node, NativeFloat& result) {
 		result = (NativeFloat) value;
 		return((NativeInt) result == value);
 	}
+}
+
+static Float nanFloat(0.0/0.0);
+static Float infinityFloat(1.0/0.0);
+AST::NodeT nan(void) {
+	return(&nanFloat);
+}
+AST::NodeT infinity(void) {
+	return(&infinityFloat);
 }
 
 }; /* end namespace Numbers */
