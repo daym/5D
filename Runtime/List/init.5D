@@ -121,6 +121,19 @@ let zipBy := \zipper rec \zipBy \l1 \l2
 	$else 
 		(zipper (head l1) (head l2)):(zipBy (tail l1) (tail l2))
 in 
+let uniqBy := \(=) rec\uniq \list 
+	let h := head list in 
+	let t := tail list in 
+	if (nil? t)
+		h:[]
+	$else
+		let h2 := head t in 
+		if (h = h2)
+			uniq t
+		$else
+			h:(uniq t)
+in 
+let uniq := uniqBy (=) in 
 let zip := zipBy (\x \y [x y]) in 
 let repeatEndlessly := rec\repeatEndlessly \v v:(repeatEndlessly v) in 
 let transpose := \matrix foldr (zipBy (:)) (repeatEndlessly nil) matrix in 
@@ -129,5 +142,5 @@ let sum := \list foldr (+) 0 list in
 let product := \list foldr (*) 1 list in 
 let anyTrue? := \list foldr (||) #f list in 
 let allTrue? := \list foldr (&&) #t list in 
-Composition.dispatch (#exports[nil nil? cons? list? (:) (++) map merge mergeBy mergeSort mergeSortBy extremum drop foldl foldr filter length head tail reverse enumerate range range1 take takeWhile zip transpose zipBy sum product anyTrue? allTrue? frange frangeLL])
+Composition.dispatch (#exports[nil nil? cons? list? (:) (++) map merge mergeBy mergeSort mergeSortBy extremum drop foldl foldr filter length head tail reverse enumerate range range1 take takeWhile zip transpose zipBy sum product anyTrue? allTrue? frange frangeLL uniq uniqBy])
 raiseMissingSymbolError

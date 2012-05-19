@@ -1,7 +1,6 @@
 = Macros = 
 
 list comprehensions in []
-macro to make dispatch lists easier to write?
 
 = Bugs =
 
@@ -9,29 +8,21 @@ loading modules (for example the one where GetLastError! is in) causes GetLastEr
 
 = Builtin Types =
 
-numbers: 1. Int (done), 2. Integer (done), 3. Q, 4. Float (done), 5. arbitrary-precision fixed point
-^-- rounding, truncating.
+numbers: 5. arbitrary-precision fixed point
 equality (numbers, strings(?) and booleans (?) and symbols (?) and lists (?)) and non-equality.
 Builtin ops: power
-When printing builtin ops, revert to the symbol?
 Complex number literals: #C(3.2 2)
 Array literals: #(a b c)
-subseq "Hello, World" 2 9
-string-upcase
-strcmp
 
 = Packages =
 
 packages (namespaces)
 import xyz hiding (a, b, c)
-import xyz (a,b,c)
 import qualified ...
-import foo
 
 = Data Structures =
 
-sorting: quicksort (?), mergesort.
-uniq
+sorting: quicksort (?).
 searching: binary search, bisect.
 trees: binary trees, tries, red black trees.
 
@@ -41,17 +32,13 @@ trees: binary trees, tries, red black trees.
 
 = Pie-in-the-Sky =
 
-bool builtins: move them into the runtime and somehow have the parser find them anyway (?)
-move provide_dynamic_builtins into the reduce phase (?)
 provide hooks for big integers (?)
-provide callback used by the scanner for getting currently registered operators and their precedence
 (+3) = \x (x+3)
 #| commented out |#
 make it possible to define custom operators in the REPL
 function to join buffers (memoryview)
 merge Str and Integer into one (for integer, the str() is reversed, though). (or merge Str and List into one)
 move str() to the actual language
-#'print or (function print) to get the value in the function slot.
 
 = GUI =
 
@@ -68,11 +55,9 @@ Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).
 nested lists: line-break only for the second list if the first list is short enough.
 pattern-match env entry back to the let macro.
-setlocale(LC_ALL, "") without string conversion functions being idiots
 Indentation:
 	[(]    note how the auto) shouldn't close down yet - but it should close if we are back at the same paren level than we were before.
-.. range
-... range-with-unlimited-end
+range-with-unlimited-end
 <=> compare
 
 = Performance =
@@ -82,7 +67,7 @@ use hash table for dispatching FFI
 performance optimisation: use the lowest bit to signify pointers (1=it is one). This will have problems with native pointers maybe, so also override the native allocator.
 degrade from Integer to Int when possible.
 $! strict applicator
-make AST::Symbol const everywhere (best to introduce a Symbol_t or something)
+make AST::Symbol const everywhere (introduce a Symbol_t ?)
 maybe delay and force
 tail recursion elimination.
 cache numbers for some time?
@@ -92,8 +77,6 @@ http://en.wikipedia.org/wiki/Lehmer%27s_GCD_algorithm
 
 --x
 "# " as line comment starter (=> rem)
-unary posfix operators like "!"?
-readFromString "XYZ" -> (quoted) AST
 eval AST userInitialEnvironment
 add custom literal parsers
 make an extra "]" emit a nicer error message
@@ -109,10 +92,8 @@ If there are open parens, ignore indentation (note that this is the LEXER and so
 sort exports
 Just representing Str as a Integer would be a lot less weird and automatically allow comparisons to work as one would expect. However, it's unconventional. However, this would only be fast for little-endian architectures (as BigUnsigned Blks are ordered LSB first). Moreover, I don't think that Strings are manipulated that often.
 add atomic? flag to allocateRecord and duplicateRecord.
-use libffi (but: hello, Windows... sigh)
 Either don't throw C++ exceptions or actually represent them somehow when one is thrown while reducing.
 exception handling? ftp://ftp.cs.indiana.edu/pub/scheme-repository/doc/prop/exceptions.ss
-NaN handling (ugh...)
 put "describe" into module dispatcher.
 make it possible to disable the searching for modules in the current directory!
 ARM: support FPA10 floating-point accelerator (80 bit registers)
@@ -122,11 +103,11 @@ module: once an unknown identifier is encountered, maybe auto-provide them to th
 \(**)
 (fn? Builtins) should be true since a module can be used exactly like a function can (that it isn't one is just an implementation detail!) - so RModule "are" functions.
 allow building our own OperationPrecedenceList from within 5D.
-Instead of 'dispatch, memoizing a normal conditional (into a HashTable) should be enough.
 Fix HashTable to use a prime size.
 What about comparing (-0.0) and 0.0 ?
 Handle division by zero for ratios?
 -D_FORTIFY_SOURCE=1
+Maybe disable macros in a 'quote.
 
 = Debugging Macros =
 
@@ -145,19 +126,14 @@ Messagebox custom buttons
 
 = GC =
 
-fix Shunting Yard deque?
 (by default, make allocators use GC_uncollectable_malloc - done by LD_PRELOAD)
 
 = Modules =
 
 String.make 10 'x'
-String.length "xxx"
 String.lowercase "MARY"
-String.join "/" ["" "usr" "local" "bin"]
-List.reverse [1 2 3]
-List.head [1 2 3]
-fst
-snd
+string-upcase
+strcmp
 
 = Interop =
 
@@ -177,8 +153,3 @@ Nicer Fortran Call-by-name support (i.e. allow creation of a temporary and pass 
 = OS module =
 
 OS.openFile!
-
-= Object Orientation =
-
-Derive everything from Object, not from raiseMissingSymbolError.
-

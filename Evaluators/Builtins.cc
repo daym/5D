@@ -61,7 +61,7 @@ static BigUnsigned unsigneds[] = {
 };
 static std::map<AST::Symbol*, AST::NodeT> cachedDynamicBuiltins;
 static AST::NodeT get_dynamic_builtin(const char* name) {
-	if((name[0] >= '0' && name[0] <= '9') || name[0] == '-' || ((name[0] == 'i' || name[0] == 'n') && name[1] && name[strlen(name) - 2] == '.')) { /* hello, number. The latter is to support strange things like 'inf.0' and 'nan.0' */
+	if((name[0] >= '0' && name[0] <= '9') || name[0] == '-') {
 		long int value;
 		char* endptr = NULL;
 		value = strtol(name, &endptr, 10);
@@ -99,8 +99,14 @@ static AST::NodeT get_dynamic_builtin(const char* name) {
 			}
 		}
 		return(Numbers::internNative((NativeInt) value));
-	} else
-		return(NULL);
+	}/* else if(name[0] == 'i') {
+		if(strcmp(name, "inf.0") == 0)
+			return(Numbers::internNative((Numbers::NativeFloat) 1.0 / 0.0));
+	} else if(name[0] == 'n') {
+		if(strcmp(name, "nan.0") == 0)
+			return(Numbers::internNative((Numbers::NativeFloat) 0.0 / 0.0));
+	}*/
+	return(NULL);
 }
 AST::NodeT provide_dynamic_builtins_impl(AST::NodeT body, AST::HashTable::const_iterator end_iter, AST::HashTable::const_iterator iter) {
 	if(iter == end_iter)

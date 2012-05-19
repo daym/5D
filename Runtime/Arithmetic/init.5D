@@ -6,6 +6,8 @@ import [dispatch raiseMissingSymbolError rem rec flip ($)] from Composition in
 import [not (&&) (||) if else] from Logic in 
 import [(-) (*) (/) (+) (<=) divmod0] from Builtins in 
 let infinity? := infinite? in 
+let inf? := infinite? in 
+let inf := infinity in 
 let (≤) := (<=) in 
 let (<) := (\a \b a <= b && not (b <= a)) in 
 let (=) := (\a \b a <= b && b <= a) in 
@@ -16,7 +18,7 @@ let (/=) := \a \b not (a = b) in
 let abs := (\x if (x <= 0) (0 - x) x) in 
 let div0 := (\a \b head (divmod0 a b)) in 
 let mod0 := (\a \b head (tail (divmod0 a b))) in 
-let modulo := (\a \b mod0 (b + mod0 a b) b) in 
+rem'(modulo := (\a \b mod0 (b + mod0 a b) b) in)
 let divmod := \a \b
 	if (0 <= a)
 		divmod0 a b
@@ -46,8 +48,14 @@ let mod := (\a \b head (tail (divmod a b))) in
 let (%) := mod0 in 
 let pi := 3.141592653589793 in 
 let π := pi in 
-let cos := (\xx (\x (\cos if (x >= pi) (0 - cos (modulo x pi)) (cos x)) (\x 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720)) (modulo xx 2*pi)) in 
-let sin := (\xx (\sin (\x if (x >= pi) (0 - sin (modulo x pi)) (sin x)) (modulo xx 2*pi)) (\x x - x*x*x/6 + x*x*x*x*x/120 - x*x*x*x*x*x*x/(120*6*7))) in 
+let cos := \angle
+	let approx := (\x 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720) in 
+	approx (mod0 angle 2⋅pi)
+in
+let sin := \angle
+	let approx := (\x x - x*x*x/6 + x*x*x*x*x/120 - x*x*x*x*x*x*x/(120*6*7)) in 
+	approx (mod0 angle 2⋅pi)
+in
 let tan := (\x (sin x)/(cos x)) in 
 let next := (\N \x (x + N/x)/2) in 
 let within := (\eps rec (\within \list (\a (\b if (abs (a - b) <= eps) b (within b:(tail (tail list)))) (head (tail list))) (head list))) in 
@@ -88,5 +96,5 @@ let gcd := (rec\gcd \a \b
 	$else
 		gcd b (a % b)
 ) in 
-(requireModule "Composition").dispatch (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt modulo within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity?])
+(requireModule "Composition").dispatch (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf?])
 raiseMissingSymbolError

@@ -15,9 +15,13 @@ REGISTER_STR(Float, {
 	sst << node->value;
 	std::string v = sst.str();
 	const char* vc = v.c_str();
-	if(strpbrk(vc, ".eE") == NULL)
+	if(*vc == '-')
+		++vc;
+	if(strpbrk(vc, ".eE") == NULL && (vc[0] >= '0' && vc[0] <= '9')) { /* not a special value like inf or nan */
 		sst << ".0";
-	return(sst.str());
+		v = sst.str();
+	}
+	return(v);
 })
 
 REGISTER_STR(Real, return("FIXME");)
