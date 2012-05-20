@@ -4,7 +4,7 @@ let Composition := requireModule "Composition" in
 let Logic := requireModule "Logic" in 
 let Arithmetic := requireModule "Arithmetic" in 
 import [if else elif] from Logic in 
-import [divmod0 (/=)] from Arithmetic in 
+import [divmod0 (/=) (+) (-) (<)] from Arithmetic in 
 import [($) rec (|)] from Composition in 
 import [head tail nil? foldr map drop (++) reverse] from List in 
 import [listFromStr str? strFromKeyword strFromList substr] from Builtins in 
@@ -21,14 +21,18 @@ let strjoin := (\sep \strings
 	$else
 		strFromList (drop (List.length sepl) (strjoinp sepl strings))
 ) in 
-let strFromInteger := 
-	let build := rec\strFromInteger\a
-		let cr := divmod0 a 10 in 
+let strFromIntegerBase := 
+	let build := \base rec\build\a
+		let cr := divmod0 a base in 
 		let c := head cr in 
 		let r := head (tail cr) in 
-		(#\0 + r):(if (c /= 0) (strFromInteger c) $else [])
+		(#\0 + r):(if (c /= 0) (build c) $else [])
 	in 
-	\a
-	build a | reverse | strFromList
+	\base \value
+	if (value < 0)
+		#\-:(build base (-value) | reverse) | strFromList
+	$else
+		build base value | reverse | strFromList
 in 
+let strFromInteger := strFromIntegerBase 10 in 
 (requireModule "Composition").dispatch1 (#exports[listFromStr str? strFromKeyword strFromList substr strcat strjoin strFromInteger])
