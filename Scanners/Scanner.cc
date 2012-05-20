@@ -493,8 +493,13 @@ void Scanner::parse_special_coding(int input) {
 		if(input != EOF) {
 			if(input == '\\')
 				input_value = AST::symbolFromStr("\\");
-			else
+			else if(symbol1_char_P(input))
 				parse_symbol(input);
+			else {
+				char buf[2] = {0};
+				buf[0] = input;
+				input_value = AST::symbolFromStr(buf);
+			}
 			// allow these to be overridden input_value = Numbers::internNative((Numbers::NativeInt) input);
 			std::stringstream sst;
 			const char* n;
