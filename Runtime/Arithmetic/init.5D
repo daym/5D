@@ -2,8 +2,8 @@ let Logic := requireModule "Logic" in
 let Composition := requireModule "Composition" in 
 let Error := requireModule "Error" in 
 import [head tail (:) nan? infinite? nan infinity] from Builtins in 
-import [dispatch raiseMissingSymbolError rem rec flip ($)] from Composition in 
-import [not (&&) (||) if else] from Logic in 
+import [dispatch raiseMissingSymbolError rem rec flip ($) compose] from Composition in 
+import [not (&&) (||) if else elif] from Logic in 
 import [(-) (*) (/) (+) (<=) divmod0] from Builtins in 
 let infinity? := infinite? in 
 let inf? := infinite? in 
@@ -58,9 +58,32 @@ let sin := \angle
 in
 let tan := (\x (sin x)/(cos x)) in 
 let next := (\N \x (x + N/x)/2) in 
-let within := (\eps rec (\within \list (\a (\b if (abs (a - b) <= eps) b (within b:(tail (tail list)))) (head (tail list))) (head list))) in 
+let relativeWithin := \eps rec\within \list
+	rem "doesn't work for √0"
+	let a := head list in 
+	let b := head (tail list) in 
+	if (abs (a - b) <= eps*(abs b)) 
+		b 
+	$else
+		within b:(tail (tail list))
+in 
+let within := \eps rec\within \list
+	let a := head list in 
+	let b := head (tail list) in 
+	if (abs (a - b) <= eps) 
+		b 
+	$else
+		within b:(tail (tail list))
+in 
 let repeat := (\f rec (\repeat \a a:(repeat (f a)))) in 
-let sqrtEps := (\a0 \eps \N within eps (repeat (next N) a0)) in 
+let sqrtEps := \a0 \eps \N 
+	if (N < eps)
+		0
+	$elif (N < 10)
+		relativeWithin eps (repeat (next N) a0) 
+	$else
+		within eps (repeat (next N) a0) 
+in 
 let sqrt := sqrtEps 1 0.001 in 
 let √ := sqrt in 
 let ground := (\v div0 v 1) in 
@@ -96,5 +119,19 @@ let gcd := (rec\gcd \a \b
 	$else
 		gcd b (a % b)
 ) in 
-(requireModule "Composition").dispatch (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf?])
-raiseMissingSymbolError
+let (**) := \a rec\r\b
+	rem "FIXME non-natural b"
+	if (b = 0)
+		1
+	$else
+		a*(r (b - 1))
+in 
+let log2 := rec\log2 \a
+	rem "FIXME"
+	if(a <= 1)
+		0
+	$else
+		1 + (log2 (a/2))
+in 
+let round1Log2 := compose round1 log2 in 
+(requireModule "Composition").dispatch1 (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? log2 round1Log2 (**)])
