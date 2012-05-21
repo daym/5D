@@ -145,5 +145,4 @@ let sum := \list foldr (+) 0 list in
 let product := \list foldr (*) 1 list in 
 let anyTrue? := \list foldr (||) #f list in 
 let allTrue? := \list foldr (&&) #t list in 
-Composition.dispatch (#exports[nil nil? cons? list? (:) (++) map merge mergeBy mergeSort mergeSortBy extremum drop foldl foldr filter length head tail reverse enumerate range range1 take takeWhile zip transpose zipBy sum product anyTrue? allTrue? frange frangeLL uniq uniqBy])
-raiseMissingSymbolError
+Composition.dispatch1 (#exports[nil nil? cons? list? (:) (++) map merge mergeBy mergeSort mergeSortBy extremum drop foldl foldr filter length head tail reverse enumerate range range1 take takeWhile zip transpose zipBy sum product anyTrue? allTrue? frange frangeLL uniq uniqBy])
