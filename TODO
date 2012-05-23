@@ -83,6 +83,7 @@ make an extra "]" emit a nicer error message
 
 = Correctness =
 
+(odd? inf) is true because it's implemented as "not even" and inf is not even.
 Don't reduce in REPL_execute. Instead make sure the printer etc evaluates thunks before using them. Note that a thunk isn't just an application node since then it wouldn't know how to reduce the arguments. Hence there's a need for storing the environment and the expression to evaluate for later use.
 Have the predicates check for non-SymbolReference non-quoted symbols or non-executed applications and if so, return "we can't do it"?
 Floats only work to 3E38, it seems. What about higher numbers? (there's no such limit for 3E-999999)
