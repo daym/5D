@@ -68,7 +68,7 @@ Formatters/Math.o: Formatters/Math.cc Formatters/Math AST/Symbol AST/AST Evaluat
 Formatters/UTFStateMachine.o: Formatters/UTFStateMachine.cc Formatters/UTFStateMachine Formatters/UTF-8_to_LATEX_result.h
 Formatters/UTF-8_to_LATEX_result.h: Formatters/UTF-8_to_LATEX.table Formatters/generate-state-machine
 	Formatters/generate-state-machine Formatters/UTF-8_to_LATEX.table >tmp4711 && mv tmp4711 Formatters/UTF-8_to_LATEX_result.h
-AST/AST.o: AST/AST.cc AST/AST AST/Symbol
+AST/AST.o: AST/AST.cc AST/AST AST/Symbol FFIs/Allocators
 AST/test-AST.o: AST/test-AST.cc AST/AST
 AST/test-Symbol.o: AST/test-Symbol.cc FFIs/Allocators AST/Symbol AST/AST AST/HashTable
 AST/test-Keyword.o: AST/test-Keyword.cc FFIs/Allocators AST/Keyword AST/AST AST/HashTable
