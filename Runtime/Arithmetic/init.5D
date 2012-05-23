@@ -50,11 +50,11 @@ let pi := 3.141592653589793 in
 let π := pi in 
 let cos := \angle
 	let approx := (\x 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720) in 
-	approx (mod0 angle 2⋅pi)
+	approx ((mod (angle + pi) 2⋅pi) - pi)
 in
 let sin := \angle
 	let approx := (\x x - x*x*x/6 + x*x*x*x*x/120 - x*x*x*x*x*x*x/(120*6*7)) in 
-	approx (mod0 angle 2⋅pi)
+	approx ((mod (angle + pi) 2⋅pi) - pi)
 in
 let tan := (\x (sin x)/(cos x)) in 
 let next := (\N \x (x + N/x)/2) in 
