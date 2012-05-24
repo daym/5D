@@ -5,7 +5,7 @@ Name 5D
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.6.2
+!define VERSION 0.6.4
 !define COMPANY "X"
 !define URL ""
 
@@ -109,6 +109,9 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\share\Error
     SetOverwrite on
     File ..\Runtime\Error\init.5D
+    SetOutPath $INSTDIR\share\Tree
+    SetOverwrite on
+    File ..\Runtime\Tree\init.5D
 
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
     
