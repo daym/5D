@@ -259,7 +259,7 @@ static AST::NodeT powersOf10[8] = {
 };
 static void get_DECIMAL(AST::NodeT source, DECIMAL* dest) {
 	// dest->wReserved = 0; ???  we assume that the caller took care of that (ugh).
-	AST::NodeT c = Evaluators::divremA(source, (Int*) powersOf10[0], NULL);
+	AST::NodeT c = Evaluators::divmod0A(source, (Int*) powersOf10[0], NULL);
 	if(!c || ! cons_P(c))
 		throw EvaluationException("cannot convert that to DECIMAL");
 	AST::NodeT root = get_cons_head(c); // the integral part.
