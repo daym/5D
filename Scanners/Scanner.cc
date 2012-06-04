@@ -563,7 +563,7 @@ static bool operatorCharP(int input) {
 	// without '#' for now (not sure whether that's good. TODO find out)
 	// without '@' for now (keywords).
 	// without braces 40 41 91 93
-	return((input >= 33 && input < 35) || (input >= 36 && input < 48 && input != '(' && input != ')') || (input >= 58 && input < 64) || (input == '^') || (input == '|') || (input == '~')) || input == '[' || input == ']';
+	return(input == '!' || (input >= 36 && input < 48 && input != '(' && input != ')') || (input >= 58 && input < 64) || (input == '^') || (input == '|') || (input == '~')) || input == '[' || input == ']';
 }
 void Scanner::parse_operator(int input) {
 	std::stringstream sst;
