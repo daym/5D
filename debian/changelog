@@ -4,6 +4,8 @@
   * GTK LATEX bridge: make sure document is kept until it was actually used.
   * add "import" macro (import [a b c d] from (requireModule "X") in ...).
   * add floor, ceil, div0, mod0, divmod0, div, mod, nan?, infinite?, finite? to "Arithmetic".
+  * make doublequote be a standalone operator.
+  * make (%) synonym for "mod", not "mod0".
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Fri, 11 May 2012 15:08:00 +0200
 
