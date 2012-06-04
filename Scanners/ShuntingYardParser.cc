@@ -206,7 +206,7 @@ AST::NodeT ShuntingYardParser::handle_unary_operator(AST::NodeT operator_) {
 static AST::NodeT macro_standin_operator(AST::NodeT op1) {
 	return Evaluators::cons_P(op1) ? AST::get_cons_head(op1) : NULL;
 }
-// [a b c d e f g], f, body => \a \b \c \d \e \f \g body) (f a) (f b) (f c) ...
+// [a b c d e f g], F, body => \a \b \c \d \e \f \g body) (F a) (F b) (F c) ...
 static AST::NodeT closeMany(AST::NodeT symbols, AST::NodeT dependency, AST::NodeT suffix) {
 	// note that #symbols in unevaluated (save for the macro expansions) as you would expect.
 	//return(Evaluators::close(parameter, replacement, suffix));
@@ -218,7 +218,7 @@ static AST::NodeT closeMany(AST::NodeT symbols, AST::NodeT dependency, AST::Node
 		AST::NodeT r = AST::get_application_operand(symbols);
 		// note: possible module access.
 		return(Evaluators::close(a, AST::makeApplication(dependency, Evaluators::quote(a)), closeMany(r, dependency, suffix)));
-	} else { /* assume nil. FIXME check. */
+	} else { /* assume nil. */
 		assert(symbols == Symbols::Snil);
 		return(suffix);
 	}
