@@ -1,14 +1,9 @@
 let List := requireModule "List" in 
 let Composition := requireModule "Composition" in 
 let Logic := requireModule "Logic" in 
-let rem := Composition.rem in 
-let ($) := Composition.($) in 
-let if := Logic.if in 
-let else := Logic.else in 
-let elif := Logic.elif in 
-let not := Logic.not in 
-let nil := List.nil in 
-let nil? := List.nil? in 
+import [rem ($)] from Composition in 
+import [if else elif not] from Logic in 
+import [nil nil?] from List in 
 rem "accessor for 'just part"
 rem "TODO check whether it's actually not nothing."
 let nothing := nil in 
