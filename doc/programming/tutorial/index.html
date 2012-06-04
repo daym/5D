@@ -181,7 +181,7 @@ REPL.define! 'f rec \self \x (self 1)      -- endless recursion, but it works
 <p>There's a more traditional way, too:</p>
 <pre>
 REPL.import! "Composition"
-REPL.defrec! 'f \x (f 1)      -- endless recursion, but it works
+REPL.defrec! 'f \x (f 1)      - endless recursion, but it works
 </pre>
 <p><span class="pre">defrec</span> is a macro which expands to the former. Note that <span class="pre">defrec</span> only works (usefully) for function definitions.</p>
 -->
@@ -276,6 +276,40 @@ $else
 <p>These work as follows:</p>
 <p>If the indentation (number of whitespace characters at the beginning of the line) increased compared to the previous line, then a "(" is inserted.</p>
 <p>If the indentation decreased compared to the previous lines, then one or more ")" are inserted until previous blocks up and excluding the current block are closed.</p>
+
+<h3>Abbreviations</h3>
+
+<h4>Single Abbreviation</h4>
+<p>If you want to abbreviate some formula you use often, you can use the <span class="pre" title="let macro">let</span> macro.</p>
+<p><span class="pre">let a := b in c</span> expands to <span class="pre">(\a c) b</span>, the macro argument order being more common for programmers.</p>
+<pre>
+let pi := 3.141592 in 
+2⋅pi
+</pre>
+<p>Result is:</p>
+<pre>
+6.283184
+</pre>
+<p>Because:</p>
+<pre>
+((\pi 2⋅pi) 3.141592) =&gt; 6.283184
+</pre>
+
+<h4>Mass Abbreviation</h4>
+<p>If you want to abbreviate a lot of <span class="pre" title="let macro">let</span>s, you can use the <span class="pre" title="import macro">import</span> macro.</p>
+<p><span class="pre">import [a b c d] from F in B</span> expands to:</p>
+<pre>
+let a := F.a in 
+let b := F.b in 
+let c := F.c in 
+let d := F.d in 
+B
+</pre>
+<p>For example:</p>
+<pre>
+import [(+) (-) (*) (/)] from (requireModule "Arithmetic") in 
+5 + 2*3
+</pre>
 
 <h2>Further Reading</h2>
 <p>See the <a href="../../library/index.html">5D Library Documentation</a> for functions available to you.</p>
