@@ -77,80 +77,96 @@ mayTheForceBeWithYou42
 <h2>Programming by example</h2>
 <h3>Hello world</h3>
 <pre>
+#!/usr/bin/λ -i
 REPL.import! "IO"
 write! stdout "Hello world"
 </pre>
+<p>Note that you need to specify (using <span class="pre">-i</span>) that you want IO to happen (rather than just be described).</p>
 <p>What this does is:</p>
 <p><span class="pre">write! \file \text</span> will write text, once a World is given (i.e. by calling the interpreter with <span class="pre" title="world starter">-i</span> or chaining actions with <span class="pre" title="World time sequencer">;</span>).</p>
 
 <h3>Mathematics</h3>
-<p>The usual calculator mathematics work, however, you have to return them:</p>
+<p>The usual calculator mathematics work (note: no <span class="pre">-i</span>):</p>
 <pre>
-REPL.import! "Arithmetic"
-return! (5 + 2) =&gt; 7
+#!/usr/bin/λ
+let Arithmetic := requireModule "Arithmetic" in 
+import [(+)] from Arithmetic in 
+(5 + 2) =&gt; 7
 </pre>
 <pre>
-REPL.import! "Arithmetic"
+#!/usr/bin/λ
+let Arithmetic := requireModule "Arithmetic" in 
+import [(+) (⋅)] from Arithmetic in 
+(5 + 2⋅3) =&gt; 11
+</pre>
+<p><a href="">Operator precedence</a> is as you would expect</p>
+<pre>
+#!/usr/bin/λ
+let Arithmetic := requireModule "Arithmetic" in 
+import [(+) (⋅)] from Arithmetic in 
 return! (5 + 2⋅3) =&gt; 11
 </pre>
-<p><a href="">Operator precedence</a> is as you would expect, with one strange quirk: 2⋅f x means (2⋅f) x</p>
 <pre>
-REPL.import! "Arithmetic"
-return! (5 + 2⋅3) =&gt; 11
-</pre>
-<pre>
-REPL.import! "Arithmetic"
-REPL.define! 'f \x x⋅x
-return! (5 + 2⋅(f 3)) =&gt; 23
-return! (5 + 2⋅f 3) =&gt; ??????
+#!/usr/bin/λ
+let Arithmetic := requireModule "Arithmetic" in 
+import [(+) (⋅)] from Arithmetic in 
+let f := \x x⋅x in 
+(5 + 2⋅(f 3)) =&gt; 23
 </pre>
 <p>Here, the function f is defined to be a function of x, giving the square of x.</p>
-<p>Then the function f is called with the argument 3. The following works, too (although it has more parens for no reason):</p>
+<p>Then the function f is called with the argument 3.</p>
+<p>However, there is one strange quirk: 2⋅f x means (2⋅f) x:</p>
 <pre>
-REPL.import! "Arithmetic"
-REPL.define! 'f\x x⋅x
-return! (5 + 2⋅(f(3))) =&gt; 23
+#!/usr/bin/λ
+let Arithmetic := requireModule "Arithmetic" in 
+import [(+) (⋅)] from Arithmetic in 
+let f := \x x⋅x in 
+(5 + 2⋅f 3) =&gt; ???
+</pre>
+<p>The following works, too (although it has more parens for no reason):</p>
+<pre>
+#!/usr/bin/λ
+let Arithmetic := requireModule "Arithmetic" in 
+import [(+) (⋅)] from Arithmetic in 
+let f := \x x⋅x in 
+(5 + 2⋅(f(3))) =&gt; 23
 </pre>
 <p>Or if it's the first operand of multiplication:</p>
 <pre>
-REPL.import! "Arithmetic"
-REPL.define! 'f \x x⋅x
-return! (5 + (f 3)⋅2) =&gt; 23
+#!/usr/bin/λ
+let Arithmetic := requireModule "Arithmetic" in 
+import [(+) (⋅)] from Arithmetic in 
+let f := \x x⋅x in 
+(5 + (f 3)⋅2) =&gt; 23
 </pre>
 <p>Note that <span class="pre">*</span> works for multiplication as well (and is the same thing):</p>
 <pre>
-REPL.import! "Arithmetic"
-REPL.define! 'f \x x⋅x
-return! (5 + (f 3)*2) =&gt; 23
-</pre>
-<h3>Reflection</h3>
-<p>Sometimes you want to know how a function was originally defined (as opposed to how it was actually implemented).</p>
-<p>Therefore, the REPL has a command to retrieve the original definition:</p>
-<p>Note that you need to put parenthesis around operators (in order to prevent them from asserting their own precedence).</p>
-<pre>
-REPL.import! "Reflection"
-REPL.import! "IO"
-REPL.define! 'f \x x*x
-REPL.describe! 'f =&gt; \x x*x
-REPL.describe! '(;) =&gt; \m \ber \world (\r ber (ioValue r) (ioWorld r)) (m world)
-</pre>
-<p>If there are multiple overrides for the definition, try using @backOffset: to reach back. The value is an integer starting at 0 (which is the default) stating how many definitions using <em>this</em> symbol back you want to reach.</p>
-<pre>
-REPL.import! "Reflection"
-REPL.describe! @backOffset:1 'g =&gt; \x x*x
+#!/usr/bin/λ
+let Arithmetic := requireModule "Arithmetic" in 
+import [(+) (*)] from Arithmetic in 
+(5 + (f 3)*2) =&gt; 23
 </pre>
 <h3>Conditionals</h3>
 <pre>
-REPL.import! "Logic"
-REPL.import! "Composition"
-REPL.define! 'abs \x if (x ≥ 0)  (x)
-                     $else       (-x)
+let Arithmetic := requireModule "Arithmetic" in 
+let Logic := requireModule "Logic" in 
+let Composition := requireModule "Composition" in 
+import [(≥)] from Arithmetic in 
+import [(if) (else)] from Logic in 
+import [($)] from Composition in 
+let abs := \x if (x ≥ 0) x $else (-x) in 
+abs (-2) =&gt; 2
 </pre>
 <h3>Logical Operators and Logical Functions and Logical Values</h3>
 <pre>
-REPL.import! "Logic"
-#t
-#f
+#!/usr/bin/λ
+let Logic := requireModule "Logic" in 
+let Composition := requireModule "Composition" in 
+import [(if) (else)] from Logic in 
+import [($)] from Composition in 
+assert [
+#t =&gt; #t
+#f =&gt; #t
 #f &amp;&amp; #f    =&gt; #f
 #f &amp;&amp; #t    =&gt; #f
 #t &amp;&amp; #f    =&gt; #f
@@ -161,21 +177,7 @@ REPL.import! "Logic"
 #t || #t    =&gt; #t
 not #f      =&gt; #t
 not #t      =&gt; #f
-</pre>
-<h3>Recursion</h3>
-<p>Usually, the function name is <em>not</em> available within the function:</p>
-<pre>
-REPL.define! 'f \x (f 1)      -- makes no sense
-</pre>
-<p>If you want it to do recursion, do it like this:</p>
-<pre>
-REPL.import! "Composition"
-REPL.define! 'f rec \f \x (f 1)      -- endless recursion, but it works
-</pre>
-<p>Or like this, which is exactly the same:</p>
-<pre>
-REPL.import! "Composition"
-REPL.define! 'f rec \self \x (self 1)      -- endless recursion, but it works
+]
 </pre>
 <!--
 <p>There's a more traditional way, too:</p>
@@ -185,20 +187,13 @@ REPL.defrec! 'f \x (f 1)      - endless recursion, but it works
 </pre>
 <p><span class="pre">defrec</span> is a macro which expands to the former. Note that <span class="pre">defrec</span> only works (usefully) for function definitions.</p>
 -->
-<p>Note that the reason that <span class="pre">define! 'f</span> doesn't make f available within the body of f is that you can refer to previous definitions of f within the new definition of f.</p>
-<p>An example will make that clearer:</p>
-<pre>
-REPL.import! "Logic"
-REPL.import! "Arithmetic"
-REPL.define! 'f \x (x**x)
-REPL.define! 'f \x if (x = 0)   1
-                               (f x)    -- refers to the previous definition.
-</pre>
 <h3>Lists</h3>
 <p>The simplest form of list is the linked list.</p>
 <p>Nodes of a linked list are created by <span class="pre" title="list constructor">:</span> like this:</p>
 <pre>
-REPL.import! "List"
+#!/usr/bin/λ
+let List := requireModule "List" in 
+import [(:) nil] from List in 
 42:24:12:nil
 </pre>
 <p>This is a list with 3 elements, linked together through the tail. The last element has <span class="pre">nil</span> tail.</p>
@@ -216,36 +211,41 @@ list? nil                   =&gt; #t
 </pre>
 <p>There's also a shorthand macro for creating lists used like this:</p>
 <pre>
-REPL.import! "List"
+let List := requireModule "List" in 
+import [(:) nil] from List in 
 [42 24 12]
 </pre>
 <h3>Literal Names</h3>
 <p>Sometimes you want to <em>not</em> reduce a function or operator to their definition but rather leave the name. To do so, prefix their name by <span class="pre">quote</span> or <span class="pre" title="quote">'</span></p>
 <pre>
-REPL.import! "Reflection"
-REPL.define! 'x 2
-x            =&gt; 2
-quote x      =&gt; x       -- NOT 2
-'x           =&gt; x       -- NOT 2
-symbol? 'x   =&gt; #t
-symbol? x    =&gt; #f
+let x := 2 in 
+'x =&gt; x
 </pre>
+<p>However:</p>
+<pre>
+let x := 2 in 
+x =&gt; 2
+</pre>
+
 <h3>Keyword Arguments</h3>
 <pre>
+#!/usr/bin/λ -i
 REPL.import! "IO"
 fopen @mode:"w" "foo.INI.temp"        -- Keyword Arguments need to be before normal arguments.
 </pre>
 <h3>Conditionals</h3>
 <p>Conditionals are used for flow control. Note that the result of a conditional is a Church functional.</p>
-<p>If you want to see a short result on screen, use the following:</p>
+<p>If you want to see a short result on screen, use something like the following:</p>
 <pre>
-REPL.import! "Logic"
-#t &amp;&amp; #t =&gt; \t \f (\t \f t) ((\t \f t) t f) f
-if (#t &amp;&amp; #t) 't $else 'f =&gt; t
+#!/usr/bin/λ
+let Logic := requireModule "Logic" in 
+if (#t &amp;&amp; #t) 'yes $else 'no =&gt; yes
 </pre>
 <h3>I/O</h3>
 <pre>
-REPL.import! "IO"
+#!/usr/bin/λ -i
+let IO := requireModule "IO" in 
+import [write! flush! readline! return! stdout] from IO in 
 write! stdout "What's your name? " ;\_
 flush! stdout ;\_
 readline! stdin ;\name
@@ -262,8 +262,12 @@ return! name
 <h3>Indentation</h3>
 <p>If you want to spread your programs over multiple lines, you can. However, then, indentation rules come into effect.</p>
 <pre>
-REPL.import! "Logic"
-REPL.import! "Composition"
+let Arithmetic := requireModule "Arithmetic" in 
+let Logic := requireModule "Logic" in 
+let Composition := requireModule "Composition" in 
+import [(if) (else) (elif) (=)] from Logic in 
+import [($)] from Composition in 
+import [(=)] from Arithmetic in 
 if (x = 0)
   1
 $elif (x = 1)
@@ -310,6 +314,49 @@ B
 let Arithmetic := requireModule "Arithmetic" in 
 import [(+) (-) (*) (/)] from Arithmetic in 
 5 + 2*3
+</pre>
+
+<h2>REPL</h2>
+<p>The interactive interpreter has a few special features:</p>
+<h3>Recursion</h3>
+<p>Usually, the function name is <em>not</em> available within the function:</p>
+<pre>
+REPL.define! 'f (\x (f 1))      -- makes no sense
+</pre>
+<p>If you want it to do recursion, do it like this:</p>
+<pre>
+REPL.import! "Composition"
+REPL.define! 'f (rec \f \x (f 1))      -- endless recursion, but it works
+</pre>
+<p>Or like this, which is exactly the same:</p>
+<pre>
+REPL.import! "Composition"
+REPL.define! 'f (rec \self \x (self 1))      -- endless recursion, but it works
+</pre>
+<p>Note that the reason that <span class="pre">define! 'f</span> doesn't make f available within the body of f is that you can refer to previous definitions of f within the new definition of f.</p>
+<p>An example will make that clearer:</p>
+<pre>
+REPL.import! "Logic"
+REPL.import! "Arithmetic"
+REPL.define! 'f \x (x**x)
+REPL.define! 'f \x if (x = 0) 1 $else (f x)    -- refers to the previous definition.
+</pre>
+
+<h3>Reflection</h3>
+<p>Sometimes you want to know how a function was originally defined (as opposed to how it was actually implemented).</p>
+<p>Therefore, the λ REPL (if you call it interactively) has a command to retrieve the original definition of things in its environment:</p>
+<p>Note that you need to put parenthesis around operators (in order to prevent them from asserting their own precedence).</p>
+<pre>
+REPL.import! "Reflection"
+REPL.import! "IO"
+REPL.define! 'f \x x*x
+REPL.describe! 'f =&gt; \x x*x
+REPL.describe! '(;) =&gt; \m \ber \world (\r ber (ioValue r) (ioWorld r)) (m world)
+</pre>
+<p>If there are multiple overrides for the definition, try using @backOffset: to reach back. The value is an integer starting at 0 (which is the default) stating how many definitions using <em>this</em> symbol back you want to reach.</p>
+<pre>
+REPL.import! "Reflection"
+REPL.describe! @backOffset:1 'g =&gt; \x x*x
 </pre>
 
 <h2>Further Reading</h2>
