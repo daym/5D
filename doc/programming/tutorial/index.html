@@ -359,7 +359,7 @@ REPL.define! 'f \x x*x
 REPL.describe! 'f =&gt; \x x*x
 REPL.describe! '(;) =&gt; \m \ber \world (\r ber (ioValue r) (ioWorld r)) (m world)
 </pre>
-<p>If there are multiple overrides for the definition, try using @backOffset: to reach back. The value is an integer starting at 0 (which is the default) stating how many definitions using <em>this</em> symbol back you want to reach.</p>
+<p>If there are multiple overrides for the definition, try using @backOffset: to reach back. The value is an integer starting at 0 (which is the default) stating how many definitions (of <em>that</em> symbol) back you want to reach.</p>
 <pre>
 REPL.import! "Reflection"
 REPL.describe! @backOffset:1 'g =&gt; \x x*x
