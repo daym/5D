@@ -5,5 +5,4 @@ let fst := Builtins.fst in
 let snd := Builtins.snd in 
 let pair? := Builtins.pair? in 
 let (,) := Builtins.(,) in 
-Composition.dispatch (#exports[(,) pair? fst snd])
-raiseMissingSymbolError
+Composition.dispatch1 (#exports[(,) pair? fst snd])
