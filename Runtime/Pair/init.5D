@@ -1,6 +1,5 @@
 let Composition := requireModule "Composition" in 
 let List := requireModule "List" in 
-let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
 let fst := Builtins.fst in 
 let snd := Builtins.snd in 
 let pair? := Builtins.pair? in 

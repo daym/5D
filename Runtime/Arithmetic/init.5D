@@ -2,7 +2,7 @@ let Logic := requireModule "Logic" in
 let Composition := requireModule "Composition" in 
 let Error := requireModule "Error" in 
 import [head tail (:) nan? infinite? nan infinity] from Builtins in 
-import [dispatch raiseMissingSymbolError rem rec flip ($) compose] from Composition in 
+import [rem rec flip ($) compose] from Composition in 
 import [not (&&) (||) if else elif] from Logic in 
 import [(-) (*) (/) (+) (<=) divmod0] from Builtins in 
 let infinity? := infinite? in 

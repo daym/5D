@@ -3,7 +3,7 @@ let Logic := requireModule "Logic" in
 let Arithmetic := requireModule "Arithmetic" in 
 let Error := requireModule "Error" in 
 import [nil? cons? head tail (:)] from Builtins in 
-import [raiseMissingSymbolError dispatch ($) compose flip rec rem] from Composition in 
+import [($) compose flip rec rem] from Composition in 
 import [if else elif (||) (&&) (#t) (#f) not] from Logic in 
 import [(<=) (>=) (=) (/=) (+) (-) (*) (/) div0 max ceiling] from Arithmetic in 
 let nil := [] in 

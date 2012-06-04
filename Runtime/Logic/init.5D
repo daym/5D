@@ -1,7 +1,5 @@
 let Error := requireModule "Error" in 
 let Composition := requireModule "Composition" in
-let dispatch := Composition.dispatch in
-let raiseMissingSymbolError := Composition.raiseMissingSymbolError in
 let #t := Builtins.#t in 
 let #f := Builtins.#f in 
 let (||) := (\a \b \t \f a t (b t f)) in 
@@ -13,5 +11,4 @@ let if := (\f f) in
 let elif := (\f f) in 
 let otherwise := (\f f) in 
 let equivalent? := (\a \b a && b || not a && not b) in 
-(requireModule "Composition").dispatch (#exports[#t #f (||) (&&) implies? else if elif not otherwise equivalent?])
-raiseMissingSymbolError
+(requireModule "Composition").dispatch1 (#exports[#t #f (||) (&&) implies? else if elif not otherwise equivalent?])

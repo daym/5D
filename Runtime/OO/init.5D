@@ -8,5 +8,4 @@ let Object := (
 	Composition.dispatch (#exports[id])
 	raiseMissingSymbolError 
 ) in 
-Composition.dispatch (#exports[Object wrap wrap!])
-raiseMissingSymbolError
+Composition.dispatch1 (#exports[Object wrap wrap!])

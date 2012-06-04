@@ -2,7 +2,7 @@ let List := requireModule "List" in
 let Error := requireModule "Error" in 
 let Composition := requireModule "Composition" in
 let Logic := requireModule "Logic" in 
-import [dispatch raiseMissingSymbolError rec (|) ($)] from Composition in 
+import [rec (|) ($)] from Composition in 
 import [head tail] from List in 
 import [if else] from Logic in 
 import [flush! stderr stdin stdout readline! write! errno!] from Builtins in 
