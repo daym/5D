@@ -6,8 +6,7 @@
 #include <map>
 #include <math.h>
 #include <string.h>
-#include <gc/gc_allocator.h>
-#include <gc/gc_cpp.h>
+#include "FFIs/Allocators"
 #include "AST/AST"
 #include "AST/Symbol"
 

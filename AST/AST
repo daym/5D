@@ -8,10 +8,8 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <string>
-#include <gc/gc_cpp.h>
-#include <gc/gc.h>
-#include <gc/gc_allocator.h>
 #include <string.h>
+#include "FFIs/Allocators"
 
 namespace AST {
 
@@ -56,8 +54,28 @@ struct Str : Box {
 	}
 	//virtual std::string str(void) const;
 };
-
-Str* makeStr(const char* text); // this can contain no pointers
+#if 0
+struct Vector : Node {
+	int count;
+	AST::NodeT elements[1]; /* stored in-line here */
+	explicit Vector(int count, AST::NodeT* elements) {
+		this->count = count;
+		for(int i = 0; i < count; ++i)
+			this->elements[i] = elements[i];
+	}
+	/* slow when vector content is inline! Vector slice(int beginning, int end) {
+		if(beginning < 0)
+			beginning = 0;
+		int count = end - beginning;
+		if(count < 0)
+			count = 0;
+		if(count > this->count - beginning)
+			count = this->count - beginning;
+		return Vector(count, elements + beginning);
+	}*/
+};
+#endif
+Str* makeStr(const char* text); // this must not contain pointers
 Str* makeStrCXX(const std::string& text, bool bAtomic = false); // this can contain pointers
 Str* makeStrRaw(char* mutableText, size_t size, bool bAtomic);
 AST::Str* makeStrSlice(AST::Str* s, int offset);
