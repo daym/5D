@@ -38,5 +38,4 @@ let accumrUntil! := (\condition \connector \terminator \body rec\accum!
 			let value2 := ioValue t in 
 			liftIO! (connector value value2) (ioWorld t)
 ) in 
-(requireModule "Composition").dispatch (#exports[ioValue ioWorld liftIO! return! flush! stderr stdin stdout readline! (;) write! errno! skipUntil! skipWhile! accumrUntil!])
-raiseMissingSymbolError
+(requireModule "Composition").dispatch1 (#exports[ioValue ioWorld liftIO! return! flush! stderr stdin stdout readline! (;) write! errno! skipUntil! skipWhile! accumrUntil!])
