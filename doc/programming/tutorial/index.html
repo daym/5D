@@ -57,7 +57,8 @@ span.pre { font-family: monospace; color: blue; }
 <h3>Hello world</h3>
 <pre>
 #!/usr/bin/λ -i
-REPL.import! "IO"
+let IO := requireModule "IO" in 
+import [write! stdout] from IO in 
 write! stdout "Hello world"
 </pre>
 <p>Note that you need to specify (using <span class="pre">-i</span>) that you want IO to happen (rather than just be described).</p>
