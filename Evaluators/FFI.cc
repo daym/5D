@@ -171,9 +171,9 @@ static AST::NodeT wrapMktime(AST::NodeT options, AST::NodeT argument) {
 		// note that WIN32 CHANGES the structure contents!!
 		// TODO error check
 #ifdef _MSC_VER
-		AST::Node* result = Numbers::internNativeU(_mktime64(f));
+		AST::NodeT result = Numbers::internNativeU(_mktime64(f));
 #else
-		AST::Node* result = Numbers::internNativeU((unsigned long long) mktime(f));
+		AST::NodeT result = Numbers::internNativeU((unsigned long long) mktime(f));
 #endif
 		return(Evaluators::makeIOMonad(result, world));
 	}
@@ -331,9 +331,9 @@ static AST::NodeT wrapMkgmtime(AST::NodeT options, AST::NodeT argument) {
 		// note that WIN32 CHANGES the structure contents!!
 		// TODO error check
 #ifdef _MSC_VER
-		AST::Node* result = Numbers::internNativeU(_mkgmtime64(f));
+		AST::NodeT result = Numbers::internNativeU(_mkgmtime64(f));
 #else
-		AST::Node* result = Numbers::internNativeU((unsigned long long) emulatemkgmtime(f));
+		AST::NodeT result = Numbers::internNativeU((unsigned long long) emulatemkgmtime(f));
 #endif
 		return(Evaluators::makeIOMonad(result, world));
 	}
@@ -347,7 +347,7 @@ static AST::NodeT wrapMktime(AST::NodeT options, AST::NodeT argument) {
 	AST::NodeT world = iter->second;
 	{
 		// TODO error check
-		AST::Node* result = Numbers::internNativeU((unsigned long long) mktime(f));
+		AST::NodeT result = Numbers::internNativeU((unsigned long long) mktime(f));
 		return(Evaluators::makeIOMonad(result, world));
 	}
 }
@@ -360,7 +360,7 @@ static AST::NodeT wrapMkgmtime(AST::NodeT options, AST::NodeT argument) {
 	{
 		// note that WIN32 CHANGES the structure contents!!
 		// TODO error check
-		AST::Node* result = Numbers::internNativeU((unsigned long long) timegm(f));
+		AST::NodeT result = Numbers::internNativeU((unsigned long long) timegm(f));
 		return(Evaluators::makeIOMonad(result, world));
 	}
 }
