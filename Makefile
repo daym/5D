@@ -129,7 +129,7 @@ FFIs/TUI.o: FFIs/TUI.cc FFIs/UI FFIs/FFIs AST/AST AST/Symbol Evaluators/Evaluato
 FFIs/GTKUI.o: FFIs/GTKUI.cc FFIs/UI FFIs/FFIs AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Numbers/Ratio
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-FFIs/Allocators.o: FFIs/Allocators.c FFIs/Allocators AST/AST
+FFIs/Allocators.o: FFIs/Allocators.cc FFIs/Allocators AST/AST
 	$(CC) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 	
 FFIs/TrampolineSymbols.o: FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols AST/Symbol

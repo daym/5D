@@ -1,6 +1,8 @@
 #ifndef __FFI_ALLOCATOR_H
 #define __FFI_ALLOCATOR_H
 #include <gc/gc.h>
+#include <gc/gc_allocator.h>
+#include <gc/gc_cpp.h>
 
 #ifdef __cplusplus
 extern "C" 
