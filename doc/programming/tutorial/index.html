@@ -197,18 +197,6 @@ import [(:) nil] from List in
 42:24:12:nil
 </pre>
 <p>This is a list with 3 elements, linked together through the tail. The last element has <span class="pre">nil</span> tail.</p>
-<pre>
-REPL.import! "List"
-REPL.import! "Reflection"
-head (1:2:3:nil)            =&gt; 1
-tail (1:2:3:nil)            =&gt; (2:3:nil)
-head (tail (1:2:3:nil))     =&gt; 2
-cons? (1:nil)               =&gt; #t
-cons? nil                   =&gt; #f
-cons? 42                    =&gt; #f
-list? (1:nil)               =&gt; #t
-list? nil                   =&gt; #t
-</pre>
 <p>There's also a shorthand macro for creating lists used like this:</p>
 <pre>
 let List := requireModule "List" in 
@@ -357,6 +345,20 @@ REPL.describe! '(;) =&gt; \m \ber \world (\r ber (ioValue r) (ioWorld r)) (m wor
 <pre>
 REPL.import! "Reflection"
 REPL.describe! @backOffset:1 'g =&gt; \x x*x
+</pre>
+
+<h4>Reflection of Builtins</h4>
+<pre>
+REPL.import! "List"
+REPL.import! "Reflection"
+head (1:2:3:nil)            =&gt; 1
+tail (1:2:3:nil)            =&gt; (2:3:nil)
+head (tail (1:2:3:nil))     =&gt; 2
+cons? (1:nil)               =&gt; #t
+cons? nil                   =&gt; #f
+cons? 42                    =&gt; #f
+list? (1:nil)               =&gt; #t
+list? nil                   =&gt; #t
 </pre>
 
 <h2>Further Reading</h2>
