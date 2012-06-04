@@ -238,7 +238,7 @@ return! name
 </pre>
 <p>What this does is:</p>
 <p><span class="pre">write! \file \text</span> will write text, once a World is given (i.e. by <span class="pre" title="world starter">interpreter option -i</span> or <span class="pre" title="World time sequencer">;</span>).</p>
-<p><span class="pre">;</span> will sequence two operations so the left-hand-side operation will be done first and the right-hand-side operation will be done afterwards.</p>
+<p><span class="pre">;</span> will sequence two operations so the left-hand-side operation will be done first and the result given to the right-hand-side - which returns and operation, which will be done afterwards.</p>
 <p><span class="pre">_</span> is the traditional variable name for "don't care about the result".</p>
 
 <h3>Indentation</h3>
