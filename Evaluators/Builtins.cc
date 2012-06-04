@@ -257,7 +257,7 @@ static inline void printStrChar(unsigned int frontier, std::stringstream& sst, u
 		} else
 			sst << c;
 }
-static inline std::string str1(AST::Str* node) {
+static inline std::string str1(const AST::Str* node) {
 	std::stringstream sst;
 	const char* item;
 	unsigned char c;
@@ -269,7 +269,7 @@ static inline std::string str1(AST::Str* node) {
 	sst << "\"";
 	return(sst.str());
 }
-static std::string strStr(AST::Str* node) {
+static std::string strStr(const AST::Str* node) {
 	try {
 		std::stringstream sst;
 		const char* item;
