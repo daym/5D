@@ -203,6 +203,23 @@ let List := requireModule "List" in
 import [(:) nil] from List in 
 [42 24 12]
 </pre>
+<p>You can access elements like this:</p>
+<pre>
+#!/usr/bin/λ
+let List := requireModule "List" in 
+import [(:) nil head tail cons? list?] from List in 
+assert [
+head (1:2:3:nil)            =&gt; 1
+tail (1:2:3:nil)            =&gt; (2:3:nil)
+head (tail (1:2:3:nil))     =&gt; 2
+cons? (1:nil)               =&gt; #t
+cons? nil                   =&gt; #f
+cons? 42                    =&gt; #f
+list? (1:nil)               =&gt; #t
+list? nil                   =&gt; #t
+]
+</pre>
+
 <h3>Literal Names</h3>
 <p>Sometimes you want to <em>not</em> reduce a function or operator to their definition but rather leave the name. To do so, prefix their name by <span class="pre" title="quote">'</span></p>
 <pre>
@@ -348,19 +365,6 @@ REPL.import! "Reflection"
 REPL.describe! @backOffset:1 'g =&gt; \x x*x
 </pre>
 
-<h4>Reflection of Builtins</h4>
-<pre>
-REPL.import! "List"
-REPL.import! "Reflection"
-head (1:2:3:nil)            =&gt; 1
-tail (1:2:3:nil)            =&gt; (2:3:nil)
-head (tail (1:2:3:nil))     =&gt; 2
-cons? (1:nil)               =&gt; #t
-cons? nil                   =&gt; #f
-cons? 42                    =&gt; #f
-list? (1:nil)               =&gt; #t
-list? nil                   =&gt; #t
-</pre>
 
 <h2>Further Reading</h2>
 <p>See the <a href="../../library/index.html">5D Library Documentation</a> for functions available to you.</p>
