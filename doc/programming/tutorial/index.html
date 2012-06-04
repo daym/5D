@@ -307,7 +307,8 @@ B
 </pre>
 <p>For example:</p>
 <pre>
-import [(+) (-) (*) (/)] from (requireModule "Arithmetic") in 
+let Arithmetic := requireModule "Arithmetic" in 
+import [(+) (-) (*) (/)] from Arithmetic in 
 5 + 2*3
 </pre>
 
