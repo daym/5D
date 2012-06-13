@@ -93,7 +93,7 @@ namespace {
 Integer::Integer(long  x) : sign(signOf(x)), mag(magOf<long , unsigned long >(x)) {}
 Integer::Integer(int   x) : sign(signOf(x)), mag(magOf<int  , unsigned int  >(x)) {}
 Integer::Integer(short x) : sign(signOf(x)), mag(magOf<short, unsigned short>(x)) {}
-Integer::Integer(long long x) : sign(signOf(x)), mag(magOf<int  , unsigned int  >(x)) {}
+Integer::Integer(long long x) : sign(signOf(x)), mag(magOf<long long  , unsigned long long >(x)) {}
 
 // CONVERSION TO PRIMITIVE INTEGERS
 
