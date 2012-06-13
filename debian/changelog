@@ -1,3 +1,12 @@
+5d (0.6.5) unstable; urgency=low
+
+  * add '∃, '∀ to "List" module.
+  * add 'natural? to "Arithmetic" module.
+  * add special-case for shebang to "Scanner" module.
+  * fix bug in Int -> Integer conversion.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Wed, 13 Jun 2012 19:15:00 +0200
+
 5d (0.6.4) unstable; urgency=low
 
   * add "Maybe" module.
