@@ -13,10 +13,10 @@ let binaryInsertBy := \(<) \(=) \x \tree
 		let Tree a y b := tree in 
 		if (x < y)
 			Tree ((insert x a) y b)
-		$elif (x > y)
-			Tree (a y (insert x b))
-		$else
+		$elif (x = y)
 			tree
+		$else
+			Tree (a y (insert x b))
 in
 let binaryInsert := binaryInsertBy (<) (=) in 
 Composition.dispatch1 (#exports[nil nil? cons? list? (:) (++) map merge mergeBy mergeSort mergeSortBy extremum drop foldl foldr filter length head tail reverse enumerate range range1 take takeWhile zip transpose zipBy sum product anyTrue? allTrue? frange frangeLL uniq uniqBy])
