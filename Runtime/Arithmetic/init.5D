@@ -90,14 +90,15 @@ let sqrt := sqrtEps 1 0.001 in
 let √ := sqrt in 
 let ground := (\v div0 v 1) in 
 let floor := (\v div v 1) in 
+let natural? := (\v (floor v) = v) in 
 let ceiling := \v
-	if ((ground v) = v)
+	if (natural? v)
 		v
 	$else
 		(floor v) + 1
 in 
 let factorial := (\v
-	if ((ground v) = v)
+	if (natural? v)
 		(rec\fac \v
 			if (v = 0)
 				1
@@ -113,8 +114,8 @@ let round1 := (\v
 	$else
 		ground (v - 1/2)
 ) in 
-let max := (\a \b if (a <= b) b a) in 
-let min := (\a \b if (a <= b) a b) in 
+let max := (\a \b if (a <= b) b $else a) in 
+let min := (\a \b if (a <= b) a $else b) in 
 let gcd := (rec\gcd \a \b
 	if (b = 0) 
 		a
@@ -136,4 +137,4 @@ let log2 := rec\log2 \a
 		1 + (log2 (a/2))
 in 
 let round1Log2 := compose round1 log2 in 
-(requireModule "Composition").dispatch1 (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? log2 round1Log2 (**) ∞ ∞?])
+(requireModule "Composition").dispatch1 (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? log2 round1Log2 (**) ∞ ∞? natural?])
