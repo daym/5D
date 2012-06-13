@@ -483,6 +483,15 @@ void Scanner::parse_number_with_base(int input, int base) {
 	sst << value; /* decimal */
 	input_value = AST::symbolFromStr(sst.str().c_str());
 }
+void Scanner::parse_shebang(int input) {
+	std::stringstream matchtext;
+	while(input != EOF && input != '\n') {
+		matchtext << (char) input;
+		input = increment_position(FGETC(input_file));
+	}
+	std::string value = matchtext.str();
+	input_value = AST::makeApplication(Symbols::Shashexclam, AST::makeStrCXX(value)); // TODO maybe this is overkill
+}
 void Scanner::parse_special_coding(int input) {
 	assert(input == '#');
 	input = increment_position(FGETC(input_file));
@@ -554,6 +563,9 @@ void Scanner::parse_special_coding(int input) {
 	//case '|': /* block comment */ TODO
 	//	parse_block_comment();
 	//	break;
+	case '!':
+		parse_shebang(input);
+		break;
 	default:
 		parse_symbol(input, '#');
 		break;

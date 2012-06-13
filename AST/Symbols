@@ -126,6 +126,7 @@ extern AST::NodeT Ssnd;
 extern AST::NodeT SpairP;
 extern AST::NodeT Simport;
 extern AST::NodeT Sfrom;
+extern AST::NodeT Shashexclam;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

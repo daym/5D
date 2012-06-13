@@ -51,6 +51,7 @@ static AST::NodeT force_import_module(const char* filename) {
 			result = parser.parse(default_operator_precedence_list(), Symbols::SlessEOFgreater);
 			result = Evaluators::close(Symbols::Squote, &Evaluators::Quoter, result); // module needs that, so provide it.
 			result = Evaluators::close(Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb))), result);
+			result = Evaluators::close(Symbols::Shashexclam, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, Symbols::Sb)), result); // rem
 			result = Evaluators::close(Symbols::Scolon, &Evaluators::Conser, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::Scomma, &Evaluators::Pairer, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::Snil, NULL, result); // dispatch [] needs that, so provide it.
