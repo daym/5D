@@ -11,10 +11,10 @@ let nothing? := nil? in
 let something := \m m in 
 let something? := \m (not (nothing? m)) in 
 let (?;) := (\m \f
-		if (something? m)
-			f (something m)
-		$else
-			nothing
+	if (something? m)
+		f (something m)
+	$else
+		nothing
 ) in 
 let makeSomething := (\v
 	v
