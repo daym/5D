@@ -1,7 +1,7 @@
 
 get digits:
 
-reverse $ (rec \f (\v if (v = 0) [] (let r = divrem v 10 in (head (tail r)):(f (head r))))) 453532
+reverse $ (rec \f (\v if (v = 0) [] (let r = divmod v 10 in (head (tail r)):(f (head r))))) 453532
 => [4 5 3 5 3 2]
 
 pack digits:
