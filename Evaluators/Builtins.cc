@@ -201,7 +201,7 @@ static AST::NodeT divmod0Float(const Numbers::Float& a, const Numbers::Float& b)
 		avalue = -avalue;
 	if(bvalue < 0.0)
 		bvalue = -bvalue;
-	NativeFloat q = floor(avalue / bvalue) * sign;
+	NativeFloat q = floor(avalue / bvalue) * sign; // TODO maybe convert to Integer (without loss, if possible)
 	NativeFloat r = a.value - q * b.value;
 	return(AST::makeCons(Numbers::internNative(q), AST::makeCons(Numbers::internNative(r), NULL)));
 	//return(makeOperation(Symbols::Sdivmod0, toHeap(a), toHeap(b)));
