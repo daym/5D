@@ -1,0 +1,15 @@
+∞ = ∞
+not ((-∞) = ∞)
+(-∞) = (-∞)
+
+(-∞) < 5 && 5 < ∞
+∞ > 5 && 5 > (-∞)
+
+not (nan = 5)
+not (nan = ∞)
+not (nan = (-∞))
+not (nan = nan)
+not (nan < 5)
+not (nan > 5)
+
+TODO transitivity
