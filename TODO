@@ -8,10 +8,9 @@ loading modules (for example the one where GetLastError! is in) causes GetLastEr
 
 = Builtin Types =
 
-numbers: 5. arbitrary-precision fixed point
+numbers: 5. arbitrary-precision fixed point, 6. complex numbers, literals: #C(3.2 2)
 equality (numbers, strings(?) and booleans (?) and symbols (?) and lists (?)) and non-equality.
 Builtin ops: power
-Complex number literals: #C(3.2 2)
 Array literals: #(a b c)
 
 = Packages =
@@ -72,6 +71,7 @@ maybe delay and force
 tail recursion elimination.
 cache numbers for some time?
 http://en.wikipedia.org/wiki/Lehmer%27s_GCD_algorithm
+allow optimized versions of nodes (be careful to preserve the original for documentation purposes, though)
 
 = Parser =
 
@@ -154,3 +154,9 @@ Nicer Fortran Call-by-name support (i.e. allow creation of a temporary and pass 
 = OS module =
 
 OS.openFile!
+OS.withFile!
+OS.closeFile!
+better:
+OS.fopen!
+OS.fclose!
+OS.fflush!

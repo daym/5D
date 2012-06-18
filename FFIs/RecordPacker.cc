@@ -771,15 +771,15 @@ AST::NodeT strFromList(AST::NodeT node) {
 static AST::NodeT substr(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	AST::NodeT mBox = iter->second;
-	if(iter->second == NULL)
-		return(NULL);
-	++iter;
-	if(!AST::str_P(mBox))
-		throw Evaluators::EvaluationException("substr on non-string is undefined");
 	int beginning = Evaluators::get_nearest_int(iter->second);
 	++iter;
 	int end = Evaluators::get_nearest_int(iter->second);
+	++iter;
+	AST::NodeT mBox = iter->second;
+	if(mBox == NULL)
+		return(NULL);
+	if(!AST::str_P(mBox))
+		throw Evaluators::EvaluationException("substr on non-string is undefined");
 	++iter;
 	char* p = (char*) AST::get_str_buffer(mBox);
 	size_t formatSize = AST::get_str_size(mBox);

@@ -4,6 +4,8 @@
   * add 'natural? to "Arithmetic" module.
   * add special-case for shebang to "Scanner" module.
   * fix bug in Int -> Integer conversion.
+  * add 'defer! to "IO" module.
+  * extract other high-level IO functions to 5DLibs.
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Wed, 13 Jun 2012 19:15:00 +0200
 

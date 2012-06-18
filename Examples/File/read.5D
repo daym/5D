@@ -1,0 +1,13 @@
+let File := requireModule "File" in 
+let IO := requireModule "IO" in 
+let Logic := requireModule "Logic" in 
+let Arithmetic := requireModule "Arithmetic" in 
+import [(&&) (||)] from Logic in 
+import [(>) (=)] from Arithmetic in 
+import [defer! return!] from IO in 
+import [fopen! fclose! fread! fwrite! stdin stdout stderr] from File in 
+fopen! @mode:"r" "bli" ;\f
+defer! (fclose! f)
+	fread! buf 1 200 f ;\count
+	fwrite! buf 1 count stdout ;\writeCount
+	return! (count > 0 && writeCount = count)
