@@ -109,6 +109,7 @@ What about comparing (-0.0) and 0.0 ?
 Handle division by zero for ratios?
 -D_FORTIFY_SOURCE=1
 Maybe disable macros in a 'quote.
+Don't hang on trying to optimize 1/∞
 
 = Debugging Macros =
 
