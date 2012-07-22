@@ -41,7 +41,7 @@ let accumrUntil! := (\condition \connector \terminator \body rec\accum!
 			liftIO! (connector value value2) (ioWorld t)
 ) in 
 let defer! := \finalizer \body 
-	rem "Following tradition, this ignores the result of the finalizer."
+	rem "Following tradition, this ignores the result of the finalizer."$
 	\world
 		let result := body world in 
 		let value := ioValue result in 
@@ -50,8 +50,8 @@ let defer! := \finalizer \body
 		let world3 := ioWorld result2 in 
 		liftIO! value world3
 in 
-let with! := \expr \exiter \body 
-	expr ;\f
-	defer! exiter (body f)
+let with! := \opener \closer \body 
+	opener ;\f
+	defer! (closer f) (body f)
 in 
 (requireModule "Composition").dispatch1 (#exports[ioValue ioWorld liftIO! return! (;) skipUntil! skipWhile! accumrUntil! defer! with!])
