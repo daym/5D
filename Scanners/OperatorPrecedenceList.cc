@@ -20,8 +20,8 @@ using namespace AST;
 // TODO REGISTER_STR(OperatorPrecedenceItem, return(...);)
 int OperatorPrecedenceList::get_operator_precedence_and_associativity(NodeT symbol, NodeT& associativity_out) const {
 	if(symbol != NULL) {
-		std::string opname = Evaluators::str(symbol);
-		printf("%s\n", opname.c_str());
+		//std::string opname = Evaluators::str(symbol);
+		//printf("%s\n", opname.c_str());
 		for(int i = 0; i < MAX_PRECEDENCE_LEVELS; ++i) {
 			for(struct OperatorPrecedenceItem* item = levels[i]; item; item = item->next)
 				if(item->operator_ == symbol) {
