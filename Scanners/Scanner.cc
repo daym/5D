@@ -141,7 +141,7 @@ void Scanner::parse_token(void) {
 	case '9':
 		parse_number(input);
 		break;
-	case 0xE2: /* part of "≠", "∂" */
+	case 0xE2: /* part of "≠", "∂", "∈" */
 	case 0xC2:
 		parse_unicode(input);
 		break;
@@ -252,11 +252,20 @@ void Scanner::parse_unicode(int input) {
 	input = increment_position(FGETC(input_file));
 	//if(input != 0x89) {
 	// second byte.
-	if(input == 0x8B) {
+	if(input == 0x8A) {
+		input = increment_position(FGETC(input_file));
+		if(input >= 0x80 && input < 0xC0) { /* these are all mathematical operators anyhow. */
+			char buf[4] = {0xE2, 0x8A, input, 0};
+			input_value = AST::symbolFromStr(buf);
+		} else
+			parse_symbol(input, 0xE2, 0x8A);
+		//input_value = compose_unicode(0xE2, 0x88, input);
+		return;
+	} else if(input == 0x8B) {
 		input = increment_position(FGETC(input_file));
 		switch(input) {
 		case 0x85: /* dot */
-			input_value = Symbols::Sasterisk;
+			input_value = Symbols::Sasterisk; /* FIXME remove special case */
 			return;
 		default:
 			//input_value = compose_unicode(0xE2, 0x8B, input);
@@ -297,10 +306,27 @@ void Scanner::parse_unicode(int input) {
 		case 0x9A: /* √ */
 			input_value = Symbols::Sroot;
 			return;
+		case 0x9E: /* ∞, ∞? */
+			parse_symbol(input, 0xE2, 0x88);
+			return;
+		case 0x88: /* ∈ */
+			input_value = AST::symbolFromStr("∈");
+			return;
+		case 0xA9: /* ∩ */
+			input_value = AST::symbolFromStr("∩");
+			return;
+		case 0xAA: /* ∪ */
+			input_value = AST::symbolFromStr("∪");
+			return;			 
 		case 0x82: /* ∂ */
 			input_value = AST::symbolFromStr("∂");
 			return;
 		default:
+			if(input >= 0x80 && input < 0xC0) { /* these are all mathematical operators anyhow. */
+				char buf[4] = {0xE2, 0x88, input, 0};
+				input_value = AST::symbolFromStr(buf);
+				return;
+			}
 			parse_symbol(input, 0xE2, 0x88);
 			//input_value = compose_unicode(0xE2, 0x88, input);
 			return;
@@ -321,13 +347,12 @@ void Scanner::parse_unicode(int input) {
 	case 0xA5:
 		input_value = Symbols::Sgreaterequalunicode;
 		return;
-#if 0
-	case 0x88: /* approx. */
-		input_value = Symbols::Sapprox;
-		/* TODO just pass that to the symbol processor in the general case. */
-		return;
-#endif
 	default:
+		if(input >= 0x80 && input < 0xC0) { /* these are all mathematical operators anyhow. */
+			char buf[4] = {0xE2, 0x89, input, 0};
+			input_value = AST::symbolFromStr(buf);
+			return;
+		}
 		return(parse_symbol(input, 0xE2, 0x89));
 		//raise_error("<operator>", input);
 	}
