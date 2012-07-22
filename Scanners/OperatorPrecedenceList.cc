@@ -19,7 +19,9 @@ using namespace AST;
 // NO REGISTER_STR(OperatorPrecedenceList, return("operatorPrecedenceList");)
 // TODO REGISTER_STR(OperatorPrecedenceItem, return(...);)
 int OperatorPrecedenceList::get_operator_precedence_and_associativity(NodeT symbol, NodeT& associativity_out) const {
-	if(symbol != NULL)
+	if(symbol != NULL) {
+		std::string opname = Evaluators::str(symbol);
+		printf("%s\n", opname.c_str());
 		for(int i = 0; i < MAX_PRECEDENCE_LEVELS; ++i) {
 			for(struct OperatorPrecedenceItem* item = levels[i]; item; item = item->next)
 				if(item->operator_ == symbol) {
@@ -27,6 +29,7 @@ int OperatorPrecedenceList::get_operator_precedence_and_associativity(NodeT symb
 					return(i);
 				}
 		}
+	}
 	associativity_out = NULL;
 	return(-1);
 }
@@ -73,24 +76,33 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 #define L Symbols::Sleft
 #define N Symbols::Snone
 #define P Symbols::Sprefix
-	apply_level = 14;
+	apply_level = 24;
 	cons(apply_level, I(" "), L); // apply
 	if(bInitDefaults) {
-		cons(22, I("."), L); // like quote
-		cons(21, I("_"), R);
-		cons(21, I("^"), R);
-		cons(20, I("**"), R);
-		cons(19, I("*"), L);
-		cons(19, I("/"), L);
-		cons(18, I("⨯"), R);
-		cons(17, I(":"), R);
-		cons(16, I("'"), P);
-		cons(13, I("++"), L);
-		cons(12, I("+"), L);
-		cons(12, I("unary-"), P);
-		cons(12, I("-"), L);
-		cons(11, I("%"), L);
+		cons(32, I("."), L); // like quote
+		cons(31, I("_"), R);
+		cons(31, I("^"), R);
+		cons(30, I("**"), R);
+		cons(29, I("*"), L);
+		cons(29, I("/"), L);
+		cons(28, I("⨯"), R); /* TODO also for sets */
+		cons(27, I(":"), R);
+		cons(26, I("'"), P);
+		cons(23, I("++"), L);
+		cons(22, I("+"), L);
+		cons(22, I("unary-"), P);
+		cons(22, I("-"), L);  /* also set difference. TODO maybe use the special char "−" for that. */
+		cons(21, I("%"), L);
+		/* TODO excluding from set \\ */
+		cons(16, I("∩"), L);
+		cons(15, I("∪"), L);
+		cons(14, I("∈"), N);
+		cons(14, I("⊂"), N);
+		cons(14, I("⊃"), N);
+		cons(14, I("⊆"), N);
+		cons(14, I("⊇"), N);
 		cons(10, I("="), N);
+		cons(10, I("≟"), N);
 		cons(10, I("/="), N);
 		cons(9, I("<"), N);
 		cons(9, I("<="), N);
@@ -99,29 +111,20 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(9, I("≤"), N);
 		cons(9, I("≥"), N);
 		cons(8, I("&&"), L);
+		cons(8, I("∧"), L);
 		cons(7, I("||"), L);
-		cons(6, I(","), R); // was 15
+		cons(7, I("∨"), L);
+		cons(6, I(","), R);
 		cons(5, I("$"), R);
 		//cons(?, I(">>"), L);
 		//cons(?, I(">>="), L);
-		//cons(?, I("$"), L);
 		cons(3, I("|"), L);
 		cons(2, I("=>"), L);
 		cons(2, I(";"), L);
 		cons(2, I("?;"), L);
 		cons(1, I("\\"), P);
-		cons(0, I("let"), R); // let
+		cons(0, I("let"), R); // and technically define, defrec, def
 		cons(0, I("import"), R);
-		//cons(0, I("define"), R); // these are more or less synonymous to "let".
-		//cons(0, I("defrec"), R); // these are more or less synonymous to "let".
-		//cons(0, I("def"), R); // these are more or less synonymous to "let".
-		/* TODO set theory:
-			intersection
-			union
-			∈
-		   TODO difference
-		   TODO excluding
-		*/
 	}
 #undef N
 #undef L
