@@ -2,12 +2,21 @@ let File := requireModule "File" in
 let IO := requireModule "IO" in 
 let Logic := requireModule "Logic" in 
 let Arithmetic := requireModule "Arithmetic" in 
+let String := requireModule "String" in 
+let FFI := requireModule "FFI" in 
 import [(&&) (||)] from Logic in 
 import [(>) (=)] from Arithmetic in 
-import [defer! return!] from IO in 
+import [defer! return! with!] from IO in 
 import [fopen! fclose! fread! fwrite! stdin stdout stderr] from File in 
-fopen! @mode:"r" "bli" ;\f
-defer! (fclose! f)
-	fread! buf 1 200 f ;\count
-	fwrite! buf 1 count stdout ;\writeCount
-	return! (count > 0 && writeCount = count)
+import [substr] from String in 
+import [allocateMemory!] from FFI in 
+with! (fopen! @mode:"r" "bli") fclose! as \f 
+with! (allocateMemory! 200) freeMemory! as \buf
+accumrUntil! nil? (\a \b b) [] 
+	fread! buf 1 200 f as \count
+	fwrite! buf 1 count stdout as \writeCount
+	return!
+		if (count > 0 && writeCount = count)
+			substr 0 count buf
+		$else
+			[]
