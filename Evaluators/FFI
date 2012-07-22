@@ -37,6 +37,10 @@ DECLARE_FULL_OPERATION(LineReader)
 DECLARE_SIMPLE_OPERATION(ErrnoGetter)
 DECLARE_FULL_OPERATION(GmtimeMaker)
 DECLARE_FULL_OPERATION(TimeMaker)
+#ifndef WIN32
+DECLARE_FULL_OPERATION(DirentSizeGetter)
+DECLARE_FULL_OPERATION(DirentUnpacker)
+#endif
 
 }; // end namespace
 

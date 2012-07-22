@@ -7,6 +7,9 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #ifdef WIN32
 #include "stdafx.h"
+#else
+#include <dirent.h>
+#include <unistd.h>
 #endif
 #include <time.h>
 #include <stdio.h>
@@ -377,5 +380,47 @@ REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline!"))
 REGISTER_BUILTIN(ErrnoGetter, 1, 0, AST::symbolFromStr("errno!"))
 REGISTER_BUILTIN(GmtimeMaker, 2, 0, AST::symbolFromStr("mkgmtime!"))
 REGISTER_BUILTIN(TimeMaker, 2, 0, AST::symbolFromStr("mktime!"))
+#ifndef WIN32
+/* TODO move all that to 5DLibs */
 
+static AST::NodeT wrapGetDirentSize(AST::NodeT options, AST::NodeT argument) {
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
+	DIR* f = (DIR*) Evaluators::get_pointer(iter->second);
+	++iter;
+	AST::NodeT world = iter->second;
+	{
+		long namemax;
+		namemax = fpathconf(dirfd(f), _PC_NAME_MAX);
+		if(namemax == -1)
+			; /* TODO error check */
+		AST::NodeT result = Numbers::internNativeU((unsigned long long) offsetof(struct dirent, d_name) + (size_t) namemax);
+		return(Evaluators::makeIOMonad(result, world));
+	}
+}
+static AST::NodeT wrapUnpackDirent(AST::NodeT options, AST::NodeT argument) {
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
+	struct dirent* f = (struct dirent*) Evaluators::get_pointer(iter->second);
+	++iter;
+	AST::NodeT world = iter->second;
+	{
+		AST::NodeT result = AST::makeCons(AST::makeStr(f->d_name), 
+		                    AST::makeCons(Numbers::internNativeU(f->d_ino),
+		                    AST::makeCons(Numbers::internNativeU(f->d_off),
+		                    AST::makeCons(Numbers::internNativeU(f->d_reclen),
+		                    AST::makeCons(Numbers::internNativeU(f->d_type), NULL)))));
+		return(Evaluators::makeIOMonad(result, world));
+	}
+}
+
+DEFINE_FULL_OPERATION(DirentSizeGetter, {
+	return(wrapGetDirentSize(fn, argument));
+})
+REGISTER_BUILTIN(DirentSizeGetter, 2, 0, AST::symbolFromStr("getDirentSize!"))
+DEFINE_FULL_OPERATION(DirentUnpacker, {
+	return(wrapUnpackDirent(fn, argument));
+})
+REGISTER_BUILTIN(DirentUnpacker, 2, 0, AST::symbolFromStr("unpackDirent!"))
+#endif
 }; /* end namespace */
