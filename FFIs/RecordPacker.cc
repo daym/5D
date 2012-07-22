@@ -787,6 +787,8 @@ static AST::NodeT substr(AST::NodeT options, AST::NodeT argument) {
 		beginning = formatSize + beginning;
 	if(end < 0)
 		end = formatSize + end;
+	if(end <= 0)
+		return(NULL);
 	if(beginning < 0)
 		beginning = 0;
 	if(end > formatSize)
