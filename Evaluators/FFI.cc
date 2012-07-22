@@ -401,15 +401,15 @@ static AST::NodeT wrapGetDirentSize(AST::NodeT options, AST::NodeT argument) {
 static AST::NodeT wrapUnpackDirent(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
-	struct dirent* f = (struct dirent*) Evaluators::get_pointer(iter->second);
+	struct dirent* f = iter->second ? (struct dirent*) Evaluators::get_pointer(iter->second) : NULL;
 	++iter;
 	AST::NodeT world = iter->second;
 	{
-		AST::NodeT result = AST::makeCons(AST::makeStr(f->d_name), 
+		AST::NodeT result = f ? AST::makeCons(AST::makeStr(f->d_name), 
 		                    AST::makeCons(Numbers::internNativeU(f->d_ino),
 		                    AST::makeCons(Numbers::internNativeU(f->d_off),
 		                    AST::makeCons(Numbers::internNativeU(f->d_reclen),
-		                    AST::makeCons(Numbers::internNativeU(f->d_type), NULL)))));
+		                    AST::makeCons(Numbers::internNativeU(f->d_type), NULL))))) : NULL;
 		return(Evaluators::makeIOMonad(result, world));
 	}
 }
