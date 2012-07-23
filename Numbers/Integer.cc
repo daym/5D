@@ -690,44 +690,79 @@ AST::NodeT internNative(NativeInt value) {
                 return(&integers[value]);
         return(new Int(value));
 }
+static const NativeInt minValue = std::numeric_limits<NativeInt>::min();
+static const NativeInt maxValue = std::numeric_limits<NativeInt>::max();
+
+/* FIXME check *exactly* minValue */
 AST::NodeT operator+(const Int& a, const Int& b) {
-	NativeInt truncatedResult = a.value + b.value;
-	Integer result = Integer(a.value) + Integer(b.value);
-	if(result == truncatedResult) // TOOD speed up.
-	        return(internNative(truncatedResult));
-	else
+	//std::cout << "max " << maxValue << std::endl;
+	if(b.value < 0 ? minValue - b.value > a.value : maxValue - b.value < a.value) {
+		Integer result = Integer(a.value) + Integer(b.value);
 		return(new Integer(result));
+	}
+	/* TODO if we assumed addition with overflow was not undefined (and violoated C standard), we could check
+	     if( ((a ^ result) & (b ^ result)) < 0)
+	       OVERFLOW
+	   after the fact. */
+	NativeInt smallResult = a.value + b.value;
+	return(internNative(smallResult));
 }
+/* FIXME check *exactly* minValue */
 AST::NodeT operator-(const Int& a, const Int& b) {
-	NativeInt truncatedResult = a.value - b.value;
-	Integer result = Integer(a.value) - Integer(b.value);
-	if(result == truncatedResult) // TODO speed up.
-	        return(internNative(truncatedResult));
-	else
+	if(b.value < 0 ? maxValue + b.value < a.value : minValue + b.value > a.value) {
+		Integer result = Integer(a.value) - Integer(b.value);
 		return(new Integer(result));
+	}
+	NativeInt smallResult = a.value - b.value;
+        return(internNative(smallResult));
 }
+/* FIXME check *exactly* minValue */
 AST::NodeT operator*(const Int& a, const Int& b) {
-	NativeInt truncatedResult = a.value * b.value;
-	Integer result = Integer(a.value) * Integer(b.value);
-	if(result == truncatedResult) // TODO speed up.
-	        return(internNative(truncatedResult));
-	else
+	/*if(av == 0 || bv == 0)
+		return(&integers[0]);*/
+	if(b.value > 0 ? a.value > maxValue/b.value || a.value < minValue/b.value
+	               : b.value < -1 ? a.value > minValue/b.value || a.value < maxValue/b.value
+	                        : b.value == -1 && a.value == minValue) {
+		Integer result = Integer(a.value) * Integer(b.value);
 		return(new Integer(result));
+	}
+	NativeInt smallResult = a.value * b.value;
+        return(internNative(smallResult));
 }
 /*
-Integer* operator+(const Integer& a, const Integer& b) {
-        return(NULL); // FIXME
+For multiplication of ints do:
+
+#include <iostream>
+#include <ostream>
+#include <iomanip>
+#include <limits>
+#include <cmath>
+
+bool multiply( int &c, int a, int b)
+{
+	c = a * b;
+	double d = (std::log(std::abs(double(a))) + std::log(std::abs(double(b))))/log(2);
+	return d < std::numeric_limits< int >::digits;
 }
-Integer* operator-(const Integer& a, const Integer& b) {
-        return(NULL); // FIXME
+
+
+int main()
+{
+	using namespace std;
+	int const M = -numeric_limits<int>::max();
+	int r;
+
+	cout << boolalpha << hex;
+
+	cout << multiply( r, M / 4, M / 4 ) << ": " << r << endl;
+	cout << multiply( r, 10, 4 ) << ": " << r << endl;
+	cout << multiply( r, (M/ + 1, 2 ) << ": " << r << endl;
+	cout << multiply( r, (M/2) + 1, 4 ) << ": " << r << endl;
 }
-Integer* operator*(const Integer& a, const Integer& b) {
-        return(NULL); // FIXME
-}
-Integer* operator/(const Integer& a, const Integer& b) {
-        return(NULL); // FIXME
-}
+
+You can do that without the double-precision math using bit scanning, as int( std::log(1 << N)/std::log(2)) == N.
 */
+
 bool operator<=(const Int& a, const Int& b) {
         return(a.value <= b.value);
 }

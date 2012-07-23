@@ -1,3 +1,12 @@
+5d (0.6.6) unstable; urgency=low
+
+  * make most unicode maths operators standalone symbols.
+  * add set operators.
+  * use better (C standard compliant) Int overflow checking.
+  * add 'readdir! support (and 'getDirents!).
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 22 Jul 2012 20:52:00 +0200
+
 5d (0.6.5) unstable; urgency=low
 
   * add '∃, '∀ to "List" module.
