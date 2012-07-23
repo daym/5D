@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+echo "(scratchbox needs to be started)"
+#if [ ! -f /home/dannym/scratchpost.org/www/online/common ]
+#then
+#	scratchpost-mount
+#	mv ~/scratchpost.org/www/online/software/5D/5d_* ~/scratchpost.org/www/online/software/5D/attic/
+#	fusermount -u ~/scratchpost.org/www/online
+#fi
+cd ~/source/playground/trunk/5D
+jstar debian/changelog
+version="$(head -1 debian/changelog |sed 's;[^(]*(\([^)]*\)).*$;\1;')"
+cd  ~/scratchpost.org/www/mirror/software/5D
+for s in 5d_*
+do
+	if [ "$s" != "5d_*" -a "${s#5d_${version}}" = "$s" ]
+	then
+		echo "$s" >> ~/scratchpost.org/www/mirror/software/5D/.webhidden
+	fi
+done
+cd ~/source/playground/trunk/5D
+dpkg-buildpackage -rfakeroot
+maemo-build FREMANTLE_ARMEL
+maemo-build KINDLE_DX
+cd ~/mount/scratchbox-home/source
+cp 5d_"${version}"* ~/scratchpost.org/www/mirror/software/5D/
+cp update_5D_"${version}"_dxg_install.bin ~/scratchpost.org/www/mirror/software/5D/
+cd ~/source/playground/trunk
+cp 5d_"${version}"* ~/scratchpost.org/www/mirror/software/5D/
+#scratchpost-push
