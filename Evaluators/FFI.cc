@@ -406,10 +406,10 @@ static AST::NodeT wrapUnpackDirent(AST::NodeT options, AST::NodeT argument) {
 	AST::NodeT world = iter->second;
 	{
 		AST::NodeT result = f ? AST::makeCons(AST::makeStr(f->d_name), 
-		                    AST::makeCons(Numbers::internNativeU(f->d_ino),
-		                    AST::makeCons(Numbers::internNativeU(f->d_off),
-		                    AST::makeCons(Numbers::internNativeU(f->d_reclen),
-		                    AST::makeCons(Numbers::internNativeU(f->d_type), NULL))))) : NULL;
+		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_ino),
+		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_off),
+		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_reclen),
+		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_type), NULL))))) : NULL;
 		return(Evaluators::makeIOMonad(result, world));
 	}
 }
