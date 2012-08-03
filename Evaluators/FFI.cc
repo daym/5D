@@ -380,8 +380,57 @@ REGISTER_BUILTIN(LineReader, 2, 0, AST::symbolFromStr("readline!"))
 REGISTER_BUILTIN(ErrnoGetter, 1, 0, AST::symbolFromStr("errno!"))
 REGISTER_BUILTIN(GmtimeMaker, 2, 0, AST::symbolFromStr("mkgmtime!"))
 REGISTER_BUILTIN(TimeMaker, 2, 0, AST::symbolFromStr("mktime!"))
-#ifndef WIN32
-/* TODO move all that to 5DLibs */
+#ifdef WIN32
+
+static AST::NodeT wrapGetWin32FindDataWSize(AST::NodeT options, AST::NodeT argument) {
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
+	//DIR* f = (DIR*) Evaluators::get_pointer(iter->second);
+	++iter;
+	AST::NodeT world = iter->second;
+	{
+		AST::NodeT result = Numbers::internNativeU((unsigned long long) sizeof(WIN32_FIND_DATAW));
+		return(Evaluators::makeIOMonad(result, world));
+	}
+}
+static AST::NodeT wrapUnpackWin32FindDataW(AST::NodeT options, AST::NodeT argument) {
+	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
+	WIN32_FIND_DATAW* f = iter->second ? (WIN32_FIND_DATAW*) Evaluators::get_pointer(iter->second) : NULL;
+	++iter;
+	AST::NodeT world = iter->second;
+	{
+	/*typedef struct _WIN32_FIND_DATA {
+  DWORD    dwFileAttributes;
+  FILETIME ftCreationTime;
+  FILETIME ftLastAccessTime;
+  FILETIME ftLastWriteTime;
+  DWORD    nFileSizeHigh;
+  DWORD    nFileSizeLow;
+  DWORD    dwReserved0;
+  DWORD    dwReserved1;
+  TCHAR    cFileName[MAX_PATH];
+  TCHAR    cAlternateFileName[14];
+} WIN32_FIND_DATA, *PWIN32_FIND_DATA, *LPWIN32_FIND_DATA;*/
+		AST::NodeT result = f ? AST::makeCons(AST::makeStr(ToUTF8(f->cFileName)), 
+		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->dwReserved0),
+		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->dwReserved1),
+		                    AST::makeCons(Numbers::internNativeU((unsigned long long) 0U),
+		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->dwFileAttributes), NULL))))) : NULL;
+		return(Evaluators::makeIOMonad(result, world));
+	}
+}
+
+DEFINE_FULL_OPERATION(Win32FindDataWSizeGetter, {
+	return(wrapGetWin32FindDataWSize(fn, argument));
+})
+REGISTER_BUILTIN(Win32FindDataWSizeGetter, 2, 0, AST::symbolFromStr("getWin32FindDataWSize!"))
+DEFINE_FULL_OPERATION(Win32FindDataWUnpacker, {
+	return(wrapUnpackWin32FindDataW(fn, argument));
+})
+REGISTER_BUILTIN(Win32FindDataWUnpacker, 2, 0, AST::symbolFromStr("unpackWin32FindDataW!"))
+
+#else
 
 static AST::NodeT wrapGetDirentSize(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);

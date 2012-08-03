@@ -7,7 +7,6 @@
 #define PATH_MAX 4096
 #endif
 #else
-#include <dirent.h>
 #include <limits.h>
 #endif
 #include "Evaluators/BuiltinSelector"
@@ -140,9 +139,12 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, AST::symbolFromStr("mktime!"), &Evaluators::TimeMaker);
 	add_builtin_method(self, AST::symbolFromStr("infinite?"), &Evaluators::InfinityChecker);
 	add_builtin_method(self, AST::symbolFromStr("nan?"), &Evaluators::NanChecker);
-#ifndef WIN32
-	add_static_builtin_binding(self, AST::symbolFromStr("getDirentSize!"), &Evaluators::DirentSizeGetter);
-	add_static_builtin_binding(self, AST::symbolFromStr("unpackDirent!"), &Evaluators::DirentUnpacker);
+#ifdef WIN32
+	add_builtin_method(self, AST::symbolFromStr("getWin32FindDataWSize!"), &Evaluators::Win32FindDataWSizeGetter);
+	add_builtin_method(self, AST::symbolFromStr("unpackWin32FindDataW!"), &Evaluators::Win32FindDataWUnpacker);
+#else
+	add_builtin_method(self, AST::symbolFromStr("getDirentSize!"), &Evaluators::DirentSizeGetter);
+	add_builtin_method(self, AST::symbolFromStr("unpackDirent!"), &Evaluators::DirentUnpacker);
 #endif
 	add_static_builtin_binding(self, AST::symbolFromStr("nan"), Numbers::nan());
 	add_static_builtin_binding(self, AST::symbolFromStr("infinity"), Numbers::infinity());
