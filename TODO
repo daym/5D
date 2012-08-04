@@ -58,6 +58,8 @@ Indentation:
 	[(]    note how the auto) shouldn't close down yet - but it should close if we are back at the same paren level than we were before.
 range-with-unlimited-end
 <=> compare
+Continuation Passing Style Compiler
+amb
 
 = Performance =
 
@@ -161,3 +163,4 @@ better:
 OS.fopen!
 OS.fclose!
 OS.fflush!
+
