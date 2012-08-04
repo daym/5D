@@ -59,6 +59,9 @@ let sin := \angle
 	approx ((mod (angle + pi) 2⋅pi) - pi)
 in
 let tan := (\x (sin x)/(cos x)) in 
+let ground := (\v div0 v 1) in 
+let floor := (\v div v 1) in 
+let natural? := (\v (floor v) = v) in 
 let next := (\N \x (x + N/x)/2) in 
 let relativeWithin := \eps rec\within \list
 	rem "doesn't work for √0"
@@ -79,6 +82,7 @@ let within := \eps rec\within \list
 in 
 let repeat := (\f rec (\repeat \a a:(repeat (f a)))) in 
 let sqrtEps := \a0 \eps \N 
+	rem "TODO: use average dampening"$
 	if (N < eps)
 		0
 	$elif (N < 10)
@@ -88,9 +92,32 @@ let sqrtEps := \a0 \eps \N
 in 
 let sqrt := sqrtEps 1 0.001 in 
 let √ := sqrt in 
-let ground := (\v div0 v 1) in 
-let floor := (\v div v 1) in 
-let natural? := (\v (floor v) = v) in 
+let averagedamp := \f
+	\x (x + (f x))/2
+in 
+let square := \x
+	x⋅x
+in 
+let (**) := \b rec\ex \n
+	rem "FIXME non-natural b"$
+        if (zero? n)
+                1
+        $elif (even? n)
+                square (ex (n/2))
+        $else
+                b⋅(ex (n - 1))
+in
+let nthRootEps := \a0 \eps \n \x
+	let iterator := averagedamp (\y (x*y/(y**n))) in 
+	if (natural? n && n > 0)
+		if (n = 1)
+			x
+		$else
+			within eps (repeat iterator a0)
+	$else
+		Error.raiseErrorWithCode "nthRoot n must be a natural number bigger than 0" 500
+in 
+let nthRoot := nthRootEps 1 0.001 in 
 let ceiling := \v
 	if (natural? v)
 		v
@@ -122,13 +149,6 @@ let gcd := (rec\gcd \a \b
 	$else
 		gcd b (a % b)
 ) in 
-let (**) := \a rec\r\b
-	rem "FIXME non-natural b"
-	if (b = 0)
-		1
-	$else
-		a*(r (b - 1))
-in 
 let log2 := rec\log2 \a
 	rem "FIXME"
 	if(a <= 1)
@@ -137,4 +157,4 @@ let log2 := rec\log2 \a
 		1 + (log2 (a/2))
 in 
 let round1Log2 := compose round1 log2 in 
-(requireModule "Composition").dispatch1 (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? log2 round1Log2 (**) ∞ ∞? natural?])
+(requireModule "Composition").dispatch1 (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? log2 round1Log2 (**) ∞ ∞? natural? nthRoot])

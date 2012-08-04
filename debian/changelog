@@ -4,6 +4,7 @@
   * add set operators.
   * use better (C standard compliant) Int overflow checking.
   * add 'readdir! support (and 'getDirents!).
+  * add 'nthRoot .
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Sun, 22 Jul 2012 20:52:00 +0200
 
