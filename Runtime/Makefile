@@ -1,5 +1,5 @@
 
-SUBDIRS2 = Arithmetic Logic Composition List OS IO UI FFI String Reflection Error
+SUBDIRS2 = Arithmetic Logic Composition List OS IO UI FFI String Reflection Error Set
 #PACKAGE = 5D
 #VERSION = $(shell head -1 debian/changelog |cut -d"(" -f2 |cut -d")" -f1)
 #DISTDIR = $(PACKAGE)-$(VERSION)
@@ -10,6 +10,7 @@ all:
 	$(MAKE) -C Composition all
 	$(MAKE) -C List all
 	$(MAKE) -C Pair all
+	$(MAKE) -C Set all
 	$(MAKE) -C OS all
 	$(MAKE) -C IO all
 	$(MAKE) -C Maybe all
@@ -27,6 +28,7 @@ clean:
 	$(MAKE) -C Composition clean
 	$(MAKE) -C List clean
 	$(MAKE) -C Pair clean
+	$(MAKE) -C Set clean
 	$(MAKE) -C OS clean
 	$(MAKE) -C IO clean
 	$(MAKE) -C Maybe clean
@@ -44,6 +46,7 @@ distclean:
 	$(MAKE) -C Composition distclean
 	$(MAKE) -C List distclean
 	$(MAKE) -C Pair distclean
+	$(MAKE) -C Set distclean
 	$(MAKE) -C OS distclean
 	$(MAKE) -C IO distclean
 	$(MAKE) -C Maybe distclean
@@ -61,6 +64,7 @@ install:
 	$(MAKE) -C Composition install
 	$(MAKE) -C List install
 	$(MAKE) -C Pair install
+	$(MAKE) -C Set install
 	$(MAKE) -C OS install
 	$(MAKE) -C IO install
 	$(MAKE) -C Maybe install
