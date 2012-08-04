@@ -10,13 +10,13 @@ import [defer! return! with!] from IO in
 import [fopen! fclose! fread! fwrite! stdin stdout stderr] from File in 
 import [substr] from String in 
 import [allocateMemory!] from FFI in 
-with! (fopen! @mode:"r" "bli") fclose! as \f 
-with! (allocateMemory! 200) freeMemory! as \buf
-accumrUntil! nil? (\a \b b) [] 
-	fread! buf 1 200 f as \count
-	fwrite! buf 1 count stdout as \writeCount
-	return!
-		if (count > 0 && writeCount = count)
-			substr 0 count buf
-		$else
-			[]
+with! (fopen! @mode:"r" "bli") fclose! \f 
+	with! (allocateMemory! 200) freeMemory! \buf
+		accumrUntil! nil? (\a \b b) [] 
+			fread! buf 1 200 f as \count
+			fwrite! buf 1 count stdout as \writeCount
+			return!
+				if (count > 0 && writeCount = count)
+					substr 0 count buf
+				$else
+					[]
