@@ -249,6 +249,7 @@ void Scanner::parse_unicode(int input) {
 		raise_error("<expression>", "<junk>");
 		return;
 	}
+	/* from here on, the topmost 4 bits of the unicode codepoint are already fixed to 2 and it's clear that the total is 16 bits */
 	input = increment_position(FGETC(input_file));
 	//if(input != 0x89) {
 	// second byte.
@@ -259,6 +260,15 @@ void Scanner::parse_unicode(int input) {
 			input_value = AST::symbolFromStr(buf);
 		} else
 			parse_symbol(input, 0xE2, 0x8A);
+		//input_value = compose_unicode(0xE2, 0x88, input);
+		return;
+	} else if(input == 0x86) {
+		input = increment_position(FGETC(input_file));
+		if(input >= 0x80 && input < 0xC0) { /* these are all mathematical operators anyhow. */
+			char buf[4] = {0xE2, 0x86, input, 0};
+			input_value = AST::symbolFromStr(buf);
+		} else
+			parse_symbol(input, 0xE2, 0x86);
 		//input_value = compose_unicode(0xE2, 0x88, input);
 		return;
 	} else if(input == 0x8B) {
