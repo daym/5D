@@ -445,6 +445,11 @@ AST::NodeT REPL_prepare(struct REPL* self, AST::NodeT input) {
 	return(prepare_module(REPL_close_environment(self, input)));
 }
 
+/* TODO defrec! is
+defrec 'a 5
+let a := rec\f 5 in ...
+*/
+
 REGISTER_BUILTIN(RImporter, (-3), 1, AST::symbolFromStr("import!"))
 REGISTER_BUILTIN(RInformant, (-3), 1, AST::symbolFromStr("describe!"))
 REGISTER_BUILTIN(RDefiner, (-4), 1, AST::symbolFromStr("define!"))
