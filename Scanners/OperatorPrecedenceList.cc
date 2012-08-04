@@ -123,6 +123,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(2, I(";"), L);
 		cons(2, I("?;"), L);
 		cons(1, I("\\"), P);
+		//cons(1, I("→"), R); // mapsto
 		cons(0, I("let"), R); // and technically define, defrec, def
 		cons(0, I("import"), R);
 	}
