@@ -265,7 +265,7 @@ static unsigned int UTF8_decode_first(unsigned char value) {
 !! U+2700..U+27BF 	Dingbats 	192 	0 BMP 	Common
 !! U+27C0..U+27EF 	Miscellaneous Mathematical Symbols-A 	48 	0 BMP 	Common
 !! U+27F0..U+27FF 	Supplemental Arrows-A 	16 	0 BMP 	Common
-?? U+2800..U+28FF 	Braille Patterns 	256 	0 BMP 	Braille
+?  U+2800..U+28FF 	Braille Patterns 	256 	0 BMP 	Braille
 !! U+2900..U+297F 	Supplemental Arrows-B 	128 	0 BMP 	Common
 !! U+2980..U+29FF 	Miscellaneous Mathematical Symbols-B 	128 	0 BMP 	Common
 !! U+2A00..U+2AFF 	Supplemental Mathematical Operators 	256 	0 BMP 	Common
@@ -293,7 +293,7 @@ void Scanner::parse_unicode(int input) {
 	using namespace AST;
 	int size;
 	unsigned char buf[4] = {0};
-	// 0xC2 U+0080:U+00C0 generic (0xAC NOT)
+	// 0xC2 U+0080:U+00C0 generic (0xAC ¬)
 	// 0xC3 U+00C0:U+0100 generic
 	// 0xE2 0x86 U+2180:U+21C0 maths
 	// 0xE2 0x88 U+2200:U+223F maths (0xAB ∫, 0x9A √, 0x9E ∞, 0x88 ∈, 0xA9 ∩, 0xAA ∪, 0x82 ∂
