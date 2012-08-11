@@ -206,7 +206,7 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 			//printf("=key> %s\n", vkey.c_str());
 			AST::NodeT value = reduce(Evaluators::get_pair_second(entry));
 			const char* name = AST::get_symbol1_name(x_key);
-			if(m->find(name) == m->end())
+			if(name && m->find(name) == m->end())
 				(*m)[name] = value;
 		}
 		AST::Cons* table = (AST::Cons*) pBox;

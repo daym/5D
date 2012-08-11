@@ -135,7 +135,7 @@ void GTKLATEXGenerator_enqueue(struct GTKLATEXGenerator* self, const char* docum
 		NULL,
 	};
 	GPid pid;
-	if(g_spawn_async(NULL, (char**) argv, NULL, (GSpawnFlags)(G_SPAWN_DO_NOT_REAP_CHILD|G_SPAWN_SEARCH_PATH|G_SPAWN_STDOUT_TO_DEV_NULL), NULL, self/*user_data*/, &pid, &error)) {
+	if(g_spawn_async(NULL, (char**) argv, NULL, (GSpawnFlags)(G_SPAWN_DO_NOT_REAP_CHILD|G_SPAWN_SEARCH_PATH/*|G_SPAWN_STDOUT_TO_DEV_NULL*/), NULL, self/*user_data*/, &pid, &error)) {
 		struct LATEXChildData* data;
 		data = (struct LATEXChildData*) calloc(1, sizeof(struct LATEXChildData)); // FIXME
 		data->generator = self;

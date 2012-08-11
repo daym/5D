@@ -4,7 +4,7 @@ let List := requireModule "List" in
 let Composition := requireModule "Composition" in 
 import [rec ($) flip] from Composition in 
 import [head tail drop foldr zipBy list? map transpose (:) sum] from List in 
-import [not (&&) (||) if else] from Logic in 
+import [not (&&) (||) (if) (else)] from Logic in 
 import [(-) (*) (+)] from Arithmetic in 
 let oldInproduct := (\a \b sum (zipBy (*) a b)) in 
 let cartesianProduct := (\f \as \bs map (\a map (\b (f a b)) bs) as) in 

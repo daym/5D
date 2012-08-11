@@ -3,7 +3,7 @@ let Composition := requireModule "Composition" in
 let Error := requireModule "Error" in 
 import [head tail (:) nan? infinite? nan infinity] from Builtins in 
 import [rem rec flip ($) compose] from Composition in 
-import [not (&&) (||) if else elif] from Logic in 
+import [not (&&) (||) (if) (else) (elif)] from Logic in 
 import [(-) (*) (/) (+) (<=) divmod0] from Builtins in 
 let (⋅) := (*) in 
 let infinity? := infinite? in 
@@ -17,7 +17,12 @@ let (>=) := flip (<=) in
 let (≥) := (>=) in 
 let (>) := flip (<) in 
 let (/=) := \a \b not (a = b) in 
-let abs := (\x if (x <= 0) (0 - x) x) in 
+let abs := \x
+	if (x <= 0)
+		(0 - x)
+	else
+		x
+in 
 let div0 := (\a \b head (divmod0 a b)) in 
 let mod0 := (\a \b head (tail (divmod0 a b))) in 
 rem'(modulo := (\a \b mod0 (b + mod0 a b) b) in)

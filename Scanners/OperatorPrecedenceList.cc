@@ -118,6 +118,9 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(7, I("∨"), L);
 		cons(6, I(","), R);
 		cons(5, I("$"), R);
+		//cons(4, I("if"), R);
+		cons(4, I("elif"), R);
+		cons(4, I("else"), R);
 		//cons(?, I(">>"), L);
 		//cons(?, I(">>="), L);
 		cons(3, I("|"), L);
