@@ -5,10 +5,10 @@ import [head tail (:) nan? infinite? nan infinity] from Builtins in
 import [rem rec flip ($) compose] from Composition in 
 import [not (&&) (||) if else elif] from Logic in 
 import [(-) (*) (/) (+) (<=) divmod0] from Builtins in 
+let (⋅) := (*) in 
 let infinity? := infinite? in 
 let inf? := infinite? in 
 let inf := infinity in 
-let (∞?) := inf? in 
 let (∞) := inf in 
 let (≤) := (<=) in 
 let (<) := (\a \b a <= b && not (b <= a)) in 
@@ -157,4 +157,4 @@ let log2 := rec\log2 \a
 		1 + (log2 (a/2))
 in 
 let round1Log2 := compose round1 log2 in 
-(requireModule "Composition").dispatch1 (#exports[(-) (*) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? log2 round1Log2 (**) ∞ ∞? natural? nthRoot])
+(requireModule "Composition").dispatch1 (#exports[(-) (*) (⋅) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? log2 round1Log2 (**) ∞ natural? nthRoot])

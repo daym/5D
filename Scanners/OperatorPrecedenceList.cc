@@ -76,6 +76,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 #define L Symbols::Sleft
 #define N Symbols::Snone
 #define P Symbols::Sprefix
+#define S Symbols::Ssuffix
 	apply_level = 24;
 	cons(apply_level, I(" "), L); // apply
 	if(bInitDefaults) {
@@ -84,6 +85,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(31, I("^"), R);
 		cons(30, I("**"), R);
 		cons(29, I("*"), L);
+		cons(29, I("⋅"), L);
 		cons(29, I("/"), L);
 		cons(28, I("⨯"), R); /* TODO also for sets */
 		cons(27, I(":"), R);
@@ -127,6 +129,8 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(0, I("let"), R); // and technically define, defrec, def
 		cons(0, I("import"), R);
 	}
+#undef S
+#undef P
 #undef N
 #undef L
 #undef R

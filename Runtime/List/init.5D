@@ -5,7 +5,7 @@ let Error := requireModule "Error" in
 import [nil? cons? head tail (:)] from Builtins in 
 import [($) compose flip rec rem] from Composition in 
 import [if else elif (||) (&&) (#t) (#f) not] from Logic in 
-import [(<=) (>=) (=) (/=) (+) (-) (*) (/) div0 max ceiling] from Arithmetic in 
+import [(<=) (>=) (=) (/=) (+) (-) (*) (⋅) (/) div0 max ceiling] from Arithmetic in 
 let nil := [] in 
 let list? := \a nil? a || cons? a in 
 let foldl := \f rec \foldl \v \list 

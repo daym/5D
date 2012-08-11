@@ -102,6 +102,7 @@ extern AST::NodeT SmoduleKeys;
 extern AST::NodeT Sexports;
 extern AST::NodeT Sdispatch;
 extern AST::NodeT Sprefix;
+extern AST::NodeT Ssuffix;
 extern AST::NodeT Sdot;
 extern AST::NodeT Sunarydash;
 extern AST::NodeT Ssubstr;

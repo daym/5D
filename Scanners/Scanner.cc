@@ -233,139 +233,140 @@ static AST::Symbol* compose_unicode(int a, int b, int c) {
 	return AST::symbolFromStr(v.c_str());
 }
 */
+static unsigned int UTF8_decode_first(unsigned char value) {
+	if((value & 0xe0) == 0xc0)
+		return 2;
+	else if((value & 0xf0) == 0xe0)
+		return 3;
+	else if((value & 0xf8) == 0xf0)
+		return 4;
+	else if((value & 0xfc) == 0xf8)
+		return 5;
+	else
+		return 1;
+}
+/*
+!! U+2000..U+206F 	General Punctuation 	112 	0 BMP 	Common, Inherited
+!! U+2070..U+209F 	Superscripts and Subscripts 	48 	0 BMP 	Latin, Common
+!! U+20A0..U+20CF 	Currency Symbols 	48 	0 BMP 	Common
+?? U+20D0..U+20FF 	Combining Diacritical Marks for Symbols 	48 	0 BMP 	Inherited
+!! U+2100..U+214F 	Letterlike Symbols 	80 	0 BMP 	Latin, Greek, Common
+?? U+2150..U+218F 	Number Forms 	64 	0 BMP 	Latin, Common
+!! U+2190..U+21FF 	Arrows 	112 	0 BMP 	Common
+!! U+2200..U+22FF 	Mathematical Operators 	256 	0 BMP 	Common
+!! U+2300..U+23FF 	Miscellaneous Technical 	256 	0 BMP 	Common
+!! U+2400..U+243F 	Control Pictures 	64 	0 BMP 	Common
+!! U+2440..U+245F 	Optical Character Recognition 	32 	0 BMP 	Common
+!! U+2460..U+24FF 	Enclosed Alphanumerics 	160 	0 BMP 	Common
+!! U+2500..U+257F 	Box Drawing 	128 	0 BMP 	Common
+!! U+2580..U+259F 	Block Elements 	32 	0 BMP 	Common
+!! U+25A0..U+25FF 	Geometric Shapes 	96 	0 BMP 	Common
+!! U+2600..U+26FF 	Miscellaneous Symbols 	256 	0 BMP 	Common
+!! U+2700..U+27BF 	Dingbats 	192 	0 BMP 	Common
+!! U+27C0..U+27EF 	Miscellaneous Mathematical Symbols-A 	48 	0 BMP 	Common
+!! U+27F0..U+27FF 	Supplemental Arrows-A 	16 	0 BMP 	Common
+?? U+2800..U+28FF 	Braille Patterns 	256 	0 BMP 	Braille
+!! U+2900..U+297F 	Supplemental Arrows-B 	128 	0 BMP 	Common
+!! U+2980..U+29FF 	Miscellaneous Mathematical Symbols-B 	128 	0 BMP 	Common
+!! U+2A00..U+2AFF 	Supplemental Mathematical Operators 	256 	0 BMP 	Common
+!! U+2B00..U+2BFF 	Miscellaneous Symbols and Arrows 	256 	0 BMP 	Common
+NO U+2C00..U+2C5F 	Glagolitic 	96 	0 BMP 	Glagolitic
+NO U+2C60..U+2C7F 	Latin Extended-C 	32 	0 BMP 	Latin
+NO U+2C80..U+2CFF 	Coptic 	128 	0 BMP 	Coptic
+NO U+2D00..U+2D2F 	Georgian Supplement 	48 	0 BMP 	Georgian
+NO U+2D30..U+2D7F 	Tifinagh 	80 	0 BMP 	Tifinagh
+NO U+2D80..U+2DDF 	Ethiopic Extended 	96 	0 BMP 	Ethiopic
+NO U+2DE0..U+2DFF 	Cyrillic Extended-A 	32 	0 BMP 	Cyrillic
+!! U+2E00..U+2E7F 	Supplemental Punctuation 	128 	0 BMP 	Common
+!! U+2E80..U+2EFF 	CJK Radicals Supplement 	128 	0 BMP 	Han
+!! U+2F00..U+2FDF 	Kangxi Radicals 	224 	0 BMP 	Han
+!! U+2FF0..U+2FFF 	Ideographic Description Characters 	16 	0 BMP 	Common
+
+So everything in U+2xxx except the following are standalone:
+U+20D0..U+20FF which is 0xE2 0x83 0x90 .. 0xE2 0x83 0xBF (e)
+U+2150..U+218F which is 0xE2 0x85 0x90 .. 0xE2 0x86 0x8F
+U+2C00..U+2DFF which is 0xE2 0xB0 0x80 .. 0xE2 0xB7 0xBF (e)
+*/
 void Scanner::parse_unicode(int input) {
 	/* What this does is identify several special unicode characters which are supposed to stand on their own, i.e. mathematical operators etc.
-	   All others will be handled as normal symbols. */
+	   All others will be handled as normal (potentially) multi-character symbols. */
 	using namespace AST;
-	if(input == 0xC2) {
-		input = increment_position(FGETC(input_file));
-		if(input == 0xAC) { // ¬
-			input_value = Symbols::Snot;
-		} else
-			raise_error("¬", input);
-		return;
-	}
-	if(input != 0xE2) {
-		raise_error("<expression>", "<junk>");
-		return;
-	}
-	/* from here on, the topmost 4 bits of the unicode codepoint are already fixed to 2 and it's clear that the total is 16 bits */
-	input = increment_position(FGETC(input_file));
-	//if(input != 0x89) {
-	// second byte.
-	if(input == 0x8A) {
-		input = increment_position(FGETC(input_file));
-		if(input >= 0x80 && input < 0xC0) { /* these are all mathematical operators anyhow. */
-			char buf[4] = {0xE2, 0x8A, input, 0};
-			input_value = AST::symbolFromStr(buf);
-		} else
-			parse_symbol(input, 0xE2, 0x8A);
-		//input_value = compose_unicode(0xE2, 0x88, input);
-		return;
-	} else if(input == 0x86) {
-		input = increment_position(FGETC(input_file));
-		if(input >= 0x80 && input < 0xC0) { /* these are all mathematical operators anyhow. */
-			char buf[4] = {0xE2, 0x86, input, 0};
-			input_value = AST::symbolFromStr(buf);
-		} else
-			parse_symbol(input, 0xE2, 0x86);
-		//input_value = compose_unicode(0xE2, 0x88, input);
-		return;
-	} else if(input == 0x8B) {
-		input = increment_position(FGETC(input_file));
-		switch(input) {
-		case 0x85: /* dot */
-			input_value = Symbols::Sasterisk; /* FIXME remove special case */
-			return;
-		default:
-			//input_value = compose_unicode(0xE2, 0x8B, input);
-			parse_symbol(input, 0xE2, 0x8B);
-			return;
-		}
-	} else if(input == 0xA8) {
-		input = increment_position(FGETC(input_file));
-		switch(input) {
-		case 0xAF: /* ⨯ */
-			input_value = Symbols::Scrossproduct;
-			return;
-		default:
-			parse_symbol(input, 0xE2, 0xA8);
-			//input_value = compose_unicode(0xE2, 0xA8, input);
-			return;
-		}
-	} else if(input == 0x9F) {
-		input = increment_position(FGETC(input_file));
-		switch(input) {
-		case 0xA8: /* ⟨ */
-			input_value = Symbols::Sleftangle;
-			return;
-		case 0xA9: /* ⟩ */
-			input_value = Symbols::Srightangle;
-			return;
-		default:
-			parse_symbol(input, 0xE2, 0xA9);
-			//input_value = compose_unicode(0xE2, 0x9F, input);
-			return;
-		}
-	} else if(input == 0x88) {
-		input = increment_position(FGETC(input_file));
-		switch(input) {
-		case 0xAB: /* ∫ */
-			input_value = Symbols::Sintegral;
-			return;
-		case 0x9A: /* √ */
-			input_value = Symbols::Sroot;
-			return;
-		case 0x9E: /* ∞, ∞? */
-			parse_symbol(input, 0xE2, 0x88);
-			return;
-		case 0x88: /* ∈ */
-			input_value = AST::symbolFromStr("∈");
-			return;
-		case 0xA9: /* ∩ */
-			input_value = AST::symbolFromStr("∩");
-			return;
-		case 0xAA: /* ∪ */
-			input_value = AST::symbolFromStr("∪");
-			return;			 
-		case 0x82: /* ∂ */
-			input_value = AST::symbolFromStr("∂");
-			return;
-		default:
-			if(input >= 0x80 && input < 0xC0) { /* these are all mathematical operators anyhow. */
-				char buf[4] = {0xE2, 0x88, input, 0};
-				input_value = AST::symbolFromStr(buf);
+	int size;
+	unsigned char buf[4] = {0};
+	// 0xC2 U+0080:U+00C0 generic (0xAC NOT)
+	// 0xC3 U+00C0:U+0100 generic
+	// 0xE2 0x86 U+2180:U+21C0 maths
+	// 0xE2 0x88 U+2200:U+223F maths (0xAB ∫, 0x9A √, 0x9E ∞, 0x88 ∈, 0xA9 ∩, 0xAA ∪, 0x82 ∂
+	// 0xE2 0x89 U+2240:U+2280 maths (0xA0 /=, 0xA4 ≤, 0xA5 ≥)
+	// 0xE2 0x8A U+2280:U+22C0 maths
+	// 0xE2 0x8B U+22C0:U+2300 maths (0x85 ⋅)
+	// 0xE2 0x9F U+27C0:U+2800 brackets (0xA8 ⟨, 0xA9 ⟩)
+	// 0xE2 0xA8 U+2A00:U+2B00 maths (0xAF ⨯)
+	// others normal => parse_symbol
+	if(input <= 0)
+		raise_error("<operator>", input);
+	size = UTF8_decode_first(input);
+	if(size <= 3) {
+		buf[0] = input;
+		switch(size) {
+		case 1:
+			parse_symbol(input);
+			break;
+		case 2:
+			input = increment_position(FGETC(input_file));
+			buf[1] = input;
+			if(buf[0] == 0xC2 && buf[1] == 0xAC) {
+				input_value = Symbols::Snot;
 				return;
 			}
-			parse_symbol(input, 0xE2, 0x88);
-			//input_value = compose_unicode(0xE2, 0x88, input);
-			return;
+			parse_symbol(buf[1], buf[0]);
+			break;
+		case 3:
+			input = increment_position(FGETC(input_file));
+			buf[1] = input;
+			input = increment_position(FGETC(input_file));
+			buf[2] = input;
+			if(buf[0] == 0xE2) { // U+2xxx
+				switch(buf[1]) {
+				case 0x83: /* U+20D0..U+20FF which is 0xE2 0x83 0x90 .. 0xE2 0x83 0xBF (e) */
+					if(buf[2] < 0x90) {
+						input_value = AST::symbolFromStr((const char*) buf);
+						return;
+					}
+					break;
+				case 0x85: /* U+2150..U+218F which is 0xE2 0x85 0x90 .. 0xE2 0x86 0x8F */
+					if(buf[2] < 0x90) {
+						input_value = AST::symbolFromStr((const char*) buf);
+						return;
+					}
+					break;
+				case 0x86: /* U+2150..U+218F which is 0xE2 0x85 0x90 .. 0xE2 0x86 0x8F */
+					if(buf[2] > 0x8F) {
+						input_value = AST::symbolFromStr((const char*) buf);
+						return;
+					}
+					break;
+				case 0xB0:
+				case 0xB1:
+				case 0xB2:
+				case 0xB3:
+				case 0xB4:
+				case 0xB5:
+				case 0xB6:
+				case 0xB7: /* U+2C00..U+2DFF which is 0xE2 0xB0 0x80 .. 0xE2 0xB7 0xBF (e) */
+					break;
+				default: /* normal */
+					input_value = AST::symbolFromStr((const char*) buf);
+					return;
+				}
+			}
+			parse_symbol(buf[2], buf[0], buf[1]);
+			break;
+		default:
+			abort();
 		}
-	} else if(input != 0x89) {
-		parse_symbol(input, 0xE2);
-		//raise_error("<expression>", input);
-		return;
 	} else
-		input = increment_position(FGETC(input_file));
-	switch(input) {
-	case 0xA0:
-		input_value = Symbols::Sslashequal;
-		return;
-	case 0xA4:
-		input_value = Symbols::Slessequalunicode;
-		return;
-	case 0xA5:
-		input_value = Symbols::Sgreaterequalunicode;
-		return;
-	default:
-		if(input >= 0x80 && input < 0xC0) { /* these are all mathematical operators anyhow. */
-			char buf[4] = {0xE2, 0x89, input, 0};
-			input_value = AST::symbolFromStr(buf);
-			return;
-		}
-		return(parse_symbol(input, 0xE2, 0x89));
-		//raise_error("<operator>", input);
-	}
+		parse_symbol(input);
 }
 static bool structural_P(int input) {
 	return(input == '(' || input == ')' || input == '[' || input == ']' || input == '{' || input == '}');
