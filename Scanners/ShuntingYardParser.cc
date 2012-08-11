@@ -371,6 +371,7 @@ AST::NodeT ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, Nod
 			fOperators.push(value);
 			fOperandCounts.push(fOperands.size());
 		} else if(any_operator_P(value) && (fOperators.empty() || 1 /*|| macro_standin_operator(fOperators.top()) != Symbols::Squote */ || value == Symbols::Sspace)) { /* operator */
+			// TODO check for postfix operators here.
 			NodeT currentAssociativity = Symbols::Sright; // TODO
 			// note that prefix associativity is right associativity.
 			int currentPrecedence = get_operator_precedence_and_associativity(value, currentAssociativity);
