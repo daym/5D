@@ -1,3 +1,10 @@
+5d (0.6.7) unstable; urgency=low
+
+  * clean up operator symbol handling.
+  * remove '∞? .
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Sat, 11 Aug 2012 15:32:00 +0200
+
 5d (0.6.6) unstable; urgency=low
 
   * make most unicode maths operators standalone symbols.
