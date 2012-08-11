@@ -5,7 +5,7 @@ let Logic := requireModule "Logic" in
 let Maybe := requireModule "Maybe" in 
 let Arithmetic := requireModule "Arithmetic" in 
 import [if else elif] from Logic in 
-import [divmod0 (/=) (+) (-) (*) (<) (=)] from Arithmetic in 
+import [divmod0 (/=) (+) (-) (*) (⋅) (<) (=)] from Arithmetic in 
 import [($) rec (|)] from Composition in 
 import [head tail nil? foldr map drop (++) reverse foldl] from List in 
 import [listFromStr str? strFromKeyword strFromList] from Builtins in 
