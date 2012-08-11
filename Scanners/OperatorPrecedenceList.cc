@@ -76,7 +76,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 #define L Symbols::Sleft
 #define N Symbols::Snone
 #define P Symbols::Sprefix
-#define S Symbols::Ssuffix
+#define S Symbols::Spostfix
 	apply_level = 24;
 	cons(apply_level, I(" "), L); // apply
 	if(bInitDefaults) {
