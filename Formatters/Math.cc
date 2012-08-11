@@ -91,13 +91,15 @@ static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, st
 	AST::NodeT parameter = get_abstraction_parameter(node);
 	AST::NodeT body = get_abstraction_body(node);
 	++position, output << '\\';
-	bool B_pparend = OPL->any_operator_P(parameter); // !isalpha(parameterString.c_str()[0]);
 	/* this is not really necessary, I just like it more that way. */
-	if(B_pparend)
-		B_pparend = maybe_print_opening_paren(output, position, NULL, 0, 10000, true);
-	std::string parameterString = str(parameter);
-	print_text_raw(output, position, parameterString, false);
-	maybe_print_closing_paren(output, position, NULL, B_pparend);
+	//bool B_pparend = OPL->any_operator_P(parameter); // !isalpha(parameterString.c_str()[0]);
+	//compare '(let (⋅) := (*) in 3)
+	print_CXX(OPL, output, position, parameter, precedence_limit /* does not matter */, false);
+	//if(B_pparend)
+	//	B_pparend = maybe_print_opening_paren(output, position, NULL, 0, 10000, true);
+	//std::string parameterString = str(parameter);
+	//print_text_raw(output, position, parameterString, false);
+	//maybe_print_closing_paren(output, position, NULL, B_pparend);
 	//print_CXX(OPL, output, position, parameter, precedence, false);
 	++position, output << ' ';
 	print_CXX(OPL, output, position, body, precedence, false);
