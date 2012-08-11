@@ -86,7 +86,7 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 		}
 	}
 	if(argCount > 0 && ffi_prep_cif(&cif, abi, argCount - 1, argTypes[0], argTypes + 1) == FFI_OK) {
-		ffi_call(&cif, (void (*)(void)) proc->native, args[0], args + 1);
+		ffi_call(&cif, (void (*)(void)) proc->value, args[0], args + 1);
 		AST::NodeT results;
 		char returnSig[2] = {*sig, 0};
 		AST::NodeT rep = AST::makeStrCXX(dataStd.substr(0, returnValueSize));

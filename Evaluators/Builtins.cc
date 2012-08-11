@@ -15,6 +15,7 @@
 #include "AST/HashTable"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
+#include "Evaluators/FFI"
 #include "Scanners/MathParser"
 #include "Scanners/OperatorPrecedenceList"
 #include "FFIs/FFIs"
@@ -263,7 +264,7 @@ static inline std::string str1(const AST::Str* node) {
 	unsigned char c;
 	size_t len = node->size;
 	sst << "\"";
-	for(item = (const char*) node->native; (c = *item), len > 0; ++item, --len) {
+	for(item = (const char*) Evaluators::get_pointer((NodeT) node); (c = *item), len > 0; ++item, --len) {
 		printStrChar(128, sst, c);
 	}
 	sst << "\"";
@@ -277,7 +278,7 @@ static std::string strStr(const AST::Str* node) {
 		int UTF8Count = (-1);
 		size_t len = node->size;
 		sst << "\"";
-		for(item = (const char*) node->native; (c = *item), len > 0; ++item, --len) {
+		for(item = (const char*) Evaluators::get_pointer((NodeT) node); (c = *item), len > 0; ++item, --len) {
 			if(UTF8Count == (-1)) {
 				if(c >= 0x80) {
 					if(c == 0xC0 || c == 0xC1 || c >= 0xF5) { // funny extra limits by RFC 3629
@@ -628,7 +629,7 @@ DEFINE_BINARY_OPERATION(Pairer, makeAPair)
 DEFINE_SIMPLE_OPERATION(ConsP, cons_P(reduce(argument)))
 DEFINE_SIMPLE_OPERATION(PairP, pair_P(reduce(argument)))
 DEFINE_SIMPLE_OPERATION(NilP, nil_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(HeadGetter, ((argument = reduce(argument), cons_P(argument)) ? AST::get_cons_head(argument) : str_P(argument) ? Numbers::internNative((Numbers::NativeInt) *((unsigned char*) ((AST::Str*) argument)->native)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(HeadGetter, ((argument = reduce(argument), cons_P(argument)) ? AST::get_cons_head(argument) : str_P(argument) ? Numbers::internNative((Numbers::NativeInt) *((unsigned char*) Evaluators::get_pointer(argument))) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(TailGetter, ((argument = reduce(argument), cons_P(argument)) ? reduce(AST::get_cons_tail(argument)) : str_P(argument) ? AST::makeStrSlice((AST::Str*) argument, 1) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(FstGetter, ((argument = reduce(argument), pair_P(argument)) ? Evaluators::get_pair_first(argument) : FALLBACK))
 DEFINE_SIMPLE_OPERATION(SndGetter, ((argument = reduce(argument), pair_P(argument)) ? Evaluators::get_pair_second(argument) : FALLBACK))

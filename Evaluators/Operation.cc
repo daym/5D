@@ -34,8 +34,8 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 
 namespace Evaluators {
 
-CProcedure::CProcedure(void* native, AST::NodeT aRepr, int aArgumentCount, int aReservedArgumentCount, AST::NodeT aSignature) : 
-	AST::Box(native, aRepr),
+CProcedure::CProcedure(void* value, AST::NodeT aRepr, int aArgumentCount, int aReservedArgumentCount, AST::NodeT aSignature) : 
+	AST::Box(value, aRepr),
 	fArgumentCount(aArgumentCount),
 	fReservedArgumentCount(aReservedArgumentCount),
 	fSignature(aSignature)
@@ -90,7 +90,7 @@ AST::NodeT call_builtin(AST::NodeT fn, AST::NodeT argument) {
 	}
 	//printf("call %p\n", proc2->native);
 	if(nil_P(proc2->fSignature)) { // probably wants the arguments unevaluated, so stop messing with them.
-		AST::NodeT (*proc3)(AST::NodeT, AST::NodeT) = (AST::NodeT (*)(AST::NodeT, AST::NodeT)) proc2->native;
+		AST::NodeT (*proc3)(AST::NodeT, AST::NodeT) = (AST::NodeT (*)(AST::NodeT, AST::NodeT)) proc2->value;
 		return((*proc3)(fn, argument));
 	} else
 		return(Trampolines::jumpT(proc2, fn, argument));

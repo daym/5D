@@ -13,6 +13,7 @@
 #include "FFIs/Allocators"
 #include "FFIs/ProcessInfos"
 #include "Evaluators/BuiltinSelector"
+#include "Evaluators/FFI"
 
 namespace Evaluators {
 
@@ -191,10 +192,10 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 		throw Evaluators::EvaluationException("invalid symbol table entry (*)");
 		return(NULL);
 	}
-	if(dynamic_cast<AST::HashTable*>((AST::NodeT) mBox->native) == NULL) {
-		//cons_P((AST::NodeT) mBox->native)) {
+	void* pBox = Evaluators::get_pointer(mBox);
+	if(dynamic_cast<AST::HashTable*>((AST::NodeT) pBox) == NULL) {
 		m = new (UseGC) AST::HashTable;
-		for(AST::Cons* table = (AST::Cons*) mBox->native; table; table = Evaluators::evaluateToCons(table->tail)) {
+		for(AST::Cons* table = (AST::Cons*) pBox; table; table = Evaluators::evaluateToCons(table->tail)) {
 			std::string irv = Evaluators::str(table->head);
 			//printf("irv %s\n", irv.c_str());
 			AST::Cons* entry = evaluateToCons(reduce(AST::get_cons_head(table)));
@@ -208,11 +209,11 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 			if(m->find(name) == m->end())
 				(*m)[name] = value;
 		}
-		AST::Cons* table = (AST::Cons*) mBox->native;
-		mBox->native = m;
+		AST::Cons* table = (AST::Cons*) pBox;
+		AST::set_box_value(mBox, m);
 		(*m)["exports"] = AST::makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
 	}
-	m = (AST::HashTable*) mBox->native;
+	m = (AST::HashTable*) mBox->value;
 	//std::string vkey = Evaluators::str(key);
 	//printf("%s\n", vkey.c_str());
 	const char* name = AST::get_symbol_name(key); 

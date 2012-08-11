@@ -36,10 +36,10 @@ struct Abstraction : Node {
 	//virtual std::string str(void) const;
 };
 struct Box : Node {
-	void* native;
+	void* value;
 	AST::NodeT fRepr;
-	explicit Box(void* native, AST::NodeT repr) {
-		this->native = native;
+	explicit Box(void* value, AST::NodeT repr) {
+		this->value = value;
 		this->fRepr = repr;
 	}
 	//virtual std::string str(void) const;
@@ -47,8 +47,8 @@ struct Box : Node {
 struct Str : Box {
 	bool bAtomicity;
 	size_t size;
-	explicit Str(void* native) :
-		Box(native, NULL)
+	explicit Str(void* value) :
+		Box(value, NULL)
 	{
 		bAtomicity = false;
 	}
@@ -79,12 +79,12 @@ Str* makeStr(const char* text); // this must not contain pointers
 Str* makeStrCXX(const std::string& text, bool bAtomic = false); // this can contain pointers
 Str* makeStrRaw(char* mutableText, size_t size, bool bAtomic);
 AST::Str* makeStrSlice(AST::Str* s, int offset);
-static inline Box* makeBox(void* native, AST::NodeT fRepr) {
-	return new Box(native, fRepr);
+static inline Box* makeBox(void* value, AST::NodeT fRepr) {
+	return new Box(value, fRepr);
 }
 bool str_P(AST::NodeT node);
 static inline char* get_str_buffer(AST::NodeT node) {
-	return (char*) (((AST::Str*) node)->native);
+	return (char*) (((AST::Str*) node)->value);
 }
 static inline size_t get_str_size(AST::NodeT node) {
 	return(((AST::Str*) node)->size);
@@ -140,6 +140,9 @@ static inline AST::NodeT makePair(AST::NodeT a, AST::NodeT b) {
 }
 static void set_cons_tail(NodeT cons, NodeT value) {
 	((Cons*) cons)->tail = value;
+}
+static void set_box_value(NodeT box, void* value) {
+	((Box*) box)->value = value;
 }
 
 }; /* namespace AST */

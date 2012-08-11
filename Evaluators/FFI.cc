@@ -70,10 +70,10 @@ IMPLEMENT_NATIVE_FLOAT_GETTER(float)
 IMPLEMENT_NATIVE_FLOAT_GETTER(double)
 IMPLEMENT_NATIVE_FLOAT_GETTER(long_double)
 
-void* get_pointer(AST::NodeT root) {
+void* get_pointer(const AST::NodeT root) {
 	Box* rootBox = dynamic_cast<Box*>(root);
 	if(rootBox)
-		return(rootBox->native);
+		return(rootBox->value);
 	else {
 		std::stringstream sst;
 		sst << "cannot get native pointer for " << str(root);
@@ -93,7 +93,7 @@ char* get_string(AST::NodeT root) {
 	AST::Str* rootString = dynamic_cast<AST::Str*>(root);
 	if(rootString) {
 		// TODO maybe check terminating zero? Maybe not.
-		return((char*) rootString->native);
+		return((char*) rootString->value);
 	} else {
 		std::stringstream sst;
 		sst << "cannot get native string for " << str(root);

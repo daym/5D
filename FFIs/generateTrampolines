@@ -142,7 +142,7 @@ for combination in sys.stdin.readlines():
     content = combination[1 : ]
     print("typedef %s %s (*proc_%s_t)(%s);" % (getLongName(content[0]), getCallingConvention(combination[0]), combination, ", ".join(map(getLongName, content[1:]))))
     print("""static %(inliner)s AST::NodeT jump%(combination)s(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, AST::NodeT options, AST::NodeT world) {
-        proc_%(combination)s_t proc = (proc_%(combination)s_t) p2->native;
+        proc_%(combination)s_t proc = (proc_%(combination)s_t) p2->value;
         %(tempvariables)s
         AST::NodeT result = NULL;
         %(returner)s((*proc)(%(marshallers)s))%(fallback)s;
