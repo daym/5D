@@ -2,6 +2,7 @@
 
   * clean up operator symbol handling.
   * remove '∞? .
+  * make 'else, 'elif operators like '($) (for now).
 
  -- Danny Milosavljevic <danny_milo@yahoo.com>  Sat, 11 Aug 2012 15:32:00 +0200
 
