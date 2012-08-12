@@ -4,7 +4,7 @@ let Composition := requireModule "Composition" in
 let Logic := requireModule "Logic" in 
 import [rec (|) ($) rem] from Composition in 
 import [head tail] from List in 
-import [if else] from Logic in 
+import [(if) (else)] from Logic in 
 let ioValue := (\m head m) in 
 let ioWorld := (\m head (tail m)) in 
 let (;) := \m \ber \world 
@@ -18,7 +18,7 @@ let skipUntil! := (\condition \body rec\skipUntil!
 		let result := body world in 
 		if (condition (ioValue result))
 			result
-		$else
+		else
 			skipUntil! (ioWorld result)
 ) in 
 let skipWhile! := (\condition \body rec\skipWhile! 
@@ -26,7 +26,7 @@ let skipWhile! := (\condition \body rec\skipWhile!
 		let result := body world in 
 		if (condition (ioValue result))
 			skipWhile! (ioWorld result)
-		$else
+		else
 			result
 ) in 
 let accumrUntil! := (\condition \connector \terminator \body rec\accum!
@@ -35,7 +35,7 @@ let accumrUntil! := (\condition \connector \terminator \body rec\accum!
 		let value := ioValue result in 
 		if (condition value)
 			liftIO! terminator (ioWorld result)
-		$else
+		else
 			let t := (accum! (ioWorld result)) in 
 			let value2 := ioValue t in 
 			liftIO! (connector value value2) (ioWorld t)

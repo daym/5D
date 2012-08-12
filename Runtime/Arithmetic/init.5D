@@ -29,7 +29,7 @@ rem'(modulo := (\a \b mod0 (b + mod0 a b) b) in)
 let divmod := \a \b
 	if (0 <= a)
 		divmod0 a b
-	$else
+	else
 		let cr := (divmod0 a b) in 
 		let c := head cr in 
 		let r := head (tail cr) in 
@@ -37,9 +37,9 @@ let divmod := \a \b
 		if (r < 0)
 			if (b < 0)
 				[(c + 1) (r - b)]
-			$else
+			else
 				[(c - 1) (r + b)]
-		$else
+		else
 			[c r]
 in
 let zero? := (\a (a = 0)) in 
@@ -74,7 +74,7 @@ let relativeWithin := \eps rec\within \list
 	let b := head (tail list) in 
 	if (abs (a - b) <= eps*(abs b)) 
 		b 
-	$else
+	else
 		within b:(tail (tail list))
 in 
 let within := \eps rec\within \list
@@ -82,7 +82,7 @@ let within := \eps rec\within \list
 	let b := head (tail list) in 
 	if (abs (a - b) <= eps) 
 		b 
-	$else
+	else
 		within b:(tail (tail list))
 in 
 let repeat := (\f rec (\repeat \a a:(repeat (f a)))) in 
@@ -90,9 +90,9 @@ let sqrtEps := \a0 \eps \N
 	rem "TODO: use average dampening"$
 	if (N < eps)
 		0
-	$elif (N < 10)
+	elif (N < 10)
 		relativeWithin eps (repeat (next N) a0) 
-	$else
+	else
 		within eps (repeat (next N) a0) 
 in 
 let sqrt := sqrtEps 1 0.001 in 
@@ -107,9 +107,9 @@ let (**) := \b rec\ex \n
 	rem "FIXME non-natural b"$
         if (zero? n)
                 1
-        $elif (even? n)
+        elif (even? n)
                 square (ex (n/2))
-        $else
+        else
                 b⋅(ex (n - 1))
 in
 let nthRootEps := \a0 \eps \n \x
@@ -117,16 +117,16 @@ let nthRootEps := \a0 \eps \n \x
 	if (natural? n && n > 0)
 		if (n = 1)
 			x
-		$else
+		else
 			within eps (repeat iterator a0)
-	$else
+	else
 		Error.raiseErrorWithCode "nthRoot n must be a natural number bigger than 0" 500
 in 
 let nthRoot := nthRootEps 1 0.001 in 
 let ceiling := \v
 	if (natural? v)
 		v
-	$else
+	else
 		(floor v) + 1
 in 
 let factorial := (\v
@@ -134,31 +134,31 @@ let factorial := (\v
 		(rec\fac \v
 			if (v = 0)
 				1
-			$else
+			else
 				v*(fac (v - 1))
 		) v
-	$else
+	else
 		Error.raiseErrorWithCode "factorial only works for natural numbers - maybe you meant gamma" 500
 ) in 
 let round1 := (\v 
 	if (0 <= v) 
 		ground (v + 1/2)
-	$else
+	else
 		ground (v - 1/2)
 ) in 
-let max := (\a \b if (a <= b) b $else a) in 
-let min := (\a \b if (a <= b) a $else b) in 
+let max := (\a \b if (a <= b) b else a) in 
+let min := (\a \b if (a <= b) a else b) in 
 let gcd := (rec\gcd \a \b
 	if (b = 0) 
 		a
-	$else
+	else
 		gcd b (a % b)
 ) in 
 let log2 := rec\log2 \a
 	rem "FIXME"
 	if(a <= 1)
 		0
-	$else
+	else
 		1 + (log2 (a/2))
 in 
 let round1Log2 := compose round1 log2 in 

@@ -4,7 +4,7 @@ let Composition := requireModule "Composition" in
 let Logic := requireModule "Logic" in 
 let Maybe := requireModule "Maybe" in 
 let Arithmetic := requireModule "Arithmetic" in 
-import [if else elif] from Logic in 
+import [(if) (else) (elif)] from Logic in 
 import [divmod0 (/=) (+) (-) (*) (⋅) (<) (=)] from Arithmetic in 
 import [($) rec (|)] from Composition in 
 import [head tail nil? foldr map drop (++) reverse foldl] from List in 
@@ -20,7 +20,7 @@ let strjoin := (\sep \strings
 	let sepl := (listFromStr sep) in 
 	if (nil? strings)
 		""
-	$else
+	else
 		strFromList (drop (List.length sepl) (strjoinp sepl strings))
 ) in 
 let strFromIntegerBase := 
@@ -28,12 +28,12 @@ let strFromIntegerBase :=
 		let cr := divmod0 a base in 
 		let c := head cr in 
 		let r := head (tail cr) in 
-		(#\0 + r):(if (c /= 0) (build c) $else [])
+		(#\0 + r):(if (c /= 0) (build c) else [])
 	in 
 	\base \value
 	if (value < 0)
 		#\-:(build base (-value) | reverse) | strFromList
-	$else
+	else
 		build base value | reverse | strFromList
 in 
 let strFromInteger := strFromIntegerBase 10 in 
@@ -42,7 +42,7 @@ let integerFromStrBase :=
 	\base \value
 	if ((head value) = #\-)
 		-(build base (tail value))
-	$else
+	else
 		build base value
 in 
 let integerFromStr := integerFromStrBase 10 in 

@@ -12,7 +12,7 @@ let mmul := (\as \bs cartesianProduct oldInproduct as (transpose bs)) in
 let (+) := (rec\add \as \bs 
 	if (list? as && list? bs) 
 		zipBy (\a \b add a b) as bs
-	$else 
+	else 
 		(as + bs)
 ) in 
 let (*) := \a \bs map (\e a*e) bs in 

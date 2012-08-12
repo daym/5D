@@ -4,50 +4,50 @@ let Arithmetic := requireModule "Arithmetic" in
 let Error := requireModule "Error" in 
 import [nil? cons? head tail (:)] from Builtins in 
 import [($) compose flip rec rem] from Composition in 
-import [if else elif (||) (&&) (#t) (#f) not] from Logic in 
+import [(if) (else) (elif) (||) (&&) (#t) (#f) not] from Logic in 
 import [(<=) (>=) (=) (/=) (+) (-) (*) (⋅) (/) div0 max ceiling] from Arithmetic in 
 let nil := [] in 
 let list? := \a nil? a || cons? a in 
 let foldl := \f rec \foldl \v \list 
 	if (nil? list) 
 		v
-	$else 
+	else 
 		foldl (f v (head list)) (tail list)
 in 
 let foldr := \f \v rec \foldr \list 
 	if (nil? list) 
 		v
-	$else
+	else
 		f (head list) (foldr (tail list))
 in 
 let (++) := \a \b foldr (:) b a in 
 let drop := rec \drop \count \list 
 	if (count <= 0 || nil? list) 
 		list 
-	$else 
+	else 
 		drop (count - 1) (tail list)
 in 
 let take := rec \take \count \list 
 	if (count <= 0 || nil? list) 
 		nil 
-	$else
+	else
 		(head list):(take (count - 1) (tail list))
 in 
 let takeWhile := \predicate rec \take \list 
 	if (nil? list || not (predicate (head list)))
 		nil 
-	$else
+	else
 		(head list):(take (tail list))
 in 
 let map := \f \list foldr (compose (:) f) nil list in 
 let mergeBy := \lessEqualComparator rec \mergeBy \l1 \l2 
 	if (nil? l1 && nil? l2) 
 		[]
-	$elif (nil? l2) 
+	elif (nil? l2) 
 		(head l1):(mergeBy (tail l1) l2) 
-	$elif (not (nil? l1) && lessEqualComparator (head l1) (head l2)) 
+	elif (not (nil? l1) && lessEqualComparator (head l1) (head l2)) 
 		(head l1):(mergeBy (tail l1) l2)
-	$else 
+	else 
 		(head l2):(mergeBy l1 (tail l2))
 in 
 let merge := mergeBy (<=) in 
@@ -55,7 +55,7 @@ let length2 := foldr (\x \y y + 1) 0 in
 let length := rec \length \list 
 	if (nil? list) 
 		0 
-	$else
+	else
 		(1 + length (tail list))
 in 
 let mergeSortBy := \lessEqualComparator 
@@ -63,7 +63,7 @@ let mergeSortBy := \lessEqualComparator
 	rec \sort \list 
 		if (nil? list || nil? (tail list)) 
 			list 
-		$else 
+		else 
 			let halfCount := div0 (length list) 2 in 
 			let leftHalf := take halfCount list in 
 			let rightHalf := drop halfCount list in 
@@ -74,9 +74,9 @@ let extremum := \fn \values foldr fn (head values) values in
 let filter := \f rec \filter \list 
 	if (nil? list) 
 		nil 
-	$elif (f (head list)) 
+	elif (f (head list)) 
 		(head list):(filter (tail list)) 
-	$else
+	else
 		filter (tail list)
 in 
 let reverse := \list foldl (flip (:)) nil list in 
@@ -85,13 +85,13 @@ let rangeLL := \terminator \step \end
 		rec \rangeLL \beginning
 			if (beginning <= end) 
 				terminator 
-			$else
+			else
 				beginning:(rangeLL (beginning + step))
-	$else
+	else
 		rec \rangeLL \beginning
 			if (beginning >= end) 
 				terminator 
-			$else
+			else
 				beginning:(rangeLL (beginning + step))
 in 
 let range1 := \beginning \end rangeLL [] 1 end beginning in 
@@ -101,7 +101,7 @@ let frangeLL := \terminator \step \end \beginning
 	let range := rec\range \i
 		if (i >= n) 
 			terminator 
-		$else 
+		else 
 			(beginning + i⋅step):(range (i + 1))
 	in 
 	range 0
@@ -118,22 +118,22 @@ in
 let zipBy := \zipper rec \zipBy \l1 \l2 
 	if (nil? l1 || nil? l2) 
 		nil 
-	$else 
+	else 
 		(zipper (head l1) (head l2)):(zipBy (tail l1) (tail l2))
 in 
 let uniqBy := \(=) rec\uniq \list 
 	if (nil? list)
 		[]
-	$else
+	else
 		let h := head list in 
 		let t := tail list in 
 		if (nil? t)
 			h:[]
-		$else
+		else
 			let h2 := head t in 
 			if (h = h2)
 				uniq t
-			$else
+			else
 				h:(uniq t)
 in 
 let uniq := uniqBy (=) in 

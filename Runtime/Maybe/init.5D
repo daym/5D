@@ -2,7 +2,7 @@ let List := requireModule "List" in
 let Composition := requireModule "Composition" in 
 let Logic := requireModule "Logic" in 
 import [rem ($)] from Composition in 
-import [if else elif not] from Logic in 
+import [(if) (else) (elif) not] from Logic in 
 import [nil nil?] from List in 
 rem "accessor for 'just part"
 rem "TODO check whether it's actually not nothing."
@@ -13,7 +13,7 @@ let something? := \m (not (nothing? m)) in
 let (?;) := (\m \f
 	if (something? m)
 		f (something m)
-	$else
+	else
 		nothing
 ) in 
 let makeSomething := (\v
