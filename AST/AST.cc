@@ -77,6 +77,12 @@ AST::Str* makeStrSlice(AST::Str* ss, int offset) {
 	assert(ss->size > 0);
 	return(AST::makeStrRaw(((char*) ss->value) + 1, ss->size - 1, ss->bAtomicity));
 }
+void set_cons_tail(NodeT cons, NodeT value) {
+	((Cons*) cons)->tail = value;
+}
+void set_box_value(NodeT box, void* value) {
+	((Box*) box)->value = value;
+}
 
 }; /* end namespace AST */
 

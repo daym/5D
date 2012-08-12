@@ -138,12 +138,8 @@ AST::NodeT makeCons(AST::NodeT a, AST::NodeT b);
 static inline AST::NodeT makePair(AST::NodeT a, AST::NodeT b) {
 	return(AST::makeCons(a, AST::makeCons(b, NULL)));
 }
-static void set_cons_tail(NodeT cons, NodeT value) {
-	((Cons*) cons)->tail = value;
-}
-static void set_box_value(NodeT box, void* value) {
-	((Box*) box)->value = value;
-}
+void set_cons_tail(NodeT cons, NodeT value);
+void set_box_value(NodeT box, void* value);
 
 }; /* namespace AST */
 #endif /* __AST_H */
