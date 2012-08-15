@@ -77,6 +77,8 @@ tail recursion elimination.
 cache numbers for some time?
 http://en.wikipedia.org/wiki/Lehmer%27s_GCD_algorithm
 allow optimized versions of nodes (be careful to preserve the original for documentation purposes, though)
+strictness analysis (Wadler)
+escape analysis (Java)
 
 = Parser =
 
