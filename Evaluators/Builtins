@@ -25,8 +25,8 @@ void resetWorld(void);
 
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
 AST::NodeT provide_dynamic_builtins(AST::NodeT body);
-extern AST::NodeT churchFalse;
-extern AST::NodeT churchTrue;
+extern AST::NodeT aFalse;
+extern AST::NodeT aTrue;
 
 DECLARE_BINARY_OPERATION(Conser)
 DECLARE_BINARY_OPERATION(Pairer)

@@ -29,12 +29,12 @@
 namespace Evaluators {
 
 using namespace AST;
-AST::NodeT churchTrue = Evaluators::annotate(AST::makeAbstraction(AST::symbolFromStr("t"), AST::makeAbstraction(AST::symbolFromStr("f"), AST::symbolFromStr("t"))));
+AST::NodeT aTrue = Evaluators::annotate(AST::makeAbstraction(AST::symbolFromStr("t"), AST::makeAbstraction(AST::symbolFromStr("f"), AST::symbolFromStr("t"))));
 //Scanners::MathParser::parse_simple("(\\t (\\f t))", NULL));
-AST::NodeT churchFalse = Evaluators::annotate(AST::makeAbstraction(AST::symbolFromStr("t"), AST::makeAbstraction(AST::symbolFromStr("f"), AST::symbolFromStr("f"))));
+AST::NodeT aFalse = Evaluators::annotate(AST::makeAbstraction(AST::symbolFromStr("t"), AST::makeAbstraction(AST::symbolFromStr("f"), AST::symbolFromStr("f"))));
 //AST::NodeT churchFalse = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f f))", NULL));
 AST::NodeT internNative(bool value) {
-	return(value ? churchTrue : churchFalse);
+	return(value ? aTrue : aFalse);
 }
 AST::NodeT internNative(const char* value) {
 	return(AST::makeStr(value));
