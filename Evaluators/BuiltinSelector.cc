@@ -92,8 +92,8 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, Symbols::Ssubstr, &FFIs::SubstrGetter);
 	add_builtin_method(self, Symbols::SstrUntilZero, &FFIs::StrUntilZeroGetter);
 	add_builtin_method(self, Symbols::SrunIO, &Evaluators::IORunner);
-	add_static_builtin_binding(self, Symbols::Shasht, Evaluators::churchTrue);
-	add_static_builtin_binding(self, Symbols::Shashf, Evaluators::churchFalse);
+	add_static_builtin_binding(self, Symbols::Shasht, Evaluators::aTrue);
+	add_static_builtin_binding(self, Symbols::Shashf, Evaluators::aFalse);
 	add_static_builtin_binding(self, AST::symbolFromStr("stdin"), AST::makeBox(stdin, AST::symbolFromStr("stdin")));
 	add_static_builtin_binding(self, AST::symbolFromStr("stdout"), AST::makeBox(stdout, AST::symbolFromStr("stdout")));
 	add_static_builtin_binding(self, AST::symbolFromStr("stderr"), AST::makeBox(stderr, AST::symbolFromStr("stderr")));
