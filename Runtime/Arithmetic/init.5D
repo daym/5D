@@ -2,7 +2,7 @@ let Logic := requireModule "Logic" in
 let Composition := requireModule "Composition" in 
 let Error := requireModule "Error" in 
 import [head tail (:) nan? infinite? nan infinity] from Builtins in 
-import [rem rec flip ($) compose] from Composition in 
+import [(rem) (rec) flip ($) compose] from Composition in 
 import [not (&&) (||) (if) (else) (elif)] from Logic in 
 import [(-) (*) (/) (+) (<=) divmod0] from Builtins in 
 let (⋅) := (*) in 
@@ -33,7 +33,7 @@ let divmod := \a \b
 		let cr := (divmod0 a b) in 
 		let c := head cr in 
 		let r := head (tail cr) in 
-		rem "sign of r is either negative or r is equal to zero. Note that resulting modulus must always be positive or zero."
+		rem "sign of r is either negative or r is equal to zero. Note that resulting modulus must always be positive or zero."$
 		if (r < 0)
 			if (b < 0)
 				[(c + 1) (r - b)]
@@ -69,7 +69,7 @@ let floor := (\v div v 1) in
 let natural? := (\v (floor v) = v) in 
 let next := (\N \x (x + N/x)/2) in 
 let relativeWithin := \eps rec\within \list
-	rem "doesn't work for √0"
+	rem "doesn't work for √0"$
 	let a := head list in 
 	let b := head (tail list) in 
 	if (abs (a - b) <= eps*(abs b)) 
