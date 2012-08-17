@@ -1,7 +1,7 @@
 [Project]
 FileName=5D.dev
 Name=5D
-UnitCount=93
+UnitCount=94
 Type=0
 Ver=1
 ObjFiles=
@@ -943,6 +943,16 @@ FileName=..\Compilers\CodeGen
 Folder=5D
 Compile=0
 Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit94]
+FileName=..\FFIs\Trampolines.cc
+CompileCpp=1
+Folder=5D
+Compile=1
+Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=

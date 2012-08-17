@@ -1,8 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <ole2.h>
+#include <OleAuto.h>
+#else
 #include <ffi.h>
 #include <ffitarget.h>
 #include <alloca.h>
+#endif
 #include <assert.h>
 #include <sstream>
 #include <vector>
@@ -13,8 +19,7 @@
 namespace Trampolines {
 #ifdef WIN32
 VARIANT variantEmpty = {0};
-#endif
-
+#else
 static inline ffi_type* ffiTypeFromChar(char t) {
 	return t == 'i' ? &ffi_type_sint : 
 	      t == 'I' ? &ffi_type_uint :
@@ -97,5 +102,6 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 	fprintf(stderr, "warning: could not find marshaller for %s\n", sig);
 	return Evaluators::makeIOMonad(NULL, endIter->second);
 }
+#endif
 
 };
