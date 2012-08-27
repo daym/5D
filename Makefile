@@ -1,7 +1,7 @@
 
 SUBDIRS = Config REPL Linear_Algebra Bugs WIN32 Tests FFIs Bootstrappers Compilers AST Evaluators TUI Numbers Formatters doc Runtime debian GUI Scanners
 SUBDIRS2 = $(SUBDIRS) doc/building doc/installation doc/interna doc/library doc/programming doc/programming/manual doc/programming/tutorial Tests/0* Runtime/Arithmetic Runtime/Logic Runtime/Composition Runtime/List Runtime/OS Runtime/IO Runtime/UI Runtime/FFI Runtime/String Runtime/Reflection Runtime/Error Examples Runtime/LinearAlgebra Runtime/OO Runtime/Pair Runtime/Maybe Runtime/Set
-EXECUTABLES = REPL/5DREPL GUI/5D TUI/TUI Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol Scanners/test-MathParser Scanners/test-Scanner REPL/5DREPL TUI2/5DTUI
+EXECUTABLES = REPL/5DREPL GUI/5D TUI/TUI TUI/STUI Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol Scanners/test-MathParser Scanners/test-Scanner REPL/5DREPL TUI2/5DTUI
 GENERATEDS = FFIs/Trampolines FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols FFIs/Combinations
 
 # -O3 is for tail-call optimization
@@ -37,7 +37,7 @@ NUMBER_OBJECTS = Numbers/Integer.o Numbers/Real.o Numbers/BigUnsigned.o Numbers/
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 
-TARGETS = REPL/5DREPL TUI/TUI
+TARGETS = REPL/5DREPL TUI/TUI TUI/STUI
 
 TARGETS += $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  && echo GUI/5D )
 
@@ -109,6 +109,9 @@ REPL/5DREPL: REPL/main.o REPL/REPL.o Scanners/ShuntingYardParser.o Scanners/SExp
 	g++ -o $@ $^ $(LDFLAGS)
 
 TUI/TUI: TUI/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o Evaluators/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o Evaluators/Logic.o
+	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
+
+TUI/STUI: TUI/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/StrictBuiltins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o Evaluators/StrictBuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o Evaluators/StrictLogic.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 TUI2/5DTUI: TUI2/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o Evaluators/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o
@@ -235,6 +238,7 @@ install: $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  
 	install -m 755 -d $(DESTDIR)/usr
 	install -m 755 -d $(DESTDIR)/usr/bin
 	install -m 755 TUI/TUI $(DESTDIR)/usr/bin/T5D
+	install -m 755 TUI/STUI $(DESTDIR)/usr/bin/ST5D
 	strip $(DESTDIR)/usr/bin/T5D
 	install -m 755 REPL/5DREPL $(DESTDIR)/usr/bin/5DREPL
 	strip $(DESTDIR)/usr/bin/5DREPL

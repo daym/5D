@@ -5,7 +5,7 @@
 
 namespace Evaluators {
 
-#ifdef STRICT_BUILTIN_SELECTOR
+#ifdef USE_SPECIAL_FORMS
 DECLARE_SPECIAL_FORM(Sequencer) /* (;) */
 DECLARE_SPECIAL_FORM(Ander) /* && */
 DECLARE_SPECIAL_FORM(Orer) /* || */
