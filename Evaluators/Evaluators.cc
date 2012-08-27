@@ -161,18 +161,28 @@ static AST::NodeT shift(AST::NodeT argument, int index, AST::NodeT term) {
 DEFINE_SIMPLE_OPERATION(Reducer, reduce(argument))
 DEFINE_SIMPLE_OPERATION(Quoter, argument)
 static inline bool wants_its_argument_reduced_P(AST::NodeT fn) {
+#ifdef STRICT_EVAL
+	return(true);
+#else
 	return(false); /* FIXME check for reducer, quoter etc */
+#endif
 }
 /* TODO static */
 int recursionLevel = 0; /* anti-endless-loop */
 
 // caching results.
 int fGeneration = 1;
+#ifdef STRICT_EVAL
+static inline AST::NodeT remember(AST::NodeT app, AST::NodeT result) {
+	return(result);
+}
+#else
 static AST::NodeT remember(AST::NodeT app, AST::NodeT result) {
 	((AST::Application*) app)->result = result;
 	((AST::Application*) app)->resultGeneration = fGeneration;
 	return(result);
 }
+#endif
 AST::NodeT get_application_result(AST::NodeT n) {
 	AST::Application* app = (AST::Application*) n;
 	if(app->resultGeneration != fGeneration) {
@@ -289,6 +299,7 @@ AST::NodeT reduce1(AST::NodeT term) {
 				return(remember(term, ensureApplication(term, fn, argument)));
 			}
 		}
+#if 0
 	} else if(abstraction_P(term)) {
 		/* this isn't strictly necessary, but nicer */
 		AST::NodeT body;
@@ -309,6 +320,7 @@ AST::NodeT reduce1(AST::NodeT term) {
 			return(term);
 		else
 			return(makeAbstraction(parameter, new_body));
+#endif
 	} else
 		return(term);
 }
