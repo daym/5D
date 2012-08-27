@@ -122,27 +122,24 @@ static AST::NodeT wrapWrite(AST::NodeT options, AST::NodeT argument) {
 	FILE* f = (FILE*) Evaluators::get_pointer(iter->second);
 	++iter;
 	char* text = iter->second ? get_string(iter->second) : NULL;
-	++iter;
-	AST::NodeT world = iter->second;
+	FETCH_WORLD(iter);
 	size_t result = fwrite(text ? text : "", 1, text ? strlen(text) : 0, f);
-	return(Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) result), world));
+	return(CHANGED_WORLD(Numbers::internNative((Numbers::NativeInt) result)));
 }
 static AST::NodeT wrapFlush(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	FILE* f = (FILE*) Evaluators::get_pointer(iter->second);
-	++iter;
-	AST::NodeT world = iter->second;
+	FETCH_WORLD(iter);
 	size_t result = fflush(f);
-	return(Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) result), world));
+	return(CHANGED_WORLD(Numbers::internNative((Numbers::NativeInt) result)));
 }
 // FIXME unlimited length
 static AST::NodeT wrapReadLine(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	FILE* f = (FILE*) Evaluators::get_pointer(iter->second);
-	++iter;
-	AST::NodeT world = iter->second;
+	FETCH_WORLD(iter);
 	char text[2049];
 	AST::NodeT result = NULL;
 	if(fgets(text, 2048, f)) {
@@ -150,7 +147,7 @@ static AST::NodeT wrapReadLine(AST::NodeT options, AST::NodeT argument) {
 	} else
 		result = NULL;
 	// TODO ferror
-	return(Evaluators::makeIOMonad(result, world));
+	return(CHANGED_WORLD(result));
 }
 
 DEFINE_FULL_OPERATION(Writer, {
@@ -162,15 +159,20 @@ DEFINE_FULL_OPERATION(LineReader, {
 DEFINE_FULL_OPERATION(Flusher, {
 	return(wrapFlush(fn, argument));
 })
-DEFINE_SIMPLE_OPERATION(ErrnoGetter, Evaluators::makeIOMonad(Numbers::internNative((Numbers::NativeInt) errno), reduce(argument)))
+DEFINE_FULL_OPERATION(ErrnoGetter, {
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(fn, argument);
+	CXXArguments::const_iterator iter = arguments.begin();
+	FETCH_WORLD(iter);
+	return(CHANGED_WORLD(Numbers::internNative((Numbers::NativeInt) errno)));
+})
+
 #ifdef WIN32
 static AST::NodeT wrapMktime(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	struct tm* f = (struct tm*) Evaluators::get_pointer(iter->second);
-	++iter;
-	AST::NodeT world = iter->second;
 	{
+		FETCH_WORLD(iter);
 		// note that WIN32 CHANGES the structure contents!!
 		// TODO error check
 #ifdef _MSC_VER
@@ -178,7 +180,7 @@ static AST::NodeT wrapMktime(AST::NodeT options, AST::NodeT argument) {
 #else
 		AST::NodeT result = Numbers::internNativeU((unsigned long long) mktime(f));
 #endif
-		return(Evaluators::makeIOMonad(result, world));
+		return(CHANGED_WORLD(result));
 	}
 }
 /* mkgmtime.c - make time corresponding to a GMT timeval struct
@@ -328,8 +330,6 @@ static AST::NodeT wrapMkgmtime(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	struct tm* f = (struct tm*) Evaluators::get_pointer(iter->second);
-	++iter;
-	AST::NodeT world = iter->second;
 	{
 		// note that WIN32 CHANGES the structure contents!!
 		// TODO error check
@@ -338,7 +338,7 @@ static AST::NodeT wrapMkgmtime(AST::NodeT options, AST::NodeT argument) {
 #else
 		AST::NodeT result = Numbers::internNativeU((unsigned long long) emulatemkgmtime(f));
 #endif
-		return(Evaluators::makeIOMonad(result, world));
+		return(CHANGED_WORLD(result));
 	}
 }
 #else
@@ -346,25 +346,23 @@ static AST::NodeT wrapMktime(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	struct tm* f = (struct tm*) Evaluators::get_pointer(iter->second);
-	++iter;
-	AST::NodeT world = iter->second;
 	{
+		FETCH_WORLD(iter);
 		// TODO error check
 		AST::NodeT result = Numbers::internNativeU((unsigned long long) mktime(f));
-		return(Evaluators::makeIOMonad(result, world));
+		return(CHANGED_WORLD(result));
 	}
 }
 static AST::NodeT wrapMkgmtime(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	struct tm* f = (struct tm*) Evaluators::get_pointer(iter->second);
-	++iter;
-	AST::NodeT world = iter->second;
+	FETCH_WORLD(iter);
 	{
 		// note that WIN32 CHANGES the structure contents!!
 		// TODO error check
 		AST::NodeT result = Numbers::internNativeU((unsigned long long) timegm(f));
-		return(Evaluators::makeIOMonad(result, world));
+		return(CHANGED_WORLD(result));
 	}
 }
 #endif
@@ -386,20 +384,18 @@ static AST::NodeT wrapGetWin32FindDataWSize(AST::NodeT options, AST::NodeT argum
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	//DIR* f = (DIR*) Evaluators::get_pointer(iter->second);
-	++iter;
-	AST::NodeT world = iter->second;
 	{
+		FETCH_WORLD(iter);
 		AST::NodeT result = Numbers::internNativeU((unsigned long long) sizeof(WIN32_FIND_DATAW));
-		return(Evaluators::makeIOMonad(result, world));
+		return(CHANGED_WORLD(result));
 	}
 }
 static AST::NodeT wrapUnpackWin32FindDataW(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	WIN32_FIND_DATAW* f = iter->second ? (WIN32_FIND_DATAW*) Evaluators::get_pointer(iter->second) : NULL;
-	++iter;
-	AST::NodeT world = iter->second;
 	{
+		FETCH_WORLD(iter);
 	/*typedef struct _WIN32_FIND_DATA {
   DWORD    dwFileAttributes;
   FILETIME ftCreationTime;
@@ -417,7 +413,7 @@ static AST::NodeT wrapUnpackWin32FindDataW(AST::NodeT options, AST::NodeT argume
 		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->dwReserved1),
 		                    AST::makeCons(Numbers::internNativeU((unsigned long long) 0U),
 		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->dwFileAttributes), NULL))))) : NULL;
-		return(Evaluators::makeIOMonad(result, world));
+		return(CHANGED_WORLD(result));
 	}
 }
 
@@ -436,30 +432,28 @@ static AST::NodeT wrapGetDirentSize(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	DIR* f = (DIR*) Evaluators::get_pointer(iter->second);
-	++iter;
-	AST::NodeT world = iter->second;
 	{
+		FETCH_WORLD(iter);
 		long namemax;
 		namemax = fpathconf(dirfd(f), _PC_NAME_MAX);
 		if(namemax == -1)
 			; /* TODO error check */
 		AST::NodeT result = Numbers::internNativeU((unsigned long long) offsetof(struct dirent, d_name) + (size_t) namemax);
-		return(Evaluators::makeIOMonad(result, world));
+		return(CHANGED_WORLD(result));
 	}
 }
 static AST::NodeT wrapUnpackDirent(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	struct dirent* f = iter->second ? (struct dirent*) Evaluators::get_pointer(iter->second) : NULL;
-	++iter;
-	AST::NodeT world = iter->second;
 	{
+		FETCH_WORLD(iter);
 		AST::NodeT result = f ? AST::makeCons(AST::makeStr(f->d_name), 
 		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_ino),
 		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_off),
 		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_reclen),
 		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_type), NULL))))) : NULL;
-		return(Evaluators::makeIOMonad(result, world));
+		return(CHANGED_WORLD(result));
 	}
 }
 

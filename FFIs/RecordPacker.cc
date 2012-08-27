@@ -694,11 +694,10 @@ static AST::NodeT wrapAllocateRecord(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	AST::NodeT format = iter->second;
-	++iter;
-	AST::NodeT world = iter->second;
+	FETCH_WORLD(iter);
 	size_t position = 0;
 	AST::NodeT result = Record_allocate(Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, format), !Record_has_pointers(position, format));
-	return(Evaluators::makeIOMonad(result, world));
+	return(CHANGED_WORLD(result));
 }
 static AST::NodeT wrapAllocateMemory(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
@@ -706,10 +705,9 @@ static AST::NodeT wrapAllocateMemory(AST::NodeT options, AST::NodeT argument) {
 	Numbers::NativeInt size = 0;
 	if(!Numbers::toNativeInt(iter->second, size))
 		throw Evaluators::EvaluationException("cannot allocate memory with unknown size");
-	++iter;
-	AST::NodeT world = iter->second;
+	FETCH_WORLD(iter);
 	AST::NodeT result = Record_allocate(size, false/*TODO atomic as an option*/);
-	return(Evaluators::makeIOMonad(result, world));
+	return(CHANGED_WORLD(result));
 }
 DEFINE_FULL_OPERATION(RecordAllocator, {
 	return(wrapAllocateRecord(fn, argument));
@@ -723,8 +721,7 @@ static AST::NodeT wrapDuplicateRecord(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	AST::NodeT record = iter->second;
-	++iter;
-	AST::NodeT world = iter->second;
+	FETCH_WORLD(iter);
 	AST::NodeT result;
 	if(record == NULL || !AST::str_P(record))
 		result = NULL;
@@ -733,7 +730,7 @@ static AST::NodeT wrapDuplicateRecord(AST::NodeT options, AST::NodeT argument) {
 		result = Record_allocate(formatSize, false); // since this is monadic, nothing stops the C runtime from putting pointers in there.
 		memcpy(Evaluators::get_pointer(result), get_str_buffer(record), formatSize);
 	}
-	return(Evaluators::makeIOMonad(result, world));
+	return(CHANGED_WORLD(result));
 }
 DEFINE_FULL_OPERATION(RecordDuplicator, {
 	return(wrapDuplicateRecord(fn, argument));

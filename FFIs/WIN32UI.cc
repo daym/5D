@@ -42,8 +42,7 @@ static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
 		0; // TODO more
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	cText = FromUTF8(Evaluators::get_string(iter->second));
-	++iter;
-	AST::NodeT world = iter->second;
+	FETCH_WORLD(iter);
 	AST::NodeT caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
 	cCaption = caption ? FromUTF8(Evaluators::get_string(caption)) : _T("");
 	int cResult = MessageBoxW(cParentWindow, cText.c_str(), cCaption.c_str(), cType);
@@ -80,7 +79,7 @@ static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
 #endif
 
 	*/
-	return(Evaluators::makeIOMonad(result, world));
+	return(CHANGED_WORLD(result));
 }
 DEFINE_FULL_OPERATION(MessageBoxDisplayer, {
 	return(wrapMessageBox(fn, argument));

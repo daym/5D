@@ -14,6 +14,7 @@
 #include <vector>
 #include "FFIs/RecordPacker"
 #include "Evaluators/Evaluators"
+#include "Evaluators/Operation"
 #include "Numbers/Integer"
 
 namespace Trampolines {
@@ -62,8 +63,9 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 	if(*sig)
 		++sig;// skip calling convention
 	size_t argCount = strlen(sig); // Note: includes return value
-	if(argCount == 0)
-		return Evaluators::makeIOMonad(NULL, endIter->second);
+	if(argCount == 0) {
+		return CHANGED_WORLD(NULL);
+	}
 	AST::Str* formatString = AST::makeStr(sig);
 	std::string dataStd;
 	size_t returnValueSize;
@@ -97,10 +99,10 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 		AST::NodeT rep = AST::makeStrCXX(dataStd.substr(0, returnValueSize));
 		results = Record_unpack(FFIs::MACHINE_BYTE_ORDER_ALIGNED, AST::makeStr(returnSig), AST::makeBox(args[0], rep));
 		AST::NodeT result = (pair_P(results) ? Evaluators::get_pair_first(results) : NULL);
-		return Evaluators::makeIOMonad(result, endIter->second);
+		return CHANGED_WORLD(result);
 	}
 	fprintf(stderr, "warning: could not find marshaller for %s\n", sig);
-	return Evaluators::makeIOMonad(NULL, endIter->second);
+	return CHANGED_WORLD(NULL);
 }
 #endif
 

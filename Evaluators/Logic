@@ -1,0 +1,30 @@
+#ifndef __EVALUATORS_LOGIC_H
+#define __EVALUATORS_LOGIC_H
+#include "AST/AST"
+#include "Evaluators/Operation"
+
+namespace Evaluators {
+
+#ifdef STRICT_BUILTIN_SELECTOR
+DECLARE_SPECIAL_FORM(Sequencer) /* (;) */
+DECLARE_SPECIAL_FORM(Ander) /* && */
+DECLARE_SPECIAL_FORM(Orer) /* || */
+DECLARE_SPECIAL_FORM(Noter) /* not */
+DECLARE_SPECIAL_FORM(Ifer) /* if */
+DECLARE_SPECIAL_FORM(Elser) /* else */
+DECLARE_SPECIAL_FORM(Elifer) /* elif */
+#else
+extern AST::NodeT Sequencer;
+extern AST::NodeT Ander;
+extern AST::NodeT Orer;
+extern AST::NodeT Noter;
+extern AST::NodeT Ifer;
+extern AST::NodeT Elifer;
+extern AST::NodeT Elser;
+#endif
+
+AST::NodeT internNative(bool value);
+
+};
+
+#endif /* ndef __EVALUATORS_LOGIC_H */

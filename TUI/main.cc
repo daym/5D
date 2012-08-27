@@ -318,6 +318,7 @@ static int handle_readline_crlf(int x, int key) {
 		inputNode = REPL_parse(REPL1, rl_line_buffer, strlen(rl_line_buffer), 0);
 	} catch (const Scanners::ParseException& e) {
 		/* user interface niceness: only auto-line-continue on things where we believe it can actually be made better */
+		/* TODO "expected <$-operands> but got <nothing> near position 46 in line 2 in file \"<stdin>\"" if the ($) is at the end. */
 		if(strstr(e.what(), "expected <(-operands>") || strstr(e.what(), "expected ]") || strstr(e.what(), "expected <body>") || strstr(e.what(), "expected <[let") || strstr(e.what(), "expected <[import") || strstr(e.what(), "expected in")) {
 			rl_insert(x, '\n');
 			return(0);

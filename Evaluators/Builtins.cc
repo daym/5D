@@ -29,13 +29,7 @@
 namespace Evaluators {
 
 using namespace AST;
-AST::NodeT aTrue = Evaluators::annotate(AST::makeAbstraction(AST::symbolFromStr("t"), AST::makeAbstraction(AST::symbolFromStr("f"), AST::symbolFromStr("t"))));
-//Scanners::MathParser::parse_simple("(\\t (\\f t))", NULL));
-AST::NodeT aFalse = Evaluators::annotate(AST::makeAbstraction(AST::symbolFromStr("t"), AST::makeAbstraction(AST::symbolFromStr("f"), AST::symbolFromStr("f"))));
 //AST::NodeT churchFalse = Evaluators::annotate(Scanners::MathParser::parse_simple("(\\t (\\f f))", NULL));
-AST::NodeT internNative(bool value) {
-	return(value ? aTrue : aFalse);
-}
 AST::NodeT internNative(const char* value) {
 	return(AST::makeStr(value));
 }
@@ -364,6 +358,7 @@ static inline AST::NodeT bug(AST::NodeT f) {
 	abort();
 	return(f);
 }
+#ifndef STRICT_BUILTINS
 static AST::NodeT fetchValueAndWorld(AST::NodeT n) {
 	AST::Cons* cons = Evaluators::evaluateToCons(reduce(n));
 	if(!cons)
@@ -374,6 +369,10 @@ static AST::NodeT fetchValueAndWorld(AST::NodeT n) {
 }
 #define WORLD Numbers::internNative((Numbers::NativeInt) 42)
 DEFINE_SIMPLE_OPERATION(IORunner, fetchValueAndWorld(makeApplication(argument, WORLD)))
+#else
+DEFINE_SIMPLE_OPERATION(IORunner, argument)
+#endif
+
 AST::NodeT operator/(const Int& a, const Int& b) {
 	if((a.value % b.value) == 0)
 		return Numbers::internNative(a.value / b.value); // int
@@ -393,20 +392,33 @@ AST::NodeT operator/(const Integer& a, const Integer& b) {
 }
 
 static AST::NodeT makeACons(AST::NodeT h, AST::NodeT t, AST::NodeT fallback) {
+#ifndef STRICT_BUILTINS
 	h = reduce(h);
 	//t = reduce(t);
+#endif
 	return(makeCons(h, t));
 }
 static AST::NodeT makeAPair(AST::NodeT f, AST::NodeT s, AST::NodeT fallback) {
+#ifndef STRICT_BUILTINS
 	f = reduce(f);
 	s = reduce(s);
+#endif
 	return(makePair(f, s));
 }
+#ifndef STRICT_BUILTINS
+#define PREPARE_AB \
+	a = reduce(a); \
+	b = reduce(b);
+#define PREPARE(a) reduce(a)
+#else
+#define PREPARE_AB 
+#define PREPARE(a) a
+#endif
+
 /* make sure NOT to return a ratio here when it wasn't already one. The ratio constructor is divideARatio, not divideA. */
 #define IMPLEMENT_NUMERIC_BUILTIN(N, op) \
 AST::NodeT N(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) { \
-	a = reduce(a); \
-	b = reduce(b); \
+	PREPARE_AB; \
 	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a); \
 	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b); \
 	if(aInt && bInt) { \
@@ -445,8 +457,7 @@ AST::NodeT N(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) { \
 
 static AST::NodeT divmod0ARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
 AST::NodeT divmod0A(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
-	a = reduce(a);
-	b = reduce(b);
+	PREPARE_AB;
 	Numbers::Int* aInt = dynamic_cast<Numbers::Int*>(a);
 	Numbers::Int* bInt = dynamic_cast<Numbers::Int*>(b);
 	if(aInt && bInt) {
@@ -482,13 +493,11 @@ AST::NodeT divmod0A(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 	return(makeOperation(Symbols::Sdivmod0, a, b));
 }
 static AST::NodeT compareAddrsLEA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
-	a = reduce(a);
-	b = reduce(b);
+	PREPARE_AB;
 	return(internNative((void*) a <= (void*) b));
 }
 static AST::NodeT addrsEqualA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
-	a = reduce(a);
-	b = reduce(b);
+	PREPARE_AB;
 	return(internNative((void*) a == (void*) b));
 }
 AST::NodeT leqA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
@@ -542,8 +551,7 @@ static AST::NodeT simplifyRatio(AST::NodeT r) {
 	}
 }
 static AST::NodeT addARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
-	a = reduce(a);
-	b = reduce(b);
+	PREPARE_AB;
 	if(!ratio_P(a))
 		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
@@ -560,8 +568,7 @@ static AST::NodeT addARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
 		)));
 }
 static AST::NodeT subtractARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
-	a = reduce(a);
-	b = reduce(b);
+	PREPARE_AB;
 	if(!ratio_P(a))
 		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
@@ -578,8 +585,7 @@ static AST::NodeT subtractARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback
 		)));
 }
 static AST::NodeT multiplyARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
-	a = reduce(a);
-	b = reduce(b);
+	PREPARE_AB;
 	if(!ratio_P(a))
 		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
@@ -590,8 +596,7 @@ static AST::NodeT multiplyARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback
 	)));
 }
 static AST::NodeT divideARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
-	a = reduce(a);
-	b = reduce(b);
+	PREPARE_AB;
 	if(!ratio_P(a))
 		a = makeRatio(a, &int01);
 	if(!ratio_P(b))
@@ -626,19 +631,19 @@ static AST::NodeT divmod0ARatio(AST::NodeT a, AST::NodeT b, AST::NodeT fallback)
 }
 DEFINE_BINARY_OPERATION(Conser, makeACons)
 DEFINE_BINARY_OPERATION(Pairer, makeAPair)
-DEFINE_SIMPLE_OPERATION(ConsP, cons_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(PairP, pair_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(NilP, nil_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(HeadGetter, ((argument = reduce(argument), cons_P(argument)) ? AST::get_cons_head(argument) : str_P(argument) ? Numbers::internNative((Numbers::NativeInt) *((unsigned char*) Evaluators::get_pointer(argument))) : FALLBACK))
-DEFINE_SIMPLE_OPERATION(TailGetter, ((argument = reduce(argument), cons_P(argument)) ? reduce(AST::get_cons_tail(argument)) : str_P(argument) ? AST::makeStrSlice((AST::Str*) argument, 1) : FALLBACK))
-DEFINE_SIMPLE_OPERATION(FstGetter, ((argument = reduce(argument), pair_P(argument)) ? Evaluators::get_pair_first(argument) : FALLBACK))
-DEFINE_SIMPLE_OPERATION(SndGetter, ((argument = reduce(argument), pair_P(argument)) ? Evaluators::get_pair_second(argument) : FALLBACK))
-DEFINE_SIMPLE_OPERATION(StrP, str_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(KeywordP, keyword_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(SymbolP, symbol_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(SymbolFromStrGetter, (argument = reduce(argument), str_P(argument) ? AST::symbolFromStr(get_string(argument)) : FALLBACK))
-DEFINE_SIMPLE_OPERATION(KeywordFromStrGetter, (argument = reduce(argument), str_P(argument) ? AST::keywordFromStr(get_string(argument)) : FALLBACK))
-DEFINE_SIMPLE_OPERATION(KeywordStr, (argument = reduce(argument), keyword_P(argument) ? AST::makeStr(AST::get_keyword_name(argument)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(ConsP, cons_P(PREPARE(argument)))
+DEFINE_SIMPLE_OPERATION(PairP, pair_P(PREPARE(argument)))
+DEFINE_SIMPLE_OPERATION(NilP, nil_P(PREPARE(argument)))
+DEFINE_SIMPLE_OPERATION(HeadGetter, ((argument = PREPARE(argument), cons_P(argument)) ? AST::get_cons_head(argument) : str_P(argument) ? Numbers::internNative((Numbers::NativeInt) *((unsigned char*) Evaluators::get_pointer(argument))) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(TailGetter, ((argument = PREPARE(argument), cons_P(argument)) ? PREPARE(AST::get_cons_tail(argument)) : str_P(argument) ? AST::makeStrSlice((AST::Str*) argument, 1) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(FstGetter, ((argument = PREPARE(argument), pair_P(argument)) ? Evaluators::get_pair_first(argument) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(SndGetter, ((argument = PREPARE(argument), pair_P(argument)) ? Evaluators::get_pair_second(argument) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(StrP, str_P(PREPARE(argument)))
+DEFINE_SIMPLE_OPERATION(KeywordP, keyword_P(PREPARE(argument)))
+DEFINE_SIMPLE_OPERATION(SymbolP, symbol_P(PREPARE(argument)))
+DEFINE_SIMPLE_OPERATION(SymbolFromStrGetter, (argument = PREPARE(argument), str_P(argument) ? AST::symbolFromStr(get_string(argument)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(KeywordFromStrGetter, (argument = PREPARE(argument), str_P(argument) ? AST::keywordFromStr(get_string(argument)) : FALLBACK))
+DEFINE_SIMPLE_OPERATION(KeywordStr, (argument = PREPARE(argument), keyword_P(argument) ? AST::makeStr(AST::get_keyword_name(argument)) : FALLBACK))
 IMPLEMENT_NUMERIC_BUILTIN(addA, +)
 DEFINE_BINARY_OPERATION(Adder, addA)
 IMPLEMENT_NUMERIC_BUILTIN(subtractA, -)
@@ -726,9 +731,8 @@ static AST::NodeT makeFileMathParserB(AST::NodeT options, AST::NodeT argument) {
 	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*)(Evaluators::get_pointer(iter->second));
 	++iter;
 	AST::NodeT inputFile = iter->second;
-	++iter;
-	AST::NodeT world = iter->second;
-	return(Evaluators::makeIOMonad(parseMath(OPL, (FILE*) Evaluators::get_pointer(inputFile), arguments, iter, endIter), world));
+	FETCH_WORLD(iter);
+	return(CHANGED_WORLD(parseMath(OPL, (FILE*) Evaluators::get_pointer(inputFile), arguments, iter, endIter)));
 }
 static AST::NodeT makeStrMathParserB(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
@@ -770,18 +774,18 @@ static inline AST::NodeT ensureAbstraction(AST::NodeT node) {
 	return(node);
 }
 DEFINE_FULL_OPERATION(ApplicationMaker, return(makeApplicationB(fn, argument)))
-DEFINE_SIMPLE_OPERATION(ApplicationP, AST::application_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(ApplicationOperatorGetter, AST::get_application_operator(ensureApplication(reduce(argument))))
-DEFINE_SIMPLE_OPERATION(ApplicationOperandGetter, AST::get_application_operand(ensureApplication(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(ApplicationP, AST::application_P(PREPARE(argument)))
+DEFINE_SIMPLE_OPERATION(ApplicationOperatorGetter, AST::get_application_operator(ensureApplication(PREPARE(argument))))
+DEFINE_SIMPLE_OPERATION(ApplicationOperandGetter, AST::get_application_operand(ensureApplication(PREPARE(argument))))
 
 DEFINE_FULL_OPERATION(AbstractionMaker, return(makeAbstractionB(fn, argument)))
-DEFINE_SIMPLE_OPERATION(AbstractionP, AST::abstraction_P(reduce(argument)))
-DEFINE_SIMPLE_OPERATION(AbstractionParameterGetter, AST::get_abstraction_parameter(ensureAbstraction(reduce(argument))))
-DEFINE_SIMPLE_OPERATION(AbstractionBodyGetter, AST::get_abstraction_body(ensureAbstraction(reduce(argument))))
+DEFINE_SIMPLE_OPERATION(AbstractionP, AST::abstraction_P(PREPARE(argument)))
+DEFINE_SIMPLE_OPERATION(AbstractionParameterGetter, AST::get_abstraction_parameter(ensureAbstraction(PREPARE(argument))))
+DEFINE_SIMPLE_OPERATION(AbstractionBodyGetter, AST::get_abstraction_body(ensureAbstraction(PREPARE(argument))))
 
 static Numbers::NativeFloat specialFloatValueOrZeroA(AST::NodeT node) {
 	Numbers::NativeFloat result;
-	node = reduce(node);
+	node = PREPARE(node);
 	if(Numbers::float_P(node) && Numbers::toNativeFloat(node, result))
 		return(result);
 	else
@@ -831,6 +835,7 @@ REGISTER_BUILTIN(RStrMathParser, (-2), 0, AST::symbolFromStr("parseMathStr"))
 REGISTER_BUILTIN(InfinityChecker, 1, 0, AST::symbolFromStr("infinite?"))
 REGISTER_BUILTIN(NanChecker, 1, 0, AST::symbolFromStr("nan?"))
 
+#ifndef STRICT_BUILTINS
 CXXArguments CXXfromArgumentsU(AST::NodeT options, AST::NodeT argument, int backwardsIndexOfArgumentNotToReduce) {
 	CXXArguments result;
 	AST::NodeT v;
@@ -861,6 +866,39 @@ CXXArguments CXXfromArgumentsU(AST::NodeT options, AST::NodeT argument, int back
 	}
 	return(result);
 }
+#else /* strict */
+CXXArguments CXXfromArgumentsU(AST::NodeT options, AST::NodeT argument, int backwardsIndexOfArgumentNotToReduce) {
+	CXXArguments result;
+	AST::NodeT v;
+	AST::NodeT p;
+	int i = 1;
+	bool B_pending_value = false;
+	assert(options);
+	p = argument; // backwardsIndexOfArgumentNotToReduce == 0 ? argument : reduce(argument);
+	B_pending_value = true;
+	AST::NodeT self;
+	for(self = options; curried_operation_P(self); self = get_curried_operation_operation(self), ++i) {
+		AST::NodeT arg = get_curried_operation_argument(self);
+		//v = i == backwardsIndexOfArgumentNotToReduce ? arg : reduce(arg); // backwards...
+		v = arg;
+		if(B_pending_value && keyword_P(v)) {
+			result.push_back(std::make_pair(v, p));
+			p = NULL;
+			B_pending_value = false;
+		} else {
+			if(B_pending_value)
+				result.push_front(std::pair<AST::NodeT, AST::NodeT>(NULL, p));
+			p = v;
+			B_pending_value = true;
+		}
+	}
+	if(B_pending_value) {
+		B_pending_value = false;
+		result.push_front(std::pair<NodeT, AST::NodeT>(NULL, p));
+	}
+	return(result);
+}
+#endif
 CXXArguments CXXfromArguments(AST::NodeT options, AST::NodeT argument) {
 	return(CXXfromArgumentsU(options, argument, -1));
 }

@@ -25,6 +25,7 @@
 #include "Numbers/Real"
 #include "Numbers/Ratio"
 #include "Evaluators/ModuleLoader"
+#include "Evaluators/Logic"
 #include "REPL/ExtREPL"
 
 // for now, these are kept all in the main executable. After ensuring that GC actually works across DLL boundaries, we can also extract stuff into their own extension modules.
@@ -67,6 +68,25 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, Symbols::Stail, &Evaluators::TailGetter);
 	add_builtin_method(self, Symbols::Sfst, &Evaluators::FstGetter);
 	add_builtin_method(self, Symbols::Ssnd, &Evaluators::SndGetter);
+#ifdef STRICT_BUILTIN_SELECTOR 
+	add_builtin_method(self, AST::symbolFromStr(";"), &Evaluators::Sequencer);
+	add_builtin_method(self, AST::symbolFromStr("&&"), &Evaluators::Ander);
+	add_builtin_method(self, AST::symbolFromStr("||"), &Evaluators::Orer);
+	add_builtin_method(self, AST::symbolFromStr("not"), &Evaluators::Noter);
+	add_builtin_method(self, AST::symbolFromStr("if"), &Evaluators::Ifer);
+	add_builtin_method(self, AST::symbolFromStr("elif"), &Evaluators::Elifer);
+	add_builtin_method(self, AST::symbolFromStr("else"), &Evaluators::Elser);
+#else
+	add_builtin_method(self, AST::symbolFromStr(";"), Evaluators::Sequencer);
+	add_builtin_method(self, AST::symbolFromStr("&&"), Evaluators::Ander);
+	add_builtin_method(self, AST::symbolFromStr("||"), Evaluators::Orer);
+	add_builtin_method(self, AST::symbolFromStr("not"), Evaluators::Noter);
+	add_builtin_method(self, AST::symbolFromStr("if"), Evaluators::Ifer);
+	add_builtin_method(self, AST::symbolFromStr("elif"), Evaluators::Elifer);
+	add_builtin_method(self, AST::symbolFromStr("else"), Evaluators::Elser);
+#endif
+	add_static_builtin_binding(self, Symbols::Shasht, Evaluators::aTrue);
+	add_static_builtin_binding(self, Symbols::Shashf, Evaluators::aFalse);
 	add_builtin_method(self, Symbols::SintP, &Numbers::IntP);
 	add_static_builtin_binding(self, Symbols::Sintzero, Numbers::internNative((Numbers::NativeInt) 0));
 	add_builtin_method(self, Symbols::SintSucc, &Numbers::IntSucc);
@@ -92,8 +112,6 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, Symbols::Ssubstr, &FFIs::SubstrGetter);
 	add_builtin_method(self, Symbols::SstrUntilZero, &FFIs::StrUntilZeroGetter);
 	add_builtin_method(self, Symbols::SrunIO, &Evaluators::IORunner);
-	add_static_builtin_binding(self, Symbols::Shasht, Evaluators::aTrue);
-	add_static_builtin_binding(self, Symbols::Shashf, Evaluators::aFalse);
 	add_static_builtin_binding(self, AST::symbolFromStr("stdin"), AST::makeBox(stdin, AST::symbolFromStr("stdin")));
 	add_static_builtin_binding(self, AST::symbolFromStr("stdout"), AST::makeBox(stdout, AST::symbolFromStr("stdout")));
 	add_static_builtin_binding(self, AST::symbolFromStr("stderr"), AST::makeBox(stderr, AST::symbolFromStr("stderr")));

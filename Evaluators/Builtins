@@ -18,7 +18,6 @@ namespace Evaluators {
 
 AST::NodeT operator/(const Numbers::Integer& a, const Numbers::Integer& b);
 AST::NodeT operator/(const Numbers::Int& a, const Numbers::Int& b);
-AST::NodeT internNative(bool value);
 AST::NodeT internNative(const char* value);
 
 void resetWorld(void);
@@ -70,7 +69,7 @@ DECLARE_SIMPLE_OPERATION(InfinityChecker)
 DECLARE_SIMPLE_OPERATION(NanChecker)
 
 typedef std::list<std::pair<AST::NodeT /*keyword*/, AST::NodeT>, gc_allocator<std::pair<AST::NodeT, AST::NodeT> > > CXXArguments;
-/* WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
+/* (non-strict) WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
 CXXArguments CXXfromArguments(AST::NodeT options, AST::NodeT argument); /* non-keyword arguments will be at the FRONT */
 
 CXXArguments CXXfromArgumentsU(AST::NodeT options, AST::NodeT argument, int backwardsIndexOfArgumentNotToReduce); /* non-keyword arguments will be at the FRONT */

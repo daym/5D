@@ -66,7 +66,7 @@ static AST::Box* environFromList(AST::NodeT argument) {
 static AST::NodeT wrapGetEnviron(AST::NodeT world) {
 	AST::NodeT result;
 	LPWSTR env = GetEnvironmentStringsW();
-	result = Evaluators::makeIOMonad(internEnviron(env), world);
+	result = CHANGED_WORLD(internEnviron(env));
 	FreeEnvironmentStringsW(env);
 	return(result);
 }
@@ -85,10 +85,9 @@ static AST::NodeT wrapGetAbsolutePath(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	char* text = iter->second ? Evaluators::get_string(iter->second) : NULL;
-	++iter;
-	AST::NodeT world = iter->second;
+	FETCH_WORLD(iter);
 	text = get_absolute_path(text);
-	return(Evaluators::makeIOMonad(AST::makeStr(text), world));
+	return(CHANGED_WORLD(AST::makeStr(text)));
 }
 DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 	return(wrapGetAbsolutePath(fn, argument));

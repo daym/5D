@@ -40,8 +40,7 @@ static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
 	        GTK_MESSAGE_INFO; // TODO more
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	cText = Evaluators::get_string(iter->second);
-	++iter;
-	AST::NodeT world = iter->second;
+	FETCH_WORLD(iter);
 	AST::NodeT caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
 	cCaption = caption ? Evaluators::get_string(caption) : NULL;
 	GtkWidget* dialog = gtk_message_dialog_new(cParentWindow, (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), cType, cButtons, "%s", cText);
@@ -62,7 +61,7 @@ static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
 	         (cResult == GTK_RESPONSE_APPLY) ? AST::symbolFromStr("apply") : 
 	         (cResult == GTK_RESPONSE_HELP) ? AST::symbolFromStr("help") : 
 	         AST::symbolFromStr("unknown");
-	return(Evaluators::makeIOMonad(result, world));
+	return(CHANGED_WORLD(result));
 }
 DEFINE_FULL_OPERATION(MessageBoxDisplayer, {
 	return(wrapMessageBox(fn, argument));

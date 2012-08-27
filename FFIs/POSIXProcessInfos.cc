@@ -7,6 +7,7 @@
 #include "FFIs/Allocators"
 #include "Evaluators/Builtins"
 #include "Evaluators/FFI"
+#include "Evaluators/Operation"
 
 namespace FFIs {
 
@@ -60,7 +61,12 @@ static AST::Box* environFromList(AST::NodeT argument) {
 	}
 	return(AST::makeBox(result, AST::makeApplication(&EnvironFromList, listNode/* or argument*/)));
 }
-DEFINE_SIMPLE_OPERATION(EnvironGetter, Evaluators::makeIOMonad(internEnviron((const char**) environ), Evaluators::reduce(argument)))
+DEFINE_FULL_OPERATION(EnvironGetter, {
+	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(fn, argument);
+	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
+	FETCH_WORLD(iter);
+	return(CHANGED_WORLD(internEnviron((const char**) environ)));
+})
 char* get_absolute_path(const char* filename) {
 	if(filename && filename[0] == '/')
 		return(GCx_strdup(filename));
@@ -82,8 +88,7 @@ static AST::NodeT wrapGetAbsolutePath(AST::NodeT options, AST::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	char* text = iter->second ? Evaluators::get_string(iter->second) : NULL;
-	++iter;
-	AST::NodeT world = iter->second;
+	FETCH_WORLD(iter);
 	text = get_absolute_path(text);
 	return(Evaluators::makeIOMonad(AST::makeStr(text), world));
 }

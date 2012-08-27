@@ -81,5 +81,18 @@ AST::NodeT call_builtin(AST::NodeT fn, AST::NodeT argument);
 /* END Binary Operations */
 
 AST::NodeT repr(AST::NodeT);
+
+/* call this only after all the other arguments have been processed. */
+#define FETCH_WORLD(iter) \
+	AST::NodeT world = (++iter)->second
+#define FETCH_WORLD1(endIter) \
+	AST::NodeT world = endIter->second
+#define CHANGED_WORLD(value) \
+	Evaluators::makeIOMonad(value, world)
+#define DECLARE_SPECIAL_FORM(P) DECLARE_SIMPLE_OPERATION(P)
+#define DEFINE_BINARY_SPECIAL_FORM(a,b) DEFINE_BINARY_OPERATION(a,b)
+#define DEFINE_SPECIAL_FORM(P,v) DEFINE_SIMPLE_OPERATION(P,v)
+#define DEFINE_FULL_SPECIAL_FORM(P,body) DEFINE_FULL_OPERATION(P,body)
+
 }; /* end namespace Evaluators */
 #endif /* ndef __EVALUATORS_OPERATION_H */
