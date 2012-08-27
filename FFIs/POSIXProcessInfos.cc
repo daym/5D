@@ -90,7 +90,7 @@ static AST::NodeT wrapGetAbsolutePath(AST::NodeT options, AST::NodeT argument) {
 	char* text = iter->second ? Evaluators::get_string(iter->second) : NULL;
 	FETCH_WORLD(iter);
 	text = get_absolute_path(text);
-	return(Evaluators::makeIOMonad(AST::makeStr(text), world));
+	return(CHANGED_WORLD(AST::makeStr(text)));
 }
 DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 	return(wrapGetAbsolutePath(fn, argument));
