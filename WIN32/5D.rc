@@ -113,7 +113,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "About 5D"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    LTEXT           "5D, Version 0.6.7",IDC_STATIC,7,15,114,8,SS_NOPREFIX
+    LTEXT           "5D, Version 0.6.8",IDC_STATIC,7,15,114,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2011 Danny Milosavljevic",IDC_STATIC,7,25,154,8
     DEFPUSHBUTTON   "&Close",IDOK,283,83,50,14,WS_GROUP
     LTEXT           "This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3, or (at your option) any later version,see http://www.gnu.org/licenses",IDC_STATIC,7,42,326,25

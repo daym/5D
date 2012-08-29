@@ -1,3 +1,6 @@
+#ifdef WIN32
+#include "stdafx.h"
+#endif
 #include "AST/AST"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Logic"

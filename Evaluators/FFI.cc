@@ -331,6 +331,7 @@ static AST::NodeT wrapMkgmtime(AST::NodeT options, AST::NodeT argument) {
 	CXXArguments::const_iterator iter = arguments.begin();
 	struct tm* f = (struct tm*) Evaluators::get_pointer(iter->second);
 	{
+		FETCH_WORLD(iter);
 		// note that WIN32 CHANGES the structure contents!!
 		// TODO error check
 #ifdef _MSC_VER
@@ -448,11 +449,20 @@ static AST::NodeT wrapUnpackDirent(AST::NodeT options, AST::NodeT argument) {
 	struct dirent* f = iter->second ? (struct dirent*) Evaluators::get_pointer(iter->second) : NULL;
 	{
 		FETCH_WORLD(iter);
+#ifdef __CYGWIN__
+		AST::NodeT result = f ? AST::makeCons(AST::makeStr(f->d_name), 
+		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_ino),
+		                    AST::makeCons(Numbers::internNativeU(0ULL),
+		                    AST::makeCons(Numbers::internNativeU(0ULL),
+		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_type), NULL))))) : NULL;
+#else
 		AST::NodeT result = f ? AST::makeCons(AST::makeStr(f->d_name), 
 		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_ino),
 		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_off),
 		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_reclen),
 		                    AST::makeCons(Numbers::internNativeU((unsigned long long) f->d_type), NULL))))) : NULL;
+#endif
+		return(Evaluators::makeIOMonad(result, world));
 		return(CHANGED_WORLD(result));
 	}
 }

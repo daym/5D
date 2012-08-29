@@ -170,3 +170,7 @@ OS.fflush!
 = Runtime Convenience =
 
 nvl
+
+= Native Library Integration =
+
+libtinfo => ncurses 5.7-2

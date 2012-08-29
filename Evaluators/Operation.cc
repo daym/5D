@@ -25,7 +25,7 @@ typedef AST::RawHashTable<const char*, jumper_t*, AST::hashstr, AST::eqstr> Hash
 AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& endIter, AST::NodeT options, AST::NodeT world) {
 	std::string v = Evaluators::str(proc->fSignature);
 	fprintf(stderr, "warning: could not find marshaller for %s\n", v.c_str());
-	FETCH_WORLD1(endIter);
+	//FXXXETCH_WORLD1(endIter);
 	return CHANGED_WORLD(NULL);
 }
 #endif
