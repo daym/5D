@@ -146,7 +146,6 @@ for combination in sys.stdin.readlines():
         %(tempvariables)s
         AST::NodeT result = NULL;
         %(returner)s((*proc)(%(marshallers)s))%(fallback)s;
-        FETCH_WORLD1(iter);
         return CHANGED_WORLD(result); }""" % {
         "combination": combination,
         "tempvariables": "\n        ".join(map(lambda s: "%s a%d = un%s;" % (longNames[s[1]], s[0], s[1]), enumerate(combination[2:]))),
