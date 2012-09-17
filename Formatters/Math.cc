@@ -14,10 +14,7 @@ namespace Formatters {
 namespace Math {
 using namespace Evaluators;
 
-// TODO make this a combination of LATEX and S Expression output.
 /* TODO Features: 
-     * only print parens when necessary.
-	 * do not print parens around subsequent applications (do  print parens if it's the first).
      * automatic indentation for "longer" expressions
 */
 
@@ -26,14 +23,6 @@ static void print_text(std::ostream& output, int& visible_position, const char* 
 		output << '(' << text << ')';
 	else
 		output << text;
-	/*if(isalnum(*text) || ((text[0] == '"' || text[0] == '[') && text[1] != 0))
-		output << text;
-	else if(*text == '@')
-		output << text;
-	else if(*text == '\'' && *(text + 1) == 0) // unary operator
-		output << '\'';
-	else if(text[0] == '[' && text[1] == ']')
-		output << "[]";*/
 	for(; *text; ++text) {
 		unsigned c = (unsigned) *text;
 		if(c == 10)
@@ -91,16 +80,7 @@ static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, st
 	AST::NodeT parameter = get_abstraction_parameter(node);
 	AST::NodeT body = get_abstraction_body(node);
 	++position, output << '\\';
-	/* this is not really necessary, I just like it more that way. */
-	//bool B_pparend = OPL->any_operator_P(parameter); // !isalpha(parameterString.c_str()[0]);
-	//compare '(let (⋅) := (*) in 3)
 	print_CXX(OPL, output, position, parameter, precedence_limit /* does not matter */, false);
-	//if(B_pparend)
-	//	B_pparend = maybe_print_opening_paren(output, position, NULL, 0, 10000, true);
-	//std::string parameterString = str(parameter);
-	//print_text_raw(output, position, parameterString, false);
-	//maybe_print_closing_paren(output, position, NULL, B_pparend);
-	//print_CXX(OPL, output, position, parameter, precedence, false);
 	++position, output << ' ';
 	print_CXX(OPL, output, position, body, precedence, false);
 	maybe_print_closing_paren(output, position, NULL, B_parend);
