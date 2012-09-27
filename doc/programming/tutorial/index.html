@@ -224,7 +224,9 @@ fopen @mode:"w" "foo.INI.temp"        -- Keyword Arguments need to be before nor
 <pre>
 #!/usr/bin/λ
 let Logic := requireModule "Logic" in 
-if (#t &amp;&amp; #t) 'yes else 'no =&gt; yes
+let Testers := requireModule "Testers" in 
+let (=&gt;) := Testers.(=&gt;) in 
+if (#t &amp;&amp; #t) 'yes else 'no =&gt; 'yes
 </pre>
 <h3>I/O</h3>
 <pre>
