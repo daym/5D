@@ -2,10 +2,12 @@ let Composition := requireModule "Composition" in
 let Logic := requireModule "Logic" in 
 let Arithmetic := requireModule "Arithmetic" in 
 let Error := requireModule "Error" in 
+let Pair := requireModule "Pair" in 
 import [nil? cons? head tail (:)] from Builtins in 
-import [($) compose flip rec rem] from Composition in 
+import [($) compose flip (rec) (rem)] from Composition in 
 import [(if) (else) (elif) (||) (&&) (#t) (#f) not] from Logic in 
 import [(<=) (>=) (=) (/=) (+) (-) (*) (⋅) (/) div0 max ceiling] from Arithmetic in 
+import [(,)] from Pair in 
 let nil := [] in 
 let list? := \a nil? a || cons? a in 
 let foldl := \f rec \foldl \v \list 
@@ -137,7 +139,7 @@ let uniqBy := \(=) rec\uniq \list
 				h:(uniq t)
 in 
 let uniq := uniqBy (=) in 
-let zip := zipBy (\x \y [x y]) in 
+let zip := zipBy (\x \y x,y) in 
 let repeatEndlessly := rec\repeatEndlessly \v v:(repeatEndlessly v) in 
 let transpose := \matrix foldr (zipBy (:)) (repeatEndlessly nil) matrix in 
 let enumerate := \list zip (range 0 (length list) 1) list in 

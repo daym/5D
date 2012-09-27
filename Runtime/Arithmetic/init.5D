@@ -53,17 +53,6 @@ in
 let div := (\a \b head (divmod a b)) in 
 let mod := (\a \b head (tail (divmod a b))) in 
 let (%) := mod in 
-let pi := 3.141592653589793 in 
-let π := pi in 
-let cos := \angle
-	let approx := (\x 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720) in 
-	approx ((mod (angle + pi) 2⋅pi) - pi)
-in
-let sin := \angle
-	let approx := (\x x - x*x*x/6 + x*x*x*x*x/120 - x*x*x*x*x*x*x/(120*6*7)) in 
-	approx ((mod (angle + pi) 2⋅pi) - pi)
-in
-let tan := (\x (sin x)/(cos x)) in 
 let ground := (\v div0 v 1) in 
 let floor := (\v div v 1) in 
 let natural? := (\v (floor v) = v) in 
@@ -154,6 +143,14 @@ let gcd := (rec\gcd \a \b
 	else
 		gcd b (a % b)
 ) in 
+let exp := \v 
+	rem "FIXME" 
+	v
+in 
+let log := \v 
+	rem "FIXME"
+	v
+in 
 let log2 := rec\log2 \a
 	rem "FIXME"
 	if(a <= 1)
@@ -171,4 +168,4 @@ let signum := \v
 	else
 		1
 in 
-(requireModule "Composition").dispatch1 (#exports[(-) (*) (⋅) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod cos sin tan sqrt within factorial ground floor round1 π pi max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? log2 round1Log2 (**) ∞ natural? nthRoot signum])
+(requireModule "Composition").dispatch1 (#exports[(-) (*) (⋅) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod sqrt within factorial ground floor round1 max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? exp log log2 round1Log2 (**) ∞ natural? nthRoot signum])

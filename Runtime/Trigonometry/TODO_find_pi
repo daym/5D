@@ -1,0 +1,14 @@
+def find_pi_to(accuracy):
+    i = 1
+    approx = 4.0
+    while 1:
+        term = (2 * i) + 1
+        if i % 2 == 1:
+            term = -term
+        new = approx + 4.0/term
+        if abs(new - approx) < accuracy:
+            approx = new
+            break
+        i += 1
+        approx = new
+    return approx
