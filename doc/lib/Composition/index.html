@@ -97,6 +97,14 @@ dispatch (#exports[bla bli]) raiseMissingSymbolError
 <hr/>
 <h3>dispatch1 \table</h3>
 <p>Convenience for <span class="pre">\</span><span class="pre">table</span> <span class="pre">dispatch</span> <span class="pre">table</span> <span class="pre">raiseMissingSymbolError</span>. Normally used only by Module dispatchers.</p>
+<p>Example:</p>
+<pre>
+let Composition := requireModule "Composition" in
+let Arithmetic := requireModule "Arithmetic" in 
+let (*) := Arithmetic.(*) in  
+let square := \x x*x in 
+Composition.dispatch1 #exports[square]
+</pre>
 <hr/>
 </body>
 </html>
