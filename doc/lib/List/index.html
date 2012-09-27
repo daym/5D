@@ -25,14 +25,14 @@ nil
 <p>Result is whether <span class="pre">l</span> is the empty list (and any list at all).</p>
 <p>Example:</p>
 <pre>
-if (nil? nil) 'yes $else 'no =&gt; yes
+if (nil? nil) 'yes else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>(:) \h \t</h3>
 <p>Result is a list with head <span class="pre">h</span> and tail <span class="pre">t</span>.</p>
 <p>Example:</p>
 <pre>
-if (list? (5:6:7:8:nil)) 'yes $else 'no =&gt; yes
+if (list? (5:6:7:8:nil)) 'yes else 'no =&gt; yes
 head (5:6:7:8:nil) =&gt; 5
 tail (5:6:7:8:nil) =&gt; (6:7:8:nil)
 </pre>
@@ -41,7 +41,7 @@ tail (5:6:7:8:nil) =&gt; (6:7:8:nil)
 <p>Result is whether <span class="pre">l</span> is something constructed by <span class="pre">(:)</span> .</p>
 <p>Example:</p>
 <pre>
-if (cons? (5:6:7:8:nil)) 'yes $else 'no =&gt; yes
+if (cons? (5:6:7:8:nil)) 'yes else 'no =&gt; yes
 if (cons? nil) 'yes 'no =&gt; no
 if (cons? 42) 'yes 'no =&gt; no
 </pre>
@@ -50,9 +50,9 @@ if (cons? 42) 'yes 'no =&gt; no
 <p>Result is whether <span class="pre">l</span> is a list, i.e. something constructed by <span class="pre">(:)</span> or <span class="pre">nil</span> .</p>
 <p>Example:</p>
 <pre>
-if (list? (5:6:7:8:nil)) 'yes $else 'no =&gt; yes
-if (list? nil) 'yes $else 'no =&gt; yes
-if (list? 42) 'yes $else 'no =&gt; no
+if (list? (5:6:7:8:nil)) 'yes else 'no =&gt; yes
+if (list? nil) 'yes else 'no =&gt; yes
+if (list? 42) 'yes else 'no =&gt; no
 </pre>
 <hr/>
 <h3>head \l</h3>

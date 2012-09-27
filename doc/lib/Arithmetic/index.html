@@ -57,7 +57,7 @@ divrem 5 3 =&gt; (1:2:nil)
 <p>Result is whether <span class="pre">a</span> is smaller than <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 &lt; 3) 'yes $else 'no =&gt; no
+if (5 &lt; 3) 'yes else 'no =&gt; no
 </pre>
 <hr/>
 <h3>(&lt;=) \a \b</h3>
@@ -65,29 +65,29 @@ if (5 &lt; 3) 'yes $else 'no =&gt; no
 <p>Result is whether <span class="pre">a</span> is smaller than or equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 &lt;= 5) 'yes $else 'no =&gt; yes
-if (5 ≤ 5) 'yes $else 'no =&gt; yes
+if (5 &lt;= 5) 'yes else 'no =&gt; yes
+if (5 ≤ 5) 'yes else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>(=) \a \b</h3>
 <p>Result is whether <span class="pre">a</span> is equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 = 5) 'yes $else 'no =&gt; yes
+if (5 = 5) 'yes else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>(/=) \a \b</h3>
 <p>Result is whether <span class="pre">a</span> is not equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 /= 5) 'yes $else 'no =&gt; no
+if (5 /= 5) 'yes else 'no =&gt; no
 </pre>
 <hr/>
 <h3>(&gt;) \a \b</h3>
 <p>Result is whether <span class="pre">a</span> is greater than <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 &gt; 3) 'yes $else 'no =&gt; yes
+if (5 &gt; 3) 'yes else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>(&gt;=) \a \b</h3>
@@ -95,8 +95,8 @@ if (5 &gt; 3) 'yes $else 'no =&gt; yes
 <p>Result is whether <span class="pre">a</span> is greater than or equal to <span class="pre">b</span>.</p>
 <p>Example:</p>
 <pre>
-if (5 &gt;= 5) 'yes $else 'no =&gt; yes
-if (5 ≥ 5) 'yes $else 'no =&gt; yes
+if (5 &gt;= 5) 'yes else 'no =&gt; yes
+if (5 ≥ 5) 'yes else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>abs \a</h3>
@@ -113,16 +113,16 @@ abs 0 =&gt; 0
 <p>Result is whether <span class="pre">a</span> is the number 0.</p>
 <p>Example:</p>
 <pre>
-if (zero? (-1)) 'yes $else 'no =&gt; no
-if (zero? 0) 'yes $else 'no =&gt; yes
-if (zero? (42)) 'yes $else 'no =&gt; no
+if (zero? (-1)) 'yes else 'no =&gt; no
+if (zero? 0) 'yes else 'no =&gt; yes
+if (zero? (42)) 'yes else 'no =&gt; no
 </pre>
 <h3>negative? \a</h3>
 <p>Result is whether <span class="pre">a</span> is less than 0.</p>
 <p>Example:</p>
 <pre>
-if (negative? (-1)) 'yes $else 'no =&gt; yes
-if (negative? 0) 'yes $else 'no =&gt; no
+if (negative? (-1)) 'yes else 'no =&gt; yes
+if (negative? 0) 'yes else 'no =&gt; no
 </pre>
 <hr/>
 -->

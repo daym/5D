@@ -42,7 +42,7 @@ define (&gt;) flip (&lt;)
 <p>Given a function f, results in a recursable function, i.e. rec f =&gt; f f.</p>
 <p>Example:</p>
 <pre>
-define factorial rec \factorial \n if (n=0) 1 $else n*(factorial (n - 1))
+define factorial rec \factorial \n if (n=0) 1 else n*(factorial (n - 1))
 factorial 3 =&gt; 6
 factorial 20 =&gt; 2432902008176640000
 </pre>

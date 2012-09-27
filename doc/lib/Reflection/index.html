@@ -18,7 +18,7 @@ hr { color: #808080;
 <p>Given a statement <span class="eq">v</span>, results in the symbol <span class="pre">t</span> if v is true, otherwise the symbol <span class="pre">f</span>.</p>
 <p>Definition:</p>
 <pre>
-REPL.define! 'toBool (\v if v 't $else 'f)
+REPL.define! 'toBool (\v if v 't else 'f)
 </pre>
 <hr/>
 <h3>symbolFromStr \s</h3>
@@ -32,7 +32,7 @@ symbolFromStr "x" =&gt; x
 <p>Given <span class="pre">v</span>, results in whether it's a Keyword or not.</p>
 <p>Example:</p>
 <pre>
-if (keyword? @mode:) 'yes $else 'no =&gt; yes
+if (keyword? @mode:) 'yes else 'no =&gt; yes
 </pre>
 <hr/>
 <h3>keywordFromStr \s</h3>
