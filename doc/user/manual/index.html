@@ -33,32 +33,40 @@ table[border="1"] {
 <p>In order to get one, run one of the following:</p>
 <table border="1">
 <tr><th>Operating System</th><th>Program to Run</th></tr>
-<tr><td>UN*X</td><td>5D (the GUI), T5D (the shell).</td></tr>
-<tr><td>Windows</td><td>5D (the GUI), <del>T5D (the shell)</del>.</td></tr>
+<tr><td>UN*X</td><td>5D (the GUI), T5D -i (the shell).</td></tr>
+<tr><td>Windows</td><td>5D (the GUI), <del>T5D -i (the shell)</del>.</td></tr>
 </table>
-<p>The T5D shell looks like this:</p>
+<p>The T5D shell (in expression mode) looks like this:</p>
 <pre>
 5D Version 0.6.7 - Copyright (C) 2011 Danny Milosavljevic et al.
 This program comes with ABSOLUTELY NO WARRANTY.
 It is free software, and you are welcome to redistribute it under certain conditions. See /usr/share/doc/5d/copyright for details.
 eval $ 
 </pre>
-
-<p>In order to import modules, use <span class="pre">import!</span>.</p>
+<p>The T5D -i shell (in IO mode) looks like this:</p>
+<pre>
+5D Version 0.6.7 - Copyright (C) 2011 Danny Milosavljevic et al.
+This program comes with ABSOLUTELY NO WARRANTY.
+It is free software, and you are welcome to redistribute it under certain conditions. See /usr/share/doc/5d/copyright for details.
+runIO $ 
+</pre>
+<p>Please use IO module for ordered (mutable) execution (usually executing functions with an exclamation mark (!) at the end of their name).</p>
+<p>In order to permanently import modules, use <span class="pre">REPL.import!</span>.</p>
 <h2>REPL.import! "&lt;name&gt;"</h2>
 <p><span class="pre">import!</span> will:</p>
 <ul>
 <li>ensure that the given module is loaded</li>
-<li>import the symbols of the module that are on the whitelist and not on the blacklist into the current namespace</li>
+<li>import the symbols of the module that are on the whitelist and not on the blacklist into the current namespace (which is saved at the end).</li>
 </ul>
-<p>(In fact, <span class="pre">import!</span> is shorthand for a combination of define! (or let) and <span class="pre">requireModule</span>).</p>
+<p>(In fact, <span class="pre">import!</span> is shorthand for a combination of <span class="pre">define!</span> (or <span class="pre">let</span>) and <span class="pre">requireModule</span>).</p>
 <hr/>
-<p>In order to define some variable, use <span class="pre">define!</span>.</p>
+<p>In order to permanently define some variable in the environment, use <span class="pre">define!</span>.</p>
 <h2>REPL.define! '&lt;name&gt; (&lt;body&gt;)"</h2>
 <p>Example:</p>
 <pre>
 REPL.define! 'f (\x x*x)
 return! (f 2) =&gt; 4
 </pre>
+<p>For non-permanent stuff, running T5D without -i is recommended.</p>
 </body>
 </html>
