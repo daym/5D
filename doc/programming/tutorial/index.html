@@ -135,7 +135,7 @@ let Composition := requireModule "Composition" in
 import [(≥)] from Arithmetic in 
 import [(if) (else)] from Logic in 
 import [($)] from Composition in 
-let abs := \x if (x ≥ 0) x $else (-x) in 
+let abs := \x if (x ≥ 0) x else (-x) in 
 abs (-2) =&gt; 2
 </pre>
 <h3>Logical Operators and Logical Functions and Logical Values</h3>
@@ -221,7 +221,7 @@ fopen @mode:"w" "foo.INI.temp"        -- Keyword Arguments need to be before nor
 <pre>
 #!/usr/bin/λ
 let Logic := requireModule "Logic" in 
-if (#t &amp;&amp; #t) 'yes $else 'no =&gt; yes
+if (#t &amp;&amp; #t) 'yes else 'no =&gt; yes
 </pre>
 <h3>I/O</h3>
 <pre>
@@ -252,11 +252,11 @@ import [($)] from Composition in
 import [(=)] from Arithmetic in 
 if (x = 0)
   1
-$elif (x = 1)
+elif (x = 1)
   2
-$elif (x = 2)
+elif (x = 2)
   3
-$else 
+else 
   4
 </pre>
 <p>These work as follows:</p>
@@ -345,7 +345,7 @@ REPL.define! 'f (rec \self \x (self 1))      -- endless recursion, but it works
 REPL.import! "Logic"
 REPL.import! "Arithmetic"
 REPL.define! 'f \x (x**x)
-REPL.define! 'f \x if (x = 0) 1 $else (f x)    -- refers to the previous definition.
+REPL.define! 'f \x if (x = 0) 1 else (f x)    -- refers to the previous definition.
 </pre>
 
 
