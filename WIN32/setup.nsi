@@ -115,6 +115,9 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\share\Tree
     SetOverwrite on
     File ..\lib\Tree\init.5D
+    SetOutPath $INSTDIR\share\Testers
+    SetOverwrite on
+    File ..\lib\Testers\init.5D
 
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
     
