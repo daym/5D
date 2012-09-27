@@ -30,7 +30,29 @@ table[border="1"] {
 <h1>5D User Manual</h1>
 <h2>REPL</h2>
 <p>REPL is the Read-Eval-Print loop.</p>
-<p>In order to get one, run one of the following:</p>
+<!-- TODO merge installation -->
+<p>In order to get one, install 5D.</p>
+<h3>Installation on UN*X</h3>
+<p>Download the <span class="pre">5d_</span> deb file from <a href="http://www.scratchpost.org/software/5D/">5D Site</a> and install it using:</p>
+<pre>
+dpkg -i 5d_*_amd64.deb
+</pre>
+<p>(or whatever platform you have instead of <em>amd64</em>).</p>
+<p>You might also install some libraries, especially <span class="pre">5d-os</span> in order to be able to use basic OS functions (File IO etc) within the language.</p>
+<h3>Installation on Windows</h3>
+<p>Download the setup.exe from <a href="http://www.scratchpost.org/software/5D/">5D Site</a> and install it like this:</p>
+<p>You might also install some libraries, especially <span class="pre">5DLibs.exe</span> in order to be able to use basic OS functions (File IO etc) within the language.</p>
+<p>Click <span class="pre">setup.exe</span></p>
+<h3>Installation on Nokia N900</h3>
+<p>See Installation on UN*X.</p>
+<h3>Installation on Amazon Kindle</h3>
+<p>Download the <span class="pre">update_5D_</span> file from <a href="http://www.scratchpost.org/software/5D/">5D Site</a> and install it like this:</p>
+<p>Connect your Kindle to the PC and copy the file onto it, into the root directory.</p>
+<p>Eject the drive and disconnect your Kindle.</p>
+<p>In the menu on the Kindle, select software update.</p>
+<p>Click OK.</p>
+<hr/>
+<p>After installation, run one of the following:</p>
 <table border="1">
 <tr><th>Operating System</th><th>Program to Run</th></tr>
 <tr><td>UN*X</td><td>5D (the GUI), T5D -i (the shell).</td></tr>
