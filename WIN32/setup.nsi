@@ -103,6 +103,9 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\share\Arithmetic
     SetOverwrite on
     File ..\lib\Arithmetic\init.5D
+    SetOutPath $INSTDIR\share\Trigonometry
+    SetOverwrite on
+    File ..\lib\Trigonometry\init.5D
     SetOutPath $INSTDIR\share\LinearAlgebra
     SetOverwrite on
     File ..\lib\LinearAlgebra\init.5D
