@@ -103,7 +103,7 @@ let Composition := requireModule "Composition" in
 let Arithmetic := requireModule "Arithmetic" in 
 let (*) := Arithmetic.(*) in  
 let square := \x x*x in 
-Composition.dispatch1 #exports[square]
+Composition.dispatch1 (#exports[square])
 </pre>
 <hr/>
 </body>
