@@ -13,7 +13,6 @@ hr { color: #808080;
 
 </head>
 <body>
-<a name="composition"><h2>Module "Composition": Function Composition</h2>
 <h3>id \f</h3>
 <p>Result is <span class="pre">f</span> .</p>
 <hr/>
@@ -47,6 +46,57 @@ factorial 3 =&gt; 6
 factorial 20 =&gt; 2432902008176640000
 </pre>
 <hr/>
+<h3>($) \a \b</h3>
+<p>Gives <span class="pre">b</span> to <span class="pre">a</span>.</p>
+<hr/>
+<h3>raiseMissingSymbolError \key</h3>
+<p>Given <span class="pre">key</span>, fails.</p>
+<hr/>
+<a name="dispatch">
+<h3>dispatch \table \fallbackAction</h3>
+<p>Given a table of (name, value) <a href="../Pair/index.html">Pair</a>s and a fallbackAction, returns a dispatcher for these.</p>
+<p>Example:</p>
+<pre>
+dispatch [
+	('bla, a)
+	('bli, b)
+] raiseMissingSymbolError
+</pre>
+<p>is the same as</p>
+<pre>
+\key
+	if (symbolsEqual? key 'bla)
+		a
+	elif (symbolsEqual? key 'bli)
+		b
+	else
+		raiseMissingSymbolError key
+</pre>
+<p>But it is more commonly written using the <span class="pre">#exports</span> macro, if the names are the same:</p>
+<pre>
+dispatch [
+	('bla, bla)
+	('bli, bli)
+] raiseMissingSymbolError
+</pre>
+<p>is the same as</p>
+<pre>
+\key
+	if (symbolsEqual? key 'bla)
+		bla
+	elif (symbolsEqual? key 'bli)
+		bli
+	else
+		raiseMissingSymbolError key
+</pre>
+<p>is the same as</p>
+<pre>
+dispatch (#exports[bla bli]) raiseMissingSymbolError
+</pre>
 </a>
+<hr/>
+<h3>dispatch1 \table</h3>
+<p>Convenience for <span class="pre">dispatch</span> <span class="table"></span> <span class="pre">raiseMissingSymbolError</span>. Usually used by Module dispatchers.</p>
+<hr/>
 </body>
 </html>
