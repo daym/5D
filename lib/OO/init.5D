@@ -1,12 +1,22 @@
-let Composition := (requireModule "Composition") in 
+let Composition := requireModule "Composition" in 
+import [(rem)] from Composition in 
 let dispatch := Composition.dispatch in 
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
-let wrap := (\class \native \key class key native) in 
-let wrap! := (\class \native (requireModule "IO").liftIO! (\key class key native)) in 
-let class := \x x in 
+let wrap := \class \instance 
+	rem "Given a class and an instance, results in a (Composition.dispatch)er for that class and instance."
+	\key class key instance 
+in 
+let wrap! := \class \instance 
+	rem "Given a class and an instance, results in an IO action, that, when executed, wraps that class and instance."
+	(requireModule "IO").liftIO! (wrap class instance) 
+in 
+let class := 
+	rem "Identity function in order to make people feel comfortable."
+	\x x 
+in 
 let Object := class
-	let id := (\self self) in 
+	let id := \self self in 
 	Composition.dispatch (#exports[id])
 	raiseMissingSymbolError 
 in 
-Composition.dispatch1 (#exports[Object wrap wrap!])
+Composition.dispatch1 (#exports[(Object) wrap wrap! (class)])
