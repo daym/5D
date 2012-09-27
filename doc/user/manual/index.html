@@ -67,6 +67,6 @@ runIO $
 REPL.define! 'f (\x x*x)
 return! (f 2) =&gt; 4
 </pre>
-<p>For non-permanent stuff, running T5D without -i is recommended.</p>
+<p>For non-permanent stuff, running T5D without -i is recommended, then you can leave off <span class="pre">return!</span> (permanently imported modules will be reloaded anyway).</p>
 </body>
 </html>
