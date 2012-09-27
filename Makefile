@@ -1,6 +1,6 @@
 
-SUBDIRS = Config REPL Linear_Algebra Bugs WIN32 Tests FFIs Bootstrappers Compilers AST Evaluators TUI Numbers Formatters doc Runtime debian GUI Scanners
-SUBDIRS2 = $(SUBDIRS) doc/building doc/installation doc/interna doc/library doc/programming doc/programming/manual doc/programming/tutorial Tests/0* Runtime/Arithmetic Runtime/Logic Runtime/Composition Runtime/List Runtime/OS Runtime/IO Runtime/UI Runtime/FFI Runtime/String Runtime/Reflection Runtime/Error Examples Runtime/LinearAlgebra Runtime/OO Runtime/Pair Runtime/Maybe Runtime/Set
+SUBDIRS = Config REPL Linear_Algebra Bugs WIN32 Tests FFIs Bootstrappers Compilers AST Evaluators TUI Numbers Formatters doc lib debian GUI Scanners
+SUBDIRS2 = $(SUBDIRS) doc/building doc/installation doc/interna doc/library doc/programming doc/programming/manual doc/programming/tutorial Tests/0* lib/Arithmetic lib/Trigonometry lib/Logic lib/Composition lib/List lib/OS lib/IO lib/UI lib/FFI lib/String lib/Reflection lib/Error Examples lib/LinearAlgebra lib/OO lib/Pair lib/Maybe lib/Set
 EXECUTABLES = REPL/5DREPL GUI/5D TUI/TUI TUI/STUI Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol Scanners/test-MathParser Scanners/test-Scanner REPL/5DREPL TUI2/5DTUI
 GENERATEDS = FFIs/Trampolines FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols FFIs/Combinations
 
@@ -42,7 +42,7 @@ TARGETS = REPL/5DREPL TUI/TUI TUI/STUI
 TARGETS += $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  && echo GUI/5D )
 
 all: $(TARGETS)
-	$(MAKE) -C Runtime all
+	$(MAKE) -C lib all
 
 Scanners/test-Scanner: Scanners/test-Scanner.o Scanners/Scanner.o AST/Symbol.o AST/HashTable.o AST/Symbols.o AST/AST.o AST/Keyword.o $(FFIS)
 	g++ -o $@ $^ $(LDFLAGS)
@@ -246,4 +246,4 @@ install: $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  
 	install -m 755 -d $(DESTDIR)/usr/share/5D
 	install -m 755 FFIs/find5DExports $(DESTDIR)/usr/share/5D/find5DExports
 	install -m 755 FFIs/extractGNUSymbols $(DESTDIR)/usr/share/5D/extractGNUSymbols
-	$(MAKE) -C Runtime install
+	$(MAKE) -C lib install

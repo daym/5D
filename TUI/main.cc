@@ -312,7 +312,12 @@ static int handle_readline_paren(int x, int key) {
 static AST::NodeT inputNode;
 static int handle_readline_crlf(int x, int key) {
 	/* check rl_point and rl_line_buffer[rl_point - 1] */
-	if((rl_line_buffer[rl_point] == '\n' || rl_line_buffer[rl_point] == 0))
+	int point;
+	point = rl_point;
+	while(rl_line_buffer[point] == ' ' || rl_line_buffer[point] == '\t')
+		++point;
+	/* TODO move across spaces */
+	if((rl_line_buffer[point] == '\n' || rl_line_buffer[point] == 0))
 	try {
 		// remember this and just use it for run() later.
 		inputNode = REPL_parse(REPL1, rl_line_buffer, strlen(rl_line_buffer), 0);

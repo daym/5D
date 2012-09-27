@@ -1,3 +1,9 @@
+5d (0.6.9) unstable; urgency=low
+
+  * factor Trigonometry out of Arithmetic, move it into new "Trigonometry" module.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Mon, 10 Sep 2012 21:55:00 +0200
+
 5d (0.6.8) unstable; urgency=low
 
   * merge strict branch into the main branch.

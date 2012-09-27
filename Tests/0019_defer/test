@@ -1,0 +1,12 @@
+let write! := (requireModule "File").write! in 
+let stdout := (requireModule "File").stdout in 
+let defer! := (requireModule "IO").defer! in 
+let (;) := (requireModule "IO").(;) in 
+let ($) := (requireModule "Composition").($) in 
+let w! :=
+	defer! (write! stdout "finished")$
+		write! stdout "a" ;\_
+		write! stdout "b"
+in 
+(requireModule "Composition").dispatch1 (#exports[w!])
+abfinished1

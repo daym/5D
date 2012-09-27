@@ -66,52 +66,52 @@ Section -Main SEC0000
     File /r /x .svn ..\doc\*
     SetOutPath $INSTDIR\share\UI
     SetOverwrite on
-    File ..\Runtime\UI\init.5D
+    File ..\lib\UI\init.5D
     SetOutPath $INSTDIR\share\String
     SetOverwrite on
-    File ..\Runtime\String\init.5D
+    File ..\lib\String\init.5D
     SetOutPath $INSTDIR\share\Pair
     SetOverwrite on
-    File ..\Runtime\Pair\init.5D
+    File ..\lib\Pair\init.5D
     SetOutPath $INSTDIR\share\Reflection
     SetOverwrite on
-    File ..\Runtime\Reflection\init.5D
+    File ..\lib\Reflection\init.5D
     SetOutPath $INSTDIR\share\OS
     SetOverwrite on
-    File ..\Runtime\OS\path.5D
+    File ..\lib\OS\path.5D
     SetOutPath $INSTDIR\share\OO
     SetOverwrite on
-    File ..\Runtime\OO\init.5D
+    File ..\lib\OO\init.5D
     SetOutPath $INSTDIR\share\Logic
     SetOverwrite on
-    File ..\Runtime\Logic\init.5D
+    File ..\lib\Logic\init.5D
     SetOutPath $INSTDIR\share\List
     SetOverwrite on
-    File ..\Runtime\List\init.5D
+    File ..\lib\List\init.5D
     SetOutPath $INSTDIR\share\IO
     SetOverwrite on
-    File ..\Runtime\IO\init.5D
+    File ..\lib\IO\init.5D
     SetOutPath $INSTDIR\share\Maybe
     SetOverwrite on
-    File ..\Runtime\Maybe\init.5D
+    File ..\lib\Maybe\init.5D
     SetOutPath $INSTDIR\share\FFI
     SetOverwrite on
-    File ..\Runtime\FFI\init.5D
+    File ..\lib\FFI\init.5D
     SetOutPath $INSTDIR\share\Composition
     SetOverwrite on
-    File ..\Runtime\Composition\init.5D
+    File ..\lib\Composition\init.5D
     SetOutPath $INSTDIR\share\Arithmetic
     SetOverwrite on
-    File ..\Runtime\Arithmetic\init.5D
+    File ..\lib\Arithmetic\init.5D
     SetOutPath $INSTDIR\share\LinearAlgebra
     SetOverwrite on
-    File ..\Runtime\LinearAlgebra\init.5D
+    File ..\lib\LinearAlgebra\init.5D
     SetOutPath $INSTDIR\share\Error
     SetOverwrite on
-    File ..\Runtime\Error\init.5D
+    File ..\lib\Error\init.5D
     SetOutPath $INSTDIR\share\Tree
     SetOverwrite on
-    File ..\Runtime\Tree\init.5D
+    File ..\lib\Tree\init.5D
 
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
     
