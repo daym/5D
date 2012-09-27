@@ -1,7 +1,7 @@
 <!DOCTYPE html >
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <style type="text/css">
 pre { font-family: monospace; color: blue; }
 span.pre { font-family: monospace; color: blue; }
@@ -141,7 +141,10 @@ abs (-2) =&gt; 2
 <h3>Logical Operators and Logical Functions and Logical Values</h3>
 <pre>
 #!/usr/bin/λ
-assert [
+let List := requireModule "List" in 
+let Testers := requireModule "Testers" in 
+let (=&gt;) := Testers.(=&gt;) in 
+List.allTrue? [
 #t =&gt; #t
 #f =&gt; #t
 #f &amp;&amp; #f    =&gt; #f
