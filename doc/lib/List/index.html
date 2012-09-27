@@ -88,6 +88,7 @@ tail (8:nil) =&gt; nil
 take 2 (5:6:7:8:nil) =&gt; (5:6:nil)
 take (-2) (5:6:7:8:nil) =&gt; nil
 </pre>
+<hr/>
 <h3>drop \count \l</h3>
 <p>Result is a list with all elements of <span class="pre">l</span> except for the first <span class="pre">count</span>.</p>
 <p>Example:</p>
@@ -95,6 +96,7 @@ take (-2) (5:6:7:8:nil) =&gt; nil
 drop 2 (5:6:7:8:nil) =&gt; (7:8:nil)
 drop (-2) (5:6:7:8:nil) =&gt; (5:6:7:8:nil)
 </pre>
+<hr/>
 <h3>length \l</h3>
 <p>Result is the length of the list <span class="pre">l</span>. This is quite slow.</p>
 <p>Example:</p>
@@ -102,6 +104,7 @@ drop (-2) (5:6:7:8:nil) =&gt; (5:6:7:8:nil)
 drop 2 (5:6:7:8:nil) =&gt; (7:8:nil)
 drop (-2) (5:6:7:8:nil) =&gt; (5:6:7:8:nil)
 </pre>
+<hr/>
 <h3>range \beginning \frontier \step</h3>
 <p>Result is a list of numbers.</p>
 <p>The list starts with <span class="pre">beginning</span> (inclusive), listing all the numbers until <span class="pre">frontier</span>, spaced <span class="pre">step</span> apart.</p>
@@ -114,24 +117,28 @@ range 5 3 1 =&gt; []
 range 0 10 2 =&gt; [0 2 4 6 8]
 </pre>
 </a>
+<hr/>
 <h3>merge \l1 \l2</h3>
 <p>Given two sorted lists, the result is a list that contains elements of both of the list in result sorted order (using <span class="pre">&lt;=</span>), preferring the first list.</p>
 <p>Example:</p>
 <pre>
 merge [1 3 4 7 8 9] [2 5 6 10 11 12] =&gt; [1 2 3 4 5 6 7 8 9 10 11 12]
 </pre>
+<hr/>
 <h3>mergeBy \lessEqualComparer \l1 \l2</h3>
 <p>Given two sorted lists, the result is a list that contains elements of both of the list in result sorted order (using <span class="pre">lessEqualComparer</span>), preferring the first list.</p>
 <p>Example:</p>
 <pre>
 mergeBy (&lt;=) [1 3 4 7 8 9] [2 5 6 10 11 12] =&gt; [1 2 3 4 5 6 7 8 9 10 11 12]
 </pre>
+<hr/>
 <h3>mergeSort \list</h3>
 <p>Given two sorted lists, the result is a sorted list that contains elements of <span class="pre">list</span> in result sorted order (using <span class="pre">&lt;=</span>).</p>
 <p>Example:</p>
 <pre>
 mergeSort [5 4 3 2 1] =&gt; [1 2 3 4 5]
 </pre>
+<hr/>
 <h3>mergeSortBy \lessEqualComparator \list</h3>
 <p>Given two sorted lists, the result is a sorted list that contains elements of <span class="pre">list</span> in result sorted order (using <span class="pre">lessEqualComparator</span>).</p>
 <p>Example:</p>
@@ -139,6 +146,7 @@ mergeSort [5 4 3 2 1] =&gt; [1 2 3 4 5]
 mergeSortBy (&lt;=) [5 4 3 2 1] =&gt; [1 2 3 4 5]
 </pre>
 <a name="dpho"><h2>(Higher-Order Data Processing Functions in module "List")</h2>
+<hr/>
 <h3>map \mapper \list</h3>
 <p>Result is a list where each element is <span class="pre">mapper</span> applied to the element of the original list, in order.</p>
 <p>Example:</p>
