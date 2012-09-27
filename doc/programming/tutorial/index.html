@@ -189,8 +189,8 @@ import [(:) nil] from List in
 <pre>
 #!/usr/bin/λ
 let List := requireModule "List" in 
-import [(:) nil head tail cons? list?] from List in 
-assert [
+import [(:) nil head tail cons? list? allTrue?] from List in 
+allTrue? [
 head (1:2:3:nil)            =&gt; 1
 tail (1:2:3:nil)            =&gt; (2:3:nil)
 head (tail (1:2:3:nil))     =&gt; 2
