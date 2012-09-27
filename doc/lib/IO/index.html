@@ -14,18 +14,26 @@ hr { color: #808080;
 </head>
 <body>
 <a name="state"><h2>Module "IO": Ordered Input and Output</h2>
-<!--<del><h3>runIO \m</h3></del>-->
-<!--<p>Can only be there once in the entire program. Will cause the state machine to run, giving the initial World State to the function <span class="pre">m</span>. m eventually returns and its result will be decomposed, the monad value extracted and it will become the result.</p>
-<hr/>-->
 <h3>(;) \m \handler</h3>
 <p>The sequencing operator.</p>
-<p>Chains together <span class="pre">m</span> and <span class="pre">handler</span> in such a way that, once <span class="pre">runIO</span> reaches <span class="pre">m</span>, <span class="pre">m</span> will run first, deliver its result to <span class="pre">handler</span>, which will run next.</p>
+<p>Results in an IO action, that, when run, runs <span class="pre">m</span>, passes the resulting value to <span class="pre">handler</span> and then runs the result.</p>
+<p>This specifies the order in which actions are executed.</p>
 <p>Example:</p>
 <pre>
-define readFile fopen @mode:"r" "/etc/passwd" ;\f fgets f
-runIO readFile
+puts! "Hello world" ;\_
+puts! "Second line"
 </pre>
-<p>This results in the first line of the file named "/etc/passwd".</p>
+<p>Output:</p>
+<pre>
+Hello world
+Second line
+</pre>
+<hr/>
+<h3>liftIO! \value</h3>
+<p>Constructs an IO action, that, when run, returns value.</p>
+<hr/>
+<h3>return! \value</h3>
+<p>Constructs an IO action, that, when run, returns value.</p>
 <hr/>
 <h3><del>ioValue \m</del></h3>
 <p>Given an IO monad, results in the value of the monad.</p>
@@ -33,21 +41,62 @@ runIO readFile
 <h3><del>ioWorld \m</del></h3>
 <p>Given an IO monad, results in the World State of the monad.</p>
 <hr/>
-<h3>until \predicate \m</h3>
-<p>Given a monad, results in a monad which will repeat its action until result fulfills <span class="pre">predicate</span>.</p>
+<h3>skipUntil! \condition \body</h3>
+<p>Given a condition (predicate) and a body, does the following:</p>
+<ol>
+<li>Run <span class="pre">body</span>, resulting in <span class="pre">value</span>.</li>
+<li>Check whether <span class="pre">condition</span> is true. If it is, just return <span class="pre">value</span>.</li>
+<li>If not, keep running <span class="pre">body</span> (goto 1).</li>
+</ol>
 <hr/>
-<!--
-<h3>andLazy \m1predicate \m2predicate</h3>
-<p>Given two predicate monads, results in a monad which will short-circuit-and the predicates.</p>
+<h3>skipWhile! \condition \body</h3>
+<p>Given a condition (predicate) and a body, does the following:</p>
+<ol>
+<li>Run <span class="pre">body</span>, resulting in <span class="pre">value</span>.</li>
+<li>Check whether <span class="pre">condition</span> is true. If it is, keep running <span class="pre">body</span>.</li>
+<li>If not, just return <span class="pre">value</span>.</li>
+</ol>
 <hr/>
-<h3>orLazy \m1predicate \m2predicate</h3>
-<p>Given two predicate monads, results in a monad which will short-circuit-or the predicates.</p>
+<h3>accumrUntil! \condition \connector \terminator \body</h3>
+<p>(Eventually) does the following:</p>
+<ol>
+<li>Run <span class="pre">body</span>, resulting in <span class="pre">value</span>.</li>
+<li>Check whether <span class="pre">condition</span> (for this value) is true. If it is, just return <span class="pre">terminator</span>.</li>
+<li>If not, keep connecting results of recursive runs of <span class="pre">accumrUntil!</span> using <span class="pre">connector</span>.</li>
+</ol>
+<p>Example:</p>
+<pre>
+FIXME
+</pre>
 <hr/>
-<h3>iterateLimit \count \monadifier \value</h3>
-<p>Given a count, monadifier and value, results in a monad of a list of the values.</p>
--->
+<h3>defer! \finalizer \body</h3>
+<p>(Eventually) does the following:</p>
+<ol>
+<li>Run <span class="pre">body</span>, resulting in <span class="pre">value</span>.</li>
+<li>Run <span class="pre">finalizer</span>, ignoring the result (this is traditionally so).</li>
+<li>Return <span class="pre">value</span>.</li>
+</ol>
+<p>Example:</p>
+<pre>
+... get f somehow ...
+defer! (File.fclose! f)
+	File.fgets! file 2000
+</pre>
 <hr/>
-
+<h3>with! \opener \closer \body</h3>
+<p>(Eventually) does the following:</p>
+<ol>
+<li>Run <span class="pre">opener</span>, resulting in <span class="pre">f</span>.</li>
+<li><span class="pre">defer!</span> running (<span class="pre">closer</span> <span class="pre">f</span>) after (<span class="pre">body</span> <span class="pre">f</span>), the latter returning <span class="pre">value</span>.</li>
+<li>Return <span class="pre">value</span>.</li>
+</ol>
+<p>This is convenient for resource management where you have some clean-up action that has to execute no matter what.</p>
+<p>Example:</p>
+<pre>
+with! (File.fopen! "/etc/passwd" "r") File.fclose! \file
+	File.fgets! file 2000
+</pre>
+<hr/>
 </a>
 </body>
 </html>
