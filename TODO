@@ -5,6 +5,7 @@ list comprehensions in []
 = Bugs =
 
 loading modules (for example the one where GetLastError! is in) causes GetLastError() to be clobbered.
+'\
 
 = Builtin Types =
 
@@ -116,6 +117,7 @@ Handle division by zero for ratios?
 -D_FORTIFY_SOURCE=1
 Maybe disable macros in a 'quote.
 Don't hang on trying to optimize 1/∞
+Is that correct? (requireModule "Arithmetic").divmod 2 1.0 => [2.0 0.0]
 
 = Debugging Macros =
 
@@ -174,3 +176,9 @@ nvl
 = Native Library Integration =
 
 libtinfo => ncurses 5.7-2
+
+= Tools =
+
+Find doc coverage.
+Remove unused imports / variables / ...
+
