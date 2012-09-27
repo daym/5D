@@ -1,0 +1,11 @@
+let Composition := requireModule "Composition" in 
+let Logic := requireModule "Logic" in 
+let Arithmetic := requireModule "Arithmetic" in 
+let Error := requireModule "Error" in 
+import [(rem)] from Composition in 
+import [(#t)] from Logic in 
+let (=>) := rem "FIXME"
+	\a \b
+	#t
+in
+Composition.dispatch1 (#exports[(=>)])
