@@ -68,5 +68,8 @@ REPL.define! 'f (\x x*x)
 return! (f 2) =&gt; 4
 </pre>
 <p>For non-permanent stuff, running T5D without -i is recommended, then you can leave off <span class="pre">return!</span> (permanently imported modules will be reloaded anyway).</p>
+<h2>Future Work</h2>
+<p>In the future, it is planned to remove all this strange business and instead just have the current expression include all imports (probably need better editing than <span class="pre">readline</span> for that, not sure).</p>
+<p>Then, no permanent mode will be needed and no special config file which contains these permanent definitions.</p>
 </body>
 </html>
