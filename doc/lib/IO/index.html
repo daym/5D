@@ -14,9 +14,9 @@ hr { color: #808080;
 </head>
 <body>
 <a name="state"><h2>Module "IO": Ordered Input and Output</h2>
-<h3>runIO \m</h3>
-<p>Can only be there once in the entire program. Will cause the state machine to run, giving the initial World State to the function <span class="pre">m</span>. m eventually returns and its result will be decomposed, the monad value extracted and it will become the result.</p>
-<hr/>
+<del><h3>runIO \m</h3></del>
+<!--<p>Can only be there once in the entire program. Will cause the state machine to run, giving the initial World State to the function <span class="pre">m</span>. m eventually returns and its result will be decomposed, the monad value extracted and it will become the result.</p>
+<hr/>-->
 <h3>(;) \m \handler</h3>
 <p>The sequencing operator.</p>
 <p>Chains together <span class="pre">m</span> and <span class="pre">handler</span> in such a way that, once <span class="pre">runIO</span> reaches <span class="pre">m</span>, <span class="pre">m</span> will run first, deliver its result to <span class="pre">handler</span>, which will run next.</p>
