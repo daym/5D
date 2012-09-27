@@ -1,7 +1,7 @@
 <!DOCTYPE html >
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <style type="text/css">
 pre { font-family: monospace; color: blue; }
 span.pre { font-family: monospace; color: blue; }
@@ -25,7 +25,6 @@ table[border="1"] {
 }
 
 </style>
-
 </head>
 <body>
 <h1>5D User Manual</h1>
@@ -34,9 +33,16 @@ table[border="1"] {
 <p>In order to get one, run one of the following:</p>
 <table border="1">
 <tr><th>Operating System</th><th>Program to Run</th></tr>
-<tr><td>UN*X</td><td>5D, T5D or λ.</td></tr>
-<tr><td>Windows</td><td>5D.</td></tr>
+<tr><td>UN*X</td><td>5D (the GUI), T5D (the shell).</td></tr>
+<tr><td>Windows</td><td>5D (the GUI), <del>T5D (the shell)</del>.</td></tr>
 </table>
+<p>The T5D shell looks like this:</p>
+<pre>
+5D Version 0.6.7 - Copyright (C) 2011 Danny Milosavljevic et al.
+This program comes with ABSOLUTELY NO WARRANTY.
+It is free software, and you are welcome to redistribute it under certain conditions. See /usr/share/doc/5d/copyright for details.
+eval $ 
+</pre>
 
 <p>In order to import modules, use <span class="pre">import!</span>.</p>
 <h2>REPL.import! "&lt;name&gt;"</h2>
