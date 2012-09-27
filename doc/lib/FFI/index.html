@@ -19,10 +19,11 @@ hr { color: #808080;
 <p>Note that <span class="pre">procName</span> should be a Str and <span class="pre">procSignature</span> should be a Symbol.</p>
 <p>Example:</p>
 <pre>
-define puts requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cis "puts"
-runIO (puts "Hello world")
+#!/usr/bin/λ -i
+let puts! := requireSharedLibrary "/lib/x86_64-linux-gnu/libc.so.6" 'Cis "puts" in 
+puts! "Hello world"
 </pre>
-<p>See the <a href="../programming/manual/index.html">5D Programming Manual</a> for more details.</p>
+<p>See the <a href="../../programming/manual/index.html">5D Programming Manual</a> for more details.</p>
 <hr/>
 <a name="packRecord">
 <h3>packRecord \format \list</h3>
