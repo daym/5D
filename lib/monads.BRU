@@ -1,0 +1,12 @@
+
+[(monad1-lift  (\x (\state (cons x (cons state nil)))))
+ (monad1-pipe  (\m(\f (\state ((f (head (m state))) (head (tail (m state))))))))
+ (monad1-get (\state (cons state (cons state nil))))
+ (monad1-set (\new-state (\state (cons #f (cons new-state nil)))))
+ (monad1-run (\m (\state (m state))))
+ (monad1-finalrun (\m (\state (head (m state)))))
+ (; monad1-pipe)]
+; (bind (unit x) f) == (f x)
+; (bind M unit) == M
+; (bind (bind M f) g) == (bind M (\ x (bind (f x) g)))
+; macro: ((do (v <- expr) rest) (monad1-pipe expr (lambda (v) rest)))

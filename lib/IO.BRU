@@ -1,0 +1,7 @@
+
+withFile \f \body
+        body f ;\v
+        fclose f ;\r
+        lift v
+define readContents \f fread f 200
+withFile (fopen name "r") readContents

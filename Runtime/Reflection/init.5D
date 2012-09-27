@@ -1,4 +1,0 @@
-let Error := requireModule "Error" in 
-let Composition := requireModule "Composition" in
-import [app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? ratio? ratioNum ratioDenom makeRatio integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE? parseMath! parseMathStr] from Builtins in 
-(requireModule "Composition").dispatch1 (#exports[app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE? parseMath! parseMathStr ratio? ratioNum ratioDenom makeRatio])

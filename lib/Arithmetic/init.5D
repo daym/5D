@@ -1,0 +1,171 @@
+let Logic := requireModule "Logic" in 
+let Composition := requireModule "Composition" in 
+let Error := requireModule "Error" in 
+import [head tail (:) nan? infinite? nan infinity] from Builtins in 
+import [(rem) (rec) flip ($) compose] from Composition in 
+import [not (&&) (||) (if) (else) (elif)] from Logic in 
+import [(-) (*) (/) (+) (<=) divmod0] from Builtins in 
+let (⋅) := (*) in 
+let infinity? := infinite? in 
+let inf? := infinite? in 
+let inf := infinity in 
+let (∞) := inf in 
+let (≤) := (<=) in 
+let (<) := (\a \b a <= b && not (b <= a)) in 
+let (=) := (\a \b a <= b && b <= a) in 
+let (>=) := flip (<=) in 
+let (≥) := (>=) in 
+let (>) := flip (<) in 
+let (/=) := \a \b not (a = b) in 
+let abs := \x
+	if (x <= 0)
+		(0 - x)
+	else
+		x
+in 
+let div0 := (\a \b head (divmod0 a b)) in 
+let mod0 := (\a \b head (tail (divmod0 a b))) in 
+rem'(modulo := (\a \b mod0 (b + mod0 a b) b) in)
+let divmod := \a \b
+	if (0 <= a)
+		divmod0 a b
+	else
+		let cr := (divmod0 a b) in 
+		let c := head cr in 
+		let r := head (tail cr) in 
+		rem "sign of r is either negative or r is equal to zero. Note that resulting modulus must always be positive or zero."$
+		if (r < 0)
+			if (b < 0)
+				[(c + 1) (r - b)]
+			else
+				[(c - 1) (r + b)]
+		else
+			[c r]
+in
+let zero? := (\a (a = 0)) in 
+let positive? := (\a a > 0) in 
+let negative? := (\a a < 0) in 
+let even? := (\a mod0 a 2 = 0) in 
+let odd? := (\a not (even? a)) in 
+let finite? := \a 
+	not (infinite? a) && not (nan? a)
+in 
+let div := (\a \b head (divmod a b)) in 
+let mod := (\a \b head (tail (divmod a b))) in 
+let (%) := mod in 
+let ground := (\v div0 v 1) in 
+let floor := (\v div v 1) in 
+let natural? := (\v (floor v) = v) in 
+let next := (\N \x (x + N/x)/2) in 
+let relativeWithin := \eps rec\within \list
+	rem "doesn't work for √0"$
+	let a := head list in 
+	let b := head (tail list) in 
+	if (abs (a - b) <= eps*(abs b)) 
+		b 
+	else
+		within b:(tail (tail list))
+in 
+let within := \eps rec\within \list
+	let a := head list in 
+	let b := head (tail list) in 
+	if (abs (a - b) <= eps) 
+		b 
+	else
+		within b:(tail (tail list))
+in 
+let repeat := (\f rec (\repeat \a a:(repeat (f a)))) in 
+let sqrtEps := \a0 \eps \N 
+	rem "TODO: use average dampening"$
+	if (N < eps)
+		0
+	elif (N < 10)
+		relativeWithin eps (repeat (next N) a0) 
+	else
+		within eps (repeat (next N) a0) 
+in 
+let sqrt := sqrtEps 1 0.001 in 
+let √ := sqrt in 
+let averagedamp := \f
+	\x (x + (f x))/2
+in 
+let square := \x
+	x⋅x
+in 
+let (**) := \b rec\ex \n
+	rem "FIXME non-natural b"$
+        if (zero? n)
+                1
+        elif (even? n)
+                square (ex (n/2))
+        else
+                b⋅(ex (n - 1))
+in
+let nthRootEps := \a0 \eps \n \x
+	let iterator := averagedamp (\y (x*y/(y**n))) in 
+	if (natural? n && n > 0)
+		if (n = 1)
+			x
+		else
+			within eps (repeat iterator a0)
+	else
+		Error.raiseErrorWithCode "nthRoot n must be a natural number bigger than 0" 500
+in 
+let nthRoot := nthRootEps 1 0.001 in 
+let ceiling := \v
+	if (natural? v)
+		v
+	else
+		(floor v) + 1
+in 
+let factorial := (\v
+	if (natural? v)
+		(rec\fac \v
+			if (v = 0)
+				1
+			else
+				v*(fac (v - 1))
+		) v
+	else
+		Error.raiseErrorWithCode "factorial only works for natural numbers - maybe you meant gamma" 500
+) in 
+let round1 := (\v 
+	if (0 <= v) 
+		ground (v + 1/2)
+	else
+		ground (v - 1/2)
+) in 
+let max := (\a \b if (a <= b) b else a) in 
+let min := (\a \b if (a <= b) a else b) in 
+let gcd := (rec\gcd \a \b
+	if (b = 0) 
+		a
+	else
+		gcd b (a % b)
+) in 
+let exp := \v 
+	rem "FIXME" 
+	v
+in 
+let log := \v 
+	rem "FIXME"
+	v
+in 
+let log2 := rec\log2 \a
+	rem "FIXME"
+	if(a <= 1)
+		0
+	else
+		1 + (log2 (a/2))
+in 
+let round1Log2 := compose round1 log2 in 
+let signum := \v
+	if (v <= 0)
+		if (0 <= v)
+			0
+		else
+			(-1)
+	else
+		1
+in 
+(requireModule "Composition").dispatch1 (#exports[(-) (*) (⋅) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod sqrt within factorial ground floor round1 max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? exp log log2 round1Log2 (**) ∞ natural? nthRoot signum])
