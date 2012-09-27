@@ -3,11 +3,11 @@ import [(rem)] from Composition in
 let dispatch := Composition.dispatch in 
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
 let wrap := \class \instance 
-	rem "Given a class and an instance, results in a (Composition.dispatch)er for that class and instance."
+	rem "Given a class and an instance, results in a #(Composition.dispatch)er for that class and instance."
 	\key class key instance 
 in 
 let wrap! := \class \instance 
-	rem "Given a class and an instance, results in an IO action, that, when executed, wraps that class and instance."
+	rem "Given a class and an instance, results in an IO action, that, when executed, #(wrap)s that class and instance."
 	(requireModule "IO").liftIO! (wrap class instance) 
 in 
 let class := 
