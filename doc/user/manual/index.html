@@ -89,6 +89,10 @@ runIO $
 <li>import the symbols of the module that are on the whitelist and not on the blacklist into the current namespace (which is saved at the end).</li>
 </ul>
 <p>(In fact, <span class="pre">import!</span> is shorthand for a combination of <span class="pre">define!</span> (or <span class="pre">let</span>) and <span class="pre">requireModule</span>).</p>
+<p>Example:</p>
+<pre>
+REPL.import! "Arithmetic"
+</pre>
 <hr/>
 <p>In order to permanently define some variable in the environment, use <span class="pre">define!</span>.</p>
 <h2>REPL.define! '&lt;name&gt; (&lt;body&gt;)"</h2>
