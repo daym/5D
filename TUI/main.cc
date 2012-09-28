@@ -30,6 +30,7 @@
 //#include "Config/Config"
 #include "FFIs/Allocators"
 #include "Evaluators/ModuleLoader"
+#include "Evaluators/Logic"
 
 namespace REPLX {
 
@@ -446,6 +447,7 @@ int main(int argc, char* argv[]) {
 	//GC_disable();
 	if(argc >= 1)
 		Evaluators::set_shared_dir_by_executable(argv[0]);
+	Logic_init();
 	REPL = REPL_new();
 	REPL1 = REPL;
 	const char* prompt = "eval $ ";

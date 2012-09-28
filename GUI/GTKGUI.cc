@@ -12,6 +12,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include "REPL/REPL"
 #include "FFIs/Allocators"
 #include "Evaluators/ModuleLoader"
+#include "Evaluators/Logic"
 
 using namespace GUI;
 
@@ -73,6 +74,7 @@ int main(int argc, char* argv[]) {
 	Allocator_init();
 	if(argc >= 1)
 		Evaluators::set_shared_dir_by_executable(argv[0]);
+	Logic_init();
 	/*GtkWindow* view;*/
 	gtk_init(&argc, &argv);
 	/*view = make_view_window();*/
