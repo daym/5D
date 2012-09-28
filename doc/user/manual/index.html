@@ -106,7 +106,7 @@ return! (f 2) =&gt; 4
 <p>In the future, it is planned to remove all this strange business and instead just have the current expression include all imports (probably need better editing than <span class="pre">readline</span> for that, not sure).</p>
 <p>Then, no permanent mode will be needed and no special config file which contains these permanent definitions.</p>
 <p>IO mode will still be needed, not sure what to do about that.</p>
-<p>Example:</p>
+<p>Example (working right now):</p>
 <pre>
 let Arithmetic := requireModule "Arithmetic" in 
 import [(+) (-) (*) (/)] from Arithmetic in 
