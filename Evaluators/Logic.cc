@@ -47,9 +47,7 @@ which is
 	Evaluators::reduce(a);
 	return(Evaluators::reduce(b));
 }
-NodeT Sequencer = annotate(fn(M, fn(BER, fn(WORLD, 
-	call(fn(R, call(call(BER, call(IO(ioValue), R)), call(IO(ioWorld), R))), 
-		call(M, WORLD)))))); /* FIXME */
+NodeT Sequencer;
 
 // \a \b \t \f a (b t f) f)
 NodeT Ander = annotate(fn(A, fn(B, fn(T, fn(F, call(call(A, call(call(B, T), F)), F))))));
@@ -63,6 +61,12 @@ NodeT Noter = annotate(fn(A, fn(T, fn(F, call(call(A, F), T)))));
 NodeT Ifer = annotate(fn(A, A));
 NodeT Elser = annotate(fn(A, A)); /* actually \a \b a b */
 NodeT Elifer = annotate(fn(A, A)); /* actually \a \b a b */
+
+void Logic_init(void) {
+	Sequencer = annotate(fn(M, fn(BER, fn(WORLD, 
+	call(fn(R, call(call(BER, call(IO(ioValue), R)), call(IO(ioWorld), R))), 
+		call(M, WORLD)))))); /* FIXME */
+}
 
 }; /* end namespace Evaluators */
 

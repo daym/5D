@@ -66,5 +66,8 @@ REGISTER_BUILTIN(Ifer, 3, 0, symbolFromStr("if"))
 REGISTER_BUILTIN(Elser, 1, 0, symbolFromStr("else"))
 REGISTER_BUILTIN(Elifer, 1, 0, symbolFromStr("elif"))
 
+void Logic_init(void) {
+}
+
 }; /* end namespace Evaluators */
 

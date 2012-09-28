@@ -14,6 +14,7 @@
 #include "AST/AST"
 #include "FFIs/ProcessInfos"
 #include "Evaluators/ModuleLoader"
+#include "Evaluators/Logic"
 
 #define MAX_LOADSTRING 100
 
@@ -113,6 +114,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	if (!InitInstance(hInstance, nCmdShow))
 		return(FALSE);
 	handleCommandLine();
+	Evaluators::Logic_init();
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MY5D));
 	DWORD reason = WAIT_TIMEOUT;
 	while(1) {
