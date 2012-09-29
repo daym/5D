@@ -5,15 +5,16 @@ namespace Compilers {
 namespace X86 {
 struct CodeGen : Compilers::CodeGen {
 public:
-	virtual unsigned get_size_in_bits(AST::NodeT source);
-	virtual void gen_push(AST::NodeT source);
-	virtual void gen_pop(AST::NodeT source);
-	virtual void gen_stack_throwaway_bits(int bit_count);
-	virtual void gen_call(AST::NodeT destination);
-	virtual void gen_load_register(AST::Symbol* register_, AST::NodeT value);
-	virtual void gen_enter_frame(void);
-	virtual void gen_leave_frame(void);
-	virtual void gen_return(int bit_count);
+	virtual unsigned getSizeInBits(AST::NodeT source);
+	virtual void genPush(AST::NodeT source);
+	virtual void genPop(AST::NodeT source);
+	virtual void genStackThrowawayBits(int bitCount);
+	virtual void genCall(AST::NodeT destination);
+	virtual void genLoadRegisterFromImmediate(AST::NodeT/*Symbol*/ dest, AST::NodeT value);
+	virtual void genLoadRegisterFromRegister(AST::NodeT/*Symbol*/ dest, AST::NodeT value);
+	virtual void genEnterFrame(void);
+	virtual void genLeaveFrame(void);
+	virtual void genReturn(int bitCount);
 	
 };
 }; /* end namespace X86 */

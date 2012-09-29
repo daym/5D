@@ -5,15 +5,16 @@
 namespace Compilers {
 class CodeGen {
 public:
-	virtual unsigned get_size_in_bits(AST::NodeT source) = 0;
-	virtual void gen_push(AST::NodeT source) = 0;
-	virtual void gen_pop(AST::NodeT source) = 0;
-	virtual void gen_stack_throwaway_bits(int bit_count) = 0;
-	virtual void gen_call(AST::NodeT destination) = 0;
-	virtual void gen_load_register(AST::NodeT/*Symbol*/register_, AST::NodeT value) = 0;
-	virtual void gen_enter_frame(void) = 0;
-	virtual void gen_leave_frame(void) = 0;
-	virtual void gen_return(int bit_count) = 0;
+	virtual unsigned getSizeInBits(AST::NodeT source) = 0;
+	virtual void genPush(AST::NodeT source) = 0;
+	virtual void genPop(AST::NodeT source) = 0;
+	virtual void genStackThrowawayBits(int bit_count) = 0;
+	virtual void genCall(AST::NodeT destination) = 0;
+	virtual void genLoadRegisterFromImmediate(AST::NodeT/*Symbol*/register_, AST::NodeT value) = 0;
+	virtual void genLoadRegisterFromRegister(AST::NodeT/*Symbol*/register_, AST::NodeT/*Symbol*/ source) = 0;
+	virtual void genEnterFrame(void) = 0;
+	virtual void genLeaveFrame(void) = 0;
+	virtual void genReturn(int bit_count) = 0;
 };
 }; /* end namespace Compilers */
 #endif /* __COMPILERS_CODEGEN_H */

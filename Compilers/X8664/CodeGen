@@ -1,0 +1,18 @@
+#ifndef __COMPILERS_X8664_CODEGEN_H
+#define __COMPILERS_X8664_CODEGEN_H
+#include "Compilers/CodeGen"
+#include "Compilers/X8664/CodeGen"
+namespace Compilers {
+namespace X8664 {
+struct CodeGen : Compilers::X86::CodeGen {
+public:
+	virtual unsigned getSizeInBits(AST::NodeT source);
+	virtual void genStackThrowawayBits(int bitCount);
+	virtual void genCall(AST::NodeT destination);
+	virtual void genLoadRegisterFromImmediate(AST::NodeT/*Symbol*/ dest, AST::NodeT value);
+	virtual void genLoadRegisterFromRegister(AST::NodeT/*Symbol*/ dest, AST::NodeT/*Symbol*/ src);
+	virtual void genReturn(int bitCount);
+};
+}; /* end namespace X8664 */
+}; /* end namespace Compilers */
+#endif /* ndef __COMPILERS_X8664_CODEGEN_H */
