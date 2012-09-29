@@ -61,6 +61,15 @@ int get_nearest_int(AST::NodeT root) {
 	}
 	return(result);
 }
+long long get_sized_int(int bitCount, AST::NodeT root) {
+	long long result = get_long_long(root);
+	if(result & ~((1 << bitCount) - 1)) {
+		std::stringstream sst;
+		sst << "value out of range for " << "bits";
+		throw Evaluators::EvaluationException(GC_strdup(sst.str().c_str()));
+	}
+	return(result);
+}
 
 IMPLEMENT_NATIVE_INT_GETTER(int)
 IMPLEMENT_NATIVE_INT_GETTER(long)

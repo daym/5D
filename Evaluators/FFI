@@ -30,6 +30,7 @@ size_t get_string_length(AST::NodeT root);
 float get_float(AST::NodeT root);
 long double get_long_double(AST::NodeT root);
 double get_double(AST::NodeT root);
+long long get_sized_int(int bitCount, AST::NodeT root);
 
 DECLARE_FULL_OPERATION(Writer)
 DECLARE_FULL_OPERATION(Flusher)

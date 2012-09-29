@@ -202,8 +202,8 @@ REPL/ExtREPL.o: REPL/ExtREPL.cc REPL/ExtREPL AST/AST AST/Symbol Evaluators/Opera
 Evaluators/BuiltinSelector.o: Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector Evaluators/Evaluators Evaluators/Operation AST/AST AST/Symbol Evaluators/ModuleLoader Evaluators/Logic
 
 # TODO maybe move Assemblers into their own lib (or external program, for that matter)?
-Assemblers/X64.o: Assemblers/X64.cc Assemblers/X64 Assemblers/X86.inc AST/Symbol AST/AST AST/Symbols Evaluators/FFI
-Assemblers/X86.o: Assemblers/X86.cc Assemblers/X86 Assemblers/X86.inc AST/Symbol AST/AST AST/Symbols Evaluators/FFI
+Assemblers/X64.o: Assemblers/X64.cc Assemblers/X64 Assemblers/X86.inc AST/Symbol AST/AST AST/Symbols Evaluators/FFI Assemblers/Glue.inc
+Assemblers/X86.o: Assemblers/X86.cc Assemblers/X86 Assemblers/X86.inc AST/Symbol AST/AST AST/Symbols Evaluators/FFI Assemblers/Glue.inc
 
 clean:
 	rm -f AST/*.o
