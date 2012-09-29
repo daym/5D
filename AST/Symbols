@@ -128,6 +128,15 @@ extern AST::NodeT SpairP;
 extern AST::NodeT Simport;
 extern AST::NodeT Sfrom;
 extern AST::NodeT Shashexclam;
+extern AST::NodeT SAX;
+extern AST::NodeT SCX;
+extern AST::NodeT SDX;
+extern AST::NodeT SBX;
+extern AST::NodeT SSP;
+extern AST::NodeT SBP;
+extern AST::NodeT SSI;
+extern AST::NodeT SDI;
+
 }
 
 #endif /* ndef __AST_SYMBOLS_H */
