@@ -69,16 +69,14 @@ int emitLoadRegReg(AST::NodeT src, AST::NodeT dest, FILE* f) {
 	CHECK(emitCode8(MODCODE2(src, dest), f));
 	OK;
 }
-
-
-int emitPop(AST::NodeT dest, FILE* f) {
+int emitPopReg(AST::NodeT dest, FILE* f) {
 	/*implicit if(REX_W)
 		CHECK(emitCode8(REX_W, f));*/
 	CHECK(emitCode8(0x8F, f)); /* pop */
 	CHECK(emitCode8(MODCODE1(dest), f));
 	OK;
 }
-int emitPush(AST::NodeT src, FILE* f) {
+int emitPushReg(AST::NodeT src, FILE* f) {
 	/*implicit if(REX_W)
 		CHECK(emitCode8(REX_W, f));*/
 	CHECK(emitCode8(0xFF, f)); /* PUSH % */
@@ -183,12 +181,42 @@ int emitSbb(int32_t value, AST::NodeT dest, FILE* f) {
 	CHECK(emitValue32(value, f));
 	OK;
 }
+// FIXME push imm, pop imm. Add pushRegs.
+
+static AST::NodeT regNames[] = {
+	SAX,
+	SCX,
+	SDX,
+	SBX,
+	SSP,
+	SBP,
+	SSI,
+	SDI,
+};
+
+int emitPushRegs(uint16_t regs, FILE* f) {
+	int i;
+	for(i = 0; i < 8; ++i)
+		if(regs & (1 << i))
+			CHECK(emitPushReg(regNames[i], f));
+	OK;
+}
+int emitPopRegs(uint16_t regs, FILE* f) {
+	int i;
+	for(i = 0; i < 8; ++i)
+		if(regs & (1 << i))
+			CHECK(emitPopReg(regNames[i], f));
+	OK;
+}
+
 #include "Assemblers/Glue.inc"
 int emit(AST::NodeT operator_, AST::NodeT a, AST::NodeT b, AST::NodeT c, FILE* f) {
 	return (operator_ == SloadRegImm) ? emitLoadRegImm(I64(a), R(b), f) :
 	       (operator_ == SloadRegReg) ? emitLoadRegReg(R(a), R(b), f) :
-	       (operator_ == Spop) ? emitPop(R(a), f) :
-	       (operator_ == Spush) ? emitPush(R(a), f) :
+	       (operator_ == SpopReg) ? emitPopReg(R(a), f) :
+	       (operator_ == SpushReg) ? emitPushReg(R(a), f) :
+	       (operator_ == SpopRegs) ? emitPopRegs(I16(a), f) :
+	       (operator_ == SpushRegs) ? emitPushRegs(I16(a), f) :
 	       (operator_ == SaddRegReg) ? emitAddRegReg(R(a), R(b), f) :
 	       (operator_ == SaddValReg) ? emitAddValReg(I32(a), R(b), f) : 
 	       (operator_ == SsubRegReg) ? emitSubRegReg(R(a), R(b), f) : 
@@ -200,6 +228,8 @@ int emit(AST::NodeT operator_, AST::NodeT a, AST::NodeT b, AST::NodeT c, FILE* f
 	       (operator_ == SclearCarry) ? emitClearCarry(f) :
 	       (operator_ == SsetCarry) ? emitSetCarry(f) : 
 	       (operator_ == Sadc) ? emitAdc(I32(a), R(b), f) : 
-	       (operator_ == Ssbb) ? emitSbb(I32(a), R(b), f) :
+	       (operator_ == Ssbb) ? emitSbb(I32(a), R(b), f) : 
+		// FIXME exports:
+		// FIXME register list.
 	       0;
 }
