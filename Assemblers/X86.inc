@@ -10,7 +10,6 @@
 /* returns: 1: ok */
 int emitCode8(uint8_t code, FILE* f) {
 	return (fputc(code, f) != EOF);
-	/* FIXME error handling */
 }
 /* X86 is little endian */
 static __inline int emitValue64(int64_t value, FILE* f) {
@@ -33,7 +32,7 @@ static __inline int emitValue32(int32_t value, FILE* f) {
 #define FITS_SIGNED_32_BIT_P(v) 0
 #define SILLY_FITS_SIGNED_32_BIT_P(v) (v >= -0x80000000L && v < 0x80000000L)
 
-int emitLoadRegImm(int64_t value, int dest, FILE* f) {
+int emitLoadValReg(int64_t value, int dest, FILE* f) {
 	if(REX_W)
 		CHECK(emitCode8(REX_W, f));
 	if(REX_W && !FITS_SIGNED_32_BIT_P(value)) { /* 64 bit */
@@ -122,7 +121,7 @@ int emitMulValRegReg(int src, int32_t value, int dest, FILE* f) {
 	OK;
 }
 /* I hope that's a joke that I'm not getting... */
-int emitIdivImm(int8_t divisor, FILE* f) {
+int emitIdivVal(int8_t divisor, FILE* f) {
 	if(REX_W)
 		CHECK(emitCode8(REX_W, f));
 	CHECK(emitCode8(0xF7, f)); /* idiv $ */
@@ -173,7 +172,7 @@ int emitSbb(int32_t value, int dest, FILE* f) {
 	CHECK(emitValue32(value, f));
 	OK;
 }
-// FIXME push imm, pop imm. Add pushRegs.
+// FIXME push imm, pop imm.
 
 static AST::NodeT regNames[] = { /* in hardware order! */
 	SAX,
@@ -203,7 +202,7 @@ int emitPopRegs(uint16_t regs, FILE* f) {
 
 #include "Assemblers/Glue.inc"
 int emit(AST::NodeT operator_, AST::NodeT a, AST::NodeT b, AST::NodeT c, FILE* f) {
-	return (operator_ == SloadRegImm) ? emitLoadRegImm(I64(a), R(b), f) :
+	return (operator_ == SloadValReg) ? emitLoadValReg(I64(a), R(b), f) :
 	       (operator_ == SloadRegReg) ? emitLoadRegReg(R(a), R(b), f) :
 	       (operator_ == SpopReg) ? emitPopReg(R(a), f) :
 	       (operator_ == SpushReg) ? emitPushReg(R(a), f) :
@@ -215,7 +214,7 @@ int emit(AST::NodeT operator_, AST::NodeT a, AST::NodeT b, AST::NodeT c, FILE* f
 	       (operator_ == SsubValReg) ? emitSubValReg(I32(a), R(b), f) :
 	       (operator_ == SmulRegReg) ? emitMulRegReg(R(a), R(b), f) : 
 	       (operator_ == SmulValRegReg) ? emitMulValRegReg(R(a), I32(b), R(c), f) :
-	       (operator_ == SidivImm) ? emitIdivImm(I8(a), f) /* WTF */ : 
+	       (operator_ == SidivVal) ? emitIdivVal(I8(a), f) /* WTF */ : 
 	       (operator_ == Sret) ? emitRet(f) : 
 	       (operator_ == SclearCarry) ? emitClearCarry(f) :
 	       (operator_ == SsetCarry) ? emitSetCarry(f) : 

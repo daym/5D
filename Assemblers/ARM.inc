@@ -1,18 +1,26 @@
 
+typedef int8_t uint4_t;
+#define CHECK(v) {if(!v) return(0);}
+#define OK return 1
+
+/* returns: 1: ok */
+int emitCode8(uint8_t code, FILE* f) {
+	return (fputc(code, f) != EOF);
+}
 
 /* all opcodes start with "e"... what does that mean? */
 
 #define MR(r1) r1
 
 /* c is destination */
-int emitInstruction(uint16_t opcode, int4_t a, int4_t b, int4_t c, FILE* f) {
+int emitInstruction(uint16_t opcode, uint4_t a, uint4_t b, uint4_t c, FILE* f) {
 	CHECK(emitCode8(opcode >> 4, f));
 	CHECK(emitCode8(((opcode&0xF) << 4) | b, f));
 	CHECK(emitCode8(a << 4, f)); // and other things.
 	CHECK(emitCode8(c, f)); /* just above C here are 2 nibbles for other purposes. */
 	OK;
 }
-int emitMInstruction(uint16_t opcode, int4_t mode, uint16_t flags, FILE* f) {
+int emitMInstruction(uint16_t opcode, uint4_t mode, uint16_t flags, FILE* f) {
 	CHECK(emitCode8(opcode >> 4, f));
 	CHECK(emitCode8(((opcode&0xF) << 4) | mode, f));
 	CHECK(emitCode8(flags >> 8, f));
@@ -26,11 +34,11 @@ int emitAddRegRegReg(int a, int b, int c, FILE* f) {
 int emitSubRegRegReg(int a, int b, int c, FILE* f) {
 	return emitInstruction(0xE04, MR(a), MR(b), MR(c), f);
 }
-int emitLoadRegReg(int src, AST::NodeT dest) {
+int emitLoadRegReg(int src, int dest, FILE* f) {
 	return emitInstruction(0xE1A, MR(src), MR(dest), 0, f);
 }
 /* FIXME bigger values */
-int emitLoadRegImm(int8_t value, AST::NodeT dest) {
+int emitLoadImmReg(int8_t value, int dest, FILE* f) {
 	return emitInstruction(0xE3A, MR(dest), 0, value, f);
 }
 int emitMulRegRegReg(int a, int b, int c, FILE* f) {
@@ -53,18 +61,18 @@ static AST::NodeT regNames[] = { /* in order! */
 	SR7,
 	SR8,
 	SR9,
-	SR10, /* TODO use PC, LR, ... etcetc */
-	SR11,
-	SR12,
-	SR13,
-	SR14,
-	SR15,
+	SSL,
+	SFP,
+	SIP,
+	SSP,
+	SLR,
+	SPC,
 };
 int emitPushReg(int reg, FILE* f) {
-	return emitPushRegs(1 << reg);
+	return emitPushRegs(1 << reg, f);
 }
 int emitPopReg(int reg, FILE* f) {
-	return emitPopRegs(1 << reg);
+	return emitPopRegs(1 << reg, f);
 }
 /*
    4:	e1a0f00e 	mov	pc, lr

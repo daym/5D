@@ -136,7 +136,7 @@ extern AST::NodeT SSP;
 extern AST::NodeT SBP;
 extern AST::NodeT SSI;
 extern AST::NodeT SDI;
-extern AST::NodeT SloadRegImm;
+extern AST::NodeT SloadValReg;
 extern AST::NodeT SloadRegReg;
 extern AST::NodeT SpopReg;
 extern AST::NodeT SpushReg;
@@ -148,12 +148,27 @@ extern AST::NodeT SsubRegReg;
 extern AST::NodeT SsubValReg;
 extern AST::NodeT SmulRegReg;
 extern AST::NodeT SmulValRegReg;
-extern AST::NodeT SidivImm;
+extern AST::NodeT SidivVal;
 extern AST::NodeT Sret;
 extern AST::NodeT SclearCarry;
 extern AST::NodeT SsetCarry;
 extern AST::NodeT Sadc;
 extern AST::NodeT Ssbb;
+extern AST::NodeT SR0;
+extern AST::NodeT SR1;
+extern AST::NodeT SR2;
+extern AST::NodeT SR3;
+extern AST::NodeT SR4;
+extern AST::NodeT SR5;
+extern AST::NodeT SR6;
+extern AST::NodeT SR7;
+extern AST::NodeT SR8;
+extern AST::NodeT SR9;
+extern AST::NodeT SSL;
+extern AST::NodeT SFP;
+extern AST::NodeT SIP;
+extern AST::NodeT SLR;
+extern AST::NodeT SPC;
 
 }
 
