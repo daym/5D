@@ -31,8 +31,14 @@ int emitMInstruction(uint16_t opcode, uint4_t mode, uint16_t flags, FILE* f) {
 int emitAddRegRegReg(int a, int b, int c, FILE* f) {
 	return emitInstruction(0xE08, MR(a), MR(b), MR(c), f);
 }
+int emitAdcRegRegReg(int a, int b, int c, FILE* f) {
+	return emitInstruction(0xE0A, MR(a), MR(b), MR(c), f);
+}
 int emitSubRegRegReg(int a, int b, int c, FILE* f) {
 	return emitInstruction(0xE04, MR(a), MR(b), MR(c), f);
+}
+int emitSbcRegRegReg(int a, int b, int c, FILE* f) {
+	return emitInstruction(0xE0C, MR(a), MR(b), MR(c), f);
 }
 int emitLoadRegReg(int src, int dest, FILE* f) {
 	return emitInstruction(0xE1A, MR(src), MR(dest), 0, f);
@@ -50,6 +56,8 @@ int emitPushRegs(uint16_t regs, FILE* f) {
 int emitPopRegs(uint16_t regs, FILE* f) {
 	return emitMInstruction(0xE8B, 0xD, regs, f);
 }
+#define LR 14
+#define PC 15
 static AST::NodeT regNames[] = { /* in order! */
 	SR0,
 	SR1,
@@ -74,6 +82,10 @@ int emitPushReg(int reg, FILE* f) {
 int emitPopReg(int reg, FILE* f) {
 	return emitPopRegs(1 << reg, f);
 }
+int emitRet(FILE* f) {
+	return emitLoadRegReg(LR, PC, f);
+}
+
 /*
    4:	e1a0f00e 	mov	pc, lr
   3c:	e080000f 	add	r0, r0, pc
@@ -95,13 +107,11 @@ int emitPopReg(int reg, FILE* f) {
   84:	e8bd8033 	pop	{r0, r1, r4, r5, pc}
 
 */
-/* TODO idiv push pop
-               (operator_ == Sret) ? emitRet(f) : 
+/* TODO 
                (operator_ == SclearCarry) ? emitClearCarry(f) :
                (operator_ == SsetCarry) ? emitSetCarry(f) : 
-               (operator_ == Sadc) ? emitAdc(I32(a), R(b), f) : 
-               (operator_ == Ssbb) ? emitSbb(I32(a), R(b), f)
 
 */
 
 /* TODO thumb */
+/* has no integer division. */
