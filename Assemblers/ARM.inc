@@ -103,3 +103,5 @@ int emitPopReg(int reg, FILE* f) {
                (operator_ == Ssbb) ? emitSbb(I32(a), R(b), f)
 
 */
+
+/* TODO thumb */

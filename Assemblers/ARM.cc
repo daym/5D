@@ -2,12 +2,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
-#include "AST/AST" /* mostly just for Symbol */
+#include "AST/AST"
 #include "AST/Symbols"
 #include "Assemblers/ARM"
 #include "Evaluators/FFI"
 
-#define REX_W 0
 namespace Assemblers {
 namespace arch {
 namespace ARM {

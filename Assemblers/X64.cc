@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
-#include "AST/AST" /* mostly just for Symbol */
+#include "AST/AST"
 #include "AST/Symbols"
 #include "Assemblers/X64"
 #include "Evaluators/FFI"
