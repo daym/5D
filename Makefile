@@ -3,6 +3,7 @@ SUBDIRS = Config REPL Linear_Algebra Bugs WIN32 Tests FFIs Bootstrappers Compile
 SUBDIRS2 = $(SUBDIRS) doc/building doc/installation doc/interna doc/library doc/programming doc/programming/manual doc/programming/tutorial Tests/0* lib/Arithmetic lib/Trigonometry lib/Logic lib/Composition lib/List lib/OS lib/IO lib/UI lib/FFI lib/String lib/Reflection lib/Error Examples lib/LinearAlgebra lib/OO lib/Pair lib/Maybe lib/Set lib/Testers
 EXECUTABLES = REPL/5DREPL GUI/5D TUI/TUI TUI/STUI Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol Scanners/test-MathParser Scanners/test-Scanner REPL/5DREPL TUI2/5DTUI
 GENERATEDS = FFIs/Trampolines FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols FFIs/Combinations
+ASSEMBLERS = Assemblers/X86.o Assemblers/X64.o
 
 # -O3 is for tail-call optimization
 
@@ -27,7 +28,7 @@ endif
 LDFLAGS += -ldl -lgc -lpthread `pkg-config --libs glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP) -lffi
 GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
 GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
-FFIS = FFIs/TrampolineSymbols.o FFIs/Allocators.o
+FFIS = FFIs/TrampolineSymbols.o FFIs/Allocators.o $(ASSEMBLERS)
 
 NUMBER_OBJECTS = Numbers/Integer.o Numbers/Real.o Numbers/BigUnsigned.o Numbers/Ratio.o
 
@@ -199,6 +200,11 @@ Numbers/BigUnsigned.o: Numbers/BigUnsigned.cc Numbers/BigUnsigned
 Numbers/Ratio.o: Numbers/Ratio.cc Numbers/Ratio Numbers/Small Evaluators/Operation Evaluators/Builtins Numbers/Integer Evaluators/Evaluators
 REPL/ExtREPL.o: REPL/ExtREPL.cc REPL/ExtREPL AST/AST AST/Symbol Evaluators/Operation Evaluators/Evaluators
 Evaluators/BuiltinSelector.o: Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector Evaluators/Evaluators Evaluators/Operation AST/AST AST/Symbol Evaluators/ModuleLoader Evaluators/Logic
+
+# TODO maybe move Assemblers into their own lib (or external program, for that matter)?
+Assemblers/X64.o: Assemblers/X64.cc Assemblers/X64 Assemblers/X86.inc AST/Symbol AST/AST AST/Symbols Evaluators/FFI
+Assemblers/X86.o: Assemblers/X86.cc Assemblers/X86 Assemblers/X86.inc AST/Symbol AST/AST AST/Symbols Evaluators/FFI
+
 clean:
 	rm -f AST/*.o
 	rm -f Scanners/*.o

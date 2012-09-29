@@ -1,3 +1,9 @@
+#if defined(WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#elif defined(__linux__) || defined(__APPLE__)
+#include <sys/mman.h>
+#endif
 #include <gc/gc.h>
 #include <glib.h>
 #include <string.h>
@@ -47,6 +53,28 @@ void Allocator_init(void) {
 */
 	// TODO move this into 5DLibs or even into FFIs/POSIX.cc , maybe
 	//xmlGcMemSetup(GCx_free, GCx_malloc, GCx_malloc_atomic, GCx_realloc, GCx_strdup);
+}
+
+
+void* ealloc(size_t size, void* source) {
+	void* result;
+#if defined(WIN32)
+	result = VirtualAlloc(0, size, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+#elif defined(__linux__) || defined(__APPLE__)
+	result = mmap(NULL, size + sizeof(long), PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANON, NULL, 0);
+	//*(long*)p = size;
+	//result = (long*)p + 1;
+#endif
+	memcpy(result, source, size);
+	return(result);
+}
+
+void efree(void* address) {
+#if defined(WIN32)
+	VirtualFree(address, 0, MEM_RELEASE);
+#elif defined(__linux__) || defined(__APPLE__)
+	munmap((long*)address - 1, *((long*)address - 1));
+#endif
 }
 
 }

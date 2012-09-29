@@ -41,7 +41,7 @@ static __inline int emitValue32(int32_t value, FILE* f) {
 #define FITS_SIGNED_32_BIT_P(v) 0
 #define SILLY_FITS_SIGNED_32_BIT_P(v) (v >= -0x80000000L && v < 0x80000000L)
 
-int emitLoadRegImm32(int64_t value, AST::NodeT dest, FILE* f) {
+int emitLoadRegImm(int64_t value, AST::NodeT dest, FILE* f) {
 	if(REX_W)
 		CHECK(emitCode8(REX_W, f));
 	if(REX_W && !FITS_SIGNED_32_BIT_P(value)) { /* 64 bit */
@@ -182,4 +182,24 @@ int emitSbb(int32_t value, AST::NodeT dest, FILE* f) {
 	                       0x00, f)); /* error */
 	CHECK(emitValue32(value, f));
 	OK;
+}
+#include "Assemblers/Glue.inc"
+int emit(AST::NodeT operator_, AST::NodeT a, AST::NodeT b, AST::NodeT c, FILE* f) {
+	return (operator_ == SloadRegImm) ? emitLoadRegImm(I64(a), R(b), f) :
+	       (operator_ == SloadRegReg) ? emitLoadRegReg(R(a), R(b), f) :
+	       (operator_ == Spop) ? emitPop(R(a), f) :
+	       (operator_ == Spush) ? emitPush(R(a), f) :
+	       (operator_ == SaddRegReg) ? emitAddRegReg(R(a), R(b), f) :
+	       (operator_ == SaddValReg) ? emitAddValReg(I32(a), R(b), f) : 
+	       (operator_ == SsubRegReg) ? emitSubRegReg(R(a), R(b), f) : 
+	       (operator_ == SsubValReg) ? emitSubValReg(I32(a), R(b), f) :
+	       (operator_ == SmulRegReg) ? emitMulRegReg(R(a), R(b), f) : 
+	       (operator_ == SmulValRegReg) ? emitMulValRegReg(R(a), I32(b), R(c), f) :
+	       (operator_ == SidivImm) ? emitIdivImm(I8(a), f) /* WTF */ : 
+	       (operator_ == Sret) ? emitRet(f) : 
+	       (operator_ == SclearCarry) ? emitClearCarry(f) :
+	       (operator_ == SsetCarry) ? emitSetCarry(f) : 
+	       (operator_ == Sadc) ? emitAdc(I32(a), R(b), f) : 
+	       (operator_ == Ssbb) ? emitSbb(I32(a), R(b), f) :
+	       0;
 }

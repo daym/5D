@@ -1,0 +1,12 @@
+#ifndef __ASSEMBLERS_X86_H
+#define __ASSEMBLERS_X86_H
+#include <stdio.h>
+#include "AST/AST"
+
+namespace Assemblers {
+namespace arch {
+namespace X86 {
+int emit(AST::NodeT operator_, AST::NodeT a, AST::NodeT b, AST::NodeT c, FILE* f);
+}}};
+
+#endif /* ndef __ASSEMBLERS_X86_H */

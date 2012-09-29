@@ -1,5 +1,9 @@
 #ifndef __FFI_ALLOCATOR_H
 #define __FFI_ALLOCATOR_H
+#ifdef WIN32
+#else
+#include <sys/types.h>
+#endif
 #include <gc/gc.h>
 #include <gc/gc_allocator.h>
 #include <gc/gc_cpp.h>
@@ -22,6 +26,9 @@ static inline char* GCx_strdup(const char* value) {
 	return(result);
 #endif
 #endif
+/* Executable Memory */
+void* ealloc(size_t size, void* source);
+void efree(void* beginning);
 }
 
 #endif /* ndef __FFI_ALLOCATOR_H */

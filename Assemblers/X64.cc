@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "AST/AST" /* mostly just for Symbol */
 #include "AST/Symbols"
+#include "Assemblers/X64"
+#include "Evaluators/FFI"
 
 #define REX_W 0x48
 namespace Assemblers {

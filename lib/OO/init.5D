@@ -19,4 +19,25 @@ let Object := class
 	Composition.dispatch (#exports[id])
 	raiseMissingSymbolError 
 in 
+rem '(
+"Object-oriented programming is done like this:"
+let OO := requireModule "OO" in 
+import [Object wrap! (class)] from OO in 
+let Widget := class
+	...
+	(requireModule "Composition").dispatch (#exports[])
+	Object
+in 
+let Button := class
+	let click! := \self
+		...
+	in
+	let new! := allocatePointer! ;\ptr
+		...
+		wrap! ptr
+	in 
+	(requireModule "Composition").dispatch (#exports[click! new!])
+	Widget
+in
+)
 Composition.dispatch1 (#exports[(Object) wrap wrap! (class)])
