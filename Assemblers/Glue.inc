@@ -3,5 +3,5 @@
 #define I32(a) Evaluators::get_sized_int(32, a)
 #define I16(a) Evaluators::get_sized_int(16, a)
 #define I8(a) Evaluators::get_sized_int(8, a)
-/* FIXME make sure it is a symbol */
-#define R(b) b
+#define R(b) Evaluators::get_int(b)
+

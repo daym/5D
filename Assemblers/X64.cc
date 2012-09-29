@@ -12,5 +12,5 @@ namespace Assemblers {
 namespace arch {
 namespace X64 {
 using namespace Symbols;
-#include "X86.inc"
+#include "Assemblers/X86.inc"
 }}};
