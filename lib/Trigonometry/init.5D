@@ -1,5 +1,6 @@
-let Logic := requireModule "Logic" in 
 let Composition := requireModule "Composition" in 
+Composition.withInterface1
+let Logic := requireModule "Logic" in 
 let Error := requireModule "Error" in 
 let Arithmetic := requireModule "Arithmetic" in 
 import [(rem) (rec) flip ($) compose] from Composition in 
@@ -55,4 +56,4 @@ let atanh := \x (asinh x)/(acosh x) in
 let asech := \x log (sqrt (-x*x + 1) + 1/x) in 
 let acsch := \x log ((signum x)*(sqrt(x*x + 1))/x) in 
 let acoth := \x (log ((x + 1)/(x - 1)))/2 in 
-(requireModule "Composition").dispatch1 (#exports[pi π cos sin tan atan atan1 atan2 sec csc cot asin asec acsc acot acos sinh cosh tanh sech csch coth asinh acosh atanh asech acsch acoth])
+(#exports[pi π cos sin tan atan atan1 atan2 sec csc cot asin asec acsc acot acos sinh cosh tanh sech csch coth asinh acosh atanh asech acsch acoth])

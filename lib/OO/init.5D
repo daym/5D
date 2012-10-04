@@ -1,4 +1,5 @@
 let Composition := requireModule "Composition" in 
+Composition.withInterface1
 import [(rem)] from Composition in 
 let dispatch := Composition.dispatch in 
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 
@@ -40,4 +41,4 @@ let Button := class
 	Widget
 in
 )
-Composition.dispatch1 (#exports[(Object) wrap wrap! (class)])
+(#exports[(Object) wrap wrap! (class)])

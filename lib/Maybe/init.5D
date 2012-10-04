@@ -1,5 +1,6 @@
-let List := requireModule "List" in 
 let Composition := requireModule "Composition" in 
+Composition.withInterface1
+let List := requireModule "List" in 
 let Logic := requireModule "Logic" in 
 import [rem ($)] from Composition in 
 import [(if) (else) (elif) not] from Logic in 
@@ -22,4 +23,4 @@ let makeSomething := (\v
 let return? := (\v
 	makeSomething v
 ) in 
-(requireModule "Composition").dispatch1 (#exports [something something? nothing nothing? (?;) return?])
+(#exports [something something? nothing nothing? (?;) return?])

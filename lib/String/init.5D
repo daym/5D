@@ -1,6 +1,7 @@
+let Composition := requireModule "Composition" in
+Composition.withInterface1
 let List := requireModule "List" in 
 let Error := requireModule "Error" in
-let Composition := requireModule "Composition" in
 let Logic := requireModule "Logic" in 
 let Maybe := requireModule "Maybe" in 
 let Arithmetic := requireModule "Arithmetic" in 
@@ -47,4 +48,4 @@ let integerFromStrBase :=
 in 
 let integerFromStr := integerFromStrBase 10 in 
 let substr := \beginning \end \box Builtins.substr beginning end box in 
-(requireModule "Composition").dispatch1 (#exports[listFromStr str? strFromKeyword strFromList substr strcat strjoin strFromInteger integerFromStr])
+(#exports[listFromStr str? strFromKeyword strFromList substr strcat strjoin strFromInteger integerFromStr])

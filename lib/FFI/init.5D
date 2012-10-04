@@ -1,5 +1,6 @@
-let Error := requireModule "Error" in 
 let Composition := requireModule "Composition" in 
+Composition.withInterface1
+let Error := requireModule "Error" in 
 import [allocateRecord! allocateMemory! duplicateRecord! packRecord recordSize unpackRecord archDepLibName strUntilZero environFromList listFromEnviron requireSharedLibrary] from Builtins in 
 let allocatePointer! := allocateMemory! (recordSize "p") in 
-(requireModule "Composition").dispatch1 (#exports[allocateRecord! allocateMemory! duplicateRecord! packRecord recordSize unpackRecord archDepLibName strUntilZero allocatePointer! environFromList listFromEnviron requireSharedLibrary])
+(#exports[allocateRecord! allocateMemory! duplicateRecord! packRecord recordSize unpackRecord archDepLibName strUntilZero allocatePointer! environFromList listFromEnviron requireSharedLibrary])

@@ -1,5 +1,6 @@
-let Logic := requireModule "Logic" in 
 let Composition := requireModule "Composition" in 
+Composition.withInterface1
+let Logic := requireModule "Logic" in 
 let Error := requireModule "Error" in 
 import [head tail (:) nan? infinite? nan infinity] from Builtins in 
 import [(rem) (rec) flip ($) compose] from Composition in 
@@ -168,4 +169,4 @@ let signum := \v
 	else
 		1
 in 
-(requireModule "Composition").dispatch1 (#exports[(-) (*) (⋅) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod sqrt within factorial ground floor round1 max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? exp log log2 round1Log2 (**) ∞ natural? nthRoot signum])
+(#exports[(-) (*) (⋅) (/) (%) (+) (<) (<=) (≤) (=) (≥) (>) (>=) (/=) √ abs div0 divmod0 mod0 div divmod mod sqrt within factorial ground floor round1 max min gcd ceiling zero? positive? negative? even? odd? nan? finite? infinite? nan infinity infinity? inf inf? exp log log2 round1Log2 (**) ∞ natural? nthRoot signum])

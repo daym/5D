@@ -1,4 +1,5 @@
 let Composition := requireModule "Composition" in 
+Composition.withInterface1
 let Logic := requireModule "Logic" in 
 let Arithmetic := requireModule "Arithmetic" in 
 let Error := requireModule "Error" in 
@@ -149,4 +150,4 @@ let anyTrue? := \list foldr (||) #f list in
 let allTrue? := \list foldr (&&) #t list in 
 let ∃ := \xs \predicate anyTrue? (map predicate xs) in 
 let ∀ := \xs \predicate allTrue? (map predicate xs) in 
-Composition.dispatch1 (#exports[nil nil? cons? list? (:) (++) map merge mergeBy mergeSort mergeSortBy extremum drop foldl foldr filter length head tail reverse enumerate range range1 take takeWhile zip transpose zipBy sum product anyTrue? allTrue? frange frangeLL uniq uniqBy ∀ ∃])
+(#exports[nil nil? cons? list? (:) (++) map merge mergeBy mergeSort mergeSortBy extremum drop foldl foldr filter length head tail reverse enumerate range range1 take takeWhile zip transpose zipBy sum product anyTrue? allTrue? frange frangeLL uniq uniqBy ∀ ∃])

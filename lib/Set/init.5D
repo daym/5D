@@ -1,4 +1,5 @@
 let Composition := requireModule "Composition" in 
+Composition.withInterface1
 let Logic := requireModule "Logic" in 
 let Arithmetic := requireModule "Arithmetic" in 
 let Error := requireModule "Error" in 
@@ -26,4 +27,4 @@ let (⊆) := subset? in
 let (⊇) := superset? in 
 let (-) := \A \B in 
 let listOf := \A in 
-Composition.dispatch1 (#exports[emptySet adjoin unite intersect (∩) (∪) contains? (∈) subset? superset? properSubset? properSuperset? (=) (≟) (⊂) (⊃) (⊆) (⊇) (-) listOf])
+(#exports[emptySet adjoin unite intersect (∩) (∪) contains? (∈) subset? superset? properSubset? properSuperset? (=) (≟) (⊂) (⊃) (⊆) (⊇) (-) listOf])
