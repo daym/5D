@@ -85,7 +85,7 @@ defer! (File.fclose! f)
 	File.fgets! file 2000
 </pre>
 <hr/>
-<h3>with! \opener \closer \body</h3>
+<h3>use! \opener \closer \body</h3>
 <p>(Eventually) does the following:</p>
 <ol>
 <li>Run <span class="pre">opener</span>, resulting in <span class="pre">f</span>.</li>
@@ -95,10 +95,26 @@ defer! (File.fclose! f)
 <p>This is convenient for resource management where you have some clean-up action that has to execute no matter what.</p>
 <p>Example:</p>
 <pre>
-with! (File.fopen! "/etc/passwd" "r") File.fclose! \file
+use! (File.fopen! "/etc/passwd" "r") File.fclose! \file
 	File.fgets! file 2000
 </pre>
 <hr/>
+<h3>with! \obj \body</h3>
+<p>Using obj, does body (see <span class="pre">use!</span> above for what "using" means).</p>
+<p>Example:</p>
+<pre>
+let passwd := 
+	let open! := File.fopen! "/etc/passwd" "r" in
+	let close! := File.fclose! in 
+	let gets! := File.fgets! in 
+	Composition.dispatch
+	(#exports [open! close!])
+	OO.Object
+in 
+with! passwd \file
+	let passwd := wrap passwd file in 
+	passwd.gets! file 2000
+</pre>
 </a>
 </body>
 </html>

@@ -60,6 +60,7 @@ extern AST::NodeT SrunIO;
 extern AST::NodeT Spercentedx;
 extern AST::NodeT SintegerSucc;
 extern AST::NodeT Slet;
+extern AST::NodeT Sletexclam;
 extern AST::NodeT Sintzero;
 extern AST::NodeT Sasteriskasterisk;
 extern AST::NodeT Sleftbracket;
@@ -169,7 +170,7 @@ extern AST::NodeT SFP;
 extern AST::NodeT SIP;
 extern AST::NodeT SLR;
 extern AST::NodeT SPC;
-
+extern AST::NodeT Ssemicolon;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

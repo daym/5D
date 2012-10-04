@@ -1,3 +1,11 @@
+5d (0.7.0) unstable; urgency=low
+
+  * introduce 'let! macro.
+  * introduce 'withInterface1 in 'Composition module.
+  * rename 'with! to 'use! , introduce 'with! with standard semantics.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Mon, 4 Oct 2012 20:41:00 +0200
+
 5d (0.6.9) unstable; urgency=low
 
   * factor Trigonometry out of Arithmetic, move it into new "Trigonometry" module.

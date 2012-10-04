@@ -103,7 +103,7 @@ AST::NodeT ShuntingYardParser::parse_define_macro(AST::NodeT operator_) {
 		body = quote(body);
 	return(AST::makeApplication(AST::makeApplication(operator_, parameter), body));
 }
-AST::NodeT ShuntingYardParser::parse_let_macro(void) {
+AST::NodeT ShuntingYardParser::parse_let_macro(AST::NodeT operator_ /* symbol */) {
 	AST::NodeT parameter;
 	if(scanner->input_value == Symbols::Sleftparen) {
 		scanner->consume();
@@ -120,7 +120,7 @@ AST::NodeT ShuntingYardParser::parse_let_macro(void) {
 	//AST::NodeT body = parse_value();
 	AST::NodeT body = parse_expression(OPL, Symbols::Sin);
 	scanner->consume(Symbols::Sin);
-	return(AST::makeCons(Symbols::Slet, AST::makeCons(parameter, AST::makeCons(body, NULL))));
+	return(AST::makeCons(operator_, AST::makeCons(parameter, AST::makeCons(body, NULL))));
 }
 AST::NodeT ShuntingYardParser::parse_import_macro(void) {
 	scanner->consume(Symbols::Sleftbracket);
@@ -195,7 +195,9 @@ AST::NodeT ShuntingYardParser::handle_unary_operator(AST::NodeT operator_) {
 		} else
 			return(AST::makeCons(Symbols::Squote, NULL));
 	} else if(operator_ == Symbols::Slet) {
-		return(parse_let_macro());
+		return(parse_let_macro(operator_));
+	} else if(operator_ == Symbols::Sletexclam) {
+		return(parse_let_macro(operator_));
 	} else if(operator_ == Symbols::Simport) {
 		return(parse_import_macro());
 	} else if(operator_ == Symbols::Sunarydash) {
@@ -241,6 +243,17 @@ AST::NodeT ShuntingYardParser::expand_macro(AST::NodeT op1, AST::NodeT suffix) {
 		AST::NodeT c3 = Evaluators::evaluateToCons(AST::get_cons_tail(c2));
 		AST::NodeT replacement = AST::get_cons_head(c3);
 		return(Evaluators::close(parameter, replacement, suffix));
+	} else if(operator_ == Symbols::Sletexclam) {
+		/* let! y := a in B =>
+		   (;) a (\y B) */
+		assert(AST::get_cons_tail(op1));
+		AST::NodeT c2 = Evaluators::evaluateToCons(AST::get_cons_tail(op1));
+		AST::NodeT parameter = AST::get_cons_head(c2);
+		assert(AST::get_symbol1_name(parameter));
+		assert(AST::get_cons_tail(c2));
+		AST::NodeT c3 = Evaluators::evaluateToCons(AST::get_cons_tail(c2));
+		AST::NodeT replacement = AST::get_cons_head(c3);
+		return(AST::makeOperation(Symbols::Ssemicolon, replacement, AST::makeAbstraction(parameter, suffix))); /* NOTE variable capture... */
 	} else if(operator_ == Symbols::Simport) {
 		assert(AST::get_cons_tail(op1));
 		AST::NodeT c2 = Evaluators::evaluateToCons(AST::get_cons_tail(op1));
