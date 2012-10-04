@@ -66,7 +66,7 @@ long long get_sized_int(int bitCount, AST::NodeT root) {
 	if(result & ~((1 << bitCount) - 1)) {
 		std::stringstream sst;
 		sst << "value out of range for " << "bits";
-		throw Evaluators::EvaluationException(GC_strdup(sst.str().c_str()));
+		throw Evaluators::EvaluationException(GCx_strdup(sst.str().c_str()));
 	}
 	return(result);
 }
