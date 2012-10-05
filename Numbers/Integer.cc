@@ -714,7 +714,6 @@ AST::NodeT operator-(const Int& a, const Int& b) {
 	NativeInt smallResult = a.value - b.value;
         return(internNative(smallResult));
 }
-/* FIXME check *exactly* minValue */
 AST::NodeT operator*(const Int& a, const Int& b) {
 	/*if(av == 0 || bv == 0)
 		return(&integers[0]);*/

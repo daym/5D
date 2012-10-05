@@ -3,7 +3,7 @@ Composition.withInterface1
 let List := requireModule "List" in 
 let Error := requireModule "Error" in 
 let Logic := requireModule "Logic" in 
-import [rec (|) ($) rem] from Composition in 
+import [(rec) (|) ($) (rem)] from Composition in 
 import [head tail] from List in 
 import [(if) (else)] from Logic in 
 let ioValue := (\m head m) in 
