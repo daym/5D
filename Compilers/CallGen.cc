@@ -12,8 +12,8 @@ void CallGen::clear(void) {
 }
 void CallGen::build(AST::NodeT call_destination) {
 		//[code_gen->gen_push(source) for source in arguments];
-		code_gen->gen_call(call_destination);
-		code_gen->gen_stack_throwaway_bits(stack_usage_afterwards);
+		code_gen->genCall(call_destination);
+		code_gen->genStackThrowawayBits(stack_usage_afterwards);
 }
 
 }; /* end namespace Compilers */

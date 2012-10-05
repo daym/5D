@@ -22,7 +22,7 @@ public:
 	virtual void clear(void);
 	void add(AST::NodeT source) {
 		arguments.push_back(source);
-		stack_usage_afterwards += code_gen->get_size_in_bits(source);
+		stack_usage_afterwards += code_gen->getSizeInBits(source);
 	}
 	virtual void build(AST::NodeT call_destination);
 };

@@ -11,10 +11,10 @@ StdCallGen::StdCallGen(CodeGen* code_gen) :
 void StdCallGen::build(AST::NodeT call_destination) {
 	std::vector<AST::NodeT>::const_reverse_iterator end_iter = arguments.rend();
 	for(std::vector<AST::NodeT>::const_reverse_iterator iter = arguments.rbegin(); iter != end_iter; ++iter)
-		code_gen->gen_push(*iter);
-	code_gen->gen_call(call_destination);
+		code_gen->genPush(*iter);
+	code_gen->genCall(call_destination);
 	/* callee cleans its mess up! */
-	code_gen->gen_stack_throwaway_bits(stack_usage_afterwards);
+	code_gen->genStackThrowawayBits(stack_usage_afterwards);
 }
 
 
