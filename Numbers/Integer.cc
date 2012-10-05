@@ -693,7 +693,6 @@ AST::NodeT internNative(NativeInt value) {
 static const NativeInt minValue = std::numeric_limits<NativeInt>::min();
 static const NativeInt maxValue = std::numeric_limits<NativeInt>::max();
 
-/* FIXME check *exactly* minValue */
 AST::NodeT operator+(const Int& a, const Int& b) {
 	//std::cout << "max " << maxValue << std::endl;
 	if(b.value < 0 ? minValue - b.value > a.value : maxValue - b.value < a.value) {
@@ -707,7 +706,6 @@ AST::NodeT operator+(const Int& a, const Int& b) {
 	NativeInt smallResult = a.value + b.value;
 	return(internNative(smallResult));
 }
-/* FIXME check *exactly* minValue */
 AST::NodeT operator-(const Int& a, const Int& b) {
 	if(b.value < 0 ? maxValue + b.value < a.value : minValue + b.value > a.value) {
 		Integer result = Integer(a.value) - Integer(b.value);
