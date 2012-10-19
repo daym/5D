@@ -91,8 +91,15 @@ bool toNativeFloat(AST::NodeT node, NativeFloat& result) {
 	}
 }
 
+#ifdef __GNUC__
+#define LLVM_INF           __builtin_inff()
+static Float nanFloat(__builtin_nanf(""));
+static Float infinityFloat(__builtin_inff());
+#else
 static Float nanFloat(0.0/0.0);
 static Float infinityFloat(1.0/0.0);
+#endif
+
 AST::NodeT nan(void) {
 	return(&nanFloat);
 }
