@@ -22,7 +22,7 @@ static inline AST::NodeT throwFallback(const char* text) {
 #define FALLBACK Evaluators::throwFallback("could not reduce")
 /* (AST::NodeT) reduce(makeOperation(Symbols::Sspace, fallback, argument))*/
 
-void get_free_variables(AST::NodeT root, AST::HashTable& freeNames);
+void getFreeVariables(AST::NodeT root, AST::HashTable& freeNames);
 AST::NodeT annotate(AST::NodeT root);
 extern int fGeneration;
 static inline bool application_result_P(AST::NodeT app) {
@@ -62,6 +62,7 @@ AST::NodeT mapTree(void* userData, replace_predicate_t* replacer, AST::NodeT ter
 
 DECLARE_SIMPLE_OPERATION(Reducer)
 DECLARE_SIMPLE_OPERATION(Quoter)
+DECLARE_SIMPLE_OPERATION(FreeVariablesGetter)
 /* BEGIN Curried Operations */
 
 struct CurriedOperation : AST::Node {

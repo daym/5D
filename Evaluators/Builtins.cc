@@ -55,7 +55,7 @@ static BigUnsigned unsigneds[] = {
 	BigUnsigned(16),
 };
 static std::map<AST::Symbol*, AST::NodeT> cachedDynamicBuiltins;
-static AST::NodeT get_dynamic_builtin(const char* name) {
+static AST::NodeT getDynamicBuiltinC(const char* name) {
 	if((name[0] >= '0' && name[0] <= '9') || name[0] == '-') {
 		long int value;
 		char* endptr = NULL;
@@ -103,22 +103,27 @@ static AST::NodeT get_dynamic_builtin(const char* name) {
 	}*/
 	return(NULL);
 }
+static AST::NodeT getDynamicBuiltinA(AST::NodeT sym) {
+	if(symbol_P(sym))
+		return(getDynamicBuiltinC(AST::get_symbol_name(sym)));
+	else
+		return(NULL);
+}
 AST::NodeT provide_dynamic_builtins_impl(AST::NodeT body, AST::HashTable::const_iterator end_iter, AST::HashTable::const_iterator iter) {
 	if(iter == end_iter)
 		return(body);
 	else {
 		const char* name = iter->first;
-		AST::NodeT value = get_dynamic_builtin(name);
+		AST::NodeT value = getDynamicBuiltinC(name); // TODO use passed getter
 		++iter;
 		return(value ? Evaluators::close(AST::symbolFromStr(name), value, provide_dynamic_builtins_impl(body, end_iter, iter)) : provide_dynamic_builtins_impl(body, end_iter, iter));
 	}
 }
 AST::NodeT provide_dynamic_builtins(AST::NodeT body) {
 	AST::HashTable freeNames;
-	AST::HashTable::const_iterator end_iter = freeNames.end();
-	get_free_variables(body, freeNames);
-	end_iter = freeNames.end();
-	return(provide_dynamic_builtins_impl(body, end_iter, freeNames.begin()));
+	getFreeVariables(body, freeNames);
+	AST::HashTable::const_iterator endIter = freeNames.end();
+	return(provide_dynamic_builtins_impl(body, endIter, freeNames.begin()));
 }
 
 Float promoteToFloat(const Int& v) {
@@ -758,6 +763,12 @@ static AST::NodeT makeStrMathParserB(AST::NodeT options, AST::NodeT argument) {
 		return(NULL); // FIXME
 	}
 }
+static AST::NodeT getFreeVariablesA(AST::NodeT expr) {
+	AST::HashTable d;
+	Evaluators::getFreeVariables(expr, d);
+	return(AST::listFromHashTable(d.begin(), d.end()));
+}
+
 #if 0
 /* FIXME */
 static AST::NodeT makeBorg(AST::NodeT foreigner) {
@@ -802,7 +813,11 @@ DEFINE_SIMPLE_OPERATION(NanChecker, Evaluators::internNative(isnan(specialFloatV
 
 DEFINE_FULL_OPERATION(RFileMathParser, return(makeFileMathParserB(fn, argument)))
 DEFINE_FULL_OPERATION(RStrMathParser, return(makeStrMathParserB(fn, argument)))
+DEFINE_SIMPLE_OPERATION(FreeVariablesGetter, getFreeVariablesA(PREPARE(argument)))
+DEFINE_SIMPLE_OPERATION(DynamicBuiltinGetter, getDynamicBuiltinA(PREPARE(argument)))
 
+REGISTER_BUILTIN(DynamicBuiltinGetter, 1, 0, AST::symbolFromStr("dynamicBuiltin"))
+REGISTER_BUILTIN(FreeVariablesGetter, 1, 0, AST::symbolFromStr("freeVariables"))
 REGISTER_BUILTIN(Conser, 2, 0, AST::symbolFromStr(":"))
 REGISTER_BUILTIN(Pairer, 2, 0, AST::symbolFromStr(","))
 REGISTER_BUILTIN(ConsP, 1, 0, AST::symbolFromStr("cons?"))

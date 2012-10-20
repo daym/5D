@@ -7,7 +7,7 @@ list comprehensions in []
 loading modules (for example the one where GetLastError! is in) causes GetLastError() to be clobbered.
 '\
 
-= Builtin Types =
+= Builtin Types (for Values) =
 
 numbers: 5. arbitrary-precision fixed point, 6. complex numbers, literals: #C(3.2 2)
 equality (numbers, strings(?) and booleans (?) and symbols (?) and lists (?)) and non-equality.
@@ -54,6 +54,7 @@ TUI: allow multi-line entry in history (maybe just use a global history used by 
 
 = Beauty =
 
+rename "AST" to "Values"
 allow REPL.remove! in order to remove a (usually the last) definition.
 Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).

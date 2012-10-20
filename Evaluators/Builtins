@@ -27,6 +27,8 @@ AST::NodeT provide_dynamic_builtins(AST::NodeT body);
 extern AST::NodeT aFalse;
 extern AST::NodeT aTrue;
 
+DECLARE_SIMPLE_OPERATION(DynamicBuiltinGetter)
+DECLARE_SIMPLE_OPERATION(FreeVariablesGetter)
 DECLARE_BINARY_OPERATION(Conser)
 DECLARE_BINARY_OPERATION(Pairer)
 DECLARE_SIMPLE_OPERATION(ConsP)

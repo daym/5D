@@ -167,4 +167,6 @@ AST::NodeT SIP = AST::symbolFromStr("IP");
 AST::NodeT SLR = AST::symbolFromStr("LR");
 AST::NodeT SPC = AST::symbolFromStr("PC");
 AST::NodeT Ssemicolon = AST::symbolFromStr(";");
+AST::NodeT SfreeVariables = AST::symbolFromStr("freeVariables");
+AST::NodeT SdynamicBuiltin = AST::symbolFromStr("dynamicBuiltin");
 };

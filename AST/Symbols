@@ -171,6 +171,8 @@ extern AST::NodeT SIP;
 extern AST::NodeT SLR;
 extern AST::NodeT SPC;
 extern AST::NodeT Ssemicolon;
+extern AST::NodeT SfreeVariables;
+extern AST::NodeT SdynamicBuiltin;
 }
 
 #endif /* ndef __AST_SYMBOLS_H */

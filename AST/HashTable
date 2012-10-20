@@ -36,16 +36,6 @@ struct ltstr {
 ////typedef __gnu_cxx::hash_map<const char*, AST::NodeT, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::NodeT> > > RawHashTable;
 //typedef std::map<const char*, AST::NodeT, ltstr, gc_allocator<std::pair<const char*, AST::NodeT> > > RawHashTable;
 //// has no allocator: typedef khmap_t<const char*, AST::NodeT, khashf_t, khasheq_t, gc_allocator<std::pair<const char*, AST::NodeT> > > RawHashTable;
-/*
-static AST::NodeT listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
-	if(iter == endIter)
-		return(NULL);
-	else {
-		++iter;
-		return(AST::makeCons(AST::symbolFromStr(iter->first), listFromHashTable(iter, endIter)));
-	}
-}
-*/
 typedef enum {
 	HS_FREE,
 	HS_OCCUPIED,
@@ -236,6 +226,16 @@ typedef RawHashTable<const char*, AST::NodeT, hashstr, eqstr> HashTable;
 class HashTable : public RawHashTable, public AST::Node {
 };
 #endif
+
+static __inline AST::NodeT listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
+	if(iter == endIter)
+		return(NULL);
+	else {
+		AST::NodeT k = AST::symbolFromStr(iter->first);
+		++iter;
+		return(AST::makeCons(k, listFromHashTable(iter, endIter)));
+	}
+}
 
 };
 #endif /* ndef __AST_HASH_TABLE_H */

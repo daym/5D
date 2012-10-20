@@ -60,6 +60,8 @@ void BuiltinSelector_init(void) {
 	add_static_builtin_binding(self, Symbols::Squote, &Evaluators::Quoter); /* keep at the beginning */
 	add_static_builtin_binding(self, Symbols::SrequireModule, &ModuleLoader);
 	add_static_builtin_binding(self, Symbols::Snil, NULL);
+	add_builtin_method(self, Symbols::SdynamicBuiltin, &Evaluators::DynamicBuiltinGetter);
+	add_builtin_method(self, Symbols::SfreeVariables, &Evaluators::FreeVariablesGetter);
 	add_builtin_method(self, Symbols::Scolon, &Evaluators::Conser);
 	add_builtin_method(self, Symbols::SconsP, &Evaluators::ConsP);
 	add_builtin_method(self, Symbols::SpairP, &Evaluators::PairP);
@@ -148,6 +150,7 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, AST::symbolFromStr("ratioDenom"), &Numbers::RatioDenominatorGetter);
 	add_builtin_method(self, AST::symbolFromStr("parseMath!"), &Evaluators::RFileMathParser);
 	add_builtin_method(self, AST::symbolFromStr("parseMathStr"), &Evaluators::RStrMathParser);
+	add_builtin_method(self, AST::symbolFromStr("freeVariables"), &Evaluators::FreeVariablesGetter);
 	add_builtin_method(self, AST::symbolFromStr("dispatchModule"), &Evaluators::ModuleDispatcher);
 	add_builtin_method(self, AST::symbolFromStr("makeModuleBox"), &Evaluators::ModuleBoxMaker);
 	add_builtin_method(self, AST::symbolFromStr("REPLMethods"), &REPLX::REPLMethodGetter);

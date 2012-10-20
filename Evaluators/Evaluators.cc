@@ -26,7 +26,7 @@ const char* EvaluationException::what() const throw() {
 	return message; //message.c_str();
 };
 
-static void get_free_variables_impl(AST::NodeT root, AST::HashTable& boundNames, AST::HashTable& freeNames) {
+static void getFreeVariablesImpl(AST::NodeT root, AST::HashTable& boundNames, AST::HashTable& freeNames) {
 	const char* n;
 	if(abstraction_P(root)) {
 		AST::NodeT parameterNode = get_abstraction_parameter(root);
@@ -35,21 +35,21 @@ static void get_free_variables_impl(AST::NodeT root, AST::HashTable& boundNames,
 		AST::NodeT body = get_abstraction_body(root);
 		if(!boundNames.containsKeyP(parameterName)) { // not bound yet
 			boundNames[parameterName] = NULL;
-			get_free_variables_impl(body, boundNames, freeNames);
+			getFreeVariablesImpl(body, boundNames, freeNames);
 			boundNames.removeByKey(parameterName);
 		} else // already bound to something else: make sure not to get rid of it.
-			get_free_variables_impl(body, boundNames, freeNames);
+			getFreeVariablesImpl(body, boundNames, freeNames);
 	} else if(application_P(root)) {
-		get_free_variables_impl(get_application_operator(root), boundNames, freeNames);
-		get_free_variables_impl(get_application_operand(root), boundNames, freeNames);
+		getFreeVariablesImpl(get_application_operator(root), boundNames, freeNames);
+		getFreeVariablesImpl(get_application_operand(root), boundNames, freeNames);
 	} else if((n = AST::get_symbol_name(root)) != NULL) {
 		if(!boundNames.containsKeyP(n))
 			freeNames[n] = NULL;
 	} // else other stuff.
 }
-void get_free_variables(AST::NodeT root, AST::HashTable& freeNames) {
+void getFreeVariables(AST::NodeT root, AST::HashTable& freeNames) {
 	AST::HashTable boundNames;
-	get_free_variables_impl(root, boundNames, freeNames);
+	getFreeVariablesImpl(root, boundNames, freeNames);
 }
 bool quote_P(AST::NodeT root) {
 	if(root == Symbols::Squote || root == &Quoter)
