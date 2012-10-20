@@ -1,5 +1,6 @@
 5d (0.7.1) unstable; urgency=low
 
+  * rename 'AST to 'Values .
   * introduce 'freeVariables builtin.
   * introduce 'dynamicBuiltin builtin.
 
