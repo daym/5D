@@ -11,12 +11,11 @@ You should have received a copy of the GNU General Public License along with thi
 #include <sstream>
 #include <map>
 #include <dlfcn.h>
-#include "AST/Symbol"
+#include "Values/Values"
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
 #include "Evaluators/Operation"
 #include "FFIs/FFIs"
-#include "AST/Symbols"
 
 /* forgotten prototype in gc_pthread_redirects.h */
 extern "C" void * GC_dlopen(const char *path, int mode);

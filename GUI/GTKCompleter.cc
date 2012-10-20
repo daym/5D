@@ -3,11 +3,9 @@
 #include <gtk/gtk.h>
 #include <set>
 #include <stdlib.h>
-#include "AST/AST"
-#include "AST/Symbol"
+#include "Values/Values"
 #include "GUI/GTKCompleter"
 #include "Scanners/MathParser"
-#include "AST/HashTable"
 #include "FFIs/Allocators"
 
 namespace REPLX {

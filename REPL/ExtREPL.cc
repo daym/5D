@@ -1,6 +1,6 @@
 #include "Evaluators/Operation"
 #include "Evaluators/Evaluators"
-#include "AST/Symbols"
+#include "Values/Symbols"
 #include "REPL/ExtREPL"
 
 namespace REPLX {

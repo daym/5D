@@ -10,10 +10,8 @@
 #include <limits.h>
 #endif
 #include "Evaluators/BuiltinSelector"
-#include "AST/AST"
-#include "AST/HashTable"
-#include "AST/Symbol"
-#include "AST/Symbols"
+#include "Values/Values"
+#include "Values/Symbols"
 #include "Evaluators/Builtins"
 #include "Evaluators/FFI"
 #include "FFIs/RecordPacker"

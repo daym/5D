@@ -1,7 +1,7 @@
 
-SUBDIRS = Config REPL Linear_Algebra Bugs WIN32 Tests FFIs Bootstrappers Compilers AST Evaluators TUI Numbers Formatters doc lib debian GUI Scanners Assemblers
+SUBDIRS = Config REPL Linear_Algebra Bugs WIN32 Tests FFIs Bootstrappers Compilers Values Evaluators TUI Numbers Formatters doc lib debian GUI Scanners Assemblers
 SUBDIRS2 = $(SUBDIRS) doc/building doc/installation doc/interna doc/library doc/programming doc/programming/manual doc/programming/tutorial Tests/0* lib/Arithmetic lib/Trigonometry lib/Logic lib/Composition lib/List lib/OS lib/IO lib/UI lib/FFI lib/String lib/Reflection lib/Error Examples lib/LinearAlgebra lib/OO lib/Pair lib/Maybe lib/Set lib/Testers
-EXECUTABLES = REPL/5DREPL GUI/5D TUI/TUI TUI/STUI Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor AST/test-AST AST/test-Symbol Scanners/test-MathParser Scanners/test-Scanner REPL/5DREPL TUI2/5DTUI
+EXECUTABLES = REPL/5DREPL GUI/5D TUI/TUI TUI/STUI Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor Values/test-Values Values/test-Symbol Scanners/test-MathParser Scanners/test-Scanner REPL/5DREPL TUI2/5DTUI
 GENERATEDS = FFIs/Trampolines FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols FFIs/Combinations
 ASSEMBLERS = Assemblers/X86.o Assemblers/X64.o Assemblers/ARM.o
 
@@ -45,101 +45,101 @@ TARGETS += $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -
 all: $(TARGETS)
 	$(MAKE) -C lib all
 
-Scanners/test-Scanner: Scanners/test-Scanner.o Scanners/Scanner.o AST/Symbol.o AST/HashTable.o AST/Symbols.o AST/AST.o AST/Keyword.o $(FFIS)
+Scanners/test-Scanner: Scanners/test-Scanner.o Scanners/Scanner.o Values/Symbol.o Values/HashTable.o Values/Symbols.o Values/Values.o Values/Keyword.o $(FFIS)
 	g++ -o $@ $^ $(LDFLAGS)
 
-Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/MathParser.o Scanners/Scanner.o AST/Symbol.o AST/HashTable.o AST/Symbols.o AST/AST.o Scanners/OperatorPrecedenceList.o AST/Keyword.o Evaluators/Builtins.o Evaluators/Evaluators.o Numbers/Integer.o Numbers/BigUnsigned.o Numbers/Real.o Evaluators/Operation.o FFIs/Trampolines.o Evaluators/FFI.o $(FFIS) Scanners/ShuntingYardParser.o Numbers/Ratio.o
+Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/MathParser.o Scanners/Scanner.o Values/Symbol.o Values/HashTable.o Values/Symbols.o Values/Values.o Scanners/OperatorPrecedenceList.o Values/Keyword.o Evaluators/Builtins.o Evaluators/Evaluators.o Numbers/Integer.o Numbers/BigUnsigned.o Numbers/Real.o Evaluators/Operation.o FFIs/Trampolines.o Evaluators/FFI.o $(FFIS) Scanners/ShuntingYardParser.o Numbers/Ratio.o
 	g++ -o $@ $^ $(LDFLAGS)
 	
-AST/test-AST: AST/test-AST.o
-	g++ -o AST/test-AST AST/test-AST.o $(LDFLAGS)
+Values/test-Values: Values/test-Values.o
+	g++ -o Values/test-Values Values/test-Values.o $(LDFLAGS)
 
-AST/test-Symbol: AST/test-Symbol.o AST/Symbol.o AST/HashTable.o AST/Symbols.o AST/AST.o $(AST_UNCLEAN)
-	g++ -o AST/test-Symbol AST/test-Symbol.o AST/HashTable.o AST/Symbol.o AST/Symbols.o AST/AST.o $(AST_UNCLEAN) $(LDFLAGS)
+Values/test-Symbol: Values/test-Symbol.o Values/Symbol.o Values/HashTable.o Values/Symbols.o Values/Values.o $(AST_UNCLEAN)
+	g++ -o Values/test-Symbol Values/test-Symbol.o Values/HashTable.o Values/Symbol.o Values/Symbols.o Values/Values.o $(AST_UNCLEAN) $(LDFLAGS)
 
-AST/test-Keyword: AST/test-Keyword.o AST/Keyword.o AST/HashTable.o AST/Symbols.o AST/Symbol.o AST/AST.o $(AST_UNCLEAN)
-	g++ -o AST/test-Keyword AST/test-Keyword.o AST/HashTable.o AST/Keyword.o AST/Symbols.o AST/Symbol.o AST/AST.o $(AST_UNCLEAN) $(LDFLAGS)
+Values/test-Keyword: Values/test-Keyword.o Values/Keyword.o Values/HashTable.o Values/Symbols.o Values/Symbol.o Values/Values.o $(AST_UNCLEAN)
+	g++ -o Values/test-Keyword Values/test-Keyword.o Values/HashTable.o Values/Keyword.o Values/Symbols.o Values/Symbol.o Values/Values.o $(AST_UNCLEAN) $(LDFLAGS)
 
-test-AST: test-AST.o
-	g++ -o test-AST test-AST.o
+test-Values: test-Values.o
+	g++ -o test-Values test-Values.o
 	
-Formatters/LATEX.o: Formatters/LATEX.cc Formatters/LATEX AST/AST AST/Symbol AST/Symbols Scanners/MathParser Formatters/UTFStateMachine Scanners/OperatorPrecedenceList Evaluators/Builtins Numbers/Integer Numbers/Real Formatters/GenericPrinter Numbers/Ratio
-Formatters/SExpression.o: Formatters/SExpression.cc Formatters/SExpression AST/Symbol AST/AST Evaluators/Builtins Numbers/Integer Numbers/Real Numbers/Ratio
-Formatters/Math.o: Formatters/Math.cc Formatters/Math AST/Symbol AST/AST Evaluators/Builtins Numbers/Integer Numbers/Real Formatters/GenericPrinter Scanners/OperatorPrecedenceList Numbers/Ratio
+Formatters/LATEX.o: Formatters/LATEX.cc Formatters/LATEX Values/Values Values/Symbol Values/Symbols Scanners/MathParser Formatters/UTFStateMachine Scanners/OperatorPrecedenceList Evaluators/Builtins Numbers/Integer Numbers/Real Formatters/GenericPrinter Numbers/Ratio
+Formatters/SExpression.o: Formatters/SExpression.cc Formatters/SExpression Values/Symbol Values/Values Evaluators/Builtins Numbers/Integer Numbers/Real Numbers/Ratio
+Formatters/Math.o: Formatters/Math.cc Formatters/Math Values/Symbol Values/Values Evaluators/Builtins Numbers/Integer Numbers/Real Formatters/GenericPrinter Scanners/OperatorPrecedenceList Numbers/Ratio
 Formatters/UTFStateMachine.o: Formatters/UTFStateMachine.cc Formatters/UTFStateMachine Formatters/UTF-8_to_LATEX_result.h
 Formatters/UTF-8_to_LATEX_result.h: Formatters/UTF-8_to_LATEX.table Formatters/generate-state-machine
 	Formatters/generate-state-machine Formatters/UTF-8_to_LATEX.table >tmp4711 && mv tmp4711 Formatters/UTF-8_to_LATEX_result.h
-AST/AST.o: AST/AST.cc AST/AST AST/Symbol FFIs/Allocators
-AST/test-AST.o: AST/test-AST.cc AST/AST
-AST/test-Symbol.o: AST/test-Symbol.cc FFIs/Allocators AST/Symbol AST/AST AST/HashTable
-AST/test-Keyword.o: AST/test-Keyword.cc FFIs/Allocators AST/Keyword AST/AST AST/HashTable
-AST/Symbol.o: AST/Symbol.cc AST/Symbol AST/AST AST/HashTable FFIs/Allocators
-AST/Symbols.o: AST/Symbols.cc AST/Symbols AST/Symbol AST/AST
-AST/Keyword.o: AST/Keyword.cc AST/Keyword AST/HashTable AST/AST FFIs/Allocators
-AST/HashTable.o: AST/HashTable.cc AST/HashTable AST/AST AST/Symbol
-Scanners/Scanner.o: Scanners/Scanner.cc Scanners/Scanner FFIs/Allocators AST/Symbol AST/AST AST/Keyword Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Evaluators AST/AST Numbers/Ratio
-Scanners/test-Scanner.o: Scanners/test-Scanner.cc Scanners/Scanner AST/Symbol AST/AST
-Scanners/MathParser.o: Scanners/MathParser.cc Scanners/MathParser Scanners/Scanner AST/AST AST/Symbol Scanners/OperatorPrecedenceList Evaluators/Builtins Evaluators/Evaluators
-Scanners/ShuntingYardParser.o: Scanners/ShuntingYardParser.cc Scanners/ShuntingYardParser Scanners/Scanner AST/AST AST/Symbol Scanners/OperatorPrecedenceList Evaluators/Builtins Evaluators/Evaluators AST/Symbols
-Scanners/SExpressionParser.o: Scanners/SExpressionParser.cc Scanners/SExpressionParser Scanners/Scanner AST/AST AST/Symbol Scanners/OperatorPrecedenceList Evaluators/Builtins Evaluators/Evaluators
-Scanners/OperatorPrecedenceList.o: Scanners/OperatorPrecedenceList.cc AST/AST AST/Symbol Evaluators/Operation
+Values/Values.o: Values/Values.cc Values/Values Values/Symbol FFIs/Allocators
+Values/test-Values.o: Values/test-Values.cc Values/Values
+Values/test-Symbol.o: Values/test-Symbol.cc FFIs/Allocators Values/Symbol Values/Values Values/HashTable
+Values/test-Keyword.o: Values/test-Keyword.cc FFIs/Allocators Values/Keyword Values/Values Values/HashTable
+Values/Symbol.o: Values/Symbol.cc Values/Symbol Values/Values Values/HashTable FFIs/Allocators
+Values/Symbols.o: Values/Symbols.cc Values/Symbols Values/Symbol Values/Values
+Values/Keyword.o: Values/Keyword.cc Values/Keyword Values/HashTable Values/Values FFIs/Allocators
+Values/HashTable.o: Values/HashTable.cc Values/HashTable Values/Values Values/Symbol
+Scanners/Scanner.o: Scanners/Scanner.cc Scanners/Scanner FFIs/Allocators Values/Symbol Values/Values Values/Keyword Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Evaluators Values/Values Numbers/Ratio
+Scanners/test-Scanner.o: Scanners/test-Scanner.cc Scanners/Scanner Values/Symbol Values/Values
+Scanners/MathParser.o: Scanners/MathParser.cc Scanners/MathParser Scanners/Scanner Values/Values Values/Symbol Scanners/OperatorPrecedenceList Evaluators/Builtins Evaluators/Evaluators
+Scanners/ShuntingYardParser.o: Scanners/ShuntingYardParser.cc Scanners/ShuntingYardParser Scanners/Scanner Values/Values Values/Symbol Scanners/OperatorPrecedenceList Evaluators/Builtins Evaluators/Evaluators Values/Symbols
+Scanners/SExpressionParser.o: Scanners/SExpressionParser.cc Scanners/SExpressionParser Scanners/Scanner Values/Values Values/Symbol Scanners/OperatorPrecedenceList Evaluators/Builtins Evaluators/Evaluators
+Scanners/OperatorPrecedenceList.o: Scanners/OperatorPrecedenceList.cc Values/Values Values/Symbol Evaluators/Operation
 Scanners/test-MathParser.o: Scanners/test-MathParser.cc Scanners/MathParser Scanners/Scanner Scanners/OperatorPrecedenceList Evaluators/Builtins
-Evaluators/Evaluators.o: Evaluators/Evaluators.cc FFIs/Allocators Evaluators/Evaluators Evaluators/Operation AST/AST AST/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList Numbers/Ratio AST/HashTable
-FFIs/Trampolines.o: FFIs/Trampolines.cc FFIs/RecordPacker Evaluators/Evaluators Numbers/Integer Numbers/Small Numbers/Ratio FFIs/RecordPacker AST/AST Evaluators/Operation
-Evaluators/Operation.o: Evaluators/Operation.cc Evaluators/Operation Evaluators/Evaluators AST/AST AST/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList FFIs/Trampolines FFIs/RecordPacker Numbers/Ratio
+Evaluators/Evaluators.o: Evaluators/Evaluators.cc FFIs/Allocators Evaluators/Evaluators Evaluators/Operation Values/Values Values/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList Numbers/Ratio Values/HashTable
+FFIs/Trampolines.o: FFIs/Trampolines.cc FFIs/RecordPacker Evaluators/Evaluators Numbers/Integer Numbers/Small Numbers/Ratio FFIs/RecordPacker Values/Values Evaluators/Operation
+Evaluators/Operation.o: Evaluators/Operation.cc Evaluators/Operation Evaluators/Evaluators Values/Values Values/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser  Scanners/OperatorPrecedenceList FFIs/Trampolines FFIs/RecordPacker Numbers/Ratio
 	$(CC) -O2 -Wall -I. -fno-strict-overflow -c -o $@ $< 
-Evaluators/Builtins.o: Evaluators/Builtins.cc FFIs/Allocators AST/HashTable Scanners/MathParser Evaluators/Builtins Numbers/Integer Numbers/Real AST/AST AST/Symbol AST/Keyword FFIs/FFIs  Scanners/OperatorPrecedenceList Numbers/Small Evaluators/Operation Numbers/Ratio Evaluators/Evaluators Evaluators/FFI
-Evaluators/StrictBuiltins.o: Evaluators/StrictBuiltins.cc Evaluators/Builtins.cc FFIs/Allocators AST/HashTable Scanners/MathParser Evaluators/Builtins Numbers/Integer Numbers/Real AST/AST AST/Symbol AST/Keyword FFIs/FFIs  Scanners/OperatorPrecedenceList Numbers/Small Evaluators/Operation Numbers/Ratio Evaluators/Evaluators Evaluators/FFI
+Evaluators/Builtins.o: Evaluators/Builtins.cc FFIs/Allocators Values/HashTable Scanners/MathParser Evaluators/Builtins Numbers/Integer Numbers/Real Values/Values Values/Symbol Values/Keyword FFIs/FFIs  Scanners/OperatorPrecedenceList Numbers/Small Evaluators/Operation Numbers/Ratio Evaluators/Evaluators Evaluators/FFI
+Evaluators/StrictBuiltins.o: Evaluators/StrictBuiltins.cc Evaluators/Builtins.cc FFIs/Allocators Values/HashTable Scanners/MathParser Evaluators/Builtins Numbers/Integer Numbers/Real Values/Values Values/Symbol Values/Keyword FFIs/FFIs  Scanners/OperatorPrecedenceList Numbers/Small Evaluators/Operation Numbers/Ratio Evaluators/Evaluators Evaluators/FFI
 Evaluators/StrictLogic.o: Evaluators/StrictLogic.cc Evaluators/Logic Evaluators/ModuleLoader
 Evaluators/Logic.o: Evaluators/Logic.cc Evaluators/Logic Evaluators/ModuleLoader
 Evaluators/Backtracker.o: Evaluators/Backtracker.cc Evaluators/Backtracker
-Evaluators/FFI.o: Evaluators/FFI.cc FFIs/Allocators Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation Numbers/Ratio
-Evaluators/ModuleLoader.o: Evaluators/ModuleLoader.cc Evaluators/ModuleLoader Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation FFIs/FFIs Scanners/MathParser Scanners/ShuntingYardParser Scanners/Scanner FFIs/Allocators FFIs/ProcessInfos Evaluators/BuiltinSelector Numbers/Ratio Evaluators/FFI
-FFIs/POSIX.o: FFIs/POSIX.cc Evaluators/Builtins FFIs/FFIs Evaluators/FFI AST/AST AST/Symbol Evaluators/Evaluators Numbers/Integer Numbers/Real Evaluators/Operation Numbers/Ratio
-Config/GTKConfig.o: Config/GTKConfig.cc Config/Config FFIs/Allocators AST/AST
+Evaluators/FFI.o: Evaluators/FFI.cc FFIs/Allocators Evaluators/FFI Values/Values Values/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation Numbers/Ratio
+Evaluators/ModuleLoader.o: Evaluators/ModuleLoader.cc Evaluators/ModuleLoader Evaluators/FFI Values/Values Values/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Evaluators/Operation FFIs/FFIs Scanners/MathParser Scanners/ShuntingYardParser Scanners/Scanner FFIs/Allocators FFIs/ProcessInfos Evaluators/BuiltinSelector Numbers/Ratio Evaluators/FFI
+FFIs/POSIX.o: FFIs/POSIX.cc Evaluators/Builtins FFIs/FFIs Evaluators/FFI Values/Values Values/Symbol Evaluators/Evaluators Numbers/Integer Numbers/Real Evaluators/Operation Numbers/Ratio
+Config/GTKConfig.o: Config/GTKConfig.cc Config/Config FFIs/Allocators Values/Values
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-test: AST/test-AST AST/test-Symbol AST/test-Keyword Scanners/test-Scanner Scanners/test-MathParser
-	./AST/test-Symbol
-	./AST/test-Keyword
-	./AST/test-AST
+test: Values/test-Values Values/test-Symbol Values/test-Keyword Scanners/test-Scanner Scanners/test-MathParser
+	./Values/test-Symbol
+	./Values/test-Keyword
+	./Values/test-Values
 	./Scanners/test-Scanner
 	./Scanners/test-MathParser
 
-REPL/5DREPL: REPL/main.o REPL/REPL.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o Evaluators/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o Evaluators/Logic.o
+REPL/5DREPL: REPL/main.o REPL/REPL.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o Values/Values.o Values/Symbol.o Values/HashTable.o Values/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o Values/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o Evaluators/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o Evaluators/Logic.o
 	g++ -o $@ $^ $(LDFLAGS)
 
-TUI/TUI: TUI/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o Evaluators/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o Evaluators/Logic.o
+TUI/TUI: TUI/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o Values/Values.o Values/Symbol.o Values/HashTable.o Values/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o Values/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o Evaluators/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o Evaluators/Logic.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
-TUI/STUI: TUI/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/StrictEvaluators.o Evaluators/StrictBuiltins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o Evaluators/StrictBuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o Evaluators/StrictLogic.o
+TUI/STUI: TUI/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o Values/Values.o Values/Symbol.o Values/HashTable.o Values/Symbols.o Scanners/Scanner.o Evaluators/StrictEvaluators.o Evaluators/StrictBuiltins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o Values/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o REPL/REPL.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/TUI.o FFIs/RecordPacker.o Evaluators/StrictBuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o Evaluators/StrictLogic.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
-TUI2/5DTUI: TUI2/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o AST/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o Evaluators/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o
+TUI2/5DTUI: TUI2/main.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o Values/Values.o Values/Symbol.o Values/HashTable.o Values/Symbols.o Scanners/Scanner.o Evaluators/Evaluators.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Evaluators/Backtracker.o Values/Keyword.o Formatters/SExpression.o Formatters/Math.o Scanners/OperatorPrecedenceList.o TUI/Interrupt.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o Evaluators/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o
 	g++ -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
-REPL/main.o: REPL/main.cc REPL/REPL Version FFIs/Allocators REPL/REPLEnvironment Evaluators/ModuleLoader FFIs/FFIs AST/AST AST/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators Scanners/MathParser Scanners/SExpressionParser Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Scanners/MathParser Scanners/Scanner Evaluators/Evaluators Numbers/Small Evaluators/Operation Numbers/Integer Numbers/Real FFIs/ProcessInfos Evaluators/ModuleLoader Numbers/Ratio
+REPL/main.o: REPL/main.cc REPL/REPL Version FFIs/Allocators REPL/REPLEnvironment Evaluators/ModuleLoader FFIs/FFIs Values/Values Values/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators Scanners/MathParser Scanners/SExpressionParser Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Scanners/MathParser Scanners/Scanner Evaluators/Evaluators Numbers/Small Evaluators/Operation Numbers/Integer Numbers/Real FFIs/ProcessInfos Evaluators/ModuleLoader Numbers/Ratio
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-TUI/main.o: TUI/main.cc FFIs/Allocators REPL/REPLEnvironment Version Evaluators/ModuleLoader FFIs/FFIs AST/AST AST/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators Scanners/MathParser Scanners/ShuntingYardParser Scanners/SExpressionParser Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Numbers/Integer Numbers/Real TUI/Interrupt Config/Config Evaluators/Evaluators Evaluators/Builtins FFIs/ProcessInfos Evaluators/ModuleLoader Numbers/Ratio
+TUI/main.o: TUI/main.cc FFIs/Allocators REPL/REPLEnvironment Version Evaluators/ModuleLoader FFIs/FFIs Values/Values Values/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators Scanners/MathParser Scanners/ShuntingYardParser Scanners/SExpressionParser Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Numbers/Integer Numbers/Real TUI/Interrupt Config/Config Evaluators/Evaluators Evaluators/Builtins FFIs/ProcessInfos Evaluators/ModuleLoader Numbers/Ratio
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-TUI2/main.o: TUI2/main.cc REPL/REPLEnvironment Version Evaluators/ModuleLoader FFIs/FFIs AST/AST AST/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators Scanners/MathParser Scanners/ShuntingYardParser Scanners/SExpressionParser  Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Numbers/Integer Numbers/Real TUI/Interrupt Config/Config Evaluators/Evaluators Evaluators/Builtins FFIs/ProcessInfos Evaluators/ModuleLoader Numbers/Ratio
+TUI2/main.o: TUI2/main.cc REPL/REPLEnvironment Version Evaluators/ModuleLoader FFIs/FFIs Values/Values Values/Symbol Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators Scanners/MathParser Scanners/ShuntingYardParser Scanners/SExpressionParser  Scanners/Scanner  Scanners/OperatorPrecedenceList Evaluators/Builtins Numbers/Integer Numbers/Real TUI/Interrupt Config/Config Evaluators/Evaluators Evaluators/Builtins FFIs/ProcessInfos Evaluators/ModuleLoader Numbers/Ratio
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-FFIs/RecordPacker.o: FFIs/RecordPacker.cc FFIs/RecordPacker FFIs/FFIs AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Numbers/Ratio Evaluators/Operation
+FFIs/RecordPacker.o: FFIs/RecordPacker.cc FFIs/RecordPacker FFIs/FFIs Values/Values Values/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Numbers/Ratio Evaluators/Operation
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-FFIs/TUI.o: FFIs/TUI.cc FFIs/UI FFIs/FFIs AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Numbers/Ratio Evaluators/Operation
+FFIs/TUI.o: FFIs/TUI.cc FFIs/UI FFIs/FFIs Values/Values Values/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Numbers/Ratio Evaluators/Operation
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-FFIs/GTKUI.o: FFIs/GTKUI.cc FFIs/UI FFIs/FFIs AST/AST AST/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Numbers/Ratio
+FFIs/GTKUI.o: FFIs/GTKUI.cc FFIs/UI FFIs/FFIs Values/Values Values/Symbol Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Numbers/Ratio
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-FFIs/Allocators.o: FFIs/Allocators.cc FFIs/Allocators AST/AST
+FFIs/Allocators.o: FFIs/Allocators.cc FFIs/Allocators Values/Values
 	$(CC) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 	
-FFIs/TrampolineSymbols.o: FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols AST/Symbol
+FFIs/TrampolineSymbols.o: FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols Values/Symbol
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 FFIs/Combinations: FFIs/generateCombinations Makefile
@@ -161,13 +161,13 @@ TUI/Interrupt.o: TUI/Interrupt.cc TUI/Interrupt
 GUI/GTKGUI.o: GUI/GTKGUI.cc Version GUI/GTKREPL GUI/GTKView REPL/REPL FFIs/Allocators Evaluators/ModuleLoader
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKREPL.o: GUI/GTKREPL.cc Scanners/MathParser Version Evaluators/Builtins FFIs/Allocators Scanners/Scanner AST/AST AST/Symbol Config/Config Formatters/LATEX GUI/UI_definition.UI GUI/GTKLATEXGenerator Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators REPL/REPL GUI/CommonCompleter GUI/GTKCompleter REPL/REPLEnvironment FFIs/ProcessInfos GUI/WindowIcon Scanners/OperatorPrecedenceList  Numbers/Small Evaluators/Operation Numbers/Integer Numbers/Real FFIs/ProcessInfos Evaluators/ModuleLoader Numbers/Ratio
+GUI/GTKREPL.o: GUI/GTKREPL.cc Scanners/MathParser Version Evaluators/Builtins FFIs/Allocators Scanners/Scanner Values/Values Values/Symbol Config/Config Formatters/LATEX GUI/UI_definition.UI GUI/GTKLATEXGenerator Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators REPL/REPL GUI/CommonCompleter GUI/GTKCompleter REPL/REPLEnvironment FFIs/ProcessInfos GUI/WindowIcon Scanners/OperatorPrecedenceList  Numbers/Small Evaluators/Operation Numbers/Integer Numbers/Real FFIs/ProcessInfos Evaluators/ModuleLoader Numbers/Ratio
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/GTKCompleter.o: GUI/GTKCompleter.cc GUI/CommonCompleter GUI/GTKCompleter FFIs/Allocators AST/AST AST/Symbol Scanners/MathParser Scanners/OperatorPrecedenceList
+GUI/GTKCompleter.o: GUI/GTKCompleter.cc GUI/CommonCompleter GUI/GTKCompleter FFIs/Allocators Values/Values Values/Symbol Scanners/MathParser Scanners/OperatorPrecedenceList
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-REPL/REPL.o: REPL/REPL.cc REPL/REPL AST/AST AST/Symbol Scanners/Scanner Scanners/MathParser Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/OperatorPrecedenceList Scanners/SExpressionParser Scanners/ShuntingYardParser Numbers/Ratio
+REPL/REPL.o: REPL/REPL.cc REPL/REPL Values/Values Values/Symbol Scanners/Scanner Scanners/MathParser Formatters/SExpression Formatters/Math Evaluators/FFI Evaluators/Evaluators Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/OperatorPrecedenceList Scanners/SExpressionParser Scanners/ShuntingYardParser Numbers/Ratio
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 GUI/GTKLATEXGenerator.o: GUI/GTKLATEXGenerator.cc GUI/GTKLATEXGenerator
@@ -176,16 +176,16 @@ GUI/GTKLATEXGenerator.o: GUI/GTKLATEXGenerator.cc GUI/GTKLATEXGenerator
 GUI/GTKView.o: GUI/GTKView.cc
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-Evaluators/BuiltinSelector.o: Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector AST/AST AST/HashTable AST/Symbol AST/Symbols Evaluators/Builtins Evaluators/FFI FFIs/RecordPacker FFIs/UI FFIs/FFIs Evaluators/Evaluators Numbers/Integer Numbers/Small FFIs/ProcessInfos Numbers/Ratio Evaluators/ModuleLoader REPL/ExtREPL
+Evaluators/BuiltinSelector.o: Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector Values/Values Values/HashTable Values/Symbol Values/Symbols Evaluators/Builtins Evaluators/FFI FFIs/RecordPacker FFIs/UI FFIs/FFIs Evaluators/Evaluators Numbers/Integer Numbers/Small FFIs/ProcessInfos Numbers/Ratio Evaluators/ModuleLoader REPL/ExtREPL
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-Evaluators/StrictBuiltinSelector.o: Evaluators/StrictBuiltinSelector.cc Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector AST/AST AST/HashTable AST/Symbol AST/Symbols Evaluators/Builtins Evaluators/FFI FFIs/RecordPacker FFIs/UI FFIs/FFIs Evaluators/Evaluators Numbers/Integer Numbers/Small FFIs/ProcessInfos Numbers/Ratio Evaluators/ModuleLoader REPL/ExtREPL
+Evaluators/StrictBuiltinSelector.o: Evaluators/StrictBuiltinSelector.cc Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector Values/Values Values/HashTable Values/Symbol Values/Symbols Evaluators/Builtins Evaluators/FFI FFIs/RecordPacker FFIs/UI FFIs/FFIs Evaluators/Evaluators Numbers/Integer Numbers/Small FFIs/ProcessInfos Numbers/Ratio Evaluators/ModuleLoader REPL/ExtREPL
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-FFIs/POSIXProcessInfos.o: FFIs/POSIXProcessInfos.cc FFIs/ProcessInfos AST/AST Evaluators/Evaluators AST/HashTable AST/Symbol Evaluators/FFI Evaluators/Builtins FFIs/Allocators Evaluators/Operation
+FFIs/POSIXProcessInfos.o: FFIs/POSIXProcessInfos.cc FFIs/ProcessInfos Values/Values Evaluators/Evaluators Values/HashTable Values/Symbol Evaluators/FFI Evaluators/Builtins FFIs/Allocators Evaluators/Operation
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-GUI/5D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o Scanners/Scanner.o AST/AST.o AST/Symbol.o AST/HashTable.o AST/Symbols.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Formatters/SExpression.o REPL/REPL.o GUI/GTKCompleter.o Evaluators/Backtracker.o AST/Keyword.o GUI/GTKTerminalEmulator.o Scanners/OperatorPrecedenceList.o Formatters/Math.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/GTKUI.o FFIs/RecordPacker.o Evaluators/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o Evaluators/Logic.o
+GUI/5D: GUI/GTKGUI.o GUI/GTKREPL.o Scanners/MathParser.o Scanners/ShuntingYardParser.o Scanners/SExpressionParser.o Scanners/Scanner.o Values/Values.o Values/Symbol.o Values/HashTable.o Values/Symbols.o GUI/GTKView.o Config/GTKConfig.o Evaluators/Evaluators.o Formatters/LATEX.o Formatters/UTFStateMachine.o GUI/GTKLATEXGenerator.o Evaluators/Builtins.o Evaluators/FFI.o FFIs/POSIX.o Formatters/SExpression.o REPL/REPL.o GUI/GTKCompleter.o Evaluators/Backtracker.o Values/Keyword.o GUI/GTKTerminalEmulator.o Scanners/OperatorPrecedenceList.o Formatters/Math.o $(NUMBER_OBJECTS) Evaluators/Operation.o FFIs/Trampolines.o FFIs/GTKUI.o FFIs/RecordPacker.o Evaluators/BuiltinSelector.o FFIs/POSIXProcessInfos.o $(FFIS) Evaluators/ModuleLoader.o REPL/ExtREPL.o Evaluators/Logic.o
 	g++ -o $@ $^ $(GUI_LDFLAGS) -lutil
 
 GUI/GTKTerminalEmulator.o: GUI/GTKTerminalEmulator.cc GUI/TerminalEmulator
@@ -198,16 +198,16 @@ Numbers/Integer.o: Numbers/Integer.cc Numbers/Integer Numbers/Small Evaluators/O
 Numbers/Real.o: Numbers/Real.cc Numbers/Real Numbers/Small Evaluators/Operation Evaluators/Builtins Evaluators/Evaluators
 Numbers/BigUnsigned.o: Numbers/BigUnsigned.cc Numbers/BigUnsigned
 Numbers/Ratio.o: Numbers/Ratio.cc Numbers/Ratio Numbers/Small Evaluators/Operation Evaluators/Builtins Numbers/Integer Evaluators/Evaluators
-REPL/ExtREPL.o: REPL/ExtREPL.cc REPL/ExtREPL AST/AST AST/Symbol Evaluators/Operation Evaluators/Evaluators
-Evaluators/BuiltinSelector.o: Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector Evaluators/Evaluators Evaluators/Operation AST/AST AST/Symbol Evaluators/ModuleLoader Evaluators/Logic
+REPL/ExtREPL.o: REPL/ExtREPL.cc REPL/ExtREPL Values/Values Values/Symbol Evaluators/Operation Evaluators/Evaluators
+Evaluators/BuiltinSelector.o: Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector Evaluators/Evaluators Evaluators/Operation Values/Values Values/Symbol Evaluators/ModuleLoader Evaluators/Logic
 
 # TODO maybe move Assemblers into their own lib (or external program, for that matter)?
-Assemblers/X64.o: Assemblers/X64.cc Assemblers/X64 Assemblers/X86.inc AST/Symbol AST/AST AST/Symbols Evaluators/FFI Assemblers/Glue.inc
-Assemblers/X86.o: Assemblers/X86.cc Assemblers/X86 Assemblers/X86.inc AST/Symbol AST/AST AST/Symbols Evaluators/FFI Assemblers/Glue.inc
-Assemblers/ARM.o: Assemblers/ARM.cc Assemblers/ARM Assemblers/ARM.inc AST/Symbol AST/AST AST/Symbols Evaluators/FFI Assemblers/Glue.inc
+Assemblers/X64.o: Assemblers/X64.cc Assemblers/X64 Assemblers/X86.inc Values/Symbol Values/Values Values/Symbols Evaluators/FFI Assemblers/Glue.inc
+Assemblers/X86.o: Assemblers/X86.cc Assemblers/X86 Assemblers/X86.inc Values/Symbol Values/Values Values/Symbols Evaluators/FFI Assemblers/Glue.inc
+Assemblers/ARM.o: Assemblers/ARM.cc Assemblers/ARM Assemblers/ARM.inc Values/Symbol Values/Values Values/Symbols Evaluators/FFI Assemblers/Glue.inc
 
 clean:
-	rm -f AST/*.o
+	rm -f Values/*.o
 	rm -f Scanners/*.o
 	rm -f Formatters/*.o
 	rm -f GUI/*.o

@@ -1,6 +1,6 @@
 #ifndef __EVALUATORS_LOGIC_H
 #define __EVALUATORS_LOGIC_H
-#include "AST/AST"
+#include "Values/Values"
 #include "Evaluators/Operation"
 
 namespace Evaluators {

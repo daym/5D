@@ -1,6 +1,6 @@
 #ifndef __NUMBERS_RATIO_H
 #define __NUMBERS_RATIO_H
-#include "AST/AST"
+#include "Values/Values"
 #include "Evaluators/Operation"
 namespace Numbers {
 	struct Ratio : AST::Node {

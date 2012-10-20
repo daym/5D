@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
-#include "AST/AST"
-#include "AST/Symbols"
+#include "Values/Values"
+#include "Values/Symbols"
 #include "Assemblers/X64"
 #include "Evaluators/FFI"
 

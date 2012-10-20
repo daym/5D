@@ -2,10 +2,8 @@
 #define __EVALUATORS_H
 #include <set>
 //#include <stdio.h>
-#include "AST/AST"
-#include "AST/Symbol"
+#include "Values/Values"
 #include "Evaluators/Operation"
-#include "AST/HashTable"
 
 namespace Evaluators {
 class EvaluationException : public std::exception {

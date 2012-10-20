@@ -2,15 +2,10 @@
 #define __5D_BUILTINS_H
 #include <sstream>
 #include <list>
-#include "AST/AST"
-#include "AST/Symbols"
-#include "AST/Keyword"
-
+#include "Values/Values"
 #include "Numbers/Small"
 #include "Numbers/Integer"
 #include "Numbers/Real"
-#include "AST/Keyword"
-#include "AST/Symbol"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Operation"
 

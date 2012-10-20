@@ -1,9 +1,7 @@
 #ifndef __EVALUATORS_OPERATION_H
 #define __EVALUATORS_OPERATION_H
 #include <list>
-#include "AST/AST"
-#include "AST/Keyword"
-#include "AST/Symbol"
+#include "Values/Values"
 
 namespace Evaluators {
 typedef std::list<std::pair<AST::NodeT /*keyword*/, AST::NodeT>, gc_allocator<std::pair<AST::NodeT, AST::NodeT> > > CXXArguments;

@@ -11,9 +11,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include <assert.h>
 #include <sstream>
 #include "Scanners/Scanner"
-#include "AST/AST"
-#include "AST/Keyword"
-#include "AST/Symbols"
+#include "Values/Values"
+#include "Values/Symbols"
 #include "Evaluators/Builtins"
 #include "FFIs/Allocators"
 

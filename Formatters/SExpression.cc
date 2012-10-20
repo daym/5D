@@ -1,8 +1,7 @@
 #include <string.h>
 #include <iostream>
 #include <sstream>
-#include "AST/AST"
-#include "AST/Symbol"
+#include "Values/Values"
 #include "Formatters/SExpression"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"

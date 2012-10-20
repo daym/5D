@@ -14,8 +14,8 @@
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "REPL/REPL"
-#include "AST/Symbols"
-#include "AST/HashTable"
+#include "Values/Values"
+#include "Values/Symbols"
 #include "FFIs/Allocators"
 #include "Evaluators/ModuleLoader"
 

@@ -2,7 +2,7 @@
 #define BIGINTEGER_H
 #include <string>
 #include <sstream>
-#include "AST/AST"
+#include "Values/Values"
 #include "Numbers/Small"
 #include "Numbers/BigUnsigned"
 #include "Evaluators/Operation"

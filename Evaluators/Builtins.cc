@@ -9,10 +9,7 @@
 #include <limits.h>
 #include <math.h>
 #include <functional>
-#include "AST/AST"
-#include "AST/Symbol"
-#include "AST/Keyword"
-#include "AST/HashTable"
+#include "Values/Values"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
 #include "Evaluators/FFI"

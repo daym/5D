@@ -2,7 +2,7 @@
 #define __WIN32REPL_A_H
 #include <string>
 #include <windows.h>
-#include "AST/AST"
+#include "Values/Values"
 
 namespace REPLX {
 struct REPL;

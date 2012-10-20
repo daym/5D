@@ -6,10 +6,8 @@
 #include <string>
 #include <string.h>
 #include <sstream>
-#include "AST/AST"
-#include "AST/Keyword"
-#include "AST/Symbols"
-#include "AST/HashTable"
+#include "Values/Values"
+#include "Values/Symbols"
 #include "Evaluators/Operation"
 #include "Evaluators/Evaluators"
 #include "FFIs/VariantPacker"

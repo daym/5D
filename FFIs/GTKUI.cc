@@ -1,6 +1,5 @@
 #include <gtk/gtk.h>
-#include "AST/AST"
-#include "AST/Keyword"
+#include "Values/Values"
 #include "FFIs/UI"
 #include "Evaluators/Operation"
 #include "Evaluators/FFI"

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string>
 #include "Config/Config"
-#include "AST/AST"
+#include "Values/Values"
 #include "FFIs/Allocators"
 
 struct Config : AST::Node {

@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "Values/Values"
 #include "Version"
 #include "GUI/GTKREPL"
 #include "Scanners/MathParser"
@@ -36,7 +37,6 @@ You should have received a copy of the GNU General Public License along with thi
 #include "GUI/GTKCompleter"
 #include "GUI/WindowIcon"
 #include "Scanners/OperatorPrecedenceList"
-#include "AST/HashTable"
 #include "FFIs/Allocators"
 #include "FFIs/ProcessInfos"
 #include "Evaluators/ModuleLoader"

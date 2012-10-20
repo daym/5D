@@ -19,8 +19,7 @@ def checks(combination):
     return(result + extra)
 
 print("""
-#include "AST/AST"
-#include "AST/Symbol"
+#include "Values/Values"
 namespace Trampolines {
 """)
 for combination in sys.stdin.readlines():

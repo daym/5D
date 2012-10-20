@@ -2,8 +2,7 @@
 #include <iostream>
 #include <assert.h>
 #include <sstream>
-#include "AST/AST"
-#include "AST/Symbol"
+#include "Values/Values"
 #include "Formatters/Math"
 #include "Evaluators/Evaluators"
 #include "Scanners/OperatorPrecedenceList"

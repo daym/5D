@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "AST/AST"
-#include "AST/Symbol"
+#include "Values/Values"
 #include "FFIs/UI"
 #include "Evaluators/Operation"
 #include "Evaluators/FFI"

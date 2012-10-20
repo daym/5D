@@ -14,10 +14,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include <deque>
 #include "Scanners/ShuntingYardParser"
 #include "Scanners/OperatorPrecedenceList"
-#include "AST/Symbol"
-#include "AST/Symbols"
-#include "AST/AST"
-#include "AST/Keyword"
+#include "Values/Values"
+#include "Values/Symbols"
 #include "Evaluators/Builtins"
 
 #ifdef _WIN32

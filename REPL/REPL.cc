@@ -11,8 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <string.h>
 #include <list>
 #include "Scanners/Scanner"
-#include "AST/AST"
-#include "AST/Symbol"
+#include "Values/Values"
 #include "Scanners/MathParser"
 #include "Scanners/SExpressionParser"
 #include "Formatters/SExpression"

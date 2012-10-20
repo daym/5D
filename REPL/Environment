@@ -1,6 +1,6 @@
 #ifndef __REPL_ENVIRONMENT_H
 #define __REPL_ENVIRONMENT_H
-#include "AST/AST"
+#include "Values/Values"
 #include "AST/Symbol"
 
 namespace REPL {

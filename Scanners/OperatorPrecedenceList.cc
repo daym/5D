@@ -8,8 +8,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "AST/Symbol"
-#include "AST/Symbols"
+#include "Values/Values"
+#include "Values/Symbols"
 #include "Scanners/OperatorPrecedenceList"
 #include "Evaluators/Operation"
 

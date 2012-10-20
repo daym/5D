@@ -5,12 +5,11 @@
 #include <deque>
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
-#include "AST/AST"
+#include "Values/Values"
+#include "Values/Symbols"
 #include "Scanners/MathParser"
-#include "AST/Symbols"
 #include "Evaluators/Operation"
 #include "FFIs/Allocators"
-#include "AST/HashTable"
 
 namespace GUI {
 bool interrupted_P(void);

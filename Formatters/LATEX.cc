@@ -2,14 +2,13 @@
 #include <iostream>
 #include <assert.h>
 #include <sstream>
-#include "AST/AST"
-#include "AST/Symbol"
+#include "Values/Values"
+#include "Values/Symbols"
 #include "Formatters/LATEX"
 #include "Evaluators/Evaluators"
 #include "Scanners/OperatorPrecedenceList"
 #include "Evaluators/Builtins"
 #include "Formatters/UTFStateMachine"
-#include "AST/Symbols"
 #include "Numbers/Ratio"
 
 namespace Formatters {
