@@ -17,16 +17,16 @@ namespace Scanners {
 class SExpressionParser {
 private:
 	Scanner* scanner;
-	AST::NodeT parse_S_list_body(void); // Cons
-	inline AST::NodeT parse_value(void) {
+	Values::NodeT parse_S_list_body(void); // Cons
+	inline Values::NodeT parse_value(void) {
 		return(scanner->consume());
 	}
 public:
 	SExpressionParser(void);
-	AST::NodeT parse(AST::Symbol* terminator);
-	AST::NodeT parse_S_list(bool B_consume_closing_brace); // Cons
+	Values::NodeT parse(Values::NodeT /*symbol*/ terminator);
+	Values::NodeT parse_S_list(bool B_consume_closing_brace); // Cons
 	void parse_closing_brace(void);
-	AST::NodeT parse_S_Expression(void);
+	Values::NodeT parse_S_Expression(void);
 public:
 	void push(FILE* input_file, int line_number, const char* input_name);
 	void pop(void);
@@ -36,7 +36,7 @@ public:
 	int get_position(void) const;
 };
 
-bool macro_operator_P(AST::NodeT operator_);
+bool macro_operator_P(Values::NodeT operator_);
 
 }; /* end namespace */
 

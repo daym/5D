@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along with thi
 /* parse_token() is the main function */
 
 namespace Scanners {
-using namespace AST;
+using namespace Values;
 using namespace Evaluators;
 
 static inline void UNGETC(int input, FILE* input_file) {
@@ -93,8 +93,8 @@ void Scanner::ensure_end(void) {
 		raise_error("<EOF>", str(input_value));
 }
 /* returns the PREVIOUS value */
-AST::NodeT Scanner::consume(AST::NodeT expected_value) {
-	AST::NodeT previous_value;
+NodeT Scanner::consume(NodeT expected_value) {
+	NodeT previous_value;
 	previous_value = input_value;
 	if(expected_value && expected_value != input_value)
 		raise_error(str(expected_value), str(input_value));
@@ -187,7 +187,6 @@ void Scanner::parse_optional_whitespace(void) {
 	UNGETC(decrement_position(input), input_file);
 }
 void Scanner::parse_number(int input) {
-	using namespace AST;
 	std::stringstream matchtext;
 	char oldInput;
 	bool hadDot = false;
@@ -221,15 +220,15 @@ void Scanner::parse_number(int input) {
 	}
 	if(input != ' ' && input != '\t')
 		UNGETC(decrement_position(input), input_file);
-	input_value = AST::symbolFromStr(matchtext.str().c_str());
+	input_value = symbolFromStr(matchtext.str().c_str());
 	/* actual value will be provided by provide_dynamic_builtins */
 }
 /*
-static AST::Symbol* compose_unicode(int a, int b, int c) {
+static Symbol* compose_unicode(int a, int b, int c) {
 	std::stringstream sst;
 	sst << (char) a << (char) b << (char) c;
 	std::string v = sst.str();
-	return AST::symbolFromStr(v.c_str());
+	return symbolFromStr(v.c_str());
 }
 */
 static unsigned int UTF8_decode_first(unsigned char value) {
@@ -289,7 +288,6 @@ U+2C00..U+2DFF which is 0xE2 0xB0 0x80 .. 0xE2 0xB7 0xBF (e)
 void Scanner::parse_unicode(int input) {
 	/* What this does is identify several special unicode characters which are supposed to stand on their own, i.e. mathematical operators etc.
 	   All others will be handled as normal (potentially) multi-character symbols. */
-	using namespace AST;
 	int size;
 	unsigned char buf[4] = {0};
 	// 0xC2 U+0080:U+00C0 generic (0xAC ¬)
@@ -329,19 +327,19 @@ void Scanner::parse_unicode(int input) {
 				switch(buf[1]) {
 				case 0x83: /* U+20D0..U+20FF which is 0xE2 0x83 0x90 .. 0xE2 0x83 0xBF (e) */
 					if(buf[2] < 0x90) {
-						input_value = AST::symbolFromStr((const char*) buf);
+						input_value = symbolFromStr((const char*) buf);
 						return;
 					}
 					break;
 				case 0x85: /* U+2150..U+218F which is 0xE2 0x85 0x90 .. 0xE2 0x86 0x8F */
 					if(buf[2] < 0x90) {
-						input_value = AST::symbolFromStr((const char*) buf);
+						input_value = symbolFromStr((const char*) buf);
 						return;
 					}
 					break;
 				case 0x86: /* U+2150..U+218F which is 0xE2 0x85 0x90 .. 0xE2 0x86 0x8F */
 					if(buf[2] > 0x8F) {
-						input_value = AST::symbolFromStr((const char*) buf);
+						input_value = symbolFromStr((const char*) buf);
 						return;
 					}
 					break;
@@ -355,7 +353,7 @@ void Scanner::parse_unicode(int input) {
 				case 0xB7: /* U+2C00..U+2DFF which is 0xE2 0xB0 0x80 .. 0xE2 0xB7 0xBF (e) */
 					break;
 				default: /* normal */
-					input_value = AST::symbolFromStr((const char*) buf);
+					input_value = symbolFromStr((const char*) buf);
 					return;
 				}
 			}
@@ -461,7 +459,7 @@ void Scanner::parse_string(int input) {
 	if(input != '"')
 		raise_error("<quote>", input);
 	std::string value = matchtext.str();
-	input_value = AST::makeStrCXX(value);
+	input_value = makeStrCXX(value);
 }
 static bool symbol1_char_P(int input) {
 	return (input >= 'A' && input <= 'Z')
@@ -516,7 +514,7 @@ void Scanner::parse_number_with_base(int input, int base) {
 	}
 	std::stringstream sst;
 	sst << value; /* decimal */
-	input_value = AST::symbolFromStr(sst.str().c_str());
+	input_value = symbolFromStr(sst.str().c_str());
 }
 void Scanner::parse_shebang(int input) {
 	std::stringstream matchtext;
@@ -525,7 +523,7 @@ void Scanner::parse_shebang(int input) {
 		input = increment_position(FGETC(input_file));
 	}
 	std::string value = matchtext.str();
-	input_value = AST::makeApplication(Symbols::Shashexclam, AST::makeStrCXX(value)); // TODO maybe this is overkill
+	input_value = makeApplication(Symbols::Shashexclam, makeStrCXX(value)); // TODO maybe this is overkill
 }
 void Scanner::parse_special_coding(int input) {
 	assert(input == '#');
@@ -536,18 +534,18 @@ void Scanner::parse_special_coding(int input) {
 		input = increment_position(FGETC(input_file));
 		if(input != EOF) {
 			if(input == '\\')
-				input_value = AST::symbolFromStr("\\");
+				input_value = symbolFromStr("\\");
 			else if(symbol1_char_P(input))
 				parse_symbol(input);
 			else {
 				char buf[2] = {0};
 				buf[0] = input;
-				input_value = AST::symbolFromStr(buf);
+				input_value = symbolFromStr(buf);
 			}
 			// allow these to be overridden input_value = Numbers::internNative((Numbers::NativeInt) input);
 			std::stringstream sst;
 			const char* n;
-			if((n = AST::get_symbol1_name(input_value)) != NULL) {
+			if((n = get_symbol1_name(input_value)) != NULL) {
 				if(n[0] && !n[1])
 					sst << (unsigned int) (unsigned char) n[0];
 				else { /* more complicated character, i.e. control character... */
@@ -555,19 +553,19 @@ void Scanner::parse_special_coding(int input) {
 						sst << 9;
 					else if(input_value == Symbols::Snewline)
 						sst << (unsigned) '\n';
-					else if(input_value == AST::symbolFromStr("space"))
+					else if(input_value == symbolFromStr("space"))
 						sst << (unsigned) ' ';
 					else if(input_value == Symbols::Sbackspace)
 						sst << (unsigned) '\b';
 					else if(input_value == Symbols::Sescape)
 						sst << 27;
-					else if(input_value == AST::symbolFromStr("equal"))
+					else if(input_value == symbolFromStr("equal"))
 						sst << (unsigned) '=';
 					else
 						raise_error("<character>", str(input_value));
 				}
 			}
-			input_value = AST::symbolFromStr(sst.str().c_str());
+			input_value = symbolFromStr(sst.str().c_str());
 		} else
 			raise_error("<character>", "<EOF>");
 		break;
@@ -614,7 +612,6 @@ static bool operatorCharP(int input) {
 }
 void Scanner::parse_operator(int input) {
 	std::stringstream sst;
-	using namespace AST;
 	// TODO UTF-8 math operators.
 	if(!operatorCharP(input))
 		return(parse_symbol(input));
@@ -627,7 +624,7 @@ void Scanner::parse_operator(int input) {
 	if(input != ' ' && input != '\t')
 		UNGETC(decrement_position(input), input_file);
 	std::string v = sst.str();
-	input_value = AST::symbolFromStr(v.c_str());
+	input_value = symbolFromStr(v.c_str());
 }
 void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) {
 	std::stringstream matchtext;
@@ -658,7 +655,7 @@ void Scanner::parse_symbol(int input, int special_prefix, int special_prefix_2) 
 	} else if(input != ' ' && input != '\t') /* ignore whitespace */
 		UNGETC(decrement_position(input), input_file);
 	std::string v = matchtext.str();
-	input_value = AST::symbolFromStr(v.c_str());
+	input_value = symbolFromStr(v.c_str());
 }
 
 void Scanner::update_indentation() {
@@ -679,7 +676,7 @@ void Scanner::update_indentation() {
 		}
 	}
 }
-void Scanner::inject(AST::NodeT value) {
+void Scanner::inject(NodeT value) {
 	/* it is assumed that this is called while scanning whitespace - or right afterwards */
 	//input_value = &pending;
 	//std::string v = str(value);

@@ -36,69 +36,69 @@ MathParser::MathParser(void) : Scanner() {
 	//operator_precedence_list = new OperatorPrecedenceList(false);
 }
 using namespace AST;
-AST::NodeT MathParser::operation(AST::NodeT operator_, AST::NodeT operand_1, AST::NodeT operand_2) {
-	AST::NodeT result = makeOperation(operator_, operand_1, operand_2);
+NodeT MathParser::operation(NodeT operator_, NodeT operand_1, NodeT operand_2) {
+	NodeT result = makeOperation(operator_, operand_1, operand_2);
 	//if(result == NULL)
 	//	raise_error("<second_operand>", "<nothing>");
 	return(result);
 }
-bool macro_operator_P(AST::NodeT operator_) {
+bool macro_operator_P(NodeT operator_) {
 	return(operator_ == Symbols::Sdefine || operator_ == Symbols::Sdef || operator_ == Symbols::Sdefrec || operator_ == Symbols::Squote || operator_ == Symbols::Sleftbracket || operator_ == Symbols::Slet);
 }
 /*
-AST::NodeT MathParser::maybe_parse_macro(AST::NodeT node) {
+NodeT MathParser::maybe_parse_macro(NodeT node) {
 	if(B_process_macros && macro_operator_P(node))
 		return(parse_macro(node));
 	else
 		return(NULL);
 }
 */
-static AST::NodeT makeDefine(AST::NodeT parameter, AST::NodeT body) {
-	AST::NodeT result = makeApplication(makeApplication(Symbols::Sdefine, parameter), body);
+static NodeT makeDefine(NodeT parameter, NodeT body) {
+	NodeT result = makeApplication(makeApplication(Symbols::Sdefine, parameter), body);
 	return(result);
 }
-AST::NodeT MathParser::parse_define(AST::NodeT operand_1) {
+NodeT MathParser::parse_define(NodeT operand_1) {
 	bool B_extended = (input_value == Symbols::Sleftparen);
 	if(B_extended)
 		consume();
-	if(dynamic_cast<AST::Symbol*>(input_value) == NULL) {
+	if(dynamic_cast<Symbol*>(input_value) == NULL) {
 		raise_error("<symbol>", str(input_value));
 		return(NULL);
 	}
-	AST::NodeT parameter = consume();
+	NodeT parameter = consume();
 	if(B_extended)
 		consume(Symbols::Srightparen);
-	//AST::NodeT parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
-	AST::NodeT body = parse_expression();
+	//NodeT parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
+	NodeT body = parse_expression();
 	if(!parameter||!body||!operand_1) {
 		raise_error("<define-body>", "<incomplete>");
 		return(NULL);
 	}
 	if(symbol_P(parameter))
 		parameter = quote(parameter);
-	if(dynamic_cast<AST::Abstraction*>(body))
+	if(dynamic_cast<Abstraction*>(body))
 		body = quote(body);
 	return(makeDefine(parameter, body));
 }
-AST::NodeT MathParser::parse_defrec(AST::NodeT operand_1) {
+NodeT MathParser::parse_defrec(NodeT operand_1) {
 	bool B_extended = (input_value == Symbols::Sleftparen);
 	if(B_extended)
 		consume();
-	AST::NodeT parameter = consume();
-	AST::Symbol* rparameter = dynamic_cast<AST::Symbol*>(parameter);
-	if(dynamic_cast<AST::Symbol*>(parameter) == NULL) {
+	NodeT parameter = consume();
+	Symbol* rparameter = dynamic_cast<Symbol*>(parameter);
+	if(dynamic_cast<Symbol*>(parameter) == NULL) {
 		raise_error("<symbol>", str(parameter));
 	}
 	if(B_extended)
 		consume(Symbols::Srightparen);
-	//AST::NodeT parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
-	if(dynamic_cast<AST::Symbol*>(parameter))
+	//NodeT parameter = (input_token == intern("<symbol>")) ? consume(intern("<symbol>")) : consume(intern("<operator>"));
+	if(dynamic_cast<Symbol*>(parameter))
 		parameter = quote(parameter);
-	//if(dynamic_cast<AST::Abstraction*>(body))
+	//if(dynamic_cast<Abstraction*>(body))
 	//	body = quote(body);
 	enter_abstraction(rparameter);
 	try {
-		AST::NodeT body = parse_expression();
+		NodeT body = parse_expression();
 		if(!parameter||!body||!operand_1) {
 			raise_error("<define-body>", "<incomplete>");
 			return(NULL); // not reached
@@ -110,46 +110,46 @@ AST::NodeT MathParser::parse_defrec(AST::NodeT operand_1) {
 		throw;
 	}
 }
-AST::NodeT MathParser::parse_quote(AST::NodeT operand_1) {
-	AST::NodeT result;
+NodeT MathParser::parse_quote(NodeT operand_1) {
+	NodeT result;
 	B_process_macros = false; /* to make it possible to (quote quote) and (quote define); TODO make it possible to use other macros anyway? */
 	result = makeApplication(operand_1, parse_value());
 	B_process_macros = true;
 	return(result);
 }
-AST::NodeT MathParser::parse_let_form(void) {
+NodeT MathParser::parse_let_form(void) {
 	if(EOFP()) {
 		raise_error("<let-form-body>", "<incomplete>");
 		return(NULL);
 	}
-	AST::Symbol* name = dynamic_cast<AST::Symbol*>(consume());
+	Symbol* name = dynamic_cast<Symbol*>(consume());
 	if(name == NULL) {
 		raise_error("<let-form-symbol>", "<incomplete>");
 		return(NULL);
 	}
 	consume(Symbols::Sequal);
-	AST::NodeT value = parse_value();
+	NodeT value = parse_value();
 	consume(Symbols::Sin);
 	enter_abstraction(name);
 	try {
-		AST::NodeT rest = parse_expression();
+		NodeT rest = parse_expression();
 		leave_abstraction(name);
-		return(AST::makeApplication(AST::makeAbstraction(name, rest), value));
+		return(makeApplication(makeAbstraction(name, rest), value));
 	} catch(...) {
 		leave_abstraction(name);
 		throw;
 	}
 }
-AST::NodeT MathParser::parse_list(void) {
+NodeT MathParser::parse_list(void) {
 	if(EOFP() || input_value == Symbols::Srightbracket) {
 		consume(Symbols::Srightbracket);
 		return(NULL);
 	} else {
-		AST::NodeT value = parse_value();
+		NodeT value = parse_value();
 		return(operation(Symbols::Scolon, value, parse_list()));
 	}
 }
-AST::NodeT MathParser::parse_macro(AST::NodeT operand_1) {
+NodeT MathParser::parse_macro(NodeT operand_1) {
 	// TODO let|where, include, cond, make-list, quote, case.
 	if(operand_1 == Symbols::Sdefine)
 		return(parse_define(operand_1));
@@ -168,13 +168,13 @@ AST::NodeT MathParser::parse_macro(AST::NodeT operand_1) {
 		return(NULL);
 	}
 }
-AST::NodeT MathParser::parse_application(void) {
-	AST::NodeT hd = parse_value();
+NodeT MathParser::parse_application(void) {
+	NodeT hd = parse_value();
 	return(hd);
 }
-AST::NodeT MathParser::parse_abstraction(void) {
-	AST::Symbol* parameter;
-	if((parameter = dynamic_cast<AST::Symbol*>(input_value)) == NULL) {
+NodeT MathParser::parse_abstraction(void) {
+	Symbol* parameter;
+	if((parameter = dynamic_cast<Symbol*>(input_value)) == NULL) {
 		raise_error("<symbol>", str(input_value));
 		return(NULL);
 	} else {
@@ -183,7 +183,7 @@ AST::NodeT MathParser::parse_abstraction(void) {
 			raise_error("<body>", str(input_value));
 		enter_abstraction(parameter);
 		try {
-			AST::NodeT expression = parse_expression();
+			NodeT expression = parse_expression();
 			leave_abstraction(parameter);
 			if(expression)
 				return(makeAbstraction(parameter, expression));
@@ -195,7 +195,7 @@ AST::NodeT MathParser::parse_abstraction(void) {
 		}
 	}
 }
-AST::NodeT MathParser::parse_value(void) {
+NodeT MathParser::parse_value(void) {
 	if(input_value == Symbols::Srightparen || input_value == Symbols::Sautorightparen) {
 		raise_error("<value>", ')');
 		return(NULL);
@@ -206,13 +206,13 @@ AST::NodeT MathParser::parse_value(void) {
 		consume();
 		return(parse_abstraction());
 	} else {
-		AST::NodeT result;
+		NodeT result;
 		if(input_value == Symbols::Sleftparen || input_value == Symbols::Sautoleftparen) {
 			bool prev_B_honor_indentation = B_honor_indentation;
 			//if(input_value == Symbols::Sleftparen)
 			//	B_honor_indentation = false;
 			try {
-				AST::NodeT opening_brace = consume();
+				NodeT opening_brace = consume();
 				if((opening_brace == Symbols::Sleftparen && input_value == Symbols::Srightparen) ||
 				   (opening_brace == Symbols::Sautoleftparen && input_value == Symbols::Sautorightparen))
 					result = NULL;
@@ -246,23 +246,23 @@ AST::NodeT MathParser::parse_value(void) {
 			return(result);
 	}
 }
-AST::NodeT MathParser::parse_binary_operation(bool B_allow_args, int precedence_level) {
-	struct AST::Symbol* associativity;
+NodeT MathParser::parse_binary_operation(bool B_allow_args, int precedence_level) {
+	struct Symbol* associativity;
 	bool B_visible_operator, B_unary_operator = false;
 	//printf("level is %d, input is: %s\n", precedence_level, input_value->str().c_str());
 	if(operator_precedence_list->empty_P(precedence_level))
 		return(B_allow_args ? parse_application() : parse_value());
 	/* special case for unary - */
-	AST::NodeT result = (precedence_level == operator_precedence_list->minus_level && input_value == Symbols::Sdash) ? (B_unary_operator = true, Symbols::Szero) : parse_binary_operation(B_allow_args, operator_precedence_list->next_precedence_level(precedence_level));
-	if(AST::NodeT actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator)) {
+	NodeT result = (precedence_level == operator_precedence_list->minus_level && input_value == Symbols::Sdash) ? (B_unary_operator = true, Symbols::Szero) : parse_binary_operation(B_allow_args, operator_precedence_list->next_precedence_level(precedence_level));
+	if(NodeT actual_token = operator_precedence_list->match_operator(precedence_level, input_value, /*out*/associativity, /*out*/B_visible_operator)) {
 		while(actual_token && actual_token != Symbols::SlessEOFgreater) {
-			AST::NodeT operator_ = B_visible_operator ? consume() : Symbols::Sspace;
+			NodeT operator_ = B_visible_operator ? consume() : Symbols::Sspace;
 			if(input_value == Symbols::Srightparen || input_value == Symbols::Sautorightparen) { // premature end.
 				if(!B_visible_operator)
 					raise_error("<operand>", ")");
 				return(B_unary_operator ? operator_ : makeApplication(operator_, result)); /* default to the binary operator */
 			}
-			AST::NodeT b = parse_binary_operation(B_allow_args, associativity != Symbols::Sright ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level);
+			NodeT b = parse_binary_operation(B_allow_args, associativity != Symbols::Sright ? operator_precedence_list->next_precedence_level(precedence_level) : precedence_level);
 			if(B_unary_operator && !b) // -nil
 				return(operator_);
 			result = operation(operator_, result, b);
@@ -275,35 +275,35 @@ AST::NodeT MathParser::parse_binary_operation(bool B_allow_args, int precedence_
 	} else
 		return(result);
 }
-AST::NodeT MathParser::parse_expression(void) {
+NodeT MathParser::parse_expression(void) {
 	if(operator_precedence_list)
 		return parse_binary_operation(true, operator_precedence_list->next_precedence_level(-1));
 	else
 		return parse_application();
 }
-AST::NodeT MathParser::parse_argument(void) {
+NodeT MathParser::parse_argument(void) {
 	assert(operator_precedence_list->apply_level != 0);
 	return parse_binary_operation(false, operator_precedence_list->apply_level);
 }
-AST::NodeT MathParser::parse(OperatorPrecedenceList* operator_precedence_list) {
+NodeT MathParser::parse(OperatorPrecedenceList* operator_precedence_list) {
 	this->operator_precedence_list = operator_precedence_list;
-	AST::NodeT result = parse_expression();
+	NodeT result = parse_expression();
 	return(result);
 }
-AST::Cons* MathParser::parse_S_list_body(void) {
+Cons* MathParser::parse_S_list_body(void) {
 	if(input_value == Symbols::Srightparen || input_value == Symbols::SlessEOFgreater)
 		return(NULL);
 	else {
-		AST::NodeT head;
+		NodeT head;
 		head = parse_S_Expression();
 		return(makeCons(head, parse_S_list_body()));
 	}
 }
-AST::Cons* MathParser::parse_S_list(bool B_consume_closing_brace) {
+Cons* MathParser::parse_S_list(bool B_consume_closing_brace) {
 	bool prev_B_honor_indentation = B_honor_indentation;
 	B_honor_indentation = false;
 	try {
-		AST::Cons* result = NULL;
+		Cons* result = NULL;
 		consume(Symbols::Sleftparen);
 		/* TODO macros (if we want) */
 		result = parse_S_list_body();
@@ -316,15 +316,15 @@ AST::Cons* MathParser::parse_S_list(bool B_consume_closing_brace) {
 		throw;
 	}
 }
-AST::NodeT MathParser::parse_S_Expression(void) {
+NodeT MathParser::parse_S_Expression(void) {
 	bool prev_B_honor_indentation = B_honor_indentation;
 	B_honor_indentation = false;
 	try {
-		AST::NodeT result;
+		NodeT result;
 		/* TODO do this without tokenizing? How? */
 		if(input_value == Symbols::Sleftparen) {
 			result = parse_S_list(true);
-		} else if(dynamic_cast<AST::Symbol*>(input_value) != NULL) {
+		} else if(dynamic_cast<Symbol*>(input_value) != NULL) {
 			result = consume(); // & whitespace.
 		} else {
 			/* numbers, strings */
@@ -343,8 +343,8 @@ AST::NodeT MathParser::parse_S_Expression(void) {
 		throw;
 	}
 }
-AST::NodeT MathParser::parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list) {
-	AST::NodeT result;
+NodeT MathParser::parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list) {
+	NodeT result;
 	MathParser parser;
 	FILE* input_file;
 	try {
@@ -363,19 +363,19 @@ void MathParser::parse_closing_brace(void) {
 	// TODO auto)
 	consume(Symbols::Srightparen);
 }
-void MathParser::enter_abstraction(AST::Symbol* name) {
-	bound_symbols = AST::makeCons(name, bound_symbols);
+void MathParser::enter_abstraction(Symbol* name) {
+	bound_symbols = makeCons(name, bound_symbols);
 }
-void MathParser::leave_abstraction(AST::Symbol* name) {
-	assert(bound_symbols && dynamic_cast<AST::Symbol*>(bound_symbols->head) == name);
-	AST::NodeT n = bound_symbols->tail;
+void MathParser::leave_abstraction(Symbol* name) {
+	assert(bound_symbols && dynamic_cast<Symbol*>(bound_symbols->head) == name);
+	NodeT n = bound_symbols->tail;
 	bound_symbols->tail = NULL;
-	bound_symbols = (AST::Cons*) n;
+	bound_symbols = (Cons*) n;
 }
-std::set<AST::Symbol*> MathParser::get_bound_symbols(const char* prefix) {
-	std::set<AST::Symbol*> syms;
-	for(AST::Cons* b = bound_symbols; b; b = (AST::Cons*) b->tail) {
-		AST::Symbol* sym = (AST::Symbol*) b->head;
+std::set<Symbol*> MathParser::get_bound_symbols(const char* prefix) {
+	std::set<Symbol*> syms;
+	for(Cons* b = bound_symbols; b; b = (Cons*) b->tail) {
+		Symbol* sym = (Symbol*) b->head;
 		if(strncmp(sym->name, prefix, strlen(prefix)) == 0) {
 			syms.insert(sym);
 		}

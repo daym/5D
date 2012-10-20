@@ -7,7 +7,7 @@
 #include <math.h>
 #include <string.h>
 
-namespace AST {
+namespace Values {
 
 struct hashstr {
 	unsigned long operator()(const char* str) const {
@@ -29,10 +29,10 @@ struct ltstr {
 	}
 };
 
-////typedef std::unordered_map<const char*, AST::NodeT, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::NodeT> > > RawHashTable;
-////typedef __gnu_cxx::hash_map<const char*, AST::NodeT, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, AST::NodeT> > > RawHashTable;
-//typedef std::map<const char*, AST::NodeT, ltstr, gc_allocator<std::pair<const char*, AST::NodeT> > > RawHashTable;
-//// has no allocator: typedef khmap_t<const char*, AST::NodeT, khashf_t, khasheq_t, gc_allocator<std::pair<const char*, AST::NodeT> > > RawHashTable;
+////typedef std::unordered_map<const char*, NodeT, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, NodeT> > > RawHashTable;
+////typedef __gnu_cxx::hash_map<const char*, NodeT, __gnu_cxx::hash<const char*>, eqstr, gc_allocator<std::pair<const char*, NodeT> > > RawHashTable;
+//typedef std::map<const char*, NodeT, ltstr, gc_allocator<std::pair<const char*, NodeT> > > RawHashTable;
+//// has no allocator: typedef khmap_t<const char*, NodeT, khashf_t, khasheq_t, gc_allocator<std::pair<const char*, NodeT> > > RawHashTable;
 typedef enum {
 	HS_FREE,
 	HS_OCCUPIED,
@@ -46,7 +46,7 @@ struct HashTableEntry {
 };
 /* Key Value Hasher Comparator */
 template<typename K, typename V, typename H, typename C>
-class RawHashTable : public AST::Node {
+class RawHashTable : public Node {
 private:
 	HashTableEntry<K,V>* entries; /* or std::vector, for that matter */
 	int capacity;
@@ -217,22 +217,22 @@ public:
 		//  TODO shrink
 	}
 };
-typedef RawHashTable<const char*, AST::NodeT, hashstr, eqstr> HashTable;
+typedef RawHashTable<const char*, NodeT, hashstr, eqstr> HashTable;
 
 #ifdef CX11
-class HashTable : public RawHashTable, public AST::Node {
+class HashTable : public RawHashTable, public Node {
 };
 #endif
 
-static __inline AST::NodeT listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
+static __inline NodeT listFromHashTable(HashTable::const_iterator iter, HashTable::const_iterator endIter) {
 	if(iter == endIter)
 		return(NULL);
 	else {
-		AST::NodeT k = AST::symbolFromStr(iter->first);
+		NodeT k = symbolFromStr(iter->first);
 		++iter;
-		return(AST::makeCons(k, listFromHashTable(iter, endIter)));
+		return(makeCons(k, listFromHashTable(iter, endIter)));
 	}
 }
 
 };
-#endif /* ndef __AST_HASH_TABLE_H */
+#endif /* ndef __VALUES_HASH_TABLE_H */

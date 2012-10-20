@@ -4,17 +4,17 @@
 #include "Values/Values"
 
 namespace Evaluators {
-typedef std::list<std::pair<AST::NodeT /*keyword*/, AST::NodeT>, gc_allocator<std::pair<AST::NodeT, AST::NodeT> > > CXXArguments;
+typedef std::list<std::pair<Values::NodeT /*keyword*/, Values::NodeT>, gc_allocator<std::pair<Values::NodeT, Values::NodeT> > > CXXArguments;
 
-static inline AST::NodeT internNative(AST::NodeT n) {
+static inline Values::NodeT internNative(Values::NodeT n) {
 	return(n);
 }
 
 /* BEGIN str() */
 
-std::string str(AST::NodeT cons);
+std::string str(Values::NodeT cons);
 struct StrRegistration {
-	virtual std::string call(AST::NodeT node) const = 0;
+	virtual std::string call(Values::NodeT node) const = 0;
 };
 StrRegistration* registerStr(StrRegistration* n);
 #define REGISTER_STR(typ, body) \
@@ -23,7 +23,7 @@ struct StrRegistration##typ : Evaluators::StrRegistration { \
 	StrRegistration##typ(void) { \
 		next = Evaluators::registerStr(this); \
 	} \
-	virtual std::string call(AST::NodeT xxxnode) const { \
+	virtual std::string call(Values::NodeT xxxnode) const { \
 		typ* node; \
 		if((node = dynamic_cast<typ*>(xxxnode)) != NULL) { \
 			body \
@@ -37,11 +37,11 @@ static StrRegistration##typ fStrRegistration##typ;
 
 /* END str() */
 
-struct CProcedure : AST::Box {
+struct CProcedure : Values::Box {
 	int fArgumentCount; // sigh. <0: can also do keyword arguments.
 	int fReservedArgumentCount; // how many not to repr.
-	AST::NodeT /*Symbol**/ fSignature;
-        CProcedure(void* native, AST::NodeT aRepr, int aArgumentCount, int aReservedArgumentCount, AST::NodeT /*Symbol**/ aSignature);
+	Values::NodeT /*Symbol**/ fSignature;
+        CProcedure(void* native, Values::NodeT aRepr, int aArgumentCount, int aReservedArgumentCount, Values::NodeT /*Symbol**/ aSignature);
 };
 #define DECLARE_SIMPLE_OPERATION(P) \
 extern Evaluators::CProcedure P;
@@ -51,21 +51,21 @@ extern Evaluators::CProcedure P;
 
 #define DEFINE_SIMPLE_OPERATION(P, B) \
 extern Evaluators::CProcedure P; \
-static AST::NodeT P##_execute(AST::NodeT fn, AST::NodeT argument) { \
+static Values::NodeT P##_execute(Values::NodeT fn, Values::NodeT argument) { \
 	return(Evaluators::internNative(B)); \
 }
 
 #define DECLARE_FULL_OPERATION(P) DECLARE_SIMPLE_OPERATION(P)
 #define DEFINE_FULL_OPERATION(P, B) \
 extern Evaluators::CProcedure P; \
-static AST::NodeT P##_execute(AST::NodeT fn, AST::NodeT argument) { \
+static Values::NodeT P##_execute(Values::NodeT fn, Values::NodeT argument) { \
 	B; \
 }
 
 #define DECLARE_BINARY_OPERATION(P) DECLARE_SIMPLE_OPERATION(P)
 #define DEFINE_BINARY_OPERATION(P, B) \
 extern Evaluators::CProcedure P; \
-static AST::NodeT P##_execute(AST::NodeT fn, AST::NodeT argument) { \
+static Values::NodeT P##_execute(Values::NodeT fn, Values::NodeT argument) { \
 	assert(Evaluators::curried_operation_P(fn)); \
 	return(B(Evaluators::get_curried_operation_argument(fn), argument, Evaluators::get_curried_operation_operation(fn))); \
 }
@@ -73,18 +73,18 @@ static AST::NodeT P##_execute(AST::NodeT fn, AST::NodeT argument) { \
 
 /* BEGIN Binary Operations */
 
-bool builtin_call_P(AST::NodeT node);
-AST::NodeT call_builtin(AST::NodeT fn, AST::NodeT argument);
+bool builtin_call_P(Values::NodeT node);
+Values::NodeT call_builtin(Values::NodeT fn, Values::NodeT argument);
 
 /* END Binary Operations */
 
-AST::NodeT repr(AST::NodeT);
+Values::NodeT repr(Values::NodeT);
 
 /* call this only after all the other arguments have been processed. */
 #define FETCH_WORLD(iter) \
-	AST::NodeT world = (++iter)->second
+	Values::NodeT world = (++iter)->second
 #define FETCH_WORLD1(endIter) \
-	AST::NodeT world = endIter->second
+	Values::NodeT world = endIter->second
 #define CHANGED_WORLD(value) \
 	Evaluators::makeIOMonad(value, world)
 #define DECLARE_SPECIAL_FORM(P) DECLARE_SIMPLE_OPERATION(P)

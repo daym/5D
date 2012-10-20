@@ -8,10 +8,11 @@
 #include "FFIs/Allocators"
 
 namespace FFIs {
-static AST::NodeT get_arch_dep_path(AST::NodeT nameNode) {
+using namespace Values;
+static NodeT get_arch_dep_path(NodeT nameNode) {
 	return(nameNode);
 }
-bool absolute_path_P(AST::NodeT name) {
+bool absolute_path_P(NodeT name) {
 	if(name == NULL) // an empty path is not an absolute path.
 		return(false);
 	//if(name->size < 2)
@@ -26,27 +27,27 @@ bool absolute_path_P(AST::NodeT name) {
 		return(true);
 	return(false);
 }
-static AST::NodeT internEnviron(WCHAR* envp) {
+static NodeT internEnviron(WCHAR* envp) {
 	if(*envp) {
 		int count = wcslen(envp);
-		AST::NodeT head = AST::makeStr(ToUTF8(envp));
+		NodeT head = makeStr(ToUTF8(envp));
 		envp += count + 1;
-		return(AST::makeCons(head, internEnviron(envp)));
+		return(makeCons(head, internEnviron(envp)));
 	}
 	else
 		return(NULL);
 }
-static AST::NodeT wrapInternEnviron(AST::NodeT argument) {
+static NodeT wrapInternEnviron(NodeT argument) {
 	// TODO check whether it worked? No.
 	return internEnviron((WCHAR*) Evaluators::get_pointer(argument));
 }
-static AST::Box* environFromList(AST::NodeT argument) {
+static Box* environFromList(NodeT argument) {
 	int count = 0;
 	WCHAR* resultC;
 	std::vector<std::wstring> result;
 	int i = 0;
-	AST::NodeT listNode = Evaluators::reduce(argument);
-	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
+	NodeT listNode = Evaluators::reduce(argument);
+	for(Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
 		std::wstring v = FromUTF8(Evaluators::get_string(node->head));
 		result.push_back(v);
 		count += v.length() + 1;
@@ -61,10 +62,10 @@ static AST::Box* environFromList(AST::NodeT argument) {
 		i += v.length() + 1;
 	}
 	resultC[i] = 0;
-	return(AST::makeBox(resultC, AST::makeApplication(&EnvironFromList, listNode/* or argument*/)));
+	return(makeBox(resultC, makeApplication(&EnvironFromList, listNode/* or argument*/)));
 }
-static AST::NodeT wrapGetEnviron(AST::NodeT world) {
-	AST::NodeT result;
+static NodeT wrapGetEnviron(NodeT world) {
+	NodeT result;
 	LPWSTR env = GetEnvironmentStringsW();
 	result = CHANGED_WORLD(internEnviron(env));
 	FreeEnvironmentStringsW(env);
@@ -81,13 +82,13 @@ char* get_absolute_path(const char* filename) {
 	} else
 		return(GCx_strdup(filename));
 }
-static AST::NodeT wrapGetAbsolutePath(AST::NodeT options, AST::NodeT argument) {
+static NodeT wrapGetAbsolutePath(NodeT options, NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	char* text = iter->second ? Evaluators::get_string(iter->second) : NULL;
 	FETCH_WORLD(iter);
 	text = get_absolute_path(text);
-	return(CHANGED_WORLD(AST::makeStr(text)));
+	return(CHANGED_WORLD(makeStr(text)));
 }
 DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 	return(wrapGetAbsolutePath(fn, argument));
@@ -98,12 +99,12 @@ DEFINE_SIMPLE_OPERATION(EnvironFromList, environFromList(argument))
 DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(Evaluators::reduce(argument)))
 DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(Evaluators::reduce(argument)))
 
-REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath!"))
-REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"))
-REGISTER_BUILTIN(AbsolutePathP, 1, 0, AST::symbolFromStr("absolutePath?"))
-REGISTER_BUILTIN(EnvironGetter, 1, 0, AST::symbolFromStr("environ!"))
-REGISTER_BUILTIN(EnvironInterner, 1, 0, AST::symbolFromStr("listFromEnviron"))
-REGISTER_BUILTIN(EnvironFromList, 1, 0, AST::symbolFromStr("environFromList"))
+REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, symbolFromStr("absolutePath!"))
+REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, symbolFromStr("archDepLibName"))
+REGISTER_BUILTIN(AbsolutePathP, 1, 0, symbolFromStr("absolutePath?"))
+REGISTER_BUILTIN(EnvironGetter, 1, 0, symbolFromStr("environ!"))
+REGISTER_BUILTIN(EnvironInterner, 1, 0, symbolFromStr("listFromEnviron"))
+REGISTER_BUILTIN(EnvironFromList, 1, 0, symbolFromStr("environFromList"))
 
 }; /* end namespace FFIs */
 

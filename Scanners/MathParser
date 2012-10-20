@@ -25,27 +25,27 @@ protected:
 	OperatorPrecedenceList* operator_precedence_list;
 private:
 	AST::Cons* bound_symbols;
-	AST::NodeT parse_value(void);
-	AST::NodeT parse_application(void);
-	AST::NodeT parse_argument(void);
-	AST::NodeT parse_binary_operation(bool B_allow_args, int precedence_level);
-	AST::NodeT parse_abstraction(void);
-	AST::NodeT operation(AST::NodeT operator_, AST::NodeT operand_1, AST::NodeT operand_2);
-	AST::NodeT parse_macro(AST::NodeT operand_1);
-	AST::NodeT parse_define(AST::NodeT operand_1);
-	AST::NodeT parse_defrec(AST::NodeT operand_1);
-	AST::NodeT parse_quote(AST::NodeT operand_1);
-	AST::NodeT parse_list(void);
-	AST::NodeT parse_let_form(void);
+	Values::NodeT parse_value(void);
+	Values::NodeT parse_application(void);
+	Values::NodeT parse_argument(void);
+	Values::NodeT parse_binary_operation(bool B_allow_args, int precedence_level);
+	Values::NodeT parse_abstraction(void);
+	Values::NodeT operation(Values::NodeT operator_, Values::NodeT operand_1, Values::NodeT operand_2);
+	Values::NodeT parse_macro(Values::NodeT operand_1);
+	Values::NodeT parse_define(Values::NodeT operand_1);
+	Values::NodeT parse_defrec(Values::NodeT operand_1);
+	Values::NodeT parse_quote(Values::NodeT operand_1);
+	Values::NodeT parse_list(void);
+	Values::NodeT parse_let_form(void);
 protected:
-	AST::NodeT parse_expression(void);
+	Values::NodeT parse_expression(void);
 	AST::Cons* parse_S_list_body(void);
 public:
 	void parse_closing_brace(void);
-	AST::NodeT parse(OperatorPrecedenceList* operator_precedence_list);
+	Values::NodeT parse(OperatorPrecedenceList* operator_precedence_list);
 	AST::Cons* parse_S_list(bool B_consume_closing_brace);
-	AST::NodeT parse_S_Expression(void);
-	static AST::NodeT parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list); // TODO remove
+	Values::NodeT parse_S_Expression(void);
+	static Values::NodeT parse_simple(const char* text, OperatorPrecedenceList* operator_precedence_list); // TODO remove
 	MathParser(void);
 	void push(FILE* input_file, int line_number);
 protected:
@@ -55,7 +55,7 @@ public:
 	std::set<AST::Symbol*> get_bound_symbols(const char* prefix);
 };
 
-bool macro_operator_P(AST::NodeT operator_);
+bool macro_operator_P(Values::NodeT operator_);
 #endif
 
 }; /* end namespace Scanners */

@@ -1,5 +1,5 @@
-#ifndef __AST_H
-#define __AST_H
+#ifndef __VALUES_H
+#define __VALUES_H
 /*
 5D programming language
 Copyright (C) 2011  Danny Milosavljevic
@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <string.h>
 #include "FFIs/Allocators"
 
-namespace AST {
+namespace Values {
 
 struct Node : public gc {
 	//virtual std::string str(void) const;
@@ -37,8 +37,8 @@ struct Abstraction : Node {
 };
 struct Box : Node {
 	void* value;
-	AST::NodeT fRepr;
-	explicit Box(void* value, AST::NodeT repr) {
+	NodeT fRepr;
+	explicit Box(void* value, NodeT repr) {
 		this->value = value;
 		this->fRepr = repr;
 	}
@@ -57,8 +57,8 @@ struct Str : Box {
 #if 0
 struct Vector : Node {
 	int count;
-	AST::NodeT elements[1]; /* stored in-line here */
-	explicit Vector(int count, AST::NodeT* elements) {
+	NodeT elements[1]; /* stored in-line here */
+	explicit Vector(int count, NodeT* elements) {
 		this->count = count;
 		for(int i = 0; i < count; ++i)
 			this->elements[i] = elements[i];
@@ -78,19 +78,19 @@ struct Vector : Node {
 Str* makeStr(const char* text); // this must not contain pointers
 Str* makeStrCXX(const std::string& text, bool bAtomic = false); // this can contain pointers
 Str* makeStrRaw(char* mutableText, size_t size, bool bAtomic);
-AST::Str* makeStrSlice(AST::Str* s, int offset);
-static inline Box* makeBox(void* value, AST::NodeT fRepr) {
+Str* makeStrSlice(Str* s, int offset);
+static inline Box* makeBox(void* value, NodeT fRepr) {
 	return new Box(value, fRepr);
 }
-bool str_P(AST::NodeT node);
-static inline char* get_str_buffer(AST::NodeT node) {
-	return (char*) (((AST::Str*) node)->value);
+bool str_P(NodeT node);
+static inline char* get_str_buffer(NodeT node) {
+	return (char*) (((Str*) node)->value);
 }
-static inline size_t get_str_size(AST::NodeT node) {
-	return(((AST::Str*) node)->size);
+static inline size_t get_str_size(NodeT node) {
+	return(((Str*) node)->size);
 }
-static inline bool get_str_atomic(AST::NodeT node) {
-	return(((AST::Str*) node)->bAtomicity);
+static inline bool get_str_atomic(NodeT node) {
+	return(((Str*) node)->bAtomicity);
 }
 static inline bool abstraction_P(NodeT root) {
 	return(dynamic_cast<Abstraction*>(root) != NULL);
@@ -122,27 +122,27 @@ Application* makeOperation(NodeT operator_, NodeT operand_1, NodeT operand_2);
 static inline bool pair_P(NodeT node) {
 	return(dynamic_cast<Cons*>(node) != NULL);
 }
-static inline bool nil_P(AST::NodeT node) {
+static inline bool nil_P(NodeT node) {
 	return(node == NULL);
 }
-static inline AST::NodeT uncacheNodeResult(void* userData, AST::NodeT node) {
+static inline NodeT uncacheNodeResult(void* userData, NodeT node) {
 	if(application_P(node)) {
-		AST::Application* app = dynamic_cast<AST::Application*>(node);
+		Application* app = dynamic_cast<Application*>(node);
 		app->resultGeneration = 0; /* make sure it is not used */
 		return(app);
 	} else
 		return(node);
 }
 #define nil NULL
-AST::NodeT makeCons(AST::NodeT a, AST::NodeT b);
-static inline AST::NodeT makePair(AST::NodeT a, AST::NodeT b) {
-	return(AST::makeCons(a, AST::makeCons(b, NULL)));
+NodeT makeCons(NodeT a, NodeT b);
+static inline NodeT makePair(NodeT a, NodeT b) {
+	return(makeCons(a, makeCons(b, NULL)));
 }
 void set_cons_tail(NodeT cons, NodeT value);
 void set_box_value(NodeT box, void* value);
 
-}; /* namespace AST */
+}; /* namespace Values */
 #include "Values/Symbol"
 #include "Values/Keyword"
 #include "Values/HashTable"
-#endif /* __AST_H */
+#endif /* __VALUES_H */

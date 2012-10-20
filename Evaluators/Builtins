@@ -11,16 +11,16 @@
 
 namespace Evaluators {
 
-AST::NodeT operator/(const Numbers::Integer& a, const Numbers::Integer& b);
-AST::NodeT operator/(const Numbers::Int& a, const Numbers::Int& b);
-AST::NodeT internNative(const char* value);
+Values::NodeT operator/(const Numbers::Integer& a, const Numbers::Integer& b);
+Values::NodeT operator/(const Numbers::Int& a, const Numbers::Int& b);
+Values::NodeT internNative(const char* value);
 
 void resetWorld(void);
 
 /* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
-AST::NodeT provide_dynamic_builtins(AST::NodeT body);
-extern AST::NodeT aFalse;
-extern AST::NodeT aTrue;
+Values::NodeT provide_dynamic_builtins(Values::NodeT body);
+extern Values::NodeT aFalse;
+extern Values::NodeT aTrue;
 
 DECLARE_SIMPLE_OPERATION(DynamicBuiltinGetter)
 DECLARE_SIMPLE_OPERATION(FreeVariablesGetter)
@@ -65,14 +65,14 @@ DECLARE_SIMPLE_OPERATION(RStrMathParser)
 DECLARE_SIMPLE_OPERATION(InfinityChecker)
 DECLARE_SIMPLE_OPERATION(NanChecker)
 
-typedef std::list<std::pair<AST::NodeT /*keyword*/, AST::NodeT>, gc_allocator<std::pair<AST::NodeT, AST::NodeT> > > CXXArguments;
+typedef std::list<std::pair<Values::NodeT /*keyword*/, Values::NodeT>, gc_allocator<std::pair<Values::NodeT, Values::NodeT> > > CXXArguments;
 /* (non-strict) WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
-CXXArguments CXXfromArguments(AST::NodeT options, AST::NodeT argument); /* non-keyword arguments will be at the FRONT */
+CXXArguments CXXfromArguments(Values::NodeT options, Values::NodeT argument); /* non-keyword arguments will be at the FRONT */
 
-CXXArguments CXXfromArgumentsU(AST::NodeT options, AST::NodeT argument, int backwardsIndexOfArgumentNotToReduce); /* non-keyword arguments will be at the FRONT */
-AST::NodeT CXXgetKeywordArgumentValue(const CXXArguments& list, AST::Keyword* key);
-AST::NodeT divideA(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
-AST::NodeT divmod0A(AST::NodeT a, AST::NodeT b, AST::NodeT fallback);
+CXXArguments CXXfromArgumentsU(Values::NodeT options, Values::NodeT argument, int backwardsIndexOfArgumentNotToReduce); /* non-keyword arguments will be at the FRONT */
+Values::NodeT CXXgetKeywordArgumentValue(const CXXArguments& list, Values::NodeT/*keyword*/ key);
+Values::NodeT divideA(Values::NodeT a, Values::NodeT b, Values::NodeT fallback);
+Values::NodeT divmod0A(Values::NodeT a, Values::NodeT b, Values::NodeT fallback);
 
 };
 

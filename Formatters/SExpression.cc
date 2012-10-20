@@ -9,6 +9,7 @@
 
 namespace Formatters {
 using namespace Evaluators;
+using namespace Values;
 
 static void print_text(std::ostream& output, int& visible_position, const char* text) {
 	output << text;
@@ -26,13 +27,13 @@ static void print_indentation(std::ostream& output, int indentation) {
 	for(; indentation > 0; --indentation)
 		output << ' ';
 }
-void print_S_Expression_CXX(std::ostream& output, int& position, int indentation, AST::NodeT node) {
+void print_S_Expression_CXX(std::ostream& output, int& position, int indentation, NodeT node) {
 	bool B_split_cons_items = true;
 	node = repr(node);
 	const char* symbolName;
 	if(node == NULL)
 		print_text(output, position, "nil");
-	else if((symbolName = AST::get_symbol1_name(node)) != NULL)
+	else if((symbolName = get_symbol1_name(node)) != NULL)
 		print_text(output, position, symbolName);
 	else if(cons_P(node)) {
 		int index = 0;
@@ -69,10 +70,10 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		}*/
 		output << '(';
 		++position;
-		print_S_Expression_CXX(output, position, indentation, AST::get_application_operator(node));
+		print_S_Expression_CXX(output, position, indentation, get_application_operator(node));
 		output << ' ';
 		++position;
-		print_S_Expression_CXX(output, position, indentation, AST::get_application_operand(node));
+		print_S_Expression_CXX(output, position, indentation, get_application_operand(node));
 		output << ')';
 		++position;
 		/*if(B_split_cons_items) {
@@ -89,14 +90,14 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		output << "(\\";
 		++position;
 		++position;
-		print_S_Expression_CXX(output, position, indentation, AST::get_abstraction_parameter(node));
+		print_S_Expression_CXX(output, position, indentation, get_abstraction_parameter(node));
 		output << ' ';
 		indentation = position;
 		output << std::endl;
 		print_indentation(output, indentation);
 		position = indentation;
 		++position;
-		print_S_Expression_CXX(output, position, indentation, AST::get_abstraction_body(node));
+		print_S_Expression_CXX(output, position, indentation, get_abstraction_body(node));
 		output << ')';
 		++position;
 		indentation = prevIndentation;
@@ -106,7 +107,7 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 		print_text(output, position, value.c_str());
 	}
 }
-void print_S_Expression(FILE* output_file, int position, int indentation, AST::NodeT node) {
+void print_S_Expression(FILE* output_file, int position, int indentation, NodeT node) {
 	std::stringstream sst;
 	std::string value;
 	print_S_Expression_CXX(sst, position, indentation, node);

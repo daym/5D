@@ -8,13 +8,13 @@
 #include "FFIs/Allocators"
 
 namespace REPLX {
-struct Completer : AST::Node {
+struct Completer : Node {
 	HWND fEntry;
-	AST::HashTable* fHaystack;
+	HashTable* fHaystack;
 	int fEntryNeedlePos;
 	char* fEntryNeedle;
 	char* fEntryText;
-	AST::HashTable* fMatches;
+	HashTable* fMatches;
 };
 
 };
@@ -43,13 +43,13 @@ static std::wstring GetTextCXX(HWND item) {
 	return(buffer);
 }
 
-/* note that haystack's values are unused. Only the keys are used and assumed to be AST::Symbol* */
-void Completer_init(struct Completer* self, HWND entry, AST::HashTable* haystack) {
-	self->fMatches = new AST::HashTable;
+/* note that haystack's values are unused. Only the keys are used and assumed to be Symbol* */
+void Completer_init(struct Completer* self, HWND entry, HashTable* haystack) {
+	self->fMatches = new HashTable;
 	self->fEntry = entry;
 	self->fHaystack = haystack;
 }
-struct Completer* Completer_new(HWND entry, AST::HashTable* haystack) {
+struct Completer* Completer_new(HWND entry, HashTable* haystack) {
 	struct Completer* result;
 	result = new (UseGC) Completer;
 	Completer_init(result,  entry, haystack);

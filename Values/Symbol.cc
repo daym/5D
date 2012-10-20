@@ -12,18 +12,18 @@ You should have received a copy of the GNU General Public License along with thi
 #include "FFIs/Allocators"
 #include "Evaluators/Operation"
 
-namespace AST {
+namespace Values {
 
-static AST::HashTable* symbols;
+static HashTable* symbols;
 
 /* TODO we can also just skip the whole map business for single-character names if we just return the character code instead of fumbling around (would have to make sure actual addresses are >255 then). 
    of course, str would then have to be global and we can't use the VMT anymore. Not sure whether it would be worth it. */
 NodeT symbolFromStr(const char* name) {
 	if(symbols == NULL) {
 		GC_INIT();
-		symbols = new AST::HashTable();
+		symbols = new HashTable();
 	}
-	AST::HashTable::const_iterator iter = symbols->find(name);
+	HashTable::const_iterator iter = symbols->find(name);
 	if(iter != symbols->end()) {
 		return((Symbol*) iter->second);
 	} else {
@@ -39,4 +39,4 @@ SymbolReference::SymbolReference(NodeT symbol, int index) {
 	this->index = index;
 }
 
-}; /* end namespace AST */
+}; /* end namespace Values */

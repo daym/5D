@@ -174,7 +174,7 @@ int emitSbb(int32_t value, int dest, FILE* f) {
 }
 // FIXME push imm, pop imm.
 
-static AST::NodeT regNames[] = { /* in hardware order! */
+static Values::NodeT regNames[] = { /* in hardware order! */
 	SAX,
 	SCX,
 	SDX,
@@ -201,7 +201,7 @@ int emitPopRegs(uint16_t regs, FILE* f) {
 }
 
 #include "Assemblers/Glue.inc"
-int emit(AST::NodeT operator_, AST::NodeT a, AST::NodeT b, AST::NodeT c, FILE* f) {
+int emit(Values::NodeT operator_, Values::NodeT a, Values::NodeT b, Values::NodeT c, FILE* f) {
 	return (operator_ == SloadValReg) ? emitLoadValReg(I64(a), R(b), f) :
 	       (operator_ == SloadRegReg) ? emitLoadRegReg(R(a), R(b), f) :
 	       (operator_ == SpopReg) ? emitPopReg(R(a), f) :

@@ -1,5 +1,5 @@
-#ifndef __AST_SYMBOL_H
-#define __AST_SYMBOL_H
+#ifndef __VALUES_SYMBOL_H
+#define __VALUES_SYMBOL_H
 /*
 5D programming language
 Copyright (C) 2011  Danny Milosavljevic
@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 #define G_5D_GNUC_PURE
 #endif
 
-namespace AST {
+namespace Values {
 
 struct Symbol : Node {
 	const char* name;
@@ -27,40 +27,40 @@ public:
 };
 NodeT symbolFromStr(const char* name) G_5D_GNUC_PURE;
 
-static inline bool symbol_P(AST::NodeT argument) {
+static inline bool symbol_P(NodeT argument) {
 	return(dynamic_cast<Symbol*>(argument) != NULL || dynamic_cast<SymbolReference*>(argument) != NULL);
 }
-static inline bool symbol1_P(AST::NodeT argument) {
+static inline bool symbol1_P(NodeT argument) {
 	return(dynamic_cast<Symbol*>(argument) != NULL);
 }
 /* will return NULL if not a Symbol. */
-static inline const char* get_symbol_name(AST::NodeT argument) {
+static inline const char* get_symbol_name(NodeT argument) {
 	SymbolReference* r = dynamic_cast<SymbolReference*>(argument);
 	Symbol* s = dynamic_cast<Symbol*>(r ? r->symbol : argument);
 	return s ? s->name : NULL;
 }
 /* will return NULL if not a Symbol. */
-static inline const char* get_symbol1_name(AST::NodeT argument) {
+static inline const char* get_symbol1_name(NodeT argument) {
 	Symbol* s = dynamic_cast<Symbol*>(argument);
 	return s ? s->name : NULL;
 }
-static inline AST::NodeT get_symbol_reference_name(AST::NodeT root) {
-	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
+static inline NodeT get_symbol_reference_name(NodeT root) {
+	SymbolReference* refNode = dynamic_cast<SymbolReference*>(root);
 	if(refNode)
 		return(refNode->symbol);
 	else
 		return(NULL);
 }
-static inline int get_symbol_reference_index(AST::NodeT root) {
-	AST::SymbolReference* refNode = dynamic_cast<AST::SymbolReference*>(root);
+static inline int get_symbol_reference_index(NodeT root) {
+	SymbolReference* refNode = dynamic_cast<SymbolReference*>(root);
 	if(refNode)
 		return(refNode->index);
 	else
 		return(-1);
 }
-static inline bool symbol_reference_P(AST::NodeT root) {
-	return(dynamic_cast<AST::SymbolReference*>(root) != NULL);
+static inline bool symbol_reference_P(NodeT root) {
+	return(dynamic_cast<SymbolReference*>(root) != NULL);
 }
 
 };
-#endif /* ndef __AST_SYMBOL_H */
+#endif /* ndef __VALUES_SYMBOL_H */

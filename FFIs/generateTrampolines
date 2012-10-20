@@ -15,7 +15,7 @@ longNames = {
     "P": "void*", # or null
     "S": "char*", # or null
     "f": "float",
-    "R": "AST::NodeT", # or null
+    "R": "Values::NodeT", # or null
     "V": "VARIANT",
 }
 
@@ -52,31 +52,31 @@ print("""
 namespace Trampolines {
 using namespace FFIs;
 
-static inline AST::NodeT extr(const Evaluators::CXXArguments::const_iterator& iter) {
+static inline Values::NodeT extr(const Evaluators::CXXArguments::const_iterator& iter) {
   return(iter->second);
 }
 
-static inline void* getSomethingUseful(AST::NodeT n) {
+static inline void* getSomethingUseful(Values::NodeT n) {
   void* result = Evaluators::get_pointer(n);
   if(result == NULL)
     throw Evaluators::EvaluationException("argument is required but empty");
   return(result);
 }
-static inline void* getSomethingUsefulOrNull(AST::NodeT n) {
+static inline void* getSomethingUsefulOrNull(Values::NodeT n) {
   if(n == NULL)
      return(NULL);
   else
      return(getSomethingUseful(n));
 }
-static inline AST::NodeT makeStrOrNil(const char* s) {
-  return(s ? AST::makeStr(s) : NULL);
+static inline Values::NodeT makeStrOrNil(const char* s) {
+  return(s ? Values::makeStr(s) : NULL);
 }
-static inline AST::NodeT makeBox(AST::NodeT repr, void* s) {
+static inline Values::NodeT makeBox(Values::NodeT repr, void* s) {
   if(s == NULL)
     throw Evaluators::EvaluationException("argument is required but empty");
-  return(AST::makeBox(s, repr));
+  return(Values::makeBox(s, repr));
 }
-static inline AST::NodeT makeBoxOrNil(AST::NodeT repr, void* s) {
+static inline Values::NodeT makeBoxOrNil(Values::NodeT repr, void* s) {
   return(s ? makeBox(repr, s) : NULL);
 }
 #ifdef WIN32
@@ -97,7 +97,7 @@ extern VARIANT variantEmpty;
 #define unR iter == end ? NULL : extr(iter++)
 #define unV iter == end ? variantEmpty : FFIs::encodeVariantCXX(extr(iter++))
 #define inv
-#define REPRME AST::makeApplication(options, world)
+#define REPRME Values::makeApplication(options, world)
 #define inp makeBox(REPRME, 
 #define inP makeBoxOrNil(REPRME, 
 #define ini Numbers::internNative((Numbers::NativeInt) 
@@ -107,13 +107,13 @@ extern VARIANT variantEmpty;
 #define inf Numbers::internNative((Numbers::NativeFloat) 
 #define inD Numbers::internNative((Numbers::NativeFloat) 
 #define ind Numbers::internNative((Numbers::NativeFloat) 
-#define ins AST::makeStr(
+#define ins Values::makeStr(
 #define inS makeStrOrNil(
 #define inR (
 #define inV FFIs::decodeVariantCXX(
 /* FIXME do inL properly */
 
-//typedef AST::NodeT (jumper_t)(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, AST::NodeT options, AST::NodeT world);
+//typedef Values::NodeT (jumper_t)(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, Values::NodeT options, Values::NodeT world);
 
 static HashTable fMarshallers;
 
@@ -141,10 +141,10 @@ for combination in sys.stdin.readlines():
        return("")
     content = combination[1 : ]
     print("typedef %s %s (*proc_%s_t)(%s);" % (getLongName(content[0]), getCallingConvention(combination[0]), combination, ", ".join(map(getLongName, content[1:]))))
-    print("""static %(inliner)s AST::NodeT jump%(combination)s(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, AST::NodeT options, AST::NodeT world) {
+    print("""static %(inliner)s Values::NodeT jump%(combination)s(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, Values::NodeT options, Values::NodeT world) {
         proc_%(combination)s_t proc = (proc_%(combination)s_t) p2->value;
         %(tempvariables)s
-        AST::NodeT result = NULL;
+        Values::NodeT result = NULL;
         %(returner)s((*proc)(%(marshallers)s))%(fallback)s;
         return CHANGED_WORLD(result); }""" % {
         "combination": combination,
@@ -188,7 +188,7 @@ print("""
 } /* end initMarshallers */
 """)
 print("""
-static AST::NodeT jumpT(Evaluators::CProcedure* proc, AST::NodeT options, AST::NodeT world) {
+static Values::NodeT jumpT(Evaluators::CProcedure* proc, Values::NodeT options, Values::NodeT world) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, world);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	Evaluators::CXXArguments::const_iterator endIter = arguments.end();
@@ -197,7 +197,7 @@ static AST::NodeT jumpT(Evaluators::CProcedure* proc, AST::NodeT options, AST::N
 	assert(iter != endIter);
 	assert(iter->first == NULL);
 	--endIter; /* hide the world */
-	HashTable::const_iterator iterMarshaller = fMarshallers.find(AST::get_symbol_name(proc->fSignature)/* TODO check NULL */);
+	HashTable::const_iterator iterMarshaller = fMarshallers.find(Values::get_symbol_name(proc->fSignature)/* TODO check NULL */);
 	if(iterMarshaller == fMarshallers.end()) {
 		return jumpFFI(proc, iter, endIter, options, world);
 	} else

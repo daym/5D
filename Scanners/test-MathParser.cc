@@ -31,7 +31,7 @@ void test_expression(const char* source, const char* expected_tree) {
 	//std::cout << source << std::endl;
 	parser.push(fmemopen((void*) buf, strlen(buf), "r"), 0);
 	try {
-		AST::NodeT result = parser.parse(new OperatorPrecedenceList(), Symbols::SlessEOFgreater);
+		NodeT result = parser.parse(new OperatorPrecedenceList(), Symbols::SlessEOFgreater);
 		if(str(result) != expected_tree) {
 			std::cerr << "error: input was " << source << "; expected " << expected_tree << " but got " << str(result) << std::endl;
 			abort();

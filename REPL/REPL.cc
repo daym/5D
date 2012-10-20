@@ -20,13 +20,15 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Evaluators/Builtins"
 
 namespace REPLX {
+using namespace Values;
 struct REPL;
-void REPL_set_environment(struct REPL* self, AST::NodeT environment);
-AST::NodeT REPL_get_user_environment(struct REPL* self);
-void REPL_add_to_environment_simple(struct REPL* self, AST::NodeT name, AST::NodeT value);
+void REPL_set_environment(struct REPL* self, NodeT environment);
+NodeT REPL_get_user_environment(struct REPL* self);
+void REPL_add_to_environment_simple(struct REPL* self, NodeT name, NodeT value);
 };
 namespace GUI {
 using namespace REPLX;
+using namespace Values;
 
 #if 0
 static bool save_integer(FILE* output_file, long value) {
@@ -55,10 +57,10 @@ char* REPL_get_output_buffer_text(struct REPL* self);
 bool REPL_confirm_close(struct REPL* self);
 void REPL_clear(struct REPL* self);
 void REPL_append_to_output_buffer(struct REPL* self, const char* text);
-void REPL_add_to_environment(struct REPL* self, AST::NodeT name, AST::NodeT body);
+void REPL_add_to_environment(struct REPL* self, NodeT name, NodeT body);
 void REPL_set_current_environment_name(struct REPL* self, const char* absolute_name);
 void REPL_set_file_modified(struct REPL* self, bool value);
-static AST::NodeT REPL_filter_environment(struct REPL* self, AST::NodeT environment) {
+static NodeT REPL_filter_environment(struct REPL* self, NodeT environment) {
 	return(environment);
 }
 bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
@@ -69,16 +71,16 @@ bool REPL_save_contents_to(struct REPL* self, FILE* output_file) {
 	//   ----envK---------------------------------------
 	//  -------envV--------------------------------------------
 	// ---------sentinel--------------------------------------------
-	using namespace AST;
+	using namespace Values;
 	char* buffer_text;
 	buffer_text = REPL_get_output_buffer_text(self);
-	AST::NodeT tbtK = AST::makeApplication(Symbols::SREPLV1, Symbols::StextBufferText);
-	AST::NodeT tbtV = AST::makeApplication(tbtK, makeStr(buffer_text));
-	AST::NodeT envK = AST::makeApplication(tbtV, Symbols::Senvironment);
-	AST::NodeT envV = AST::makeApplication(envK, REPL_filter_environment(self, REPL_get_user_environment(self)));
+	NodeT tbtK = makeApplication(Symbols::SREPLV1, Symbols::StextBufferText);
+	NodeT tbtV = makeApplication(tbtK, makeStr(buffer_text));
+	NodeT envK = makeApplication(tbtV, Symbols::Senvironment);
+	NodeT envV = makeApplication(envK, REPL_filter_environment(self, REPL_get_user_environment(self)));
 	//std::string v = Evaluators::str(envV);
 	//assert(strstr(v.c_str(), "\\divmoxxd") == NULL);
-	AST::NodeT sentinel = AST::makeApplication(envV, NULL);
+	NodeT sentinel = makeApplication(envV, NULL);
 	Formatters::print_S_Expression(output_file, 0, 0, sentinel);
 	return(true);
 }
@@ -86,7 +88,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 	REPL_clear(self);
 	{
 		FILE* input_file;
-		AST::NodeT content;
+		NodeT content;
 		Scanners::SExpressionParser parser;
 		input_file = fopen(name, "r");
 		if(!input_file) {
@@ -113,19 +115,19 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 			//   ----envK---------------------------------------
 			//  -------envV--------------------------------------------
 			// ---------sentinel--------------------------------------------
-			std::list<AST::NodeT> arguments;
+			std::list<NodeT> arguments;
 			for(; application_P(content); content = get_application_operator(content)) {
 				arguments.push_front(get_application_operand(content));
 				if(get_application_operator(content) == Symbols::SREPLV1)
 					break;
 			}
-			std::list<AST::NodeT>::const_iterator end_arguments = arguments.end();
-			for(std::list<AST::NodeT>::const_iterator iter_arguments = arguments.begin(); iter_arguments != end_arguments; ++iter_arguments) {
-				AST::NodeT keywordName = *iter_arguments;
+			std::list<NodeT>::const_iterator end_arguments = arguments.end();
+			for(std::list<NodeT>::const_iterator iter_arguments = arguments.begin(); iter_arguments != end_arguments; ++iter_arguments) {
+				NodeT keywordName = *iter_arguments;
 				++iter_arguments;
 				if(iter_arguments == end_arguments) // ???
 					break;
-				AST::NodeT value = *iter_arguments;
+				NodeT value = *iter_arguments;
 				if(keywordName == Symbols::StextBufferText) {
 					const char* text;
 					text = (value == Symbols::Snil || value == NULL) ? "" : Evaluators::get_string(value);
@@ -135,7 +137,7 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 						assert(application_P(value));
 					REPL_set_environment(self, value);
 	// GC_gcollect here and it works.
-		//AST::NodeT envV = AST::makeApplication(NULL, REPL_filter_environment(self, REPL_get_user_environment(self)));
+		//NodeT envV = makeApplication(NULL, REPL_filter_environment(self, REPL_get_user_environment(self)));
 		//std::string v = Evaluators::str(envV);
 		//assert(strstr(v.c_str(), "\\divmod") == NULL);
 				}
@@ -152,9 +154,9 @@ bool REPL_load_contents_from(struct REPL* self, const char* name) {
 	return(true);
 }
 /* caller needs to make sure it would actually work...*/
-void REPL_add_to_environment(struct REPL* self, AST::NodeT name, AST::NodeT body) {
-	using namespace AST;
-	if(AST::get_symbol1_name(name))
+void REPL_add_to_environment(struct REPL* self, NodeT name, NodeT body) {
+	using namespace Values;
+	if(get_symbol1_name(name))
 		REPL_add_to_environment_simple(self, name, body);
 }
 

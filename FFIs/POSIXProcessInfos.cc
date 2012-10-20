@@ -10,8 +10,9 @@
 #include "Evaluators/Operation"
 
 namespace FFIs {
+using namespace Values;
 
-static AST::Str* get_arch_dep_path(AST::NodeT nameNode) {
+static Str* get_arch_dep_path(NodeT nameNode) {
 	if(nameNode == NULL)
 		return(NULL);
 	const char* name = Evaluators::get_string(nameNode);
@@ -26,40 +27,40 @@ static AST::Str* get_arch_dep_path(AST::NodeT nameNode) {
 		sst << buf.machine;
 	sst << "-linux-gnu/";
 	sst << name;
-	return(AST::makeStrCXX(sst.str()));
+	return(makeStrCXX(sst.str()));
 }
-bool absolute_path_P(AST::NodeT nameN) {
+bool absolute_path_P(NodeT nameN) {
 	char* c = nameN ? Evaluators::get_string(nameN) : NULL;
 	if(!c || !*c)
 		return(false);
 	return(*c == '/');
 }
-static AST::NodeT internEnviron(const char** envp) {
+static NodeT internEnviron(const char** envp) {
 	if(*envp) {
-		AST::NodeT head = AST::makeStr(*envp++);
-		return(AST::makeCons(head, internEnviron(envp)));
+		NodeT head = makeStr(*envp++);
+		return(makeCons(head, internEnviron(envp)));
 	}
 	else
 		return(NULL);
 }
-static AST::NodeT wrapInternEnviron(AST::NodeT argument) {
+static NodeT wrapInternEnviron(NodeT argument) {
 	return internEnviron((const char**) Evaluators::get_pointer(argument));
 }
-static AST::Box* environFromList(AST::NodeT argument) {
+static Box* environFromList(NodeT argument) {
 	int count = 0;
 	char** result;
 	int i = 0;
-	AST::NodeT listNode = Evaluators::reduce(argument);
-	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
+	NodeT listNode = Evaluators::reduce(argument);
+	for(Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
 		++count;
 		// FIXME handle overflow
 	}
 	result = (char**) GC_MALLOC(sizeof(char*) * (count + 1));
-	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
+	for(Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
 		result[i] = Evaluators::get_string(node->head);
 		++i;
 	}
-	return(AST::makeBox(result, AST::makeApplication(&EnvironFromList, listNode/* or argument*/)));
+	return(makeBox(result, makeApplication(&EnvironFromList, listNode/* or argument*/)));
 }
 DEFINE_FULL_OPERATION(EnvironGetter, {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(fn, argument);
@@ -84,13 +85,13 @@ char* get_absolute_path(const char* filename) {
 		return(GCx_strdup(v.c_str()));
 	}
 }
-static AST::NodeT wrapGetAbsolutePath(AST::NodeT options, AST::NodeT argument) {
+static NodeT wrapGetAbsolutePath(NodeT options, NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	char* text = iter->second ? Evaluators::get_string(iter->second) : NULL;
 	FETCH_WORLD(iter);
 	text = get_absolute_path(text);
-	return(CHANGED_WORLD(AST::makeStr(text)));
+	return(CHANGED_WORLD(makeStr(text)));
 }
 DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 	return(wrapGetAbsolutePath(fn, argument));
@@ -101,12 +102,12 @@ DEFINE_SIMPLE_OPERATION(EnvironFromList, environFromList(argument))
 DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(Evaluators::reduce(argument)))
 DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(Evaluators::reduce(argument)))
 
-REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, AST::symbolFromStr("absolutePath!"))
-REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, AST::symbolFromStr("archDepLibName"))
-REGISTER_BUILTIN(AbsolutePathP, 1, 0, AST::symbolFromStr("absolutePath?"))
-REGISTER_BUILTIN(EnvironGetter, 1, 0, AST::symbolFromStr("environ!"))
-REGISTER_BUILTIN(EnvironInterner, 1, 0, AST::symbolFromStr("listFromEnviron"))
-REGISTER_BUILTIN(EnvironFromList, 1, 0, AST::symbolFromStr("environFromList"))
+REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, symbolFromStr("absolutePath!"))
+REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, symbolFromStr("archDepLibName"))
+REGISTER_BUILTIN(AbsolutePathP, 1, 0, symbolFromStr("absolutePath?"))
+REGISTER_BUILTIN(EnvironGetter, 1, 0, symbolFromStr("environ!"))
+REGISTER_BUILTIN(EnvironInterner, 1, 0, symbolFromStr("listFromEnviron"))
+REGISTER_BUILTIN(EnvironFromList, 1, 0, symbolFromStr("environFromList"))
 
 }; /* end namespace FFIs */
 

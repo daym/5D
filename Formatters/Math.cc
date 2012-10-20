@@ -12,6 +12,7 @@
 namespace Formatters {
 namespace Math {
 using namespace Evaluators;
+using namespace Values;
 
 /* TODO Features: 
      * automatic indentation for "longer" expressions
@@ -50,7 +51,7 @@ static void print_text_raw(std::ostream& output, int& visible_position, const st
 	}
 }
 #define XN(x) OPL->next_precedence_level(x)
-static inline bool maybe_print_opening_paren(std::ostream& output, int& position, AST::NodeT operator_, int precedence, int precedence_limit, bool B_paren_equal_levels) {
+static inline bool maybe_print_opening_paren(std::ostream& output, int& position, NodeT operator_, int precedence, int precedence_limit, bool B_paren_equal_levels) {
 	if(precedence < precedence_limit) {
 		++position, output << '(';
 		return(true);
@@ -68,16 +69,16 @@ static inline bool maybe_print_opening_paren(std::ostream& output, int& position
 	} else
 		return(false);
 }
-static inline void maybe_print_closing_paren(std::ostream& output, int& position, AST::NodeT operator_, bool B_parend) {
+static inline void maybe_print_closing_paren(std::ostream& output, int& position, NodeT operator_, bool B_parend) {
 	if(B_parend) {
 		++position, output << ')';
 	}
 }
-static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, AST::NodeT node, int precedence_limit, bool B_paren_equal_levels) {
+static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, NodeT node, int precedence_limit, bool B_paren_equal_levels) {
 	int precedence = 0;
 	bool B_parend = maybe_print_opening_paren(output, position, NULL, precedence, precedence_limit, B_paren_equal_levels);
-	AST::NodeT parameter = get_abstraction_parameter(node);
-	AST::NodeT body = get_abstraction_body(node);
+	NodeT parameter = get_abstraction_parameter(node);
+	NodeT body = get_abstraction_body(node);
 	++position, output << '\\';
 	print_CXX(OPL, output, position, parameter, precedence_limit /* does not matter */, false);
 	++position, output << ' ';

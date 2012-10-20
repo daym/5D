@@ -12,12 +12,12 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Values/Values"
 #include "Values/Symbols"
 
-namespace AST {
+namespace Values {
 
 Node::~Node() {
 }
 
-AST::NodeT makeCons(NodeT fst, NodeT snd) {
+NodeT makeCons(NodeT fst, NodeT snd) {
 	Cons* result = new Cons;
 	result->head = fst;
 	result->tail = snd;
@@ -26,7 +26,7 @@ AST::NodeT makeCons(NodeT fst, NodeT snd) {
 Str* makeStrRaw(char* mutableText, size_t size, bool bAtomicity) {
 	if(size < 1)
 		return(NULL);
-	AST::Str* result = new AST::Str((void*) mutableText);
+	Str* result = new Str((void*) mutableText);
 	result->bAtomicity = bAtomicity;
 	result->size = size;
 	return(result);
@@ -45,8 +45,8 @@ Str* makeStrCXX(const std::string& text, bool bAtomic) {
 	memcpy(result, text.c_str(), text.length() + 1);
 	return(makeStrRaw(result, text.length(), bAtomic));
 }
-bool str_P(AST::NodeT node) {
-	return(dynamic_cast<AST::Str*>(node) != NULL);
+bool str_P(NodeT node) {
+	return(dynamic_cast<Str*>(node) != NULL);
 }
 
 Application* makeApplication(NodeT fn, NodeT argument) {
@@ -71,10 +71,10 @@ Application* makeOperation(NodeT operator_, NodeT operand_1, NodeT operand_2) {
 	else
 		return(makeApplication(makeApplication(operator_, operand_1), operand_2));
 }
-AST::Str* makeStrSlice(AST::Str* ss, int offset) {
+Str* makeStrSlice(Str* ss, int offset) {
 	assert(offset == 1);
 	assert(ss->size > 0);
-	return(AST::makeStrRaw(((char*) ss->value) + 1, ss->size - 1, ss->bAtomicity));
+	return(makeStrRaw(((char*) ss->value) + 1, ss->size - 1, ss->bAtomicity));
 }
 void set_cons_tail(NodeT cons, NodeT value) {
 	((Cons*) cons)->tail = value;
@@ -83,5 +83,5 @@ void set_box_value(NodeT box, void* value) {
 	((Box*) box)->value = value;
 }
 
-}; /* end namespace AST */
+}; /* end namespace Values */
 

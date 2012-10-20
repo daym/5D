@@ -58,7 +58,7 @@ int emitPopRegs(uint16_t regs, FILE* f) {
 }
 #define LR 14
 #define PC 15
-static AST::NodeT regNames[] = { /* in order! */
+static Values::NodeT regNames[] = { /* in order! */
 	SR0,
 	SR1,
 	SR2,

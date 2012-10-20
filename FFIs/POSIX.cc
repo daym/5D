@@ -22,8 +22,9 @@ extern "C" void * GC_dlopen(const char *path, int mode);
 
 namespace FFIs {
 using namespace Evaluators;
+using namespace Values;
 
-AST::NodeT wrapAccessLibrary(AST::NodeT options, AST::NodeT argument) {
+NodeT wrapAccessLibrary(NodeT options, NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	Evaluators::CXXArguments::const_iterator endIter = arguments.end();
@@ -33,38 +34,38 @@ AST::NodeT wrapAccessLibrary(AST::NodeT options, AST::NodeT argument) {
 	++iter;
 	assert(iter != endIter);
 	assert(iter->first == NULL);
-	AST::NodeT libName = iter->second; // Str
+	NodeT libName = iter->second; // Str
 	++iter;
 	assert(iter != endIter);
 	assert(iter->first == NULL);
-	AST::NodeT signature = iter->second; // Symbol
+	NodeT signature = iter->second; // Symbol
 	++iter;
 	assert(iter != endIter);
 	assert(iter->first == NULL);
-	AST::NodeT fnName = iter->second;
+	NodeT fnName = iter->second;
 	++iter;
 
 	void* nativeProc = body && fnName ? dlsym(body, Evaluators::get_string(fnName)) : NULL; // FIXME
 	// filename is the second argument, so ignore.
-	//return(Evaluators::reduce(AST::makeApplication(body, argument)));
+	//return(Evaluators::reduce(makeApplication(body, argument)));
 	// TODO prevent crash if get_symbol_name returned NULL
-	return(new CProcedure(nativeProc, AST::makeApplication(AST::makeApplication(AST::makeApplication(AST::symbolFromStr("requireSharedLibrary"), libName), quote(signature)), fnName), strlen(AST::get_symbol_name(signature)) - 2 + 1/*monad*/, 0, signature));
+	return(new CProcedure(nativeProc, makeApplication(makeApplication(makeApplication(symbolFromStr("requireSharedLibrary"), libName), quote(signature)), fnName), strlen(get_symbol_name(signature)) - 2 + 1/*monad*/, 0, signature));
 }
-AST::NodeT wrapLoadLibraryC(AST::NodeT nameS) {
+NodeT wrapLoadLibraryC(NodeT nameS) {
 	const char* name = Evaluators::get_string(nameS);
 	void* clib = dlopen(name, RTLD_LAZY);
 	if(!clib) {
 		fprintf(stderr, "(dlopen \"%s\") failed because: %s\n", name, dlerror());
 	}
-	return(AST::makeBox(clib, AST::makeApplication(&SharedLibraryLoader, nameS)));
-	//return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
+	return(makeBox(clib, makeApplication(&SharedLibraryLoader, nameS)));
+	//return(makeAbstraction(symbolFromStr("name"), result));
 }
-static AST::NodeT wrapLoadLibrary(AST::NodeT options, AST::NodeT filename) {
+static NodeT wrapLoadLibrary(NodeT options, NodeT filename) {
 	filename = Evaluators::reduce(filename);
 	//Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, filename);
 	//Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	//Evaluators::CXXArguments::const_iterator endIter = arguments.end();
-	AST::NodeT body = wrapLoadLibraryC(filename);
+	NodeT body = wrapLoadLibraryC(filename);
 	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&SharedLibrary, body)), filename)));
 }
 
@@ -74,8 +75,8 @@ DEFINE_FULL_OPERATION(SharedLibraryLoader, {
 DEFINE_FULL_OPERATION(SharedLibrary, {
 	return(wrapAccessLibrary(fn, argument));
 })
-REGISTER_BUILTIN(SharedLibraryLoader, 1, 0, AST::symbolFromStr("requireSharedLibrary"));
-REGISTER_BUILTIN(SharedLibrary, 4, 1, AST::symbolFromStr("requireSharedLibrary"));
+REGISTER_BUILTIN(SharedLibraryLoader, 1, 0, symbolFromStr("requireSharedLibrary"));
+REGISTER_BUILTIN(SharedLibrary, 4, 1, symbolFromStr("requireSharedLibrary"));
 bool sharedLibraryFileP(const char* name) {
 	FILE* input_file;
 	char buf[4];

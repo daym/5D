@@ -17,7 +17,7 @@ namespace GUI {
 };
 namespace REPLX {
 struct REPL;
-typedef AST::Node EnvEntry; /* actually Application, but we don't want the client to assume silly things */
+typedef Values::Node EnvEntry; /* actually Application, but we don't want the client to assume silly things */
 using namespace GUI;
 
 /*      [ ->!]            [ ->!]                  [ ->!]
@@ -47,42 +47,43 @@ fTailUserEnvironment is the last entry before the user environment, it can be us
 fTailUserEnvironmentFrontier is the last entry of the user environment. Its tail will be the code to execute.
 */
 
-static bool envEntry_P(AST::NodeT node) {
+static bool envEntry_P(Values::NodeT node) {
 	return(application_P(node) && abstraction_P(get_application_operator(node)));
 }
-static void envEntrySetTail(AST::NodeT node, AST::NodeT value) {
+/* FIXME delete this! */
+static void envEntrySetTail(Values::NodeT node, Values::NodeT value) {
 	// continue at the abstraction body embedded in the application (all other slots are used up)
 	assert(envEntry_P(node));
-	AST::NodeT op = get_application_operator(node);
+	Values::NodeT op = get_application_operator(node);
 	assert(abstraction_P(op));
-	((AST::Abstraction*)op)->body = value; // shoot me now
+	((Values::Abstraction*)op)->body = value; // shoot me now
 }
-static AST::NodeT envEntryGetTail(AST::NodeT node) {
+static Values::NodeT envEntryGetTail(Values::NodeT node) {
 	// continue at the abstraction body embedded in the application (all other slots are used up)
 	assert(envEntry_P(node));
-	AST::NodeT op = get_application_operator(node);
+	Values::NodeT op = get_application_operator(node);
 	assert(abstraction_P(op));
 	return(get_abstraction_body(op));
 }
-static AST::NodeT makeEnvEntry(AST::NodeT /* symbol */ name, AST::NodeT body, AST::NodeT next) {
+static Values::NodeT makeEnvEntry(Values::NodeT /* symbol */ name, Values::NodeT body, Values::NodeT next) {
 	return(makeApplication(makeAbstraction(name, next), body));
 }
-static void getEnvEntry(AST::NodeT entry, AST::NodeT& name, AST::NodeT& body, AST::NodeT& next) {
+static void getEnvEntry(Values::NodeT entry, Values::NodeT& name, Values::NodeT& body, Values::NodeT& next) {
 	assert(application_P(entry));
-	AST::NodeT abstraction = get_application_operator(entry);
+	Values::NodeT abstraction = get_application_operator(entry);
 	assert(abstraction_P(abstraction));
 	name = get_abstraction_parameter(abstraction);
 	next = get_abstraction_body(abstraction);
 	body = get_application_operand(entry);
 }
 
-AST::NodeT REPL_get_definition_backwards(struct REPL* self, AST::NodeT /*Symbol*/ name, size_t backOffset) {
+Values::NodeT REPL_get_definition_backwards(struct REPL* self, Values::NodeT /*Symbol*/ name, size_t backOffset) {
 	// envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL);
-	AST::NodeT x_name;
-	AST::NodeT x_body;
-	AST::NodeT x_next;
-	std::deque<AST::NodeT> matches;
-	for(AST::NodeT entry = envEntryGetTail(self->fTailEnvironment); getEnvEntry(entry, x_name, x_body, x_next), true; entry = x_next) {
+	Values::NodeT x_name;
+	Values::NodeT x_body;
+	Values::NodeT x_next;
+	std::deque<Values::NodeT> matches;
+	for(Values::NodeT entry = envEntryGetTail(self->fTailEnvironment); getEnvEntry(entry, x_name, x_body, x_next), true; entry = x_next) {
 		if(x_name == name) {
 			matches.push_front(x_body);
 		}
@@ -94,13 +95,13 @@ AST::NodeT REPL_get_definition_backwards(struct REPL* self, AST::NodeT /*Symbol*
 	else
 		return(NULL);
 }
-AST::NodeT REPL_get_definition(struct REPL* self, size_t offset) {
+Values::NodeT REPL_get_definition(struct REPL* self, size_t offset) {
 	// envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL);
-	AST::NodeT x_name;
-	AST::NodeT x_body;
-	AST::NodeT x_next;
-	std::deque<AST::NodeT> matches;
-	for(AST::NodeT entry = envEntryGetTail(self->fTailEnvironment); getEnvEntry(entry, x_name, x_body, x_next), true; entry = x_next, --offset) {
+	Values::NodeT x_name;
+	Values::NodeT x_body;
+	Values::NodeT x_next;
+	std::deque<Values::NodeT> matches;
+	for(Values::NodeT entry = envEntryGetTail(self->fTailEnvironment); getEnvEntry(entry, x_name, x_body, x_next), true; entry = x_next, --offset) {
 		if(offset == 0)
 			return(x_body);
 		if(entry == self->fTailUserEnvironmentFrontier)
@@ -111,7 +112,7 @@ AST::NodeT REPL_get_definition(struct REPL* self, size_t offset) {
 bool exit_P(const char* text) {
 	return(strncmp(text, "#exit", strlen("#exit")) == 0);
 }
-AST::NodeT REPL_prepare(struct REPL* self, AST::NodeT input);
+Values::NodeT REPL_prepare(struct REPL* self, Values::NodeT input);
 Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self) {
 	Scanners::OperatorPrecedenceList* result;
 	result = new Scanners::OperatorPrecedenceList;
@@ -119,7 +120,7 @@ Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct RE
 	return(result);
 }
 template<typename T>
-AST::NodeT REPL_parse(struct REPL* self, const char* command, int commandLen, T destination/*for errors*/) {
+Values::NodeT REPL_parse(struct REPL* self, const char* command, int commandLen, T destination/*for errors*/) {
 	// TODO just call the builtin! RStrMathParser
 	/* is not allowed to both print stuff AND return non-null, except when it updates the destination iter */
 	Scanners::MathParser parser;
@@ -127,7 +128,7 @@ AST::NodeT REPL_parse(struct REPL* self, const char* command, int commandLen, T 
 	if(input_file) {
 		try {
 			parser.push(input_file, 0, "<stdin>");
-			AST::NodeT result = NULL;
+			Values::NodeT result = NULL;
 			result = parser.parse(REPL_ensure_operator_precedence_list(self), Symbols::SlessEOFgreater);
 			fclose(input_file);
 			return(result);
@@ -140,13 +141,13 @@ AST::NodeT REPL_parse(struct REPL* self, const char* command, int commandLen, T 
 	return(NULL);
 }
 template<typename T>
-bool REPL_execute(struct REPL* self, AST::NodeT input, T destination) {
+bool REPL_execute(struct REPL* self, Values::NodeT input, T destination) {
 	bool B_ok = false;
 	try {
-		AST::NodeT result = input;
+		Values::NodeT result = input;
 		Evaluators::resetWorld();
 		if(self->fBRunIO)
-			result = AST::makeApplication(&Evaluators::IORunner, result);
+			result = Values::makeApplication(&Evaluators::IORunner, result);
 		result = REPL_prepare(self, result);
 		result = Evaluators::reduce(result);
 		/*std::string v = result ? result->str() : "OK";
@@ -169,66 +170,66 @@ bool REPL_execute(struct REPL* self, AST::NodeT input, T destination) {
 #define DEFINE_REPL_OPERATION(P, B) \
 	DEFINE_FULL_OPERATION(P, B)
 
-static AST::NodeT REPL_import(AST::NodeT options, AST::NodeT argument);
+static Values::NodeT REPL_import(Values::NodeT options, Values::NodeT argument);
 DEFINE_REPL_OPERATION(RImporter, {
 	return(REPL_import(fn, argument));
 })
-static AST::HashTable setFromList(AST::NodeT listNode) {
-	AST::HashTable result;
-	for(AST::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
-		const char* name = AST::get_symbol1_name(AST::get_cons_head(node));
+static Values::HashTable setFromList(Values::NodeT listNode) {
+	Values::HashTable result;
+	for(Values::Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
+		const char* name = Values::get_symbol1_name(Values::get_cons_head(node));
 		// TODO error handling
 		if(name)
 			result[GCx_strdup(name)] = NULL;
 	}
 	return(result);
 }
-static AST::NodeT REPL_import(AST::NodeT options, AST::NodeT argument) {
+static Values::NodeT REPL_import(Values::NodeT options, Values::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	struct REPL* self = (struct REPL*)(Evaluators::get_pointer(iter->second));
 	assert(self);
 	++iter;
 	assert(iter != arguments.end());
-	AST::NodeT filename = iter->second;
+	Values::NodeT filename = iter->second;
 	FETCH_WORLD(iter);
 	if(!str_P(filename))
 		throw Evaluators::EvaluationException("import: expected Str filename");
-	AST::NodeT body = Evaluators::import_module(options/*FIXME*/, filename);
+	Values::NodeT body = Evaluators::import_module(options/*FIXME*/, filename);
 	//body = Evaluators::annotate(body);
 	//REPL_prepare(self, body);
 	//REPL_add_to_environment(self, name, body);
 
 	// TODO make it possible to limit imports (use whitelist and blacklist)
-	AST::NodeT whitelistN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("whitelist:"));
-	AST::HashTable whitelist = setFromList(whitelistN);
-	AST::NodeT blacklistN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("blacklist:"));
-	AST::HashTable blacklist = setFromList(blacklistN);
-	AST::NodeT prefixN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("prefix:"));
+	Values::NodeT whitelistN = Evaluators::CXXgetKeywordArgumentValue(arguments, Values::keywordFromStr("whitelist:"));
+	Values::HashTable whitelist = setFromList(whitelistN);
+	Values::NodeT blacklistN = Evaluators::CXXgetKeywordArgumentValue(arguments, Values::keywordFromStr("blacklist:"));
+	Values::HashTable blacklist = setFromList(blacklistN);
+	Values::NodeT prefixN = Evaluators::CXXgetKeywordArgumentValue(arguments, Values::keywordFromStr("prefix:"));
 	char* prefix = prefixN ? Evaluators::get_string(prefixN) : NULL;
 
-	AST::NodeT exports = Evaluators::reduce(AST::makeApplication(body, Symbols::Sexports));
-	AST::NodeT usedExports = NULL;
+	Values::NodeT exports = Evaluators::reduce(Values::makeApplication(body, Symbols::Sexports));
+	Values::NodeT usedExports = NULL;
 	blacklist["exports"] = NULL; // Sexports
-	for(AST::Cons* node = Evaluators::evaluateToCons(exports); node; node = Evaluators::evaluateToCons(node->tail)) {
-		AST::NodeT key = get_cons_head(node);
-		const char* xname = AST::get_symbol1_name(key);
+	for(Values::Cons* node = Evaluators::evaluateToCons(exports); node; node = Evaluators::evaluateToCons(node->tail)) {
+		Values::NodeT key = get_cons_head(node);
+		const char* xname = Values::get_symbol1_name(key);
 		if(xname && (whitelist.empty() || whitelist.find(xname) != whitelist.end()) && blacklist.find(xname) == blacklist.end()) {
-			AST::NodeT xbody = AST::makeApplication(body, Evaluators::quote(key));
+			Values::NodeT xbody = Values::makeApplication(body, Evaluators::quote(key));
 			//REPL_prepare(self, xbody);
 			if(prefix && prefix[0]) {
 				std::stringstream sst;
 				sst << prefix << xname;
 				std::string v = sst.str();
-				key = AST::symbolFromStr(v.c_str());
+				key = Values::symbolFromStr(v.c_str());
 			}
 			REPL_add_to_environment(self, key, xbody);
-			usedExports = AST::makeCons(key, usedExports);
+			usedExports = Values::makeCons(key, usedExports);
 		}
 	}
 	return(CHANGED_WORLD(usedExports));
 }
-static AST::NodeT REPL_define(AST::NodeT options, AST::NodeT argument) {
+static Values::NodeT REPL_define(Values::NodeT options, Values::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	assert(iter != arguments.end());
@@ -236,17 +237,17 @@ static AST::NodeT REPL_define(AST::NodeT options, AST::NodeT argument) {
 	assert(self);
 	++iter;
 	assert(iter != arguments.end());
-	AST::NodeT name = iter->second;
+	Values::NodeT name = iter->second;
 	++iter;
 	assert(iter != arguments.end());
-	AST::NodeT body = iter->second;
+	Values::NodeT body = iter->second;
 	FETCH_WORLD(iter);
 	/* make sure it would actually work... (otherwise would throw exception) */
 	REPL_prepare(self, body);
 	REPL_add_to_environment(self, name, body);
 	return(CHANGED_WORLD(body));
 }
-static AST::NodeT REPL_describe(AST::NodeT options, AST::NodeT argument) {
+static Values::NodeT REPL_describe(Values::NodeT options, Values::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	struct REPL* self = (struct REPL*)(Evaluators::get_pointer(arguments.front().second));
 	assert(self);
@@ -256,15 +257,15 @@ static AST::NodeT REPL_describe(AST::NodeT options, AST::NodeT argument) {
 	assert(iter != arguments.end());
 	argument = iter->second;
 	FETCH_WORLD(iter);
-	AST::NodeT backOffsetNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("@backOffset:"));
+	Values::NodeT backOffsetNode = Evaluators::CXXgetKeywordArgumentValue(arguments, Values::keywordFromStr("@backOffset:"));
 	int backOffset = backOffsetNode ? Evaluators::get_int(backOffsetNode) : 0;
-	if(AST::get_symbol1_name(argument) != NULL) {
-		AST::NodeT body = REPL_get_definition_backwards(self, argument, backOffset);
+	if(Values::get_symbol1_name(argument) != NULL) {
+		Values::NodeT body = REPL_get_definition_backwards(self, argument, backOffset);
 		return(CHANGED_WORLD(body));
 	} else
 		return(CHANGED_WORLD(argument));
 }
-static AST::NodeT REPL_purge(AST::NodeT options, AST::NodeT argument) {
+static Values::NodeT REPL_purge(Values::NodeT options, Values::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	assert(iter != arguments.end());
@@ -274,7 +275,7 @@ static AST::NodeT REPL_purge(AST::NodeT options, AST::NodeT argument) {
 	// TODO actually purge
 	return(CHANGED_WORLD(NULL));
 }
-static AST::NodeT REPL_getOperatorPrecedenceList(AST::NodeT options, AST::NodeT argument) {
+static Values::NodeT REPL_getOperatorPrecedenceList(Values::NodeT options, Values::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	assert(iter != arguments.end());
@@ -282,10 +283,10 @@ static AST::NodeT REPL_getOperatorPrecedenceList(AST::NodeT options, AST::NodeT 
 	std::string v = Evaluators::str(iter->second);
 	assert(self);
 	FETCH_WORLD(iter);
-	return(CHANGED_WORLD(AST::makeBox(REPL_ensure_operator_precedence_list(self), NULL/*TODO*/)));
+	return(CHANGED_WORLD(Values::makeBox(REPL_ensure_operator_precedence_list(self), NULL/*TODO*/)));
 }
 using namespace GUI;
-static AST::NodeT REPL_execute1(AST::NodeT options, AST::NodeT argument) {
+static Values::NodeT REPL_execute1(Values::NodeT options, Values::NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	assert(iter != arguments.end());
@@ -293,7 +294,7 @@ static AST::NodeT REPL_execute1(AST::NodeT options, AST::NodeT argument) {
 	assert(self);
 	++iter;
 	assert(iter != arguments.end());
-	AST::NodeT expression = iter->second;
+	Values::NodeT expression = iter->second;
 	{
 		FETCH_WORLD(iter);
 		FILL_END_ITER
@@ -304,8 +305,8 @@ static AST::NodeT REPL_execute1(AST::NodeT options, AST::NodeT argument) {
 //fTailEnvironment
 //fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */
 //fTailUserEnvironmentFrontier
-void REPL_add_to_environment_simple(struct REPL* self, AST::NodeT name, AST::NodeT value);
-static void REPL_add_static_builtin_binding(struct REPL* self, AST::NodeT name, AST::NodeT value) {
+void REPL_add_to_environment_simple(struct REPL* self, Values::NodeT name, Values::NodeT value);
+static void REPL_add_static_builtin_binding(struct REPL* self, Values::NodeT name, Values::NodeT value) {
 	REPL_add_to_environment_simple(self, name, value);
 }
 using namespace Evaluators;
@@ -331,7 +332,7 @@ DEFINE_REPL_OPERATION(RPurger, {
 DEFINE_REPL_OPERATION(RExecutor, {
 	return(REPL_execute1(fn, argument));
 })
-//#define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, uncurried((AST::NodeT) v, (AST::NodeT) AST::makeApplication(&Evaluators::Quoter, n)))
+//#define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, uncurried((Values::NodeT) v, (Values::NodeT) Values::makeApplication(&Evaluators::Quoter, n)))
 #define REPL_add_builtin_method(s, n, v) REPL_add_to_environment_simple(s, n, v)
 static void REPL_init_builtins(struct REPL* self) {
 	if(self->fTailUserEnvironment && envEntryGetTail(self->fTailUserEnvironment)) {
@@ -345,14 +346,14 @@ static void REPL_init_builtins(struct REPL* self) {
 	}
 	Evaluators::BuiltinSelector_init();
 	REPL_add_static_builtin_binding(self, Symbols::Squote, &Evaluators::Quoter); /* keep at the beginning */
-	REPL_add_static_builtin_binding(self, Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb)))); // TODO close
+	REPL_add_static_builtin_binding(self, Symbols::Sdot, Values::makeAbstraction(Symbols::Sa, Values::makeAbstraction(Symbols::Sb, Values::makeApplication(Symbols::Sa, Symbols::Sb)))); // TODO close
 	REPL_add_static_builtin_binding(self, Symbols::Slet, &Evaluators::Quoter); // dummy
 	// ??? REPL_add_static_builtin_binding(self, Symbols::Sinline, &Evaluators::Reducer);
 
-	REPL_add_static_builtin_binding(self, AST::symbolFromStr("REPL"), AST::makeAbstraction(Symbols::Sa, 
-		AST::makeApplication(AST::makeApplication(
-			&REPLX::REPLMethodGetter, // AST::makeApplication(&Evaluators::BuiltinGetter, AST::symbolFromStr("REPLMethods")), 
-			Symbols::Sa), AST::makeBox(self, AST::symbolFromStr("REPL")))));
+	REPL_add_static_builtin_binding(self, Values::symbolFromStr("REPL"), Values::makeAbstraction(Symbols::Sa, 
+		Values::makeApplication(Values::makeApplication(
+			&REPLX::REPLMethodGetter, // Values::makeApplication(&Evaluators::BuiltinGetter, Values::symbolFromStr("REPLMethods")), 
+			Symbols::Sa), Values::makeBox(self, Values::symbolFromStr("REPL")))));
 	REPL_add_static_builtin_binding(self, Symbols::SrequireModule, &ModuleLoader);
 	REPL_add_builtin_method(self, Symbols::SBuiltins, &Evaluators::BuiltinGetter);
 	REPL_add_builtin_method(self, Symbols::Scolon, &Evaluators::Conser); // module dispatch list needs that anyway
@@ -360,10 +361,10 @@ static void REPL_init_builtins(struct REPL* self) {
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
 }
-//int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::NodeT name, AST::NodeT value);
+//int REPL_add_to_environment_simple_GUI(struct REPL* self, Values::NodeT name, Values::NodeT value);
 /* returns: whether we just inserted something after endIter, ostensibly moving stuff */
-bool REPL_add_to_environment_simple_end(struct REPL* self, AST::NodeT name, AST::NodeT value, AST::NodeT endIter) {
-	using namespace AST;
+bool REPL_add_to_environment_simple_end(struct REPL* self, Values::NodeT name, Values::NodeT value, Values::NodeT endIter) {
+	using namespace Values;
 	using namespace Evaluators;
 	int index = REPL_add_to_environment_simple_GUI(self, name, value);
 	assert(index >= 0);
@@ -381,26 +382,26 @@ bool REPL_add_to_environment_simple_end(struct REPL* self, AST::NodeT name, AST:
 	envEntrySetTail(prevNode, newNode);
 	return(prevNode == endIter);
 }
-void REPL_add_to_environment_simple(struct REPL* self, AST::NodeT name, AST::NodeT value) {
+void REPL_add_to_environment_simple(struct REPL* self, Values::NodeT name, Values::NodeT value) {
 	if(REPL_add_to_environment_simple_end(self, name, value, self->fTailUserEnvironmentFrontier))
 		self->fTailUserEnvironmentFrontier = envEntryGetTail(self->fTailUserEnvironmentFrontier);
 }
-static AST::NodeT REPL_close_environment(struct REPL* self, AST::NodeT node) {
+static Values::NodeT REPL_close_environment(struct REPL* self, Values::NodeT node) {
 	if(self->fTailUserEnvironmentFrontier) {
 		if(increaseGeneration() == 1) { /* overflow */
-			mapTree(NULL, AST::uncacheNodeResult, Evaluators::evaluateToCons(self->fTailUserEnvironment)->tail);
+			mapTree(NULL, Values::uncacheNodeResult, Evaluators::evaluateToCons(self->fTailUserEnvironment)->tail);
 		}
 		envEntrySetTail(self->fTailUserEnvironmentFrontier, node);
 		return(envEntryGetTail(self->fTailEnvironment));
 	} else
 		return(node);
 }
-static void REPL_unfilter_environment(struct REPL* self, AST::NodeT environment) {
+static void REPL_unfilter_environment(struct REPL* self, Values::NodeT environment) {
 	/* filters out Builtins */
-	using namespace AST;
-	AST::NodeT name;
-	AST::NodeT body;
-	AST::NodeT next;
+	using namespace Values;
+	Values::NodeT name;
+	Values::NodeT body;
+	Values::NodeT next;
 	if(environment == Symbols::Snil) {
 		self->fTailUserEnvironmentFrontier = self->fTailUserEnvironment;
 		return;
@@ -423,12 +424,12 @@ void REPL_set_environment(struct REPL* self, EnvEntry* environment) {
 	REPL_unfilter_environment(self, environment);
 	assert(self->fTailUserEnvironmentFrontier != NULL);
 }
-AST::NodeT REPL_get_user_environment(struct REPL* self) {
+Values::NodeT REPL_get_user_environment(struct REPL* self) {
 	if(self->fTailUserEnvironmentFrontier)
 		envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL); /* clear the last command from the environment, nobody cares. */
 	return(self->fTailUserEnvironment ? envEntryGetTail(self->fTailUserEnvironment) : NULL);
 }
-AST::NodeT REPL_prepare(struct REPL* self, AST::NodeT input) {
+Values::NodeT REPL_prepare(struct REPL* self, Values::NodeT input) {
 	return(prepare_module(REPL_close_environment(self, input)));
 }
 
@@ -437,12 +438,12 @@ defrec 'a 5
 let a := rec\f 5 in ...
 */
 
-REGISTER_BUILTIN(RImporter, (-3), 1, AST::symbolFromStr("import!"))
-REGISTER_BUILTIN(RInformant, (-3), 1, AST::symbolFromStr("describe!"))
-REGISTER_BUILTIN(RDefiner, (-4), 1, AST::symbolFromStr("define!"))
-REGISTER_BUILTIN(ROperatorPrecedenceListGetter, (-2), 1, AST::symbolFromStr("getOperatorPrecedenceList!"))
-REGISTER_BUILTIN(RPurger, (-2), 1, AST::symbolFromStr("purge!"))
-REGISTER_BUILTIN(RExecutor, (-3), 1, AST::symbolFromStr("execute!"))
+REGISTER_BUILTIN(RImporter, (-3), 1, Values::symbolFromStr("import!"))
+REGISTER_BUILTIN(RInformant, (-3), 1, Values::symbolFromStr("describe!"))
+REGISTER_BUILTIN(RDefiner, (-4), 1, Values::symbolFromStr("define!"))
+REGISTER_BUILTIN(ROperatorPrecedenceListGetter, (-2), 1, Values::symbolFromStr("getOperatorPrecedenceList!"))
+REGISTER_BUILTIN(RPurger, (-2), 1, Values::symbolFromStr("purge!"))
+REGISTER_BUILTIN(RExecutor, (-3), 1, Values::symbolFromStr("execute!"))
 REGISTER_STR(REPL, return("REPL");)
 
 }; /* end namespace */

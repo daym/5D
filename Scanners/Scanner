@@ -33,7 +33,7 @@ public:
 #define SCROLL_RIGHT(x) \
 	(x[4] = x[3], x[3] = x[2], x[2] = x[1], x[1] = x[0], x[4])
 
-class Scanner : public AST::Node {
+class Scanner : public Values::Node {
 protected:
 	FILE* input_file;
 	//std::stringstream matchtext;
@@ -82,9 +82,9 @@ protected:
 	void decrease_brace_level() {
 		--brace_level;
 	}
-	void inject(AST::NodeT input_value);
+	void inject(Values::NodeT input_value);
 public:
-	AST::NodeT input_value; // read-only
+	Values::NodeT input_value; // read-only
 	void push(FILE* input_file, int line_number, const char* input_name);
 	void pop(void);
 	int get_position(void) const {
@@ -101,14 +101,14 @@ public:
 	Scanner(void);
 	bool EOFP(void) const;
 	void ensure_end(void);
-	AST::NodeT consume(AST::NodeT expected_value = NULL);
+	Values::NodeT consume(Values::NodeT expected_value = NULL);
 	bool setHonorIndentation(bool value) {
 		bool result = B_honor_indentation;
 		B_honor_indentation = value;
 		return(result);
 	}
 private:
-	std::list<AST::NodeT> injected_input_values;
+	std::list<Values::NodeT> injected_input_values;
 	bool deinject();
 	void parse_token(void);
 	void parse_optional_whitespace(void);

@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace Scanners {
 
-inline bool macro_operator_P(AST::NodeT operator_) {
+inline bool macro_operator_P(Values::NodeT operator_) {
 	return(operator_ == Symbols::Sdefine || 
 	       operator_ == Symbols::Sdef || 
 	       operator_ == Symbols::Sdefrec || 
@@ -30,30 +30,30 @@ class ShuntingYardParser {
 private:
 	Scanner* scanner;
 	OperatorPrecedenceList* OPL;
-	AST::NodeT bound_symbols;
-	AST::NodeT parse_abstraction_parameter(void);
-	int get_operator_precedence_and_associativity(AST::NodeT node, AST::NodeT& outAssociativity);
-	int get_operator_precedence(AST::NodeT node);
-	AST::NodeT expand_macro(AST::NodeT op1, AST::NodeT suffix);
-	bool macro_standin_P(AST::NodeT op1);
-	AST::NodeT expand_simple_macro(AST::NodeT value);
+	Values::NodeT bound_symbols;
+	Values::NodeT parse_abstraction_parameter(void);
+	int get_operator_precedence_and_associativity(Values::NodeT node, Values::NodeT& outAssociativity);
+	int get_operator_precedence(Values::NodeT node);
+	Values::NodeT expand_macro(Values::NodeT op1, Values::NodeT suffix);
+	bool macro_standin_P(Values::NodeT op1);
+	Values::NodeT expand_simple_macro(Values::NodeT value);
 protected:
-	AST::NodeT parse_exports_macro(void);
-	AST::NodeT parse_exports_macro_body(void);
-	AST::NodeT parse_imports_macro_body(void);
-	AST::NodeT parse_list_macro(void);
-	AST::NodeT parse_list_macro_body(void);
-	AST::NodeT parse_value(void); /* what the macros think constitutes an atom */
-	AST::NodeT parse_let_macro(AST::NodeT operator_);
-	AST::NodeT parse_import_macro(void);
-	AST::NodeT parse_define_macro(AST::NodeT operator_);
-	AST::NodeT parse_macro(void);
-	AST::NodeT parse_quote_macro(void);
+	Values::NodeT parse_exports_macro(void);
+	Values::NodeT parse_exports_macro_body(void);
+	Values::NodeT parse_imports_macro_body(void);
+	Values::NodeT parse_list_macro(void);
+	Values::NodeT parse_list_macro_body(void);
+	Values::NodeT parse_value(void); /* what the macros think constitutes an atom */
+	Values::NodeT parse_let_macro(Values::NodeT operator_);
+	Values::NodeT parse_import_macro(void);
+	Values::NodeT parse_define_macro(Values::NodeT operator_);
+	Values::NodeT parse_macro(void);
+	Values::NodeT parse_quote_macro(void);
 public:
 	ShuntingYardParser(void);
-	AST::NodeT parse_expression(OperatorPrecedenceList* OPL, AST::NodeT terminator);
-	AST::NodeT parse(OperatorPrecedenceList* operator_precedence_list, AST::NodeT terminator);
-	bool any_operator_P(AST::NodeT node);
+	Values::NodeT parse_expression(OperatorPrecedenceList* OPL, Values::NodeT terminator);
+	Values::NodeT parse(OperatorPrecedenceList* operator_precedence_list, Values::NodeT terminator);
+	bool any_operator_P(Values::NodeT node);
 public: 
 	inline bool EOFP(void) const {
 		return(scanner->EOFP());
@@ -63,9 +63,9 @@ public:
 	int get_position(void) const;
 
 protected:
-	AST::NodeT handle_unary_operator(AST::NodeT operator_);
-	void enter_abstraction(AST::NodeT name);
-	void leave_abstraction(AST::NodeT name);
+	Values::NodeT handle_unary_operator(Values::NodeT operator_);
+	void enter_abstraction(Values::NodeT name);
+	void leave_abstraction(Values::NodeT name);
 };
 
 }; /* end namespace */

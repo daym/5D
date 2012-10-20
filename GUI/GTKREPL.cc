@@ -53,9 +53,10 @@ bool interrupted_P(void) {
 };
 
 namespace REPLX {
+using namespace Values;
 
 struct Completer;
-struct REPL : AST::Node {
+struct REPL : Node {
 	GtkWindow* fWidget;
 	GtkBox* fMainBox;
 	GtkTextView* fOutputArea;
@@ -82,16 +83,16 @@ struct REPL : AST::Node {
 	char* fSearchTerm;
 	bool fBSearchUpwards;
 	bool fBSearchCaseSensitive;
-	AST::NodeT fTailEnvironment;
-	AST::NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::NodeT fTailUserEnvironmentFrontier;
-	AST::HashTable* fModules;
+	NodeT fTailEnvironment;
+	NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	NodeT fTailUserEnvironmentFrontier;
+	HashTable* fModules;
 	GtkTextIter fCursorPosition;
 	bool fBRunIO;
 };
 };
 namespace GUI {
-int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::NodeT name, AST::NodeT value);
+int REPL_add_to_environment_simple_GUI(struct REPL* self, NodeT name, NodeT value);
 void REPL_insert_into_output_buffer(struct REPL* self, GtkTextIter* destination, const char* text);
 void REPL_set_file_modified(struct REPL* self, bool value);
 void REPL_queue_scroll_down(struct REPL* self);
@@ -196,7 +197,7 @@ char* REPL_get_output_text(struct REPL* self, GtkTextIter* beginning, GtkTextIte
 	/*g_utf8_pointer_to_offset(str, str+byte_index)*/
 	return(result);
 }
-static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, GtkTextIter* destination);
+static void REPL_enqueue_LATEX(struct REPL* self, NodeT node, GtkTextIter* destination);
 static gboolean REPL_scroll_down(struct REPL* self) {
 	GtkTextIter iter;
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &iter);
@@ -215,7 +216,7 @@ void REPL_insert_error_message(struct REPL* self, GtkTextIter* destination, cons
 	REPL_set_file_modified(self, true);
 	REPL_queue_scroll_down(self);
 }
-/*bool REPL_execute_end(struct REPL* self, AST::NodeT expression) {
+/*bool REPL_execute_end(struct REPL* self, NodeT expression) {
 	gtk_text_buffer_get_end_iter(self->fOutputBuffer, &self->fCursorPosition);
 	return REPL_execute(self, input, &end);
 }*/
@@ -224,7 +225,7 @@ static void REPL_front_execute(struct REPL* self, gboolean B_IO) {
 	GtkTextIter end;
 	gboolean B_from_entry = false;
 	gchar* text;
-	AST::NodeT input;
+	NodeT input;
 	self->fBRunIO = B_IO;
 	if(!gtk_text_buffer_get_selection_bounds(self->fOutputBuffer, &beginning, &end)) {
 		gtk_text_buffer_get_start_iter(self->fOutputBuffer, &beginning);
@@ -280,7 +281,7 @@ static void REPL_handle_environment_row_activation(struct REPL* self, GtkTreePat
 		if(!command)
 			return;
 		gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end);
-		AST::NodeT body = REPL_get_definition(self, *gtk_tree_path_get_indices(path));
+		NodeT body = REPL_get_definition(self, *gtk_tree_path_get_indices(path));
 		REPL_enqueue_LATEX(self, body, &end);
 		B_ok = true;
 	}
@@ -401,13 +402,13 @@ static void REPL_handle_add_environment_item(struct REPL* self, GtkAction* actio
 		gtk_text_buffer_get_start_iter(buffer, &beginning);
 		gtk_text_buffer_get_end_iter(buffer, &end);
 		char* text = gtk_text_buffer_get_text(buffer, &beginning, &end, FALSE);
-		AST::NodeT value = NULL;
+		NodeT value = NULL;
 		try {
 			GtkTextIter end2;
 			gtk_text_buffer_get_end_iter(self->fOutputBuffer, &end2);
 			value = REPL_parse(self, text, strlen(text), &end2);
 			REPL_prepare(self, value);
-			REPL_add_to_environment_simple(self, AST::symbolFromStr(name), value);
+			REPL_add_to_environment_simple(self, symbolFromStr(name), value);
 		} catch(Scanners::ParseException& e) {
 			std::string v = e.what() ? e.what() : "error";
 			GtkDialog* messageDialog = (GtkDialog*) gtk_message_dialog_new(GTK_WINDOW(dialog), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_CLOSE, "%s", v.c_str());
@@ -515,9 +516,9 @@ static void REPL_handle_find_next(struct REPL* self, GtkAction* action) {
 static void handle_about_response(GtkDialog* dialog, gint response_id, gpointer user_data) {
 	gtk_widget_hide(GTK_WIDGET(dialog));
 }
-static AST::Cons* tips;
+static Cons* tips;
 static int current_tip_index = -1;
-static AST::Cons* current_tip = NULL;
+static Cons* current_tip = NULL;
 void REPL_load_tips(struct REPL* self) {
 	FILE* input_file;
 	std::string d = Evaluators::get_shared_dir();
@@ -525,12 +526,12 @@ void REPL_load_tips(struct REPL* self) {
 	input_file = fopen(d.c_str(), "r");
 	if(input_file) {
 		Scanners::SExpressionParser parser;
-		AST::NodeT contents;
+		NodeT contents;
 		parser.push(input_file, 0, "<stdin>");
 		contents = parser.parse_S_Expression();
 		fclose(input_file);
-		AST::Cons* contentsCons = Evaluators::evaluateToCons(contents);
-		if(contentsCons && contentsCons->head == AST::symbolFromStr("tips5DV1"))
+		Cons* contentsCons = Evaluators::evaluateToCons(contents);
+		if(contentsCons && contentsCons->head == symbolFromStr("tips5DV1"))
 			tips = Evaluators::evaluateToCons(contentsCons->tail);
 		else
 			tips = NULL;
@@ -550,8 +551,8 @@ static void handle_tips_response(GtkDialog* dialog, gint response_id, struct REP
 		}
 	} else if(response_id == 1/*PREV*/) {
 		if(current_tip) {
-			AST::Cons* previous_tip = NULL;
-			for(AST::Cons* n = tips; n != current_tip; n = Evaluators::evaluateToCons(n->tail))
+			Cons* previous_tip = NULL;
+			for(Cons* n = tips; n != current_tip; n = Evaluators::evaluateToCons(n->tail))
 				previous_tip = n;
 			if(previous_tip)
 				--current_tip_index;
@@ -841,10 +842,10 @@ void REPL_init(struct REPL* self, GtkWindow* parent) {
 	if(Config_get_show_tips(self->fConfig))
 		REPL_show_tips(self);
 }
-int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::NodeT sym, AST::NodeT value) {
+int REPL_add_to_environment_simple_GUI(struct REPL* self, NodeT sym, NodeT value) {
 	GtkTreeIter iter;
 	GtkTreePath* path = NULL;
-	const char* name = AST::get_symbol1_name(sym);
+	const char* name = get_symbol1_name(sym);
 	g_hash_table_replace(self->fEnvironmentKeys, g_strdup(name), gtk_tree_iter_copy(&iter));
 	gtk_tree_view_get_cursor(self->fEnvironmentView, &path, NULL);
 	if(path) {
@@ -871,7 +872,7 @@ int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::NodeT sym, AST::N
 GtkWidget* REPL_get_widget(struct REPL* self) {
 	return(GTK_WIDGET(self->fWidget));
 }
-static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, GtkTextIter* destination) {
+static void REPL_enqueue_LATEX(struct REPL* self, NodeT node, GtkTextIter* destination) {
 	//Formatters::Math::print(REPL_ensure_operator_precedence_list(self), stdout, 0, 0, node);
 	//Formatters::print_S_Expression(stdout, 0, 0, node);
 	//fprintf(stdout, "\n");
@@ -938,7 +939,7 @@ void REPL_append_to_output_buffer(struct REPL* self, const char* o_text) {
 		} else {
 			FILE* input_file;
 			Scanners::SExpressionParser parser;
-			AST::NodeT content;
+			NodeT content;
 			next_text = image_match + 3;
 			*image_match = 0;
 			gtk_text_buffer_get_end_iter(self->fOutputBuffer, &text_end);

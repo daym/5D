@@ -9,45 +9,45 @@ namespace REPL {
 struct REPL {
 	Scanners::OperatorPrecedenceList* fOPL;
 	Environment* fValenceEnvironment;
-	AST::NodeT fEnvironment;
-	AST::NodeT fEnvironmentTail;
-	AST::NodeT fEnvironmentFrontier; // see tail
+	NodeT fEnvironment;
+	NodeT fEnvironmentTail;
+	NodeT fEnvironmentFrontier; // see tail
 };
-static bool envEntry_P(AST::NodeT node) {
+static bool envEntry_P(NodeT node) {
 	return(application_P(node) && abstraction_P(get_application_operator(node)));
 }
-static void envEntrySetTail(AST::NodeT node, AST::NodeT value) {
+static void envEntrySetTail(NodeT node, NodeT value) {
 	// continue at the abstraction body embedded in the application (all other slots are used up)
 	assert(envEntry_P(node));
-	AST::NodeT op = get_application_operator(node);
+	NodeT op = get_application_operator(node);
 	assert(abstraction_P(op));
-	((AST::Abstraction*)op)->body = value; // shoot me now
+	((Abstraction*)op)->body = value; // shoot me now
 }
-static AST::NodeT envEntryGetTail(AST::NodeT node) {
+static NodeT envEntryGetTail(NodeT node) {
 	// continue at the abstraction body embedded in the application (all other slots are used up)
 	assert(envEntry_P(node));
-	AST::NodeT op = get_application_operator(node);
+	NodeT op = get_application_operator(node);
 	assert(abstraction_P(op));
 	return(get_abstraction_body(op));
 }
-static AST::NodeT makeEnvEntry(AST::Symbol* name, AST::NodeT body, AST::NodeT next) {
+static NodeT makeEnvEntry(Symbol* name, NodeT body, NodeT next) {
 	return(makeApplication(makeAbstraction(name, next), body));
 }
-static void getEnvEntry(AST::NodeT entry, AST::NodeT& name, AST::NodeT& body, AST::NodeT& next) {
+static void getEnvEntry(NodeT entry, NodeT& name, NodeT& body, NodeT& next) {
 	assert(application_P(entry));
-	AST::NodeT abstraction = get_application_operator(entry);
+	NodeT abstraction = get_application_operator(entry);
 	assert(abstraction_P(abstraction));
 	name = get_abstraction_parameter(abstraction);
 	next = get_abstraction_body(abstraction);
 	body = get_application_operand(entry);
 }
-AST::NodeT REPL_get_definition_backwards(struct REPL* self, AST::Symbol* name, size_t backOffset) {
+NodeT REPL_get_definition_backwards(struct REPL* self, Symbol* name, size_t backOffset) {
 	// envEntrySetTail(self->fTailUserEnvironmentFrontier, NULL);
-	AST::NodeT x_name;
-	AST::NodeT x_body;
-	AST::NodeT x_next;
-	std::deque<AST::NodeT> matches;
-	for(AST::NodeT entry = envEntryGetTail(self->fEnvironmentTail); getEnvEntry(entry, x_name, x_body, x_next), true; entry = x_next) {
+	NodeT x_name;
+	NodeT x_body;
+	NodeT x_next;
+	std::deque<NodeT> matches;
+	for(NodeT entry = envEntryGetTail(self->fEnvironmentTail); getEnvEntry(entry, x_name, x_body, x_next), true; entry = x_next) {
 		if(x_name == name) {
 			matches.push_front(x_body);
 		}
@@ -59,7 +59,7 @@ AST::NodeT REPL_get_definition_backwards(struct REPL* self, AST::Symbol* name, s
 	else
 		return(NULL);
 }
-static AST::NodeT REPL_close_environment(struct REPL* self, AST::NodeT node) {
+static NodeT REPL_close_environment(struct REPL* self, NodeT node) {
 	if(self->fTailUserEnvironmentFrontier) {
 		if(increaseGeneration() == 1) { /* overflow */
 			mapTree(NULL, uncacheNodeResult, Evaluators::evaluateToCons(self->fTailUserEnvironment)->tail);
@@ -78,7 +78,7 @@ void regenerateActualEnvironment(struct REPL* self) {
 Environment* getEnvironment(struct REPL* self) {
 	return(self->fValenceEnvironment);
 }
-AST::NodeT describe(struct REPL* self, AST::NodeT options, AST::NodeT key) {
+NodeT describe(struct REPL* self, NodeT options, NodeT key) {
 	/*
 	- find the item in the environment, if any.
 	- print the current value, or the one at backOffset specified in #options. */
@@ -90,15 +90,15 @@ AST::NodeT describe(struct REPL* self, AST::NodeT options, AST::NodeT key) {
 	++iter;
 	assert(iter != arguments.end());
 	argument = iter->second;
-	AST::NodeT backOffsetNode = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("@backOffset:"));
+	NodeT backOffsetNode = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("@backOffset:"));
 	int backOffset = backOffsetNode ? Evaluators::get_int(backOffsetNode) : 0;
-	if(dynamic_cast<AST::Symbol*>(argument) != NULL) {
-		AST::NodeT body = REPL_get_definition_backwards(self, dynamic_cast<AST::Symbol*>(argument), backOffset);
+	if(dynamic_cast<Symbol*>(argument) != NULL) {
+		NodeT body = REPL_get_definition_backwards(self, dynamic_cast<Symbol*>(argument), backOffset);
 		return(body);
 	} else
 		return(argument);
 }
-AST::NodeT define(struct REPL* self, AST::NodeT key, AST::NodeT value) {
+NodeT define(struct REPL* self, NodeT key, NodeT value) {
 	/* TODO:
 	- place the item in the environment, shifting existing nodes as necessary. 
 	regenerateActualEnvironment() 
@@ -110,16 +110,16 @@ AST::NodeT define(struct REPL* self, AST::NodeT key, AST::NodeT value) {
 	assert(iter != arguments.end());
 	++iter;
 	assert(iter != arguments.end());
-	AST::NodeT name = iter->second;
+	NodeT name = iter->second;
 	++iter;
 	assert(iter != arguments.end());
-	AST::NodeT body = iter->second;
+	NodeT body = iter->second;
 	/* make sure it would actually work... (otherwise would throw exception) */
 	REPL_prepare(self, body);
 	REPL_add_to_environment(self, name, body);
 	return(name);
 }
-AST::NodeT import(struct REPL* self, AST::NodeT options, AST::NodeT filename) {
+NodeT import(struct REPL* self, NodeT options, NodeT filename) {
 	/* TODO:
 	- mass-place the item in the environment.
 	regenerateActualEnvironment() 
@@ -130,38 +130,38 @@ AST::NodeT import(struct REPL* self, AST::NodeT options, AST::NodeT filename) {
 	assert(self);
 	++iter;
 	assert(iter != arguments.end());
-	AST::NodeT filename = iter->second;
+	NodeT filename = iter->second;
 	if(!str_P(filename))
 		throw Evaluators::EvaluationException("import: expected Str filename");
-	AST::NodeT body = Evaluators::import_module(options/*FIXME*/, filename);
+	NodeT body = Evaluators::import_module(options/*FIXME*/, filename);
 	//body = Evaluators::annotate(body);
 	//REPL_prepare(self, body);
 	//REPL_add_to_environment(self, name, body);
 
 	// TODO make it possible to limit imports (use whitelist and blacklist)
-	AST::NodeT whitelistN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("whitelist:"));
-	AST::HashTable whitelist = setFromList(whitelistN);
-	AST::NodeT blacklistN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("blacklist:"));
-	AST::HashTable blacklist = setFromList(blacklistN);
-	AST::NodeT prefixN = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("prefix:"));
+	NodeT whitelistN = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("whitelist:"));
+	HashTable whitelist = setFromList(whitelistN);
+	NodeT blacklistN = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("blacklist:"));
+	HashTable blacklist = setFromList(blacklistN);
+	NodeT prefixN = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("prefix:"));
 	char* prefix = prefixN ? Evaluators::get_string(prefixN) : NULL;
 
-	AST::NodeT exports = Evaluators::reduce(AST::makeApplication(body, Symbols::Sexports));
-	AST::Cons* usedExports = NULL;
+	NodeT exports = Evaluators::reduce(makeApplication(body, Symbols::Sexports));
+	Cons* usedExports = NULL;
 	blacklist[Symbols::Sexports->name] = NULL;
-	for(AST::Cons* node = Evaluators::evaluateToCons(exports); node; node = Evaluators::evaluateToCons(node->tail)) {
-		AST::Symbol* xname = dynamic_cast<AST::Symbol*>(node->head);
+	for(Cons* node = Evaluators::evaluateToCons(exports); node; node = Evaluators::evaluateToCons(node->tail)) {
+		Symbol* xname = dynamic_cast<Symbol*>(node->head);
 		if(xname && (whitelist.empty() || whitelist.find(xname->name) != whitelist.end()) && blacklist.find(xname->name) == blacklist.end()) {
-			AST::NodeT xbody = AST::makeApplication(body, Evaluators::quote(xname));
+			NodeT xbody = makeApplication(body, Evaluators::quote(xname));
 			//REPL_prepare(self, xbody);
 			if(prefix && prefix[0]) {
 				std::stringstream sst;
 				sst << prefix << xname->name;
 				std::string v = sst.str();
-				xname = AST::symbolFromStr(v.c_str());
+				xname = symbolFromStr(v.c_str());
 			}
 			REPL_add_to_environment(self, xname, xbody);
-			usedExports = AST::makeCons(xname, usedExports);
+			usedExports = makeCons(xname, usedExports);
 		}
 	}
 	return(usedExports);
@@ -172,14 +172,14 @@ void purge(struct REPL* self) {
 	- traverse the hashtable, saving live items.
 	*/
 }
-AST::NodeT evaluate(struct REPL* self, AST::NodeT node) {
+NodeT evaluate(struct REPL* self, NodeT node) {
 	/* TODO:
 	- eval the node in the environment fEnvironment.
 	- if possible, avoid having to copy over all of the fEnvironment nodes every time (possibly by having a copy where the actual environment lives in).
 	*/
 	bool B_ok = false;
 	try {
-		AST::NodeT result = input;
+		NodeT result = input;
 		Evaluators::resetWorld();
 		result = prepare_module(REPL_close_environment(self, result)));
 		result = Evaluators::reduce(result);

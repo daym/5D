@@ -21,36 +21,36 @@ You should have received a copy of the GNU General Public License along with thi
 #include "stdafx.h"
 #endif
 namespace Scanners {
-using namespace AST;
 using namespace Evaluators;
+using namespace Values;
 
 SExpressionParser::SExpressionParser(void) {
 	scanner = new Scanner();
 }
 #define CONSUME_OPERATION { \
-	AST::Symbol* op1 = fOperators.back(); \
+	Symbol* op1 = fOperators.back(); \
 	if(fOperands.empty()) \
 		scanner->raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
-	AST::NodeT b = fOperands.back(); \
+	NodeT b = fOperands.back(); \
 	fOperands.pop_back(); \
 	if(fOperands.empty()) \
 		scanner->raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
-	AST::NodeT a = fOperands.back(); \
+	NodeT a = fOperands.back(); \
 	fOperands.pop_back(); \
-	fOperands.push_back(AST::makeOperation(op1, a, b)); \
+	fOperands.push_back(makeOperation(op1, a, b)); \
 	fOperators.pop_back(); }
-AST::NodeT SExpressionParser::parse_S_list_body(void) {
+NodeT SExpressionParser::parse_S_list_body(void) {
 	if(scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::SlessEOFgreater)
 		return(NULL);
 	else {
-		AST::NodeT head;
+		NodeT head;
 		head = parse_S_Expression();
 		return(makeCons(head, parse_S_list_body()));
 	}
 }
-AST::NodeT SExpressionParser::parse_S_list(bool B_consume_closing_brace) {
+NodeT SExpressionParser::parse_S_list(bool B_consume_closing_brace) {
 	try {
-		AST::NodeT result = NULL;
+		NodeT result = NULL;
 		scanner->consume(Symbols::Sleftparen);
 		result = parse_S_list_body();
 		if(B_consume_closing_brace)
@@ -60,13 +60,13 @@ AST::NodeT SExpressionParser::parse_S_list(bool B_consume_closing_brace) {
 		throw;
 	}
 }
-AST::NodeT SExpressionParser::parse_S_Expression(void) {
+NodeT SExpressionParser::parse_S_Expression(void) {
 	try {
-		AST::NodeT result;
+		NodeT result;
 		/* TODO do this without tokenizing? How? */
 		if(scanner->input_value == Symbols::Sleftparen) {
 			result = parse_S_list(true);
-		} else if(AST::get_symbol1_name(scanner->input_value) != NULL) {
+		} else if(get_symbol1_name(scanner->input_value) != NULL) {
 			result = scanner->consume(); // & whitespace.
 		} else {
 			/* numbers, strings */
@@ -82,8 +82,8 @@ AST::NodeT SExpressionParser::parse_S_Expression(void) {
 		throw;
 	}
 }
-AST::NodeT SExpressionParser::parse(AST::Symbol* terminator) {
-	AST::NodeT result = parse_S_Expression();
+NodeT SExpressionParser::parse(NodeT terminator) {
+	NodeT result = parse_S_Expression();
 	if(scanner->input_value != terminator)
 		scanner->raise_error(str(terminator), str(scanner->input_value));
 	return(result);

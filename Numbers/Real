@@ -16,30 +16,30 @@ typedef long double NativeFloat;
 //#define NATIVEFLOAT_PRECISION 19
 #endif
 
-AST::NodeT internNative(NativeFloat value);
+Values::NodeT internNative(NativeFloat value);
 
 DECLARE_SMALL_VALUE(Float, NativeFloat)   
 DECLARE_SIMPLE_OPERATION(FloatP)
 
-struct Real : AST::Node {
+struct Real : Values::Node {
 	NativeFloat* parts;
 };
 
-AST::NodeT operator+(const Float& a, const Float& b);
-AST::NodeT operator-(const Float& a, const Float& b);
-AST::NodeT operator*(const Float& a, const Float& b);
-AST::NodeT operator/(const Float& a, const Float& b);
+Values::NodeT operator+(const Float& a, const Float& b);
+Values::NodeT operator-(const Float& a, const Float& b);
+Values::NodeT operator*(const Float& a, const Float& b);
+Values::NodeT operator/(const Float& a, const Float& b);
 Real* operator+(const Real& a, const Real& b);
 Real* operator-(const Real& a, const Real& b);
 Real* operator*(const Real& a, const Real& b);
 Real* operator/(const Real& a, const Real& b);
-AST::NodeT operator<=(const Float& a, const Float& b);
-AST::NodeT operator<=(const Real& a, const Real& b);
+Values::NodeT operator<=(const Float& a, const Float& b);
+Values::NodeT operator<=(const Real& a, const Real& b);
 
-bool toNativeFloat(AST::NodeT node, NativeFloat& result);
-bool float_P(AST::NodeT node);
-AST::NodeT nan(void);
-AST::NodeT infinity(void);
+bool toNativeFloat(Values::NodeT node, NativeFloat& result);
+bool float_P(Values::NodeT node);
+Values::NodeT nan(void);
+Values::NodeT infinity(void);
 
 };
 

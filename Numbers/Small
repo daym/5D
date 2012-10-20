@@ -3,7 +3,7 @@
 
 #define DECLARE_SMALL_VALUE(P, T) \
 /* use internNative to create. */ \
-struct P : AST::Node { \
+struct P : Values::Node { \
 	T value; \
 	P(T value) { \
 		this->value = value; \

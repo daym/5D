@@ -6,12 +6,14 @@
 #include "Numbers/Integer"
 
 namespace Evaluators {
-AST::NodeT internNative(bool value);
-static inline AST::NodeT internNative(AST::NodeT value);
+using namespace Values;
+NodeT internNative(bool value);
+static inline NodeT internNative(NodeT value);
 };
 
 namespace Numbers {
 using namespace Evaluators;
+using namespace Values;
 
 void Integer::operator =(const Integer &x) {
 	// Calls like a = a have no effect
@@ -685,7 +687,7 @@ static Int integers[256] = {
         Int(254),
         Int(255),
 }; /* TODO ptr */
-AST::NodeT internNative(NativeInt value) {
+NodeT internNative(NativeInt value) {
         if(value >= 0 && value < 256)
                 return(&integers[value]);
         return(new Int(value));
@@ -693,7 +695,7 @@ AST::NodeT internNative(NativeInt value) {
 static const NativeInt minValue = std::numeric_limits<NativeInt>::min();
 static const NativeInt maxValue = std::numeric_limits<NativeInt>::max();
 
-AST::NodeT operator+(const Int& a, const Int& b) {
+NodeT operator+(const Int& a, const Int& b) {
 	//std::cout << "max " << maxValue << std::endl;
 	if(b.value < 0 ? minValue - b.value > a.value : maxValue - b.value < a.value) {
 		Integer result = Integer(a.value) + Integer(b.value);
@@ -706,7 +708,7 @@ AST::NodeT operator+(const Int& a, const Int& b) {
 	NativeInt smallResult = a.value + b.value;
 	return(internNative(smallResult));
 }
-AST::NodeT operator-(const Int& a, const Int& b) {
+NodeT operator-(const Int& a, const Int& b) {
 	if(b.value < 0 ? maxValue + b.value < a.value : minValue + b.value > a.value) {
 		Integer result = Integer(a.value) - Integer(b.value);
 		return(new Integer(result));
@@ -714,7 +716,7 @@ AST::NodeT operator-(const Int& a, const Int& b) {
 	NativeInt smallResult = a.value - b.value;
         return(internNative(smallResult));
 }
-AST::NodeT operator*(const Int& a, const Int& b) {
+NodeT operator*(const Int& a, const Int& b) {
 	/*if(av == 0 || bv == 0)
 		return(&integers[0]);*/
 	if(b.value > 0 ? a.value > maxValue/b.value || a.value < minValue/b.value
@@ -763,11 +765,11 @@ You can do that without the double-precision math using bit scanning, as int( st
 bool operator<=(const Int& a, const Int& b) {
         return(a.value <= b.value);
 }
-/*AST::NodeT operator<=(const Integer& a, const Integer& b) {
+/*NodeT operator<=(const Integer& a, const Integer& b) {
         return(Evaluators::internNative(a.compareTo(b) != Integer::greater));
 }*/
 static Integer xinteger1(1);
-static inline AST::NodeT intASucc(AST::NodeT argument) {
+static inline NodeT intASucc(NodeT argument) {
 	Int* int1 = dynamic_cast<Int*>(argument);
 	if(int1) {
 		NativeInt value = int1->value;
@@ -778,7 +780,7 @@ static inline AST::NodeT intASucc(AST::NodeT argument) {
 		return(FALLBACK);
 }
 DEFINE_SIMPLE_OPERATION(IntSucc, intASucc(argument))
-static inline AST::NodeT integerASucc(AST::NodeT argument) {
+static inline NodeT integerASucc(NodeT argument) {
 	Integer* integer1 = dynamic_cast<Integer*>(argument);
 	if(integer1) {
 		return(new Integer((*integer1) + xinteger1));
@@ -829,7 +831,7 @@ REGISTER_STR(Integer, {
 	return(strInteger(node));
 })
 
-bool toNativeInt(AST::NodeT node, NativeInt& result) {
+bool toNativeInt(NodeT node, NativeInt& result) {
 	Int* intNode;
 	Integer* integerNode;
 	result = 0;
@@ -849,7 +851,7 @@ bool toNativeInt(AST::NodeT node, NativeInt& result) {
 	} else
 		return(false);
 }
-bool toNearestNativeInt(AST::NodeT node, NativeInt& result) {
+bool toNearestNativeInt(NodeT node, NativeInt& result) {
 	Int* intNode;
 	Integer* integerNode;
 	result = 0;
@@ -881,7 +883,7 @@ bool toNearestNativeInt(AST::NodeT node, NativeInt& result) {
 	} else
 		return(false);
 }
-AST::NodeT internUnsignedLongLong(unsigned long long value, bool B_negative) {
+NodeT internUnsignedLongLong(unsigned long long value, bool B_negative) {
 	Integer result(0);
 	for(; value != 0; value <<= 1) {
 		result *= 2;
@@ -890,16 +892,16 @@ AST::NodeT internUnsignedLongLong(unsigned long long value, bool B_negative) {
 	}
 	return new Integer(result);
 }
-AST::NodeT internNativeU(NativeUInt value) {
+NodeT internNativeU(NativeUInt value) {
         if(value >= 0 && value < 256)
                 return(&integers[value]);
 	return (value < 0) ? internUnsignedLongLong((unsigned long long) (-value), true) : internUnsignedLongLong((unsigned long long) value, false);
 }
 #ifdef INTERN_NATIVE_NEED_LONG_LONG
-AST::NodeT internNative(long long value) {
+NodeT internNative(long long value) {
 	return (value < 0) ? internUnsignedLongLong((unsigned long long) (-value), true) : internUnsignedLongLong((unsigned long long) value, false);
 }
-AST::NodeT internNativeU(unsigned long long value) {
+NodeT internNativeU(unsigned long long value) {
 	return internUnsignedLongLong(value, false);
 }
 #endif
@@ -907,9 +909,9 @@ AST::NodeT internNativeU(unsigned long long value) {
 DEFINE_SIMPLE_OPERATION(IntP, (dynamic_cast<Int*>(reduce(argument)) != NULL))
 DEFINE_SIMPLE_OPERATION(IntegerP, (dynamic_cast<Int*>(reduce(argument)) !=NULL||dynamic_cast<Integer*>(reduce(argument)) != NULL))
 
-REGISTER_BUILTIN(IntP, 1, 0, AST::symbolFromStr("int?"))
-REGISTER_BUILTIN(IntegerP, 1, 0, AST::symbolFromStr("integer?"))
-REGISTER_BUILTIN(IntSucc, 1, 0, AST::symbolFromStr("intSucc"))
-REGISTER_BUILTIN(IntegerSucc, 1, 0, AST::symbolFromStr("integerSucc"))
+REGISTER_BUILTIN(IntP, 1, 0, symbolFromStr("int?"))
+REGISTER_BUILTIN(IntegerP, 1, 0, symbolFromStr("integer?"))
+REGISTER_BUILTIN(IntSucc, 1, 0, symbolFromStr("intSucc"))
+REGISTER_BUILTIN(IntegerSucc, 1, 0, symbolFromStr("integerSucc"))
 
 }; /* namespace Numbers */

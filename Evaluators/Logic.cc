@@ -9,10 +9,10 @@
 
 namespace Evaluators {
 
-using namespace AST;
-#define fn AST::makeAbstraction
-#define call AST::makeApplication
-#define sy AST::symbolFromStr
+using namespace Values;
+#define fn makeAbstraction
+#define call makeApplication
+#define sy symbolFromStr
 #define T sy("t")
 #define F sy("f")
 #define A sy("a")
@@ -34,7 +34,7 @@ NodeT internNative(bool value) {
 	return(value ? aTrue : aFalse);
 }
 
-static AST::NodeT sequence2(AST::NodeT a, AST::NodeT b, AST::NodeT fallback) {
+static NodeT sequence2(NodeT a, NodeT b, NodeT fallback) {
 /*
 let (;) := \m \ber \world
         let r := (m world) in

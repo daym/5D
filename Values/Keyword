@@ -1,5 +1,5 @@
-#ifndef __AST_KEYWORD_H
-#define __AST_KEYWORD_H
+#ifndef __VALUES_KEYWORD_H
+#define __VALUES_KEYWORD_H
 /*
 5D programming language
 Copyright (C) 2011  Danny Milosavljevic
@@ -13,20 +13,20 @@ You should have received a copy of the GNU General Public License along with thi
 #define G_5D_GNUC_PURE
 #endif
 
-namespace AST {
+namespace Values {
 
 struct Keyword : Node {
 	const char* name;
 };
 
 Keyword* keywordFromStr(const char* name) G_5D_GNUC_PURE;
-static inline bool keyword_P(AST::NodeT argument) {
+static inline bool keyword_P(NodeT argument) {
 	return(dynamic_cast<Keyword*>(argument) != NULL);
 }
-static inline const char* get_keyword_name(AST::NodeT argument) {
+static inline const char* get_keyword_name(NodeT argument) {
 	return(((Keyword*) argument)->name);
 }
 void debugKeywords(void);
 
 };
-#endif /* ndef __AST_KEYWORD_H */
+#endif /* ndef __VALUES_KEYWORD_H */

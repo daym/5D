@@ -18,6 +18,7 @@
 #include "Numbers/Integer"
 
 namespace Trampolines {
+using namespace Values;
 #ifdef WIN32
 VARIANT variantEmpty = {0};
 #else
@@ -44,21 +45,21 @@ static inline ffi_type* ffiTypeFromChar(char t) {
 	      t == 'v' ? &ffi_type_void :
 	      &ffi_type_void;
 }
-static AST::NodeT buildList(Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& endIter) {
+static NodeT buildList(Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& endIter) {
 	if(iter == endIter)
 		return(NULL);
 	else {
-		AST::NodeT v = iter->second;
+		NodeT v = iter->second;
 		++iter;
-		return(AST::makeCons(v, buildList(iter, endIter)));
+		return(makeCons(v, buildList(iter, endIter)));
 	}
 }
 /* note that the caller did (--endIter) so it now points to the World. */
-AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& endIter, AST::NodeT options, AST::NodeT world) {
+NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& endIter, NodeT options, NodeT world) {
 	ffi_cif cif;
 	ffi_abi abi = FFI_DEFAULT_ABI;
 	ffi_type** argTypes;
-	const char* sig = AST::get_symbol1_name(proc->fSignature);
+	const char* sig = get_symbol1_name(proc->fSignature);
 	//abi = (*sig == 'P') ? FFI_STDCALL : FFI_DEFAULT_API; TODO
 	if(*sig)
 		++sig;// skip calling convention
@@ -66,7 +67,7 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 	if(argCount == 0) {
 		return CHANGED_WORLD(NULL);
 	}
-	AST::Str* formatString = AST::makeStr(sig);
+	Str* formatString = makeStr(sig);
 	std::string dataStd;
 	size_t returnValueSize;
 	void** args = (void**) alloca(argCount * sizeof(void*));
@@ -75,8 +76,8 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 		size_t offset = 0;
 		std::stringstream sst;
 		std::vector<size_t> offsets;
-		AST::NodeT returnValue = (ffiTypeFromChar(sig[0]) == &ffi_type_pointer) ? NULL : Numbers::internNative((Numbers::NativeInt) 0);
-		Record_pack(FFIs::MACHINE_BYTE_ORDER_ALIGNED, position, offset, formatString, AST::makeCons(returnValue, buildList(iter, endIter)), sst, offsets);
+		NodeT returnValue = (ffiTypeFromChar(sig[0]) == &ffi_type_pointer) ? NULL : Numbers::internNative((Numbers::NativeInt) 0);
+		Record_pack(FFIs::MACHINE_BYTE_ORDER_ALIGNED, position, offset, formatString, makeCons(returnValue, buildList(iter, endIter)), sst, offsets);
 		assert(offsets.size() == argCount);
 		dataStd = sst.str();
 		returnValueSize = (argCount < 2) ? dataStd.length() : offsets[1]; // actually this could in principle be too much. Since it's the first entry, it's correct.
@@ -94,11 +95,11 @@ AST::NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const
 	}
 	if(argCount > 0 && ffi_prep_cif(&cif, abi, argCount - 1, argTypes[0], argTypes + 1) == FFI_OK) {
 		ffi_call(&cif, (void (*)(void)) proc->value, args[0], args + 1);
-		AST::NodeT results;
+		NodeT results;
 		char returnSig[2] = {*sig, 0};
-		AST::NodeT rep = AST::makeStrCXX(dataStd.substr(0, returnValueSize));
-		results = Record_unpack(FFIs::MACHINE_BYTE_ORDER_ALIGNED, AST::makeStr(returnSig), AST::makeBox(args[0], rep));
-		AST::NodeT result = (pair_P(results) ? Evaluators::get_pair_first(results) : NULL);
+		NodeT rep = makeStrCXX(dataStd.substr(0, returnValueSize));
+		results = Record_unpack(FFIs::MACHINE_BYTE_ORDER_ALIGNED, makeStr(returnSig), makeBox(args[0], rep));
+		NodeT result = (pair_P(results) ? Evaluators::get_pair_first(results) : NULL);
 		return CHANGED_WORLD(result);
 	}
 	fprintf(stderr, "warning: could not find marshaller for %s\n", sig);

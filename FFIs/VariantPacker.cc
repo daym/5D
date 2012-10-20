@@ -174,18 +174,18 @@ typedef struct tagVARIANT {
 namespace FFIs {
 using namespace Numbers;
 
-/*static SAFEARRAY* marshalCArray(AST::NodeT source) {
+/*static SAFEARRAY* marshalCArray(NodeT source) {
 	SAFEARRAY* result = SafeArrayCreateVector(VT_BSTR, 0, (unsigned int) myPaths.size() );
 	return(result);
 }
-static AST::NodeT demarshalCArray(SAFEARRAY* arr) {
+static NodeT demarshalCArray(SAFEARRAY* arr) {
 	return(NULL);
 }*/
-static SAFEARRAY* marshalSafeArray(VARTYPE itemType, AST::NodeT source) {
+static SAFEARRAY* marshalSafeArray(VARTYPE itemType, NodeT source) {
 	// FIXME
 	return(NULL);
 }
-static AST::NodeT demarshalSafeArray(VARTYPE itemType, SAFEARRAY* arr) {
+static NodeT demarshalSafeArray(VARTYPE itemType, SAFEARRAY* arr) {
 	long lBound, uBound;
 	/*
 	VariantInit
@@ -231,11 +231,11 @@ typedef struct  tagSAFEARRAY {
 } SAFEARRAY;
 */
 }
-static void get_tuple_with_two_elements(AST::NodeT tuple, AST::NodeT& a, AST::NodeT& b) {
+static void get_tuple_with_two_elements(NodeT tuple, NodeT& a, NodeT& b) {
 	/* FIXME */
 }
 template<typename A>
-static inline void encodeNumber(AST::NodeT source, A& destination) {
+static inline void encodeNumber(NodeT source, A& destination) {
 	Numbers::NativeInt temp;
 	if(!Numbers::toNativeInt(source, temp))
 		throw Evaluators::EvaluationException("pack: number does not fit into slot");
@@ -246,7 +246,7 @@ static inline void encodeNumber(AST::NodeT source, A& destination) {
 	}
 }
 static const ULONGLONG max64 = ~0ULL;
-static AST::NodeT powersOf10[8] = {
+static NodeT powersOf10[8] = {
 	new Int(1), // 0
 	new Int(10), // 1
 	new Int(100), // 2
@@ -257,12 +257,12 @@ static AST::NodeT powersOf10[8] = {
 	new Int(10000000), // 7
 	// C++ has problems with literals up to 10**28
 };
-static void get_DECIMAL(AST::NodeT source, DECIMAL* dest) {
+static void get_DECIMAL(NodeT source, DECIMAL* dest) {
 	// dest->wReserved = 0; ???  we assume that the caller took care of that (ugh).
-	AST::NodeT c = Evaluators::divmod0A(source, (Int*) powersOf10[0], NULL);
+	NodeT c = Evaluators::divmod0A(source, (Int*) powersOf10[0], NULL);
 	if(!c || ! cons_P(c))
 		throw EvaluationException("cannot convert that to DECIMAL");
-	AST::NodeT root = get_cons_head(c); // the integral part.
+	NodeT root = get_cons_head(c); // the integral part.
 	NativeInt result2 = 0;
 	dest->scale = 0; // FIXME log10 root
 	dest->sign = 0; // FIXME DECIMAL_NEG if negative, otherwise 0.
@@ -274,10 +274,10 @@ static void get_DECIMAL(AST::NodeT source, DECIMAL* dest) {
 		throw Evaluators::EvaluationException("value out of range for Variant");
 	}
 }
-AST::NodeT internDECIMAL(DECIMAL* source) {
+NodeT internDECIMAL(DECIMAL* source) {
 	//Given DECIMAL d, the number of decimal places is d.scale 
 	//and the value is (d.sign?-1:1) * (double(d.Lo64) + double(d.Hi32) * double(1UL<<32) * double(1UL<<32)) * pow(10, d.scale)
-	AST::NodeT denominator;
+	NodeT denominator;
 	if (source->scale < 8) // and >= 0
 		denominator = powersOf10[source->scale];
 	else {
@@ -292,11 +292,11 @@ AST::NodeT internDECIMAL(DECIMAL* source) {
 		result = -result;
 	return(Numbers::makeRatio(new Integer(result), denominator));
 }
-void encodeVariant(AST::NodeT both, VARIANT* value) {
-	AST::NodeT vtNum;
-	AST::NodeT source;
-	AST::NodeT a;
-	AST::NodeT b;
+void encodeVariant(NodeT both, VARIANT* value) {
+	NodeT vtNum;
+	NodeT source;
+	NodeT a;
+	NodeT b;
 	VariantInit(value);
 	get_tuple_with_two_elements(both, vtNum, source);
 	encodeNumber(vtNum, value->vt);
@@ -436,21 +436,21 @@ void encodeVariant(AST::NodeT both, VARIANT* value) {
 		break;
 	}
 }
-#define MAKE_VTV(b) AST::makeCons(Numbers::internNative(value->vt), AST::makeCons(b, NULL))
-AST::NodeT decodeVariant(VARIANT* value) {
+#define MAKE_VTV(b) makeCons(Numbers::internNative(value->vt), makeCons(b, NULL))
+NodeT decodeVariant(VARIANT* value) {
 	if(value->vt & VT_BYREF)
-		return(MAKE_VTV(AST::makeBox(value->byref, NULL/*TODO*/)));
+		return(MAKE_VTV(makeBox(value->byref, NULL/*TODO*/)));
 	if(value->vt & VT_ARRAY) {
 		VARTYPE itemType = value->vt &~ VT_ARRAY;
 		return(MAKE_VTV(demarshalSafeArray(itemType, value->parray)));
 	}
 	switch(value->vt) {
 	case VT_BSTR:
-		return(MAKE_VTV(AST::makeStr(ToUTF8(std::wstring(value->bstrVal))))); // TODO support native UCS-4 strings? Probably not.
+		return(MAKE_VTV(makeStr(ToUTF8(std::wstring(value->bstrVal))))); // TODO support native UCS-4 strings? Probably not.
 	case VT_BOOL:
 		return(MAKE_VTV(Evaluators::internNative(value->boolVal)));
 	case VT_CY:
-		return(MAKE_VTV(AST::makeCons(Numbers::internNativeU((unsigned long long) value->cyVal.Lo), AST::makeCons(Numbers::internNative((Numbers::NativeInt/*FIXME*/) value->cyVal.Hi), NULL))));
+		return(MAKE_VTV(makeCons(Numbers::internNativeU((unsigned long long) value->cyVal.Lo), makeCons(Numbers::internNative((Numbers::NativeInt/*FIXME*/) value->cyVal.Hi), NULL))));
 	case VT_DATE:
 		return(MAKE_VTV(Numbers::internNative((Numbers::NativeFloat /* TODO */) value->date)));
 #if 0

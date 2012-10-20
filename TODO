@@ -54,7 +54,6 @@ TUI: allow multi-line entry in history (maybe just use a global history used by 
 
 = Beauty =
 
-rename "AST" to "Values"
 allow REPL.remove! in order to remove a (usually the last) definition.
 Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).

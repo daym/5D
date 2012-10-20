@@ -14,10 +14,10 @@ enum ByteOrder {
 };
 
 /* uses C packing alignment */
-void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, AST::NodeT formatStr, AST::NodeT data, std::stringstream& sst, std::vector<size_t>& offsets);
-AST::NodeT Record_unpack(enum ByteOrder byteOrder, AST::NodeT formatStr, AST::NodeT dataStr);
-AST::NodeT Record_allocate(size_t size, bool bAtomicity);
-size_t Record_get_size(enum ByteOrder byteOrder, AST::NodeT formatStr);
+void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, Values::NodeT formatStr, Values::NodeT data, std::stringstream& sst, std::vector<size_t>& offsets);
+Values::NodeT Record_unpack(enum ByteOrder byteOrder, Values::NodeT formatStr, Values::NodeT dataStr);
+Values::NodeT Record_allocate(size_t size, bool bAtomicity);
+size_t Record_get_size(enum ByteOrder byteOrder, Values::NodeT formatStr);
 
 DECLARE_SIMPLE_OPERATION(RecordPacker)
 DECLARE_SIMPLE_OPERATION(RecordUnpacker)
@@ -29,7 +29,7 @@ DECLARE_BINARY_OPERATION(ListFromStrGetter)
 DECLARE_BINARY_OPERATION(StrFromListGetter)
 DECLARE_SIMPLE_OPERATION(SubstrGetter)
 DECLARE_SIMPLE_OPERATION(StrUntilZeroGetter)
-AST::Str* str_until_zero(AST::Box* value);
+Values::NodeT /*Str**/ strUntilZero(Values::NodeT /*Box**/ value);
 
 }; /* end namespace FFIs */
 

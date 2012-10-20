@@ -28,25 +28,26 @@
 
 // for now, these are kept all in the main executable. After ensuring that GC actually works across DLL boundaries, we can also extract stuff into their own extension modules.
 namespace Evaluators {
+using namespace Values;
 
-static AST::HashTable self;
+static HashTable self;
 
-static void add_static_builtin_binding(AST::HashTable& self, AST::NodeT name, AST::NodeT value) {
+static void add_static_builtin_binding(HashTable& self, NodeT name, NodeT value) {
 	// TODO maybe dup name. Not really from the looks of it.
 	const char* n = get_symbol_name(name);
 	// TODO non-symbols?
 	self[n] = value;
 }
-static void add_builtin_method(AST::HashTable& self, AST::NodeT name, AST::NodeT value) {
+static void add_builtin_method(HashTable& self, NodeT name, NodeT value) {
 	add_static_builtin_binding(self, name, value);
 }
-static AST::NodeT consFromKeys(AST::HashTable::const_iterator begin, AST::HashTable::const_iterator end) {
+static NodeT consFromKeys(HashTable::const_iterator begin, HashTable::const_iterator end) {
 	if(begin == end)
 		return(NULL);
 	else {
-		AST::NodeT name = AST::symbolFromStr(begin->first);
+		NodeT name = symbolFromStr(begin->first);
 		++begin;
-		return(AST::makeCons(name, consFromKeys(begin, end)));
+		return(makeCons(name, consFromKeys(begin, end)));
 	}
 }
 
@@ -69,21 +70,21 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, Symbols::Sfst, &Evaluators::FstGetter);
 	add_builtin_method(self, Symbols::Ssnd, &Evaluators::SndGetter);
 #ifdef STRICT_BUILTIN_SELECTOR 
-	add_builtin_method(self, AST::symbolFromStr(";"), &Evaluators::Sequencer);
-	add_builtin_method(self, AST::symbolFromStr("&&"), &Evaluators::Ander);
-	add_builtin_method(self, AST::symbolFromStr("||"), &Evaluators::Orer);
-	add_builtin_method(self, AST::symbolFromStr("not"), &Evaluators::Noter);
-	add_builtin_method(self, AST::symbolFromStr("if"), &Evaluators::Ifer);
-	add_builtin_method(self, AST::symbolFromStr("elif"), &Evaluators::Elifer);
-	add_builtin_method(self, AST::symbolFromStr("else"), &Evaluators::Elser);
+	add_builtin_method(self, symbolFromStr(";"), &Evaluators::Sequencer);
+	add_builtin_method(self, symbolFromStr("&&"), &Evaluators::Ander);
+	add_builtin_method(self, symbolFromStr("||"), &Evaluators::Orer);
+	add_builtin_method(self, symbolFromStr("not"), &Evaluators::Noter);
+	add_builtin_method(self, symbolFromStr("if"), &Evaluators::Ifer);
+	add_builtin_method(self, symbolFromStr("elif"), &Evaluators::Elifer);
+	add_builtin_method(self, symbolFromStr("else"), &Evaluators::Elser);
 #else
-	add_builtin_method(self, AST::symbolFromStr(";"), Evaluators::Sequencer);
-	add_builtin_method(self, AST::symbolFromStr("&&"), Evaluators::Ander);
-	add_builtin_method(self, AST::symbolFromStr("||"), Evaluators::Orer);
-	add_builtin_method(self, AST::symbolFromStr("not"), Evaluators::Noter);
-	add_builtin_method(self, AST::symbolFromStr("if"), Evaluators::Ifer);
-	add_builtin_method(self, AST::symbolFromStr("elif"), Evaluators::Elifer);
-	add_builtin_method(self, AST::symbolFromStr("else"), Evaluators::Elser);
+	add_builtin_method(self, symbolFromStr(";"), Evaluators::Sequencer);
+	add_builtin_method(self, symbolFromStr("&&"), Evaluators::Ander);
+	add_builtin_method(self, symbolFromStr("||"), Evaluators::Orer);
+	add_builtin_method(self, symbolFromStr("not"), Evaluators::Noter);
+	add_builtin_method(self, symbolFromStr("if"), Evaluators::Ifer);
+	add_builtin_method(self, symbolFromStr("elif"), Evaluators::Elifer);
+	add_builtin_method(self, symbolFromStr("else"), Evaluators::Elser);
 #endif
 	add_static_builtin_binding(self, Symbols::Shasht, Evaluators::aTrue);
 	add_static_builtin_binding(self, Symbols::Shashf, Evaluators::aFalse);
@@ -112,70 +113,70 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, Symbols::Ssubstr, &FFIs::SubstrGetter);
 	add_builtin_method(self, Symbols::SstrUntilZero, &FFIs::StrUntilZeroGetter);
 	add_builtin_method(self, Symbols::SrunIO, &Evaluators::IORunner);
-	add_static_builtin_binding(self, AST::symbolFromStr("stdin"), AST::makeBox(stdin, AST::symbolFromStr("stdin")));
-	add_static_builtin_binding(self, AST::symbolFromStr("stdout"), AST::makeBox(stdout, AST::symbolFromStr("stdout")));
-	add_static_builtin_binding(self, AST::symbolFromStr("stderr"), AST::makeBox(stderr, AST::symbolFromStr("stderr")));
-	add_static_builtin_binding(self, AST::symbolFromStr("PATHMAX"), Numbers::internNative((Numbers::NativeInt) PATH_MAX));
-	add_builtin_method(self, AST::symbolFromStr("write!"), &Evaluators::Writer);
-	add_builtin_method(self, AST::symbolFromStr("flush!"), &Evaluators::Flusher);
-	add_builtin_method(self, AST::symbolFromStr("readline!"), &Evaluators::LineReader);
-	add_builtin_method(self, AST::symbolFromStr("messageBox!"), &FFIs::MessageBoxDisplayer);
-	add_builtin_method(self, AST::symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
-	add_builtin_method(self, AST::symbolFromStr("absolutePath!"), &FFIs::AbsolutePathGetter);
-	add_builtin_method(self, AST::symbolFromStr("absolutePath?"), &FFIs::AbsolutePathP);
-	add_builtin_method(self, AST::symbolFromStr("packRecord"), &FFIs::RecordPacker);
-	add_builtin_method(self, AST::symbolFromStr("unpackRecord"), &FFIs::RecordUnpacker);
-	add_builtin_method(self, AST::symbolFromStr("recordSize"), &FFIs::RecordSizeCalculator);
-	add_builtin_method(self, AST::symbolFromStr("allocateMemory!"), &FFIs::MemoryAllocator);
-	add_builtin_method(self, AST::symbolFromStr("allocateRecord!"), &FFIs::RecordAllocator); // this is actually (compose allocateMemory recordSize)
-	add_builtin_method(self, AST::symbolFromStr("duplicateRecord!"), &FFIs::RecordDuplicator);
-	add_builtin_method(self, AST::symbolFromStr("archDepLibName"), &FFIs::ArchDepLibNameGetter);
-	add_builtin_method(self, AST::symbolFromStr("errno!"), &Evaluators::ErrnoGetter);
-	add_builtin_method(self, AST::symbolFromStr("environ!"), &FFIs::EnvironGetter);
-	add_builtin_method(self, AST::symbolFromStr("listFromEnviron"), &FFIs::EnvironInterner);
-	add_builtin_method(self, AST::symbolFromStr("environFromList"), &FFIs::EnvironFromList);
-	add_builtin_method(self, AST::symbolFromStr("makeApp"), &Evaluators::ApplicationMaker);
-	add_builtin_method(self, AST::symbolFromStr("app?"), &Evaluators::ApplicationP);
-	add_builtin_method(self, AST::symbolFromStr("appOperator"), &Evaluators::ApplicationOperatorGetter);
-	add_builtin_method(self, AST::symbolFromStr("appOperand"), &Evaluators::ApplicationOperandGetter);
-	add_builtin_method(self, AST::symbolFromStr("makeFn"), &Evaluators::AbstractionMaker);
-	add_builtin_method(self, AST::symbolFromStr("fn?"), &Evaluators::AbstractionP);
-	add_builtin_method(self, AST::symbolFromStr("fnParam"), &Evaluators::AbstractionParameterGetter);
-	add_builtin_method(self, AST::symbolFromStr("fnBody"), &Evaluators::AbstractionBodyGetter);
-	add_builtin_method(self, AST::symbolFromStr("makeRatio"), &Numbers::RatioMaker);
-	add_builtin_method(self, AST::symbolFromStr("ratio?"), &Numbers::RatioP);
-	add_builtin_method(self, AST::symbolFromStr("ratioNum"), &Numbers::RatioNumeratorGetter);
-	add_builtin_method(self, AST::symbolFromStr("ratioDenom"), &Numbers::RatioDenominatorGetter);
-	add_builtin_method(self, AST::symbolFromStr("parseMath!"), &Evaluators::RFileMathParser);
-	add_builtin_method(self, AST::symbolFromStr("parseMathStr"), &Evaluators::RStrMathParser);
-	add_builtin_method(self, AST::symbolFromStr("freeVariables"), &Evaluators::FreeVariablesGetter);
-	add_builtin_method(self, AST::symbolFromStr("dispatchModule"), &Evaluators::ModuleDispatcher);
-	add_builtin_method(self, AST::symbolFromStr("makeModuleBox"), &Evaluators::ModuleBoxMaker);
-	add_builtin_method(self, AST::symbolFromStr("REPLMethods"), &REPLX::REPLMethodGetter);
-	add_builtin_method(self, AST::symbolFromStr(","), &Evaluators::Pairer);
-	add_builtin_method(self, AST::symbolFromStr("#exports"), &Evaluators::HashExporter);
-	add_builtin_method(self, AST::symbolFromStr("mkgmtime!"), &Evaluators::GmtimeMaker);
-	add_builtin_method(self, AST::symbolFromStr("mktime!"), &Evaluators::TimeMaker);
-	add_builtin_method(self, AST::symbolFromStr("infinite?"), &Evaluators::InfinityChecker);
-	add_builtin_method(self, AST::symbolFromStr("nan?"), &Evaluators::NanChecker);
+	add_static_builtin_binding(self, symbolFromStr("stdin"), makeBox(stdin, symbolFromStr("stdin")));
+	add_static_builtin_binding(self, symbolFromStr("stdout"), makeBox(stdout, symbolFromStr("stdout")));
+	add_static_builtin_binding(self, symbolFromStr("stderr"), makeBox(stderr, symbolFromStr("stderr")));
+	add_static_builtin_binding(self, symbolFromStr("PATHMAX"), Numbers::internNative((Numbers::NativeInt) PATH_MAX));
+	add_builtin_method(self, symbolFromStr("write!"), &Evaluators::Writer);
+	add_builtin_method(self, symbolFromStr("flush!"), &Evaluators::Flusher);
+	add_builtin_method(self, symbolFromStr("readline!"), &Evaluators::LineReader);
+	add_builtin_method(self, symbolFromStr("messageBox!"), &FFIs::MessageBoxDisplayer);
+	add_builtin_method(self, symbolFromStr("requireSharedLibrary"), &FFIs::SharedLibraryLoader);
+	add_builtin_method(self, symbolFromStr("absolutePath!"), &FFIs::AbsolutePathGetter);
+	add_builtin_method(self, symbolFromStr("absolutePath?"), &FFIs::AbsolutePathP);
+	add_builtin_method(self, symbolFromStr("packRecord"), &FFIs::RecordPacker);
+	add_builtin_method(self, symbolFromStr("unpackRecord"), &FFIs::RecordUnpacker);
+	add_builtin_method(self, symbolFromStr("recordSize"), &FFIs::RecordSizeCalculator);
+	add_builtin_method(self, symbolFromStr("allocateMemory!"), &FFIs::MemoryAllocator);
+	add_builtin_method(self, symbolFromStr("allocateRecord!"), &FFIs::RecordAllocator); // this is actually (compose allocateMemory recordSize)
+	add_builtin_method(self, symbolFromStr("duplicateRecord!"), &FFIs::RecordDuplicator);
+	add_builtin_method(self, symbolFromStr("archDepLibName"), &FFIs::ArchDepLibNameGetter);
+	add_builtin_method(self, symbolFromStr("errno!"), &Evaluators::ErrnoGetter);
+	add_builtin_method(self, symbolFromStr("environ!"), &FFIs::EnvironGetter);
+	add_builtin_method(self, symbolFromStr("listFromEnviron"), &FFIs::EnvironInterner);
+	add_builtin_method(self, symbolFromStr("environFromList"), &FFIs::EnvironFromList);
+	add_builtin_method(self, symbolFromStr("makeApp"), &Evaluators::ApplicationMaker);
+	add_builtin_method(self, symbolFromStr("app?"), &Evaluators::ApplicationP);
+	add_builtin_method(self, symbolFromStr("appOperator"), &Evaluators::ApplicationOperatorGetter);
+	add_builtin_method(self, symbolFromStr("appOperand"), &Evaluators::ApplicationOperandGetter);
+	add_builtin_method(self, symbolFromStr("makeFn"), &Evaluators::AbstractionMaker);
+	add_builtin_method(self, symbolFromStr("fn?"), &Evaluators::AbstractionP);
+	add_builtin_method(self, symbolFromStr("fnParam"), &Evaluators::AbstractionParameterGetter);
+	add_builtin_method(self, symbolFromStr("fnBody"), &Evaluators::AbstractionBodyGetter);
+	add_builtin_method(self, symbolFromStr("makeRatio"), &Numbers::RatioMaker);
+	add_builtin_method(self, symbolFromStr("ratio?"), &Numbers::RatioP);
+	add_builtin_method(self, symbolFromStr("ratioNum"), &Numbers::RatioNumeratorGetter);
+	add_builtin_method(self, symbolFromStr("ratioDenom"), &Numbers::RatioDenominatorGetter);
+	add_builtin_method(self, symbolFromStr("parseMath!"), &Evaluators::RFileMathParser);
+	add_builtin_method(self, symbolFromStr("parseMathStr"), &Evaluators::RStrMathParser);
+	add_builtin_method(self, symbolFromStr("freeVariables"), &Evaluators::FreeVariablesGetter);
+	add_builtin_method(self, symbolFromStr("dispatchModule"), &Evaluators::ModuleDispatcher);
+	add_builtin_method(self, symbolFromStr("makeModuleBox"), &Evaluators::ModuleBoxMaker);
+	add_builtin_method(self, symbolFromStr("REPLMethods"), &REPLX::REPLMethodGetter);
+	add_builtin_method(self, symbolFromStr(","), &Evaluators::Pairer);
+	add_builtin_method(self, symbolFromStr("#exports"), &Evaluators::HashExporter);
+	add_builtin_method(self, symbolFromStr("mkgmtime!"), &Evaluators::GmtimeMaker);
+	add_builtin_method(self, symbolFromStr("mktime!"), &Evaluators::TimeMaker);
+	add_builtin_method(self, symbolFromStr("infinite?"), &Evaluators::InfinityChecker);
+	add_builtin_method(self, symbolFromStr("nan?"), &Evaluators::NanChecker);
 #ifdef WIN32
-	add_builtin_method(self, AST::symbolFromStr("getWin32FindDataWSize!"), &Evaluators::Win32FindDataWSizeGetter);
-	add_builtin_method(self, AST::symbolFromStr("unpackWin32FindDataW!"), &Evaluators::Win32FindDataWUnpacker);
+	add_builtin_method(self, symbolFromStr("getWin32FindDataWSize!"), &Evaluators::Win32FindDataWSizeGetter);
+	add_builtin_method(self, symbolFromStr("unpackWin32FindDataW!"), &Evaluators::Win32FindDataWUnpacker);
 #else
-	add_builtin_method(self, AST::symbolFromStr("getDirentSize!"), &Evaluators::DirentSizeGetter);
-	add_builtin_method(self, AST::symbolFromStr("unpackDirent!"), &Evaluators::DirentUnpacker);
+	add_builtin_method(self, symbolFromStr("getDirentSize!"), &Evaluators::DirentSizeGetter);
+	add_builtin_method(self, symbolFromStr("unpackDirent!"), &Evaluators::DirentUnpacker);
 #endif
-	add_static_builtin_binding(self, AST::symbolFromStr("nan"), Numbers::nan());
-	add_static_builtin_binding(self, AST::symbolFromStr("infinity"), Numbers::infinity());
+	add_static_builtin_binding(self, symbolFromStr("nan"), Numbers::nan());
+	add_static_builtin_binding(self, symbolFromStr("infinity"), Numbers::infinity());
 	self["exports"] = consFromKeys(self.begin(), self.end()); // see Sexports
 }
 
-static AST::NodeT getEntry(AST::NodeT sym) {
+static NodeT getEntry(NodeT sym) {
 	if(nil_P(sym)) { /* ?!?!?! */
 		return(NULL);
 	} else {
-		const char* name = AST::get_symbol1_name(sym);
-		AST::HashTable::const_iterator iter = self.find(name);
+		const char* name = get_symbol1_name(sym);
+		HashTable::const_iterator iter = self.find(name);
 		if(iter == self.end())
 			return(NULL);
 		return(iter->second);

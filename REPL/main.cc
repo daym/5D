@@ -26,19 +26,20 @@ bool interrupted_P(void) {
 };
 namespace REPLX {
 using namespace Evaluators;
+using namespace Values;
 
-struct REPL : AST::Node {
-	AST::NodeT fTailEnvironment;
-	AST::NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::NodeT fTailUserEnvironmentFrontier;
+struct REPL : Node {
+	NodeT fTailEnvironment;
+	NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	NodeT fTailUserEnvironmentFrontier;
 	int fEnvironmentCount;
 	int fCursorPosition;
 	bool fBModified;
-	AST::HashTable* fModules;
+	HashTable* fModules;
 	bool fBRunIO;
 };
 
-int REPL_add_to_environment_simple_GUI(REPL* self, AST::NodeT name, AST::NodeT value) {
+int REPL_add_to_environment_simple_GUI(REPL* self, NodeT name, NodeT value) {
 	return(self->fEnvironmentCount++);
 }
 
@@ -62,7 +63,7 @@ void REPL_insert_into_output_buffer(struct REPL* self, int destination, char con
 }
 void REPL_append_to_output_buffer(struct REPL* self, char const* text) {
 }
-static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT node, int destination) {
+static void REPL_enqueue_LATEX(struct REPL* self, NodeT node, int destination) {
 }
 
 };
@@ -111,19 +112,19 @@ int main(int argc, char* argv[]) {
 				parser.parse_closing_brace();
 			if(parser.EOFP())
 				break;
-			AST::NodeT source = parser.parse_S_list(false);
+			NodeT source = parser.parse_S_list(false);
 			source = Evaluators::programFromSExpression(source);
 			// TODO parse left-over ")"
 			REPL_execute(REPL, source, 0);
 		} catch(Scanners::ParseException exception) {
-			AST::NodeT err = Evaluators::makeError(exception.what());
+			NodeT err = Evaluators::makeError(exception.what());
 			std::string errStr = str(err);
 			fprintf(stderr, "%s\n", errStr.c_str());
 			status = 1;
 			break;
 			//parser.consume();
 		} catch(Evaluators::EvaluationException exception) {
-			AST::NodeT err = Evaluators::makeError(exception.what());
+			NodeT err = Evaluators::makeError(exception.what());
 			std::string errStr = str(err);
 			fprintf(stderr, "%s\n", errStr.c_str());
 			status = 2;

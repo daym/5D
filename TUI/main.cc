@@ -32,29 +32,30 @@
 #include "Evaluators/Logic"
 
 namespace REPLX {
+using namespace Values;
 
-struct REPL : AST::Node {
-	AST::NodeT fTailEnvironment;
-	AST::NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::NodeT fTailUserEnvironmentFrontier;
+struct REPL : Node {
+	NodeT fTailEnvironment;
+	NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	NodeT fTailUserEnvironmentFrontier;
 	int fEnvironmentCount;
 	bool fFileModified;
 	char* fEnvironmentName;
 	//struct Config* fConfig;
-	AST::HashTable fEnvironmentTable;
-	AST::NodeT fEnvironmentNames; // Cons
-	AST::HashTable* fModules;
+	HashTable fEnvironmentTable;
+	NodeT fEnvironmentNames; // Cons
+	HashTable* fModules;
 	int fCursorPosition;
 	bool fBRunIO;
 };
 void REPL_set_IO(REPL* self, bool value) {
 	self->fBRunIO = value;
 }
-int REPL_add_to_environment_simple_GUI(REPL* self, AST::NodeT sym, AST::NodeT value) {
-	const char* name = AST::get_symbol1_name(sym);
+int REPL_add_to_environment_simple_GUI(REPL* self, NodeT sym, NodeT value) {
+	const char* name = get_symbol1_name(sym);
 	if(self->fEnvironmentTable.find(name) == self->fEnvironmentTable.end()) {
 		self->fEnvironmentTable[name] = value;
-		self->fEnvironmentNames = AST::makeCons(sym, self->fEnvironmentNames);
+		self->fEnvironmentNames = makeCons(sym, self->fEnvironmentNames);
 	}
 	return(self->fEnvironmentCount++); // FIXME
 }
@@ -69,7 +70,7 @@ int REPL_insert_into_output_buffer(struct REPL* self, int destination, const cha
 }
 Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self);
 
-static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT result, int destination) {
+static void REPL_enqueue_LATEX(struct REPL* self, NodeT result, int destination) {
 	// TODO LATEX
 	int position = 0; // TODO use actual horizontal position at the destination.
 	std::stringstream buffer;
@@ -223,19 +224,19 @@ static char** completion_matches(const char* text, rl_compentry_func_t* callback
 static struct REPL* REPL1; // for completion. eew.
 static char* command_generator(const char* text, int state) {
 	static int len;
-	static AST::NodeT iter;
+	static NodeT iter;
 	if(state == 0) {
 		iter = REPL1->fEnvironmentNames;
 		len = strlen(text);
 	}
 	while(iter) {
 		const char* name;
-		name = AST::get_symbol1_name(AST::get_cons_head(iter));
+		name = get_symbol1_name(get_cons_head(iter));
 		if(strncmp(name, text, len) == 0) {
-			iter = Evaluators::evaluateToCons(AST::get_cons_tail(iter));
+			iter = Evaluators::evaluateToCons(get_cons_tail(iter));
 			return(strdup(name)); // XXX
 		} else
-			iter = Evaluators::evaluateToCons(AST::get_cons_tail(iter));
+			iter = Evaluators::evaluateToCons(get_cons_tail(iter));
 	}
 	return(NULL);
 }
@@ -262,9 +263,9 @@ static int lexForMatchingParen(const char* command, int commandLen, int position
 			scanner.push(inputFile, 0, "<stdin>");
 			scanner.consume();
 			while(scanner.input_value != Symbols::SlessEOFgreater) {
-				if(scanner.input_value == Symbols::Sleftparen || scanner.input_value == Symbols::Sleftbracket || scanner.input_value == AST::symbolFromStr("{")) {
+				if(scanner.input_value == Symbols::Sleftparen || scanner.input_value == Symbols::Sleftbracket || scanner.input_value == symbolFromStr("{")) {
 					openParens.push(scanner.get_position());
-				} else if(scanner.input_value == Symbols::Srightparen || scanner.input_value == Symbols::Srightbracket || scanner.input_value == AST::symbolFromStr("}")) {
+				} else if(scanner.input_value == Symbols::Srightparen || scanner.input_value == Symbols::Srightbracket || scanner.input_value == symbolFromStr("}")) {
 					if(openParens.empty()) {
 						break; /* indicate that there should be one there. */
 					} else {
@@ -309,7 +310,7 @@ static int handle_readline_paren(int x, int key) {
 	}
 	return(0);
 }
-static AST::NodeT inputNode;
+static NodeT inputNode;
 static int handle_readline_crlf(int x, int key) {
 	/* check rl_point and rl_line_buffer[rl_point - 1] */
 	int point;
@@ -360,9 +361,9 @@ static void initialize_readline(void) {
 }
 using namespace REPLX;
 //static Scanners::OperatorPrecedenceList* operator_precedence_list;
-void run(struct REPL* REPL, const char* text, AST::NodeT inputNode) {
+void run(struct REPL* REPL, const char* text, NodeT inputNode) {
 	//const char* text) {
-	AST::NodeT result;
+	NodeT result;
 	if(exit_P(text)) {
 		/* special case for computers which can't signal EOF. */
 		exit(0);
@@ -374,11 +375,11 @@ void run(struct REPL* REPL, const char* text, AST::NodeT inputNode) {
 		result = inputNode;
 		REPL_execute(REPL, result, 0);
 	} catch(Scanners::ParseException exception) {
-		AST::NodeT err = Evaluators::makeError(exception.what());
+		NodeT err = Evaluators::makeError(exception.what());
 		std::string errStr = str(err);
 		fprintf(stderr, "%s\n", errStr.c_str());
 	} catch(Evaluators::EvaluationException exception) {
-		AST::NodeT err = Evaluators::makeError(exception.what());
+		NodeT err = Evaluators::makeError(exception.what());
 		std::string errStr = str(err);
 		fprintf(stderr, "%s\n", errStr.c_str());
 	}

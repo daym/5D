@@ -9,11 +9,12 @@
 #include "FFIs/Allocators"
 
 namespace REPLX {
+using namespace Values;
 struct Completer {
 	GtkEntry* fEntry;
 	GHashTable* fHaystack; /* hash table's entry's value is unused */
 	char* fEntryNeedle;
-	AST::HashTable* fMatches;
+	HashTable* fMatches;
 	int fEntryNeedlePos;
 	const char* fEntryText;
 };
@@ -30,6 +31,7 @@ void Completer_accept_match_GUI(struct Completer* self, const char* new_text, in
 };
 #include "GUI/CommonCompleter"
 namespace GUI {
+using namespace Values;
 void Completer_complete(struct Completer* self) {
 	const char* entry_text;
 	int pos;
@@ -44,7 +46,7 @@ void Completer_init(struct Completer* self, GtkEntry* entry, GHashTable* haystac
 	self->fEntryNeedle = NULL;
 	self->fMatches = NULL;
 	self->fEntryNeedlePos = 0;
-	self->fMatches = new AST::HashTable;
+	self->fMatches = new HashTable;
 }
 struct Completer* Completer_new(GtkEntry* entry, GHashTable* haystack) {
 	struct Completer* result;

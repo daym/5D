@@ -7,56 +7,56 @@
 #include "Evaluators/Builtins"
 namespace FFIs {
 
-static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
+static NodeT wrapMessageBox(NodeT options, NodeT argument) {
 	HWND cParentWindow = NULL;
 	std::wstring cText;
 	std::wstring cCaption;
 	int cType = 0;
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
-	AST::NodeT parent = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("parent:"));
+	NodeT parent = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("parent:"));
 	if(parent) {
 		cParentWindow = (HWND) Evaluators::get_pointer(parent);
 	}
-	AST::NodeT type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("type:"));
-	cType |= (type_ == AST::symbolFromStr("ok")) ? MB_OK :
-	         (type_ == AST::symbolFromStr("okcancel")) ? MB_OKCANCEL :
-			 (type_ == AST::symbolFromStr("abortretryignore")) ? MB_ABORTRETRYIGNORE :
-			 (type_ == AST::symbolFromStr("yesnocancel")) ? MB_YESNOCANCEL :
-			 (type_ == AST::symbolFromStr("yesno")) ? MB_YESNO :
-			 (type_ == AST::symbolFromStr("retrycancel")) ? MB_RETRYCANCEL :
-			 (type_ == AST::symbolFromStr("canceltrycontinue")) ? MB_CANCELTRYCONTINUE : 0;
-	AST::NodeT modality = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("modality:"));
-	cType |= (modality == AST::symbolFromStr("appl")) ? MB_APPLMODAL :
-		(modality == AST::symbolFromStr("system")) ? MB_SYSTEMMODAL : 
-		(modality == AST::symbolFromStr("task")) ? MB_TASKMODAL : 
+	NodeT type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("type:"));
+	cType |= (type_ == symbolFromStr("ok")) ? MB_OK :
+	         (type_ == symbolFromStr("okcancel")) ? MB_OKCANCEL :
+			 (type_ == symbolFromStr("abortretryignore")) ? MB_ABORTRETRYIGNORE :
+			 (type_ == symbolFromStr("yesnocancel")) ? MB_YESNOCANCEL :
+			 (type_ == symbolFromStr("yesno")) ? MB_YESNO :
+			 (type_ == symbolFromStr("retrycancel")) ? MB_RETRYCANCEL :
+			 (type_ == symbolFromStr("canceltrycontinue")) ? MB_CANCELTRYCONTINUE : 0;
+	NodeT modality = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("modality:"));
+	cType |= (modality == symbolFromStr("appl")) ? MB_APPLMODAL :
+		(modality == symbolFromStr("system")) ? MB_SYSTEMMODAL : 
+		(modality == symbolFromStr("task")) ? MB_TASKMODAL : 
 		0;
-	AST::NodeT icon = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("icon:"));
-	cType |= (icon == AST::symbolFromStr("information")) ? MB_ICONINFORMATION :
-		(icon == AST::symbolFromStr("exclamation")) ? MB_ICONEXCLAMATION : 
-		(icon == AST::symbolFromStr("hand")) ? MB_ICONHAND : 
-		(icon == AST::symbolFromStr("stop")) ? MB_ICONSTOP : 
-		(icon == AST::symbolFromStr("question")) ? MB_ICONQUESTION : 
-		(icon == AST::symbolFromStr("asterisk")) ? MB_ICONASTERISK : 
-		(icon == AST::symbolFromStr("warning")) ? MB_ICONWARNING : 
-		(icon == AST::symbolFromStr("error")) ? MB_ICONERROR : 
+	NodeT icon = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("icon:"));
+	cType |= (icon == symbolFromStr("information")) ? MB_ICONINFORMATION :
+		(icon == symbolFromStr("exclamation")) ? MB_ICONEXCLAMATION : 
+		(icon == symbolFromStr("hand")) ? MB_ICONHAND : 
+		(icon == symbolFromStr("stop")) ? MB_ICONSTOP : 
+		(icon == symbolFromStr("question")) ? MB_ICONQUESTION : 
+		(icon == symbolFromStr("asterisk")) ? MB_ICONASTERISK : 
+		(icon == symbolFromStr("warning")) ? MB_ICONWARNING : 
+		(icon == symbolFromStr("error")) ? MB_ICONERROR : 
 		0; // TODO more
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
 	cText = FromUTF8(Evaluators::get_string(iter->second));
 	FETCH_WORLD(iter);
-	AST::NodeT caption = Evaluators::CXXgetKeywordArgumentValue(arguments, AST::keywordFromStr("caption:"));
+	NodeT caption = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("caption:"));
 	cCaption = caption ? FromUTF8(Evaluators::get_string(caption)) : _T("");
 	int cResult = MessageBoxW(cParentWindow, cText.c_str(), cCaption.c_str(), cType);
-	AST::NodeT result;
-	result = (cResult == IDOK) ? AST::symbolFromStr("ok") : 
-	         (cResult == IDCANCEL) ? AST::symbolFromStr("cancel") : 
-	         (cResult == IDYES) ? AST::symbolFromStr("yes") : 
-	         (cResult == IDNO) ? AST::symbolFromStr("no") : 
-	         (cResult == IDABORT) ? AST::symbolFromStr("abort") : 
-	         (cResult == IDRETRY) ? AST::symbolFromStr("retry") : 
-	         (cResult == IDIGNORE) ? AST::symbolFromStr("ignore") : 
-	         (cResult == IDTRYAGAIN) ? AST::symbolFromStr("try") : 
-	         (cResult == IDCONTINUE) ? AST::symbolFromStr("continue") : 
-	         AST::symbolFromStr("unknown");
+	NodeT result;
+	result = (cResult == IDOK) ? symbolFromStr("ok") : 
+	         (cResult == IDCANCEL) ? symbolFromStr("cancel") : 
+	         (cResult == IDYES) ? symbolFromStr("yes") : 
+	         (cResult == IDNO) ? symbolFromStr("no") : 
+	         (cResult == IDABORT) ? symbolFromStr("abort") : 
+	         (cResult == IDRETRY) ? symbolFromStr("retry") : 
+	         (cResult == IDIGNORE) ? symbolFromStr("ignore") : 
+	         (cResult == IDTRYAGAIN) ? symbolFromStr("try") : 
+	         (cResult == IDCONTINUE) ? symbolFromStr("continue") : 
+	         symbolFromStr("unknown");
 
 	/* TODO 
 	#define MB_NOFOCUS                  0x00008000L
@@ -84,6 +84,6 @@ static AST::NodeT wrapMessageBox(AST::NodeT options, AST::NodeT argument) {
 DEFINE_FULL_OPERATION(MessageBoxDisplayer, {
 	return(wrapMessageBox(fn, argument));
 })
-REGISTER_BUILTIN(MessageBoxDisplayer, (-2), 0, AST::symbolFromStr("messageBox!"))
+REGISTER_BUILTIN(MessageBoxDisplayer, (-2), 0, symbolFromStr("messageBox!"))
 
 }; // end namespace

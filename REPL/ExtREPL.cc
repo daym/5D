@@ -4,6 +4,7 @@
 #include "REPL/ExtREPL"
 
 namespace REPLX {
+using namespace Values;
 DECLARE_SIMPLE_OPERATION(RImporter)
 DECLARE_SIMPLE_OPERATION(RInformant)
 DECLARE_SIMPLE_OPERATION(RDefiner)
@@ -11,7 +12,7 @@ DECLARE_SIMPLE_OPERATION(ROperatorPrecedenceListGetter)
 DECLARE_SIMPLE_OPERATION(RPurger)
 DECLARE_SIMPLE_OPERATION(RExecutor)
 
-static AST::NodeT getMethod(AST::NodeT name) {
+static NodeT getMethod(NodeT name) {
 	if(name == Symbols::SgetOperatorPrecedenceListexclam)
 		return(&REPLX::ROperatorPrecedenceListGetter);
 	//else if(name == Symbols::SgetEnvironment)
@@ -27,18 +28,18 @@ static AST::NodeT getMethod(AST::NodeT name) {
 	else if(name == Symbols::Sexecuteexclam)
 		return(&REPLX::RExecutor);
 	else if(name == Symbols::Sexports)
-		return(AST::makeCons(Symbols::SgetOperatorPrecedenceListexclam,
-		       AST::makeCons(Symbols::Sdescribeexclam,
-		       AST::makeCons(Symbols::Sdefineexcam,
-		       AST::makeCons(Symbols::Simportexclam,
-		       AST::makeCons(Symbols::Spurgeexclam,
-		       AST::makeCons(Symbols::Sexecuteexclam,
-		       AST::makeCons(Symbols::Sexports,
+		return(makeCons(Symbols::SgetOperatorPrecedenceListexclam,
+		       makeCons(Symbols::Sdescribeexclam,
+		       makeCons(Symbols::Sdefineexcam,
+		       makeCons(Symbols::Simportexclam,
+		       makeCons(Symbols::Spurgeexclam,
+		       makeCons(Symbols::Sexecuteexclam,
+		       makeCons(Symbols::Sexports,
 		       NULL))))))));
 	else
 		return(NULL); // TODO
 }
 DEFINE_SIMPLE_OPERATION(REPLMethodGetter, getMethod(Evaluators::reduce(argument)))
-REGISTER_BUILTIN(REPLMethodGetter, 1, 0, AST::symbolFromStr("REPLMethods"))
+REGISTER_BUILTIN(REPLMethodGetter, 1, 0, symbolFromStr("REPLMethods"))
 
 };

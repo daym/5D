@@ -23,8 +23,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include "stdafx.h"
 #endif
 namespace Scanners {
-using namespace AST;
 using namespace Evaluators;
+using namespace Values;
 
 /* macros work like this: 
 
@@ -39,7 +39,7 @@ All these levels of indirection are in order to conserve stack space. Otherwise 
 
 */
 // keep in sync with OperatorPrecedenceList P entries.
-bool prefix_operator_P(AST::NodeT operator_) {
+bool prefix_operator_P(NodeT operator_) {
 	return(operator_ == Symbols::Squote || 
 	       operator_ == Symbols::Sbackslash || 
 	       operator_ == Symbols::Sdash ||
@@ -50,15 +50,15 @@ ShuntingYardParser::ShuntingYardParser(void) {
 	bound_symbols = NULL;
 	scanner = new Scanner();
 }
-AST::NodeT ShuntingYardParser::parse_abstraction_parameter(void) {
-	AST::NodeT parameter = scanner->input_value;
+NodeT ShuntingYardParser::parse_abstraction_parameter(void) {
+	NodeT parameter = scanner->input_value;
 	if(parameter == Symbols::Sleftparen) {
 		scanner->consume();
 		parameter = scanner->consume();
 		scanner->consume(Symbols::Srightparen);
 	} else
 		scanner->consume(); /* consume parameter */
-	if(!AST::get_symbol1_name(parameter)) {
+	if(!get_symbol1_name(parameter)) {
 		scanner->raise_error("<symbol>", str(parameter));
 		return(NULL);
 	} else {
@@ -69,21 +69,21 @@ AST::NodeT ShuntingYardParser::parse_abstraction_parameter(void) {
 		return(parameter);
 	}
 }
-bool ShuntingYardParser::macro_standin_P(AST::NodeT op1) {
-	return(!AST::get_symbol1_name(op1));
+bool ShuntingYardParser::macro_standin_P(NodeT op1) {
+	return(!get_symbol1_name(op1));
 }
-AST::NodeT ShuntingYardParser::parse_value(void) {
+NodeT ShuntingYardParser::parse_value(void) {
 	if(scanner->input_value == Symbols::SlessEOFgreater) {
 		scanner->raise_error("<parameter>", "<nothing>");
 		return(NULL);
 	} else if(scanner->input_value == Symbols::Sleftparen) {
 		scanner->consume();
-		AST::NodeT result = parse_expression(OPL, Symbols::Srightparen);
+		NodeT result = parse_expression(OPL, Symbols::Srightparen);
 		scanner->consume();
 		return(result);
 	} else if(scanner->input_value == Symbols::Sautoleftparen) {
 		scanner->consume();
-		AST::NodeT result = parse_expression(OPL, Symbols::Sautorightparen);
+		NodeT result = parse_expression(OPL, Symbols::Sautorightparen);
 		scanner->consume();
 		return(result);
 	} else if(macro_operator_P(scanner->input_value))
@@ -91,18 +91,18 @@ AST::NodeT ShuntingYardParser::parse_value(void) {
 	else
 		return(parse_expression(OPL, Symbols::Sspace));
 }
-AST::NodeT ShuntingYardParser::parse_define_macro(AST::NodeT operator_) {
-	AST::NodeT parameter = parse_value(); // this is supposed to be a symbol or so
-	AST::NodeT body = parse_expression(OPL, Symbols::SlessEOFgreater); // backwards compat
-	//return(AST::makeCons(operator_, AST::makeCons(parameter, NULL)));
+NodeT ShuntingYardParser::parse_define_macro(NodeT operator_) {
+	NodeT parameter = parse_value(); // this is supposed to be a symbol or so
+	NodeT body = parse_expression(OPL, Symbols::SlessEOFgreater); // backwards compat
+	//return(makeCons(operator_, makeCons(parameter, NULL)));
 	if(symbol_P(parameter))
 		parameter = quote(parameter);
 	if(abstraction_P(body))
 		body = quote(body);
-	return(AST::makeApplication(AST::makeApplication(operator_, parameter), body));
+	return(makeApplication(makeApplication(operator_, parameter), body));
 }
-AST::NodeT ShuntingYardParser::parse_let_macro(AST::NodeT operator_ /* symbol */) {
-	AST::NodeT parameter;
+NodeT ShuntingYardParser::parse_let_macro(NodeT operator_ /* symbol */) {
+	NodeT parameter;
 	if(scanner->input_value == Symbols::Sleftparen) {
 		scanner->consume();
 		parameter = scanner->consume();
@@ -115,83 +115,83 @@ AST::NodeT ShuntingYardParser::parse_let_macro(AST::NodeT operator_ /* symbol */
 		scanner->consume(Symbols::Sequal);
 	} else
 		scanner->consume(Symbols::Scolonequal);
-	//AST::NodeT body = parse_value();
-	AST::NodeT body = parse_expression(OPL, Symbols::Sin);
+	//NodeT body = parse_value();
+	NodeT body = parse_expression(OPL, Symbols::Sin);
 	scanner->consume(Symbols::Sin);
-	return(AST::makeCons(operator_, AST::makeCons(parameter, AST::makeCons(body, NULL))));
+	return(makeCons(operator_, makeCons(parameter, makeCons(body, NULL))));
 }
-AST::NodeT ShuntingYardParser::parse_import_macro(void) {
+NodeT ShuntingYardParser::parse_import_macro(void) {
 	scanner->consume(Symbols::Sleftbracket);
-	AST::NodeT exports = parse_imports_macro_body();
+	NodeT exports = parse_imports_macro_body();
 	scanner->consume(Symbols::Srightbracket);
 	scanner->consume(Symbols::Sfrom);
-	AST::NodeT moduleR = parse_expression(OPL, Symbols::Sin);
+	NodeT moduleR = parse_expression(OPL, Symbols::Sin);
 	scanner->consume(Symbols::Sin);
-	return(AST::makeCons(Symbols::Simport, AST::makeCons(exports, AST::makeCons(moduleR, NULL))));
+	return(makeCons(Symbols::Simport, makeCons(exports, makeCons(moduleR, NULL))));
 }
-AST::NodeT ShuntingYardParser::parse_list_macro_body(void) {
+NodeT ShuntingYardParser::parse_list_macro_body(void) {
 	if(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
-		AST::NodeT hd = parse_value();
-		return(AST::makeApplication(AST::makeApplication(Symbols::Scolon, hd), parse_list_macro_body()));
+		NodeT hd = parse_value();
+		return(makeApplication(makeApplication(Symbols::Scolon, hd), parse_list_macro_body()));
 	} else
 		return(Symbols::Snil);
 }
-AST::NodeT ShuntingYardParser::parse_list_macro(void) {
-	AST::NodeT result = parse_list_macro_body();
+NodeT ShuntingYardParser::parse_list_macro(void) {
+	NodeT result = parse_list_macro_body();
 	scanner->consume(Symbols::Srightbracket);
 	return(result);
 }
-AST::NodeT ShuntingYardParser::parse_exports_macro_body(void) { /* also used by parse_import_macro() */
+NodeT ShuntingYardParser::parse_exports_macro_body(void) { /* also used by parse_import_macro() */
 	if(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
-		AST::NodeT a = parse_value();
-		AST::NodeT hd = AST::makeApplication(AST::makeApplication(Symbols::Scomma, AST::makeApplication(Symbols::Squote, a)), a);
-		return(AST::makeApplication(AST::makeApplication(Symbols::Scolon, hd), parse_exports_macro_body()));
+		NodeT a = parse_value();
+		NodeT hd = makeApplication(makeApplication(Symbols::Scomma, makeApplication(Symbols::Squote, a)), a);
+		return(makeApplication(makeApplication(Symbols::Scolon, hd), parse_exports_macro_body()));
 	} else
 		return(Symbols::Snil);
 }
-AST::NodeT ShuntingYardParser::parse_imports_macro_body(void) {
+NodeT ShuntingYardParser::parse_imports_macro_body(void) {
 	if(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
-		AST::NodeT hd = parse_value(); // symbol, should be
-		return(AST::makeApplication(AST::makeApplication(Symbols::Scolon, hd), parse_imports_macro_body()));
+		NodeT hd = parse_value(); // symbol, should be
+		return(makeApplication(makeApplication(Symbols::Scolon, hd), parse_imports_macro_body()));
 	} else
 		return(Symbols::Snil);
 }
-AST::NodeT ShuntingYardParser::parse_exports_macro(void) {
+NodeT ShuntingYardParser::parse_exports_macro(void) {
 	scanner->consume(Symbols::Sleftbracket);
-	AST::NodeT result = parse_exports_macro_body();
+	NodeT result = parse_exports_macro_body();
 	scanner->consume(Symbols::Srightbracket);
 	return(result);
 }
-AST::NodeT ShuntingYardParser::parse_quote_macro(void) {
+NodeT ShuntingYardParser::parse_quote_macro(void) {
 	if(scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::Sautorightparen || scanner->input_value == Symbols::SlessEOFgreater) {
 		// this cannot be quoted, so just bail out, resulting in the quote function.
 		return(Symbols::Squote);
 	}
-	AST::NodeT body = parse_value();
-	return(AST::makeApplication(Symbols::Squote, body));
+	NodeT body = parse_value();
+	return(makeApplication(Symbols::Squote, body));
 }
-inline bool simple_macro_P(AST::NodeT value) {
+inline bool simple_macro_P(NodeT value) {
 	return(value == Symbols::Sleftbracket || value == Symbols::Squote);
 }
-AST::NodeT ShuntingYardParser::expand_simple_macro(AST::NodeT value) {
+NodeT ShuntingYardParser::expand_simple_macro(NodeT value) {
 	return (value == Symbols::Sleftbracket) ? parse_list_macro() :
 	       (value == Symbols::Squote) ? parse_quote_macro() :
 	       (value == Symbols::Shashexports) ? parse_exports_macro() :
 	       value;
 }
-AST::NodeT ShuntingYardParser::handle_unary_operator(AST::NodeT operator_) {
+NodeT ShuntingYardParser::handle_unary_operator(NodeT operator_) {
 	// these will "prepare" macros by parsing the macro and representing everything but the tail (if applicable) in an AST. Later, expand_macro will fit it into the whole.
 	if(operator_ == Symbols::Sbackslash) {
-		AST::NodeT parameter = parse_abstraction_parameter();
+		NodeT parameter = parse_abstraction_parameter();
 		//std::string v = str(parameter);
 		//printf("abstr param %s\n", v.c_str());
-		return(AST::makeCons(operator_, AST::makeCons(parameter, NULL)));
+		return(makeCons(operator_, makeCons(parameter, NULL)));
 	} else if(operator_ == Symbols::Squote) {
 		if(scanner->input_value == Symbols::Srightparen || scanner->input_value == Symbols::Sautorightparen || scanner->input_value == Symbols::SlessEOFgreater) {
 			// these cannot be quoted.
 			return(Symbols::Squote);
 		} else
-			return(AST::makeCons(Symbols::Squote, NULL));
+			return(makeCons(Symbols::Squote, NULL));
 	} else if(operator_ == Symbols::Slet) {
 		return(parse_let_macro(operator_));
 	} else if(operator_ == Symbols::Sletexclam) {
@@ -199,89 +199,89 @@ AST::NodeT ShuntingYardParser::handle_unary_operator(AST::NodeT operator_) {
 	} else if(operator_ == Symbols::Simport) {
 		return(parse_import_macro());
 	} else if(operator_ == Symbols::Sunarydash) {
-		return(AST::makeCons(Symbols::Sunarydash, NULL));
+		return(makeCons(Symbols::Sunarydash, NULL));
 	}
 	return(operator_);
 }
-static AST::NodeT macro_standin_operator(AST::NodeT op1) {
-	return Evaluators::cons_P(op1) ? AST::get_cons_head(op1) : NULL;
+static NodeT macro_standin_operator(NodeT op1) {
+	return Evaluators::cons_P(op1) ? get_cons_head(op1) : NULL;
 }
 // [a b c d e f g], F, body => \a \b \c \d \e \f \g body) (F a) (F b) (F c) ...
-static AST::NodeT closeMany(AST::NodeT symbols, AST::NodeT dependency, AST::NodeT suffix) {
+static NodeT closeMany(NodeT symbols, NodeT dependency, NodeT suffix) {
 	// note that #symbols in unevaluated (save for the macro expansions) as you would expect.
 	//return(Evaluators::close(parameter, replacement, suffix));
 	// (: a (: b (:c n))) => []
-	AST::NodeT t;
-	if(AST::application_P(symbols) && AST::application_P((t = AST::get_application_operator(symbols))) && AST::get_application_operator(t) == Symbols::Scolon) {
-		AST::NodeT a = AST::get_application_operand(t); // should be a symbol
-		assert(AST::get_symbol1_name(a));
-		AST::NodeT r = AST::get_application_operand(symbols);
+	NodeT t;
+	if(application_P(symbols) && application_P((t = get_application_operator(symbols))) && get_application_operator(t) == Symbols::Scolon) {
+		NodeT a = get_application_operand(t); // should be a symbol
+		assert(get_symbol1_name(a));
+		NodeT r = get_application_operand(symbols);
 		// note: possible module access.
-		return(Evaluators::close(a, AST::makeApplication(dependency, Evaluators::quote(a)), closeMany(r, dependency, suffix)));
+		return(Evaluators::close(a, makeApplication(dependency, Evaluators::quote(a)), closeMany(r, dependency, suffix)));
 	} else { /* assume nil. */
 		assert(symbols == Symbols::Snil);
 		return(suffix);
 	}
 }
-AST::NodeT ShuntingYardParser::expand_macro(AST::NodeT op1, AST::NodeT suffix) {
+NodeT ShuntingYardParser::expand_macro(NodeT op1, NodeT suffix) {
 	if(!Evaluators::cons_P(op1))
 		abort();
-	AST::NodeT operator_ = get_cons_head(op1);
+	NodeT operator_ = get_cons_head(op1);
 	if(operator_ == Symbols::Sbackslash) {
-		AST::NodeT parameter = AST::get_cons_head(Evaluators::evaluateToCons(get_cons_tail(op1)));
-		return(AST::makeAbstraction(parameter, suffix));
+		NodeT parameter = get_cons_head(Evaluators::evaluateToCons(get_cons_tail(op1)));
+		return(makeAbstraction(parameter, suffix));
 	} else if(operator_ == Symbols::Squote) {
-		return(AST::makeApplication(Symbols::Squote, suffix));
+		return(makeApplication(Symbols::Squote, suffix));
 	} else if(operator_ == Symbols::Slet) {
-		assert(AST::get_cons_tail(op1));
-		AST::NodeT c2 = Evaluators::evaluateToCons(AST::get_cons_tail(op1));
-		AST::NodeT parameter = AST::get_cons_head(c2);
-		assert(AST::get_symbol1_name(parameter));
-		assert(AST::get_cons_tail(c2));
-		AST::NodeT c3 = Evaluators::evaluateToCons(AST::get_cons_tail(c2));
-		AST::NodeT replacement = AST::get_cons_head(c3);
+		assert(get_cons_tail(op1));
+		NodeT c2 = Evaluators::evaluateToCons(get_cons_tail(op1));
+		NodeT parameter = get_cons_head(c2);
+		assert(get_symbol1_name(parameter));
+		assert(get_cons_tail(c2));
+		NodeT c3 = Evaluators::evaluateToCons(get_cons_tail(c2));
+		NodeT replacement = get_cons_head(c3);
 		return(Evaluators::close(parameter, replacement, suffix));
 	} else if(operator_ == Symbols::Sletexclam) {
 		/* let! y := a in B =>
 		   (;) a (\y B) */
-		assert(AST::get_cons_tail(op1));
-		AST::NodeT c2 = Evaluators::evaluateToCons(AST::get_cons_tail(op1));
-		AST::NodeT parameter = AST::get_cons_head(c2);
-		assert(AST::get_symbol1_name(parameter));
-		assert(AST::get_cons_tail(c2));
-		AST::NodeT c3 = Evaluators::evaluateToCons(AST::get_cons_tail(c2));
-		AST::NodeT replacement = AST::get_cons_head(c3);
-		return(AST::makeOperation(Symbols::Ssemicolon, replacement, AST::makeAbstraction(parameter, suffix))); /* NOTE variable capture... */
+		assert(get_cons_tail(op1));
+		NodeT c2 = Evaluators::evaluateToCons(get_cons_tail(op1));
+		NodeT parameter = get_cons_head(c2);
+		assert(get_symbol1_name(parameter));
+		assert(get_cons_tail(c2));
+		NodeT c3 = Evaluators::evaluateToCons(get_cons_tail(c2));
+		NodeT replacement = get_cons_head(c3);
+		return(makeOperation(Symbols::Ssemicolon, replacement, makeAbstraction(parameter, suffix))); /* NOTE variable capture... */
 	} else if(operator_ == Symbols::Simport) {
-		assert(AST::get_cons_tail(op1));
-		AST::NodeT c2 = Evaluators::evaluateToCons(AST::get_cons_tail(op1));
-		AST::NodeT symbols = AST::get_cons_head(c2);
-		// TODO eval the list (using a very limited eval) assert(AST::get_symbol1_name(parameter));
-		assert(AST::get_cons_tail(c2));
-		AST::NodeT c3 = Evaluators::evaluateToCons(AST::get_cons_tail(c2));
-		AST::NodeT dependency = AST::get_cons_head(c3);
-		AST::NodeT r = closeMany(symbols, dependency, suffix);
+		assert(get_cons_tail(op1));
+		NodeT c2 = Evaluators::evaluateToCons(get_cons_tail(op1));
+		NodeT symbols = get_cons_head(c2);
+		// TODO eval the list (using a very limited eval) assert(get_symbol1_name(parameter));
+		assert(get_cons_tail(c2));
+		NodeT c3 = Evaluators::evaluateToCons(get_cons_tail(c2));
+		NodeT dependency = get_cons_head(c3);
+		NodeT r = closeMany(symbols, dependency, suffix);
 		std::string s;
 		s = Evaluators::str(r);
 		return(r);
 	} else if(operator_ == Symbols::Sunarydash) {
-		return(AST::makeOperation(Symbols::Sdash, Symbols::Szero, suffix));
+		return(makeOperation(Symbols::Sdash, Symbols::Szero, suffix));
 	} else {
 		scanner->raise_error("<macro-body>", str(op1));
 		return(NULL);
 	}
 }
-AST::NodeT makeOperationDot(AST::NodeT op, AST::NodeT a, AST::NodeT b) {
+NodeT makeOperationDot(NodeT op, NodeT a, NodeT b) {
 	if(op == Symbols::Sdot)
-		return(AST::makeOperation(op, a, quote(b)));
+		return(makeOperation(op, a, quote(b)));
 	else
-		return(AST::makeOperation(op, a, b));
+		return(makeOperation(op, a, b));
 }
 #define CONSUME_OPERATION { \
-	AST::NodeT op1 = fOperators.top(); \
+	NodeT op1 = fOperators.top(); \
 	/*std::cout << str(op1) << std::endl;*/ \
 	bool bUnary = macro_standin_P(op1); \
-	AST::NodeT b = NULL; \
+	NodeT b = NULL; \
 	if(!bUnary) { \
 		if(fOperands.empty()) \
 			scanner->raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
@@ -290,33 +290,33 @@ AST::NodeT makeOperationDot(AST::NodeT op, AST::NodeT a, AST::NodeT b) {
 	} \
 	if(fOperands.empty()) \
 		scanner->raise_error(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
-	AST::NodeT a = fOperands.top(); \
+	NodeT a = fOperands.top(); \
 	fOperands.pop(); \
 	fOperands.push(bUnary ? expand_macro(op1, a) : makeOperationDot(op1, a, b)); \
 	fOperators.pop(); }
-bool ShuntingYardParser::any_operator_P(AST::NodeT node) {
+bool ShuntingYardParser::any_operator_P(NodeT node) {
 	// fake '(' and 'auto('
 	if(node == Symbols::Sleftparen || node == Symbols::Sautoleftparen || node == Symbols::Srightparen || node == Symbols::Sautorightparen)
 		return(true);
 	else
 		return(OPL->any_operator_P(node));
 }
-int ShuntingYardParser::get_operator_precedence_and_associativity(AST::NodeT node, AST::NodeT& outAssociativity) {
-	AST::Cons* c = Evaluators::evaluateToCons(node);
+int ShuntingYardParser::get_operator_precedence_and_associativity(NodeT node, NodeT& outAssociativity) {
+	Cons* c = Evaluators::evaluateToCons(node);
 	if(c) // macro-like operators have their operator symbol as the head
 		node = c->head;
-	assert(AST::get_symbol1_name(node) != NULL);
+	assert(get_symbol1_name(node) != NULL);
 	outAssociativity = Symbols::Sright;
 	return(OPL->get_operator_precedence_and_associativity(node, outAssociativity));
 }
-int ShuntingYardParser::get_operator_precedence(AST::NodeT node) {
-	AST::NodeT associativity = NULL;
+int ShuntingYardParser::get_operator_precedence(NodeT node) {
+	NodeT associativity = NULL;
 	return(get_operator_precedence_and_associativity(node, associativity));
 }
 #define SCOPERANDS \
 	unsigned int prevOperandCount = fOperandCounts.top(); \
 	if(!fOperators.empty() && fOperators.top() != Symbols::Sleftparen && fOperators.top() != Symbols::Sautoleftparen && (!macro_standin_P(fOperators.top()) || macro_standin_operator(fOperators.top()) == Symbols::Sunarydash) && fOperands.size() <= prevOperandCount) { /* well, there has been nothing interesting in the parentesized expression yet. */ \
-		AST::NodeT operand = fOperators.top(); \
+		NodeT operand = fOperators.top(); \
 		if(macro_standin_P(operand)) \
 			operand = macro_standin_operator(operand); \
 		if(operand == Symbols::Sunarydash) /* long standing tradition */ \
@@ -325,17 +325,17 @@ int ShuntingYardParser::get_operator_precedence(AST::NodeT node) {
 		fOperators.pop(); \
 	} else \
 
-AST::NodeT ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, NodeT terminator) {
+NodeT ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, NodeT terminator) {
 	bool oldIndentationHonoring = false;
 	try {
 		oldIndentationHonoring = scanner->setHonorIndentation(true);
 	// TODO curried operators (probably easiest to generate a symbol and put it in place instead of the second operand?)
-	std::stack<AST::NodeT, std::deque<AST::NodeT, gc_allocator<AST::NodeT> > > fOperators;
-	std::stack<AST::NodeT, std::deque<AST::NodeT, gc_allocator<AST::NodeT> >  > fOperands;
+	std::stack<NodeT, std::deque<NodeT, gc_allocator<NodeT> > > fOperators;
+	std::stack<NodeT, std::deque<NodeT, gc_allocator<NodeT> >  > fOperands;
 	std::stack<unsigned int> fOperandCounts; // for paren operand counting
 	fOperandCounts.push(0U);
-	AST::NodeT previousValue = Symbols::Sleftparen;
-	AST::NodeT value;
+	NodeT previousValue = Symbols::Sleftparen;
+	NodeT value;
 	this->OPL = OPL;
 	for(; value = scanner->input_value, (value != terminator || fOperandCounts.size() > 1) && value != Symbols::SlessEOFgreater; previousValue = value) {
 		if(previousValue != Symbols::Sspace && 
@@ -419,17 +419,17 @@ AST::NodeT ShuntingYardParser::parse_expression(OperatorPrecedenceList* OPL, Nod
 		throw;
 	}
 }
-AST::NodeT ShuntingYardParser::parse(OperatorPrecedenceList* OPL, NodeT terminator) {
+NodeT ShuntingYardParser::parse(OperatorPrecedenceList* OPL, NodeT terminator) {
 	return(parse_expression(OPL, terminator));
 }
 void ShuntingYardParser::enter_abstraction(NodeT name) {
-	bound_symbols = AST::makeCons(name, bound_symbols);
+	bound_symbols = makeCons(name, bound_symbols);
 }
 void ShuntingYardParser::leave_abstraction(NodeT name) {
-	assert(!AST::nil_P(bound_symbols) && AST::get_cons_head(bound_symbols) == name);
-	AST::NodeT n = AST::get_cons_tail(bound_symbols);
-	AST::set_cons_tail(bound_symbols, NULL);
-	bound_symbols = (AST::Cons*) n;
+	assert(!nil_P(bound_symbols) && get_cons_head(bound_symbols) == name);
+	NodeT n = get_cons_tail(bound_symbols);
+	set_cons_tail(bound_symbols, NULL);
+	bound_symbols = (Cons*) n;
 }
 void ShuntingYardParser::push(FILE* input_file, int line_number, const char* input_name) {
 	// TODO maybe just replace the entire scanner (making sure to copy input_value over).

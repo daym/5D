@@ -8,7 +8,8 @@
 
 #define CONFIG_NAME "5D/config.INI"
 
-struct Config : AST::Node {
+using namespace Values;
+struct Config : Node {
 	GKeyFile* key_file;
 	char* environment_name;
 	int main_window_width;
@@ -127,3 +128,4 @@ int Config_get_current_tip(struct Config* config) {
 void Config_set_current_tip(struct Config* config, int index) {
 	config->current_tip = index;
 }
+

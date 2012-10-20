@@ -32,9 +32,9 @@ bool interrupted_P(void) {
 };
 namespace REPLX {
 	static void REPL_init_builtins(struct REPL* self);
-	static AST::NodeT REPL_close_environment(struct REPL* self, AST::NodeT node);
+	static NodeT REPL_close_environment(struct REPL* self, NodeT node);
 	Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self);
-struct REPL : AST::Node {
+struct REPL : Node {
 	HWND dialog;
 	bool B_file_modified;
 	struct Config* fConfig;
@@ -44,20 +44,20 @@ struct REPL : AST::Node {
 	std::wstring fSearchTerm;
 	bool fBSearchUpwards;
 	bool fBSearchCaseSensitive;
-	AST::NodeT fTailEnvironment;
-	AST::NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
-	AST::NodeT fTailUserEnvironmentFrontier;
+	NodeT fTailEnvironment;
+	NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
+	NodeT fTailUserEnvironmentFrontier;
 	WNDPROC oldEditBoxProc;
 	struct Completer* fCompleter;
-	AST::HashTable* fEnvironmentKeys;
+	HashTable* fEnvironmentKeys;
 	HMENU fEnvironmentMenu;
-	AST::HashTable* fModules;
+	HashTable* fModules;
 	int fCursorPosition;
 	bool fBRunIO;
 };
 }; /* end namespace REPLX */
 namespace GUI {
-	int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::NodeT parameter, AST::NodeT value);
+	int REPL_add_to_environment_simple_GUI(struct REPL* self, NodeT parameter, NodeT value);
 	void REPL_set_file_modified(struct REPL* self, bool value);
 	void REPL_queue_scroll_down(struct REPL* self);
 };
@@ -376,13 +376,13 @@ static INT_PTR CALLBACK HandleDefinitionMessages(HWND hDlg, UINT message, WPARAM
 				std::wstring name = GetDlgItemTextCXX(hDlg, IDC_DEFINITION_NAME);
 				std::wstring textValue = GetDlgItemTextCXX(hDlg, IDC_DEFINITION_VALUE);
 				std::string UTF8_value = ToUTF8(textValue);
-				AST::NodeT value;
+				NodeT value;
 				try {
 					int destination = -1;
 					// FIXME what if UTF8_value is killed before we are done using it?
 					value = REPL_parse(self, UTF8_value.c_str(), UTF8_value.length(), destination);
 					REPL_prepare(self, value);
-					REPL_add_to_environment(self, AST::symbolFromStr(ToUTF8(name)), value);
+					REPL_add_to_environment(self, symbolFromStr(ToUTF8(name)), value);
 				} catch(Scanners::ParseException& e) {
 					std::string v = e.what() ? e.what() : "error";
 					//REPL_insert_error_message(self, -1, B_from_entry ? (std::string("\n") + std::string(text) + std::string("\n=> ")) : std::string("=> "), v);
@@ -551,7 +551,7 @@ void REPL_insert_error_message(struct REPL* self, int destination, const std::st
 	REPL_set_file_modified(self, true);
 	REPL_queue_scroll_down(self);
 }
-static void REPL_enqueue_LATEX(struct REPL* self, AST::NodeT result, int destination) {
+static void REPL_enqueue_LATEX(struct REPL* self, NodeT result, int destination) {
 	// TODO LATEX
 	int position = 0; // TODO use actual horizontal position at the destination.
 	std::stringstream buffer;
@@ -572,7 +572,7 @@ static void REPL_handle_environment_row_activation(struct REPL* self, HWND list,
 		//command = ToUTF8(name);
 		//if(!command)
 		//	return;
-		AST::NodeT body = REPL_get_definition(self, index);
+		NodeT body = REPL_get_definition(self, index);
 		REPL_enqueue_LATEX(self, body, -1);
 		B_ok = true;
 	}
@@ -631,7 +631,7 @@ static void REPL_open_webpage(struct REPL* self, const std::wstring& path) {
 	ShellExecute(self->dialog, _T("open"), path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 static void REPL_handle_execute(struct REPL* self, const char* text, int destination, bool B_from_entry, bool B_IO) {
-	AST::NodeT input;
+	NodeT input;
 	try {
 		input = REPL_parse(self, text, strlen(text), destination);
 	} catch(Scanners::ParseException& e) {
@@ -1006,7 +1006,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 	self->fBRunIO = false;
 
 	self->fEnvironmentMenu = GetSubMenu(LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDM_ENVIRONMENT)), 0); /* FIXME global? */ /* TODO DestroyMenu */
-	self->fEnvironmentKeys = new AST::HashTable;
+	self->fEnvironmentKeys = new HashTable;
 	self->fBSearchUpwards = true;
 	self->fBSearchCaseSensitive = true;
 	hinstance = GetModuleHandle(NULL);
@@ -1057,7 +1057,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 bool REPL_get_file_modified(struct REPL* self) {
 	return(self->B_file_modified);
 }
-int REPL_add_to_environment_simple_GUI(struct REPL* self, AST::NodeT parameter, AST::NodeT value) {
+int REPL_add_to_environment_simple_GUI(struct REPL* self, NodeT parameter, NodeT value) {
 	//std::string bodyString = body->str();
 	const char* name = get_symbol_name(parameter);
 	if(self->fEnvironmentKeys->find(name) == self->fEnvironmentKeys->end()) {
@@ -1089,19 +1089,19 @@ void REPL_clear(struct REPL* self) {
 	REPL_init_builtins(self);
 	REPL_set_file_modified(self, false);
 }
-static AST::NodeT box_environment_elements(HWND dialog, int index, int count) {
+static NodeT box_environment_elements(HWND dialog, int index, int count) {
 	if(index >= count)
 		return(NULL);
 	else {
 		// FIXME Ptr
 		HWND environmentList = GetDlgItem(dialog, IDC_ENVIRONMENT);
-		AST::NodeT value = (AST::NodeT) GetListViewItemUserData(environmentList, index);
+		NodeT value = (NodeT) GetListViewItemUserData(environmentList, index);
 		std::wstring name = GetListViewEntryStringCXX(environmentList, index);
-		AST::NodeT nameSymbol = AST::symbolFromStr(ToUTF8(name));
+		NodeT nameSymbol = symbolFromStr(ToUTF8(name));
 		return(makeEnvEntry(nameSymbol, value, box_environment_elements(dialog, index + 1, count)));
 	}
 }
-AST::NodeT REPL_get_environment(struct REPL* self) {
+NodeT REPL_get_environment(struct REPL* self) {
 	int count = SendDlgItemMessageW(self->dialog, IDC_ENVIRONMENT, LVM_GETITEMCOUNT, (WPARAM) 0, (LPARAM) 0);
 	return(box_environment_elements(self->dialog, 0, count));
 }

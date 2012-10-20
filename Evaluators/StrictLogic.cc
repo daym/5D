@@ -6,7 +6,7 @@
 
 namespace Evaluators {
 
-using namespace AST;
+using namespace Values;
 
 NodeT aTrue = symbolFromStr("t");
 NodeT aFalse = NULL; // XXX symbolFromStr("f");

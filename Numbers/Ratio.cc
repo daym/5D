@@ -1,27 +1,29 @@
 #include <stdlib.h>
 #include <assert.h>
+#include "Values/Values"
 #include "Numbers/Ratio"
 #include "Evaluators/Builtins"
 namespace Numbers {
-Ratio* makeRatio(AST::NodeT aa, AST::NodeT bb) {
+using namespace Values;
+Ratio* makeRatio(NodeT aa, NodeT bb) {
 	Ratio* result = new Ratio;
 	result->a = aa;
 	result->b = bb;
 	return(result);
 }
-bool ratio_P(AST::NodeT n) {
+bool ratio_P(NodeT n) {
 	return(dynamic_cast<Ratio*>(n) != NULL);
 }
-static AST::NodeT makeRatioB(AST::NodeT options, AST::NodeT argument) {
+static NodeT makeRatioB(NodeT options, NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
-	AST::NodeT a = iter->second;
+	NodeT a = iter->second;
 	++iter;
-	AST::NodeT b = iter->second;
+	NodeT b = iter->second;
 	//++iter;
 	return(makeRatio(a, b));
 }
-static inline AST::NodeT ensureRatio(AST::NodeT node) {
+static inline NodeT ensureRatio(NodeT node) {
 	if(!ratio_P(node))
 		throw EvaluationException("argument is not a Ratio");
 	return(node);
@@ -42,8 +44,8 @@ REGISTER_STR(Ratio, {
 	result << '(' << Evaluators::str(node->a) << "/" << Evaluators::str(node->b) << ')';
 	return(result.str());
 })
-REGISTER_BUILTIN(RatioMaker, 2, 0, AST::symbolFromStr("makeRatio"))
-REGISTER_BUILTIN(RatioP, 1, 0, AST::symbolFromStr("ratio?"))
-REGISTER_BUILTIN(RatioNumeratorGetter, 1, 0, AST::symbolFromStr("ratioNum"))
-REGISTER_BUILTIN(RatioDenominatorGetter, 1, 0, AST::symbolFromStr("ratioDenom"))
+REGISTER_BUILTIN(RatioMaker, 2, 0, symbolFromStr("makeRatio"))
+REGISTER_BUILTIN(RatioP, 1, 0, symbolFromStr("ratio?"))
+REGISTER_BUILTIN(RatioNumeratorGetter, 1, 0, symbolFromStr("ratioNum"))
+REGISTER_BUILTIN(RatioDenominatorGetter, 1, 0, symbolFromStr("ratioDenom"))
 }; /* end namespace Numbers */

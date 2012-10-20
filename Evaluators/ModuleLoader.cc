@@ -15,6 +15,7 @@
 #include "Evaluators/FFI"
 
 namespace Evaluators {
+using namespace Values;
 
 Scanners::OperatorPrecedenceList* default_operator_precedence_list(void) {
 	static Scanners::OperatorPrecedenceList* result;
@@ -22,23 +23,23 @@ Scanners::OperatorPrecedenceList* default_operator_precedence_list(void) {
 		result = new Scanners::OperatorPrecedenceList;
 	return(result);
 }
-static AST::NodeT access_module(AST::NodeT fn, AST::NodeT argument) {
-	AST::NodeT body = get_curried_operation_argument(get_curried_operation_operation(fn));
-	AST::NodeT result = Evaluators::reduce(AST::makeApplication(body, argument));
+static NodeT access_module(NodeT fn, NodeT argument) {
+	NodeT body = get_curried_operation_argument(get_curried_operation_operation(fn));
+	NodeT result = Evaluators::reduce(makeApplication(body, argument));
 	return(result);
 }
 
-AST::NodeT prepare_module(AST::NodeT input) {
-	AST::NodeT result = Evaluators::provide_dynamic_builtins(input);
+NodeT prepare_module(NodeT input) {
+	NodeT result = Evaluators::provide_dynamic_builtins(input);
 	result = Evaluators::annotate(result);
 	return(result);
 }
 
-static AST::NodeT force_import_module(const char* filename) {
+static NodeT force_import_module(const char* filename) {
 	int previousErrno = errno;
-	AST::NodeT result = NULL;
+	NodeT result = NULL;
 	if(FFIs::sharedLibraryFileP(filename)) {
-		return Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&FFIs::SharedLibraryLoader, AST::makeStr(filename))), NULL)), AST::makeStr("access5DModuleV1")));
+		return Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&FFIs::SharedLibraryLoader, makeStr(filename))), NULL)), makeStr("access5DModuleV1")));
 	}
 	try {
 		Scanners::MathParser parser;
@@ -47,17 +48,17 @@ static AST::NodeT force_import_module(const char* filename) {
 			return(FALLBACK);
 		try {
 			parser.push(input_file, 0, filename);
-			AST::NodeT result = NULL;
+			NodeT result = NULL;
 			result = parser.parse(default_operator_precedence_list(), Symbols::SlessEOFgreater);
 			result = Evaluators::close(Symbols::Squote, &Evaluators::Quoter, result); // module needs that, so provide it.
-			result = Evaluators::close(Symbols::Sdot, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, AST::makeApplication(Symbols::Sa, Symbols::Sb))), result);
-			result = Evaluators::close(Symbols::Shashexclam, AST::makeAbstraction(Symbols::Sa, AST::makeAbstraction(Symbols::Sb, Symbols::Sb)), result); // rem
+			result = Evaluators::close(Symbols::Sdot, makeAbstraction(Symbols::Sa, makeAbstraction(Symbols::Sb, makeApplication(Symbols::Sa, Symbols::Sb))), result);
+			result = Evaluators::close(Symbols::Shashexclam, makeAbstraction(Symbols::Sa, makeAbstraction(Symbols::Sb, Symbols::Sb)), result); // rem
 			result = Evaluators::close(Symbols::Scolon, &Evaluators::Conser, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::Scomma, &Evaluators::Pairer, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::Snil, NULL, result); // dispatch [] needs that, so provide it.
 			result = Evaluators::close(Symbols::SrequireModule, &ModuleLoader, result); // module needs that, so provide it. // TODO maybe use Builtins.requireModule (not sure whether that's useful)
 			result = Evaluators::close(Symbols::SBuiltins, &Evaluators::BuiltinGetter, result);
-			// ?? result = Evaluators::close(Symbols::SdispatchModule, AST::makeAbstraction(Symbols::Sexports, AST::makeApplication(&Evaluators::ModuleDispatcher, AST::makeApplication(&Evaluators::ModuleBoxMaker, Symbols::Sexports))), result);
+			// ?? result = Evaluators::close(Symbols::SdispatchModule, makeAbstraction(Symbols::Sexports, makeApplication(&Evaluators::ModuleDispatcher, makeApplication(&Evaluators::ModuleBoxMaker, Symbols::Sexports))), result);
 			result = prepare_module(result);
 			//fprintf(stderr, "before reduce_module\n");
 			result = Evaluators::reduce(result);
@@ -80,17 +81,17 @@ static AST::NodeT force_import_module(const char* filename) {
 		fprintf(stderr, "%s\n", v.c_str());
 		throw;
 	}
-	return(AST::makeAbstraction(AST::symbolFromStr("name"), result));
+	return(makeAbstraction(symbolFromStr("name"), result));
 }
-static AST::HashTable* fModules = new AST::HashTable;
-AST::NodeT require_module(const char* filename, const std::string& xmoduleKey) {
+static HashTable* fModules = new HashTable;
+NodeT require_module(const char* filename, const std::string& xmoduleKey) {
 	if(fModules == NULL) { /* init order problems, sigh. */
-		fModules = new AST::HashTable;
+		fModules = new HashTable;
 	}
 	const char* moduleKeyC = xmoduleKey.c_str();
 	char* moduleKey = GCx_strdup(moduleKeyC);
 	if((*fModules).find(moduleKey) == fModules->end()) {
-		(*fModules)[moduleKey] = AST::symbolFromStr("loading"); // protect against endless recusion.
+		(*fModules)[moduleKey] = symbolFromStr("loading"); // protect against endless recusion.
 		(*fModules)[moduleKey] = force_import_module(filename);
 	}
 	return((*fModules)[moduleKey]);
@@ -106,7 +107,7 @@ static std::vector<std::string> get_module_search_path(void) {
 #endif
 	return(result);
 }
-AST::NodeT import_module(AST::NodeT options, AST::NodeT fileNameNode) {
+NodeT import_module(NodeT options, NodeT fileNameNode) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, fileNameNode);
 	std::vector<std::string> searchPaths = get_module_search_path();
 	std::vector<std::string>::const_iterator endSearchPaths = searchPaths.end();
@@ -129,8 +130,8 @@ AST::NodeT import_module(AST::NodeT options, AST::NodeT fileNameNode) {
 		return(FALLBACK);
 	}
 	char* actualFilename = FFIs::get_absolute_path(realFilename.c_str());
-	AST::NodeT body = Evaluators::require_module(actualFilename, moduleKey);
-	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&Module, body)), AST::makeStr(actualFilename))));
+	NodeT body = Evaluators::require_module(actualFilename, moduleKey);
+	return(Evaluators::reduce(Evaluators::uncurried(Evaluators::reduce(Evaluators::uncurried(&Module, body)), makeStr(actualFilename))));
 }
 
 DEFINE_FULL_OPERATION(Module, {
@@ -140,8 +141,8 @@ DEFINE_FULL_OPERATION(ModuleLoader, {
 	return(import_module(fn, argument));
 })
 
-REGISTER_BUILTIN(Module, 3, 1, AST::symbolFromStr("requireModule"));
-REGISTER_BUILTIN(ModuleLoader, 1, 1, AST::symbolFromStr("requireModule"));
+REGISTER_BUILTIN(Module, 3, 1, symbolFromStr("requireModule"));
+REGISTER_BUILTIN(ModuleLoader, 1, 1, symbolFromStr("requireModule"));
 
 static std::string sharedDir = PREFIX "/share/5D/"; // keep "/" suffix.
 std::string get_shared_dir(void) {
@@ -163,14 +164,14 @@ void set_shared_dir_by_executable(const char* argv0) {
 	}*/
 }
 
-static AST::NodeT mapGetFst2(AST::NodeT fallback, AST::Cons* c) {
+static NodeT mapGetFst2(NodeT fallback, Cons* c) {
 	if(c == NULL) {
-		AST::NodeT tail = fallback ? reduce(AST::makeApplication(fallback, Symbols::Sexports)) : NULL;
+		NodeT tail = fallback ? reduce(makeApplication(fallback, Symbols::Sexports)) : NULL;
 		return(tail);
 	} else
-		return(AST::makeCons(Evaluators::get_pair_first(reduce(evaluateToCons(reduce(AST::get_cons_head(c))))), mapGetFst2(fallback, evaluateToCons(AST::get_cons_tail(c)))));
+		return(makeCons(Evaluators::get_pair_first(reduce(evaluateToCons(reduce(get_cons_head(c))))), mapGetFst2(fallback, evaluateToCons(get_cons_tail(c)))));
 }
-static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
+static NodeT dispatchModule(NodeT options, NodeT argument) {
 	/* parameters: <exports> <fallback> <key> 
 	               2         1          0*/
 	CXXArguments arguments = Evaluators::CXXfromArgumentsU(options, argument, 1);
@@ -181,41 +182,41 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 	Formatters::Math::print_CXX(new Scanners::OperatorPrecedenceList(), buffer, position, iter->second, 0, false);
 	v = buffer.str();
 	printf("%s\n", v.c_str());*/
-	AST::Box* mBox = dynamic_cast<AST::Box*>(iter->second);
+	Box* mBox = dynamic_cast<Box*>(iter->second);
 	++iter;
-	AST::NodeT fallback = iter->second;
+	NodeT fallback = iter->second;
 	++iter;
-	AST::NodeT key = iter->second;
-	AST::HashTable* m;
+	NodeT key = iter->second;
+	HashTable* m;
 	if(!mBox) {
 		throw Evaluators::EvaluationException("invalid symbol table entry (*)");
 		return(NULL);
 	}
 	void* pBox = Evaluators::get_pointer(mBox);
-	if(dynamic_cast<AST::HashTable*>((AST::NodeT) pBox) == NULL) {
-		m = new (UseGC) AST::HashTable;
-		for(AST::Cons* table = (AST::Cons*) pBox; table; table = Evaluators::evaluateToCons(table->tail)) {
+	if(dynamic_cast<HashTable*>((NodeT) pBox) == NULL) {
+		m = new (UseGC) HashTable;
+		for(Cons* table = (Cons*) pBox; table; table = Evaluators::evaluateToCons(table->tail)) {
 			std::string irv = Evaluators::str(table->head);
 			//printf("irv %s\n", irv.c_str());
-			AST::Cons* entry = evaluateToCons(reduce(AST::get_cons_head(table)));
+			Cons* entry = evaluateToCons(reduce(get_cons_head(table)));
 			//std::string v = str(entry);
 			//printf("=irv> %s\n", v.c_str());
-			AST::NodeT x_key = reduce(Evaluators::get_pair_first(entry));
+			NodeT x_key = reduce(Evaluators::get_pair_first(entry));
 			//std::string vkey = Evaluators::str(x_key);
 			//printf("=key> %s\n", vkey.c_str());
-			AST::NodeT value = reduce(Evaluators::get_pair_second(entry));
-			const char* name = AST::get_symbol1_name(x_key);
+			NodeT value = reduce(Evaluators::get_pair_second(entry));
+			const char* name = get_symbol1_name(x_key);
 			if(name && m->find(name) == m->end())
 				(*m)[name] = value;
 		}
-		AST::Cons* table = (AST::Cons*) pBox;
-		AST::set_box_value(mBox, m);
-		(*m)["exports"] = AST::makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
+		Cons* table = (Cons*) pBox;
+		set_box_value(mBox, m);
+		(*m)["exports"] = makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
 	}
-	m = (AST::HashTable*) mBox->value;
+	m = (HashTable*) mBox->value;
 	//std::string vkey = Evaluators::str(key);
 	//printf("%s\n", vkey.c_str());
-	const char* name = AST::get_symbol_name(key); 
+	const char* name = get_symbol_name(key); 
 	if(name) {
 		/*HashTable::const_iterator b = m->begin();
 		HashTable::const_iterator e = m->end();
@@ -223,12 +224,12 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 			printf("%s<\n", b->first);
 		}
 		printf("searching \"%s\"\n", s->name);*/
-		AST::HashTable::const_iterator iter = m->find(name);
+		HashTable::const_iterator iter = m->find(name);
 		if(iter != m->end())
 			return(iter->second);
 		else {
 			if(fallback) { // this should always hold
-				return(reduce(AST::makeApplication(fallback, key)));
+				return(reduce(makeApplication(fallback, key)));
 			} else { // this is a leftover
 				std::stringstream sst;
 				sst << "library does not contain '" << name;
@@ -240,13 +241,13 @@ static AST::NodeT dispatchModule(AST::NodeT options, AST::NodeT argument) {
 		throw Evaluators::EvaluationException("not a symbol");
 	return(NULL);
 }
-static AST::NodeT build_hash_exports(AST::NodeT node) {
-	if(AST::nil_P(node))
+static NodeT build_hash_exports(NodeT node) {
+	if(nil_P(node))
 		return(node);
-	AST::NodeT head = AST::get_cons_head(node);
-	AST::NodeT tail = Evaluators::evaluateToCons(AST::get_cons_tail(node));
-	AST::NodeT result = AST::makeApplication(AST::makeApplication(&Evaluators::Pairer, AST::makeApplication(&Evaluators::Quoter, head)), head);
-	return AST::makeCons(result, build_hash_exports(tail));
+	NodeT head = get_cons_head(node);
+	NodeT tail = Evaluators::evaluateToCons(get_cons_tail(node));
+	NodeT result = makeApplication(makeApplication(&Evaluators::Pairer, makeApplication(&Evaluators::Quoter, head)), head);
+	return makeCons(result, build_hash_exports(tail));
 }
 /*
 better:
@@ -256,20 +257,20 @@ parseExports! = (\world
 	return! (map (\item ((quote item), item)) (eval value [('(:), (:)) ('nil, nil) ('(,), (,)]))
 ) in 
 */
-static AST::NodeT hashExports(AST::NodeT options, AST::NodeT argument) {
-	AST::NodeT result = Evaluators::reduce(argument);
+static NodeT hashExports(NodeT options, NodeT argument) {
+	NodeT result = Evaluators::reduce(argument);
 	std::string s = Evaluators::str(result);
 	printf("%s\n", s.c_str());
-	return(AST::makeApplication(Evaluators::get_module_entry_accessor("Composition", Symbols::Sdispatch), build_hash_exports(result)));
+	return(makeApplication(Evaluators::get_module_entry_accessor("Composition", Symbols::Sdispatch), build_hash_exports(result)));
 }
 DEFINE_FULL_OPERATION(ModuleDispatcher, return(dispatchModule(fn, argument));)
 DEFINE_FULL_OPERATION(HashExporter, return(hashExports(fn, argument));)
-static inline AST::NodeT makeModuleBox(AST::NodeT argument) {
-	return AST::makeBox(argument, AST::makeApplication(&ModuleBoxMaker, argument));
+static inline NodeT makeModuleBox(NodeT argument) {
+	return makeBox(argument, makeApplication(&ModuleBoxMaker, argument));
 }
 DEFINE_SIMPLE_OPERATION(ModuleBoxMaker, makeModuleBox(reduce(argument)))
-REGISTER_BUILTIN(ModuleDispatcher, (-3), 1, AST::symbolFromStr("dispatchModule"))
-REGISTER_BUILTIN(ModuleBoxMaker, 1, 0, AST::symbolFromStr("makeModuleBox"))
-REGISTER_BUILTIN(HashExporter, 1, 0, AST::symbolFromStr("#exports"))
+REGISTER_BUILTIN(ModuleDispatcher, (-3), 1, symbolFromStr("dispatchModule"))
+REGISTER_BUILTIN(ModuleBoxMaker, 1, 0, symbolFromStr("makeModuleBox"))
+REGISTER_BUILTIN(HashExporter, 1, 0, symbolFromStr("#exports"))
 
 };

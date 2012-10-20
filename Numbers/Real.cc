@@ -4,11 +4,12 @@
 #include "Evaluators/Builtins"
 
 namespace Evaluators {
-AST::NodeT internNative(bool value);
+using namespace Values;
+NodeT internNative(bool value);
 };
 
 namespace Numbers {
-
+using namespace Values;
 REGISTER_STR(Float, {
 	std::stringstream sst;
 	sst.precision(std::numeric_limits<NativeFloat>::digits10 + 1);
@@ -26,25 +27,25 @@ REGISTER_STR(Float, {
 
 REGISTER_STR(Real, return("FIXME");)
 
-AST::NodeT internNative(NativeFloat value) {
+NodeT internNative(NativeFloat value) {
 	return(new Float(value));
 }
 
-bool float_P(AST::NodeT node) {
+bool float_P(NodeT node) {
 	return(dynamic_cast<Float*>(node) != NULL);
 }
 DEFINE_SIMPLE_OPERATION(FloatP, float_P(reduce(argument)))
 
-AST::NodeT operator+(const Float& a, const Float& b) {
+NodeT operator+(const Float& a, const Float& b) {
 	return(internNative(a.value + b.value)); /* FIXME */
 }
-AST::NodeT operator-(const Float& a, const Float& b) {
+NodeT operator-(const Float& a, const Float& b) {
 	return(internNative(a.value - b.value)); /* FIXME */
 }
-AST::NodeT operator*(const Float& a, const Float& b) {
+NodeT operator*(const Float& a, const Float& b) {
 	return(internNative(a.value * b.value)); /* FIXME */
 }
-AST::NodeT operator/(const Float& a, const Float& b) {
+NodeT operator/(const Float& a, const Float& b) {
 	return(internNative(a.value / b.value)); /* FIXME */
 }
 Real* operator+(const Real& a, const Real& b) {
@@ -59,16 +60,16 @@ Real* operator*(const Real& a, const Real& b) {
 Real* operator/(const Real& a, const Real& b) {
 	return(NULL); /* FIXME */
 }
-AST::NodeT operator<=(const Float& a, const Float& b) {
+NodeT operator<=(const Float& a, const Float& b) {
 	return(Evaluators::internNative(a.value <= b.value));
 }
-AST::NodeT operator<=(const Real& a, const Real& b) {
+NodeT operator<=(const Real& a, const Real& b) {
 	return(Evaluators::internNative(false)); /* FIXME */
 }
 
-REGISTER_BUILTIN(FloatP, 1, 0, AST::symbolFromStr("float?"))
+REGISTER_BUILTIN(FloatP, 1, 0, symbolFromStr("float?"))
 
-bool toNativeFloat(AST::NodeT node, NativeFloat& result) {
+bool toNativeFloat(NodeT node, NativeFloat& result) {
 	Float* floatNode;
 	Real* realNode;
 	result = 0.0;
@@ -100,10 +101,10 @@ static Float nanFloat(0.0/0.0);
 static Float infinityFloat(1.0/0.0);
 #endif
 
-AST::NodeT nan(void) {
+NodeT nan(void) {
 	return(&nanFloat);
 }
-AST::NodeT infinity(void) {
+NodeT infinity(void) {
 	return(&infinityFloat);
 }
 
