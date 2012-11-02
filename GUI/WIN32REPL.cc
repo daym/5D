@@ -14,7 +14,6 @@
 #include "WIN32REPL"
 #include "Scanners/MathParser"
 #include "Values/Values"
-#include "AST/HashTable"
 #include "Evaluators/Evaluators"
 #include "Config/Config"
 #include "FFIs/FFIs"
@@ -31,6 +30,7 @@ bool interrupted_P(void) {
 
 };
 namespace REPLX {
+using namespace Values;
 	static void REPL_init_builtins(struct REPL* self);
 	static NodeT REPL_close_environment(struct REPL* self, NodeT node);
 	Scanners::OperatorPrecedenceList* REPL_ensure_operator_precedence_list(struct REPL* self);

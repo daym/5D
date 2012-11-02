@@ -3,6 +3,7 @@
 #include "FFIs/COMWrapper"
 
 namespace FFIs {
+using namespace Values;
 
 // TODO make that nicer...
 

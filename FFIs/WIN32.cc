@@ -11,15 +11,15 @@ You should have received a copy of the GNU General Public License along with thi
 #include <string.h>
 #include <sstream>
 #include <map>
-#include "AST/Symbol"
+#include "Values/Values"
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
 #include "Evaluators/Operation"
 #include "FFIs/FFIs"
-#include "AST/Symbols"
 
 namespace FFIs {
 using namespace Evaluators;
+using namespace Values;
 
 NodeT wrapAccessLibrary(NodeT options, NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);

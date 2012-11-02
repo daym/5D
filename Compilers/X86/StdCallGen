@@ -6,7 +6,7 @@ namespace Compilers {
 namespace X86 {
 struct StdCallGen : Compilers::CallGen {
 	StdCallGen(CodeGen* code_gen);
-	virtual void build(AST::NodeT call_destination);
+	virtual void build(Values::NodeT call_destination);
 };
 }; /* end namespace X86 */
 }; /* end namespace X86 */

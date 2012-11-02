@@ -188,7 +188,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\AST\AST.cc"
+				RelativePath="..\Values\AST.cc"
 				>
 			</File>
 			<File
@@ -240,7 +240,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\AST\Keyword.cc"
+				RelativePath="..\Values\Keyword.cc"
 				>
 			</File>
 			<File
@@ -320,11 +320,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\AST\Symbol.cc"
+				RelativePath="..\Values\Symbol.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\AST\Symbols.cc"
+				RelativePath="..\Values\Symbols.cc"
 				>
 			</File>
 			<File
@@ -366,7 +366,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\AST\AST"
+				RelativePath="..\Values\AST"
 				>
 			</File>
 			<File
@@ -426,7 +426,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\AST\Keyword"
+				RelativePath="..\Values\Keyword"
 				>
 			</File>
 			<File
@@ -510,11 +510,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\AST\Symbol"
+				RelativePath="..\Values\Symbol"
 				>
 			</File>
 			<File
-				RelativePath="..\AST\Symbols"
+				RelativePath="..\Values\Symbols"
 				>
 			</File>
 			<File

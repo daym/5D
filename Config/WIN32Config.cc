@@ -6,8 +6,8 @@
 #include "Config/Config"
 #include "Values/Values"
 #include "FFIs/Allocators"
-
-struct Config : AST::Node {
+using namespace Values;
+struct Config : Node {
 	char* fEnvironment;
 	int fMainWindowWidth;
 	int fMainWindowHeight;

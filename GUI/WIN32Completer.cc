@@ -8,6 +8,7 @@
 #include "FFIs/Allocators"
 
 namespace REPLX {
+using namespace Values;
 struct Completer : Node {
 	HWND fEntry;
 	HashTable* fHaystack;

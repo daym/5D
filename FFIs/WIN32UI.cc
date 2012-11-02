@@ -5,7 +5,9 @@
 #include "Evaluators/Operation"
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
+#include "Values/Values"
 namespace FFIs {
+using namespace Values;
 
 static NodeT wrapMessageBox(NodeT options, NodeT argument) {
 	HWND cParentWindow = NULL;

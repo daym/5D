@@ -4,16 +4,14 @@
 #include <windows.h>
 #include <set>
 #include "Values/Values"
-#include "AST/Symbol"
-#include "AST/HashTable"
 
 namespace REPLX {
 struct Completer;
 };
 namespace GUI {
 using namespace REPLX;
-void Completer_init(struct Completer* self, HWND entry, AST::HashTable* haystack);
-struct Completer* Completer_new(HWND entry, AST::HashTable* haystack);
+void Completer_init(struct Completer* self, HWND entry, Values::HashTable* haystack);
+struct Completer* Completer_new(HWND entry, Values::HashTable* haystack);
 void Completer_complete(struct Completer* self);
 };
 #endif /* ndef __5D_GUI_WIN32COMPLETER_H */

@@ -10,7 +10,7 @@ void CallGen::clear(void) {
 		arguments.clear();
 		stack_usage_afterwards = 0;
 }
-void CallGen::build(AST::NodeT call_destination) {
+void CallGen::build(Values::NodeT call_destination) {
 		//[code_gen->gen_push(source) for source in arguments];
 		code_gen->genCall(call_destination);
 		code_gen->genStackThrowawayBits(stack_usage_afterwards);

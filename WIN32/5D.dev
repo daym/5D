@@ -153,7 +153,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit14]
-FileName=..\AST\Symbol
+FileName=..\Values\Symbol
 Folder=5D
 Compile=0
 Link=0
@@ -162,7 +162,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit15]
-FileName=..\AST\Symbol.cc
+FileName=..\Values\Symbol.cc
 CompileCpp=1
 Folder=5D
 Compile=1
@@ -172,7 +172,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit16]
-FileName=..\AST\AST.cc
+FileName=stdafx.cpp
 CompileCpp=1
 Folder=5D
 Compile=1
@@ -182,13 +182,14 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit17]
-FileName=..\AST\AST
+FileName=stdafx.h
 Folder=5D
-Compile=0
-Link=0
+Compile=1
+Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
 [VersionInfo]
 Major=0
@@ -209,26 +210,6 @@ ProductVersion=
 AutoIncBuildNr=0
 
 [Unit18]
-FileName=stdafx.cpp
-CompileCpp=1
-Folder=5D
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit19]
-FileName=stdafx.h
-CompileCpp=1
-Folder=5D
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit20]
 FileName=5D.cpp
 CompileCpp=1
 Folder=5D
@@ -238,8 +219,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit21]
+[Unit19]
 FileName=5D.rc
+CompileCpp=1
 Folder=5D
 Compile=1
 Link=0
@@ -247,7 +229,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit22]
+[Unit20]
 FileName=Resource.h
 CompileCpp=1
 Folder=5D
@@ -257,7 +239,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit23]
+[Unit21]
 FileName=..\Evaluators\FFI
 Folder=5D
 Compile=0
@@ -266,7 +248,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit24]
+[Unit22]
 FileName=..\Evaluators\FFI.cc
 CompileCpp=1
 Folder=5D
@@ -276,18 +258,19 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit25]
+[Unit23]
 FileName=..\Evaluators\Builtins.cc
-CompileCpp=1
 Folder=5D
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit26]
+[Unit24]
 FileName=..\Evaluators\Builtins
+CompileCpp=1
 Folder=5D
 Compile=0
 Link=0
@@ -295,7 +278,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit27]
+[Unit25]
 FileName=..\FFIs\WIN32.cc
 CompileCpp=1
 Folder=5D
@@ -305,7 +288,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit28]
+[Unit26]
 FileName=..\Formatters\SExpression
 Folder=5D
 Compile=0
@@ -314,19 +297,18 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit29]
+[Unit27]
 FileName=..\Formatters\SExpression.cc
+CompileCpp=1
 Folder=5D
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
-CompileCpp=1
 
-[Unit30]
+[Unit28]
 FileName=..\Compilers\CallGen
-CompileCpp=1
 Folder=5D
 Compile=0
 Link=0
@@ -334,7 +316,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit31]
+[Unit29]
 FileName=..\Compilers\CallGen.cc
 Folder=5D
 Compile=1
@@ -344,7 +326,17 @@ OverrideBuildCmd=0
 BuildCmd=
 CompileCpp=1
 
-[Unit33]
+[Unit30]
+FileName=..\Compilers\X86\BorlandFastCallGen
+CompileCpp=1
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit31]
 FileName=..\Compilers\X86\MicrosoftThisCallGen
 Folder=5D
 Compile=0
@@ -354,8 +346,18 @@ OverrideBuildCmd=0
 BuildCmd=
 CompileCpp=1
 
+[Unit33]
+FileName=..\Compilers\X86\StdCallGen
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
 [Unit36]
-FileName=..\Compilers\X86\BorlandFastCallGen.cc
+FileName=..\Compilers\X86\PascalCallGen.cc
 CompileCpp=1
 Folder=5D
 Compile=1
@@ -365,26 +367,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit37]
-FileName=..\Compilers\X86\StdCallGen.cc
-Folder=5D
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-CompileCpp=1
-
-[Unit38]
-FileName=..\Compilers\X86\PascalCallGen.cc
-Folder=5D
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-CompileCpp=1
-
-[Unit39]
 FileName=..\Config\WIN32Config.cc
 Folder=5D
 Compile=1
@@ -394,27 +376,27 @@ OverrideBuildCmd=0
 BuildCmd=
 CompileCpp=1
 
+[Unit38]
+FileName=..\FFIs\FFIs
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit39]
+FileName=..\GUI\WIN32Completer
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
 [Unit42]
-FileName=..\GUI\WIN32Completer.cc
-CompileCpp=1
-Folder=5D
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit43]
-FileName=..\Evaluators\Backtracker.cc
-Folder=5D
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-CompileCpp=1
-
-[Unit44]
 FileName=..\Evaluators\Backtracker
 CompileCpp=1
 Folder=5D
@@ -424,18 +406,18 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit45]
-FileName=..\AST\Keyword.cc
-CompileCpp=1
+[Unit43]
+FileName=..\Values\Keyword.cc
 Folder=5D
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit46]
-FileName=..\AST\Keyword
+[Unit44]
+FileName=..\Values\Keyword
 CompileCpp=1
 Folder=5D
 Compile=0
@@ -444,7 +426,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit47]
+[Unit45]
 FileName=..\Scanners\OperatorPrecedenceList
 CompileCpp=1
 Folder=5D
@@ -454,7 +436,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit48]
+[Unit46]
 FileName=..\Scanners\OperatorPrecedenceList.cc
 CompileCpp=1
 Folder=5D
@@ -464,8 +446,28 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit49]
+[Unit47]
 FileName=..\Formatters\Math.cc
+CompileCpp=1
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit48]
+FileName=..\Formatters\Math
+CompileCpp=1
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit49]
+FileName=..\REPL\REPL.cc
 Folder=5D
 Compile=1
 Link=1
@@ -475,7 +477,7 @@ BuildCmd=
 CompileCpp=1
 
 [Unit50]
-FileName=..\Formatters\Math
+FileName=..\REPL\REPL
 Folder=5D
 Compile=0
 Link=0
@@ -485,92 +487,26 @@ BuildCmd=
 CompileCpp=1
 
 [Unit51]
-FileName=..\REPL\REPL.cc
+FileName=..\Numbers\Real
 CompileCpp=1
 Folder=5D
-Compile=1
-Link=1
+Compile=0
+Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit52]
-FileName=..\REPL\REPL
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit53]
-FileName=..\Numbers\Real
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-CompileCpp=1
-
-[Unit54]
 FileName=..\Numbers\Integer.cc
-CompileCpp=1
 Folder=5D
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
-
-[Unit32]
-FileName=..\Compilers\X86\BorlandFastCallGen
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit34]
-FileName=..\Compilers\X86\PascalCallGen
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit35]
-FileName=..\Compilers\X86\StdCallGen
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit40]
-FileName=..\FFIs\FFIs
 CompileCpp=1
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
 
-[Unit41]
-FileName=..\GUI\WIN32Completer
-CompileCpp=1
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit55]
+[Unit53]
 FileName=..\Numbers\Small
 Folder=5D
 Compile=0
@@ -580,7 +516,7 @@ OverrideBuildCmd=0
 BuildCmd=
 CompileCpp=1
 
-[Unit56]
+[Unit54]
 FileName=..\Numbers\Integer
 CompileCpp=1
 Folder=5D
@@ -590,8 +526,37 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit57]
-FileName=..\Numbers\Real.cc
+[Unit32]
+FileName=..\Compilers\X86\PascalCallGen
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit34]
+FileName=..\Compilers\X86\BorlandFastCallGen.cc
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit35]
+FileName=..\Compilers\X86\StdCallGen.cc
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit40]
+FileName=..\GUI\WIN32Completer.cc
 CompileCpp=1
 Folder=5D
 Compile=1
@@ -600,8 +565,48 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit58]
+[Unit41]
+FileName=..\Evaluators\Backtracker.cc
+CompileCpp=1
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit55]
+FileName=..\Numbers\Real.cc
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit56]
 FileName=..\Numbers\BigUnsigned.cc
+CompileCpp=1
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit57]
+FileName=..\Numbers\BigUnsigned
+CompileCpp=1
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit58]
+FileName=..\Values\Symbols.cc
 Folder=5D
 Compile=1
 Link=1
@@ -611,7 +616,7 @@ BuildCmd=
 CompileCpp=1
 
 [Unit59]
-FileName=..\Numbers\BigUnsigned
+FileName=..\Values\Symbols
 Folder=5D
 Compile=0
 Link=0
@@ -620,7 +625,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit60]
-FileName=..\AST\Symbols.cc
+FileName=..\Evaluators\Operation.cc
 CompileCpp=1
 Folder=5D
 Compile=1
@@ -630,7 +635,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit61]
-FileName=..\AST\Symbols
+FileName=..\Evaluators\Operation
 Folder=5D
 Compile=0
 Link=0
@@ -639,7 +644,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit62]
-FileName=..\Evaluators\Operation.cc
+FileName=..\FFIs\WIN32UI.cc
 Folder=5D
 Compile=1
 Link=1
@@ -649,7 +654,7 @@ BuildCmd=
 CompileCpp=1
 
 [Unit63]
-FileName=..\Evaluators\Operation
+FileName=..\FFIs\UI
 CompileCpp=1
 Folder=5D
 Compile=0
@@ -659,25 +664,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit64]
-FileName=..\FFIs\WIN32UI.cc
-CompileCpp=1
-Folder=5D
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit65]
-FileName=..\FFIs\UI
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit66]
 FileName=..\FFIs\Trampolines
 CompileCpp=1
 Folder=5D
@@ -687,7 +673,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit67]
+[Unit65]
 FileName=..\FFIs\TrampolineSymbols.cc
 Folder=5D
 Compile=1
@@ -697,7 +683,7 @@ OverrideBuildCmd=0
 BuildCmd=
 CompileCpp=1
 
-[Unit68]
+[Unit66]
 FileName=..\FFIs\TrampolineSymbols
 CompileCpp=1
 Folder=5D
@@ -707,7 +693,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit69]
+[Unit67]
 FileName=..\Scanners\ShuntingYardParser.cc
 Folder=5D
 Compile=1
@@ -717,7 +703,7 @@ OverrideBuildCmd=0
 BuildCmd=
 CompileCpp=1
 
-[Unit70]
+[Unit68]
 FileName=..\Scanners\ShuntingYardParser
 CompileCpp=1
 Folder=5D
@@ -727,7 +713,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit71]
+[Unit69]
 FileName=..\Scanners\SExpressionParser.cc
 Folder=5D
 Compile=1
@@ -737,8 +723,28 @@ OverrideBuildCmd=0
 BuildCmd=
 CompileCpp=1
 
-[Unit72]
+[Unit70]
 FileName=..\Scanners\SExpressionParser
+CompileCpp=1
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit71]
+FileName=..\FFIs\RecordPacker.cc
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit72]
+FileName=..\FFIs\RecordPacker
 Folder=5D
 Compile=0
 Link=0
@@ -747,7 +753,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit73]
-FileName=..\FFIs\RecordPacker.cc
+FileName=..\Values\HashTable.cc
 CompileCpp=1
 Folder=5D
 Compile=1
@@ -757,7 +763,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit74]
-FileName=..\FFIs\RecordPacker
+FileName=..\Values\HashTable
 Folder=5D
 Compile=0
 Link=0
@@ -766,17 +772,17 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit75]
-FileName=..\AST\HashTable.cc
+FileName=..\Config\Config
 CompileCpp=1
 Folder=5D
-Compile=1
-Link=1
+Compile=0
+Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit76]
-FileName=..\AST\HashTable
+FileName=..\FFIs\ProcessInfos
 Folder=5D
 Compile=0
 Link=0
@@ -785,25 +791,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit77]
-FileName=..\Config\Config
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit78]
-FileName=..\FFIs\ProcessInfos
-CompileCpp=1
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit79]
 FileName=..\FFIs\WIN32ProcessInfos.cc
 Folder=5D
 Compile=1
@@ -813,17 +800,8 @@ OverrideBuildCmd=0
 BuildCmd=
 CompileCpp=1
 
-[Unit80]
+[Unit78]
 FileName=..\REPL\REPLEnvironment
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit81]
-FileName=..\Evaluators\ModuleLoader
 CompileCpp=1
 Folder=5D
 Compile=0
@@ -832,7 +810,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit82]
+[Unit79]
+FileName=..\Evaluators\ModuleLoader
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit80]
 FileName=..\Evaluators\ModuleLoader.cc
 Folder=5D
 Compile=1
@@ -842,8 +830,9 @@ OverrideBuildCmd=0
 BuildCmd=
 CompileCpp=1
 
-[Unit83]
+[Unit81]
 FileName=..\Evaluators\BuiltinSelector
+CompileCpp=1
 Folder=5D
 Compile=0
 Link=0
@@ -851,36 +840,37 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit84]
+[Unit82]
 FileName=..\Evaluators\BuiltinSelector.cc
-CompileCpp=1
 Folder=5D
 Compile=1
 Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit83]
+FileName=..\FFIs\VariantPacker.cc
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit84]
+FileName=..\FFIs\VariantPacker
+CompileCpp=1
+Folder=5D
+Compile=0
+Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit85]
-FileName=..\FFIs\VariantPacker.cc
-CompileCpp=1
-Folder=5D
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit86]
-FileName=..\FFIs\VariantPacker
-Folder=5D
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit87]
 FileName=..\FFIs\COMWrapper.cc
 CompileCpp=1
 Folder=5D
@@ -890,7 +880,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit88]
+[Unit86]
 FileName=..\FFIs\COMWrapper
 Folder=5D
 Compile=0
@@ -899,7 +889,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit89]
+[Unit87]
 FileName=..\Numbers\Ratio.cc
 CompileCpp=1
 Folder=5D
@@ -909,7 +899,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit90]
+[Unit88]
 FileName=..\Numbers\Ratio
 Folder=5D
 Compile=0
@@ -918,7 +908,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit91]
+[Unit89]
 FileName=..\REPL\ExtREPL.cc
 CompileCpp=1
 Folder=5D
@@ -928,18 +918,19 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit92]
+[Unit90]
 FileName=..\Compilers\CodeGen.cc
-CompileCpp=1
 Folder=5D
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit93]
+[Unit91]
 FileName=..\Compilers\CodeGen
+CompileCpp=1
 Folder=5D
 Compile=0
 Link=0
@@ -947,7 +938,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit94]
+[Unit92]
 FileName=..\FFIs\Trampolines.cc
 CompileCpp=1
 Folder=5D
@@ -957,8 +948,28 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit95]
+[Unit93]
 FileName=..\Evaluators\Logic.cc
+Folder=5D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit94]
+FileName=..\Values\Values
+CompileCpp=1
+Folder=5D
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit95]
+FileName=..\Values\Values.cc
 CompileCpp=1
 Folder=5D
 Compile=1

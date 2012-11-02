@@ -173,6 +173,7 @@ typedef struct tagVARIANT {
 #endif
 namespace FFIs {
 using namespace Numbers;
+using namespace Values;
 
 /*static SAFEARRAY* marshalCArray(NodeT source) {
 	SAFEARRAY* result = SafeArrayCreateVector(VT_BSTR, 0, (unsigned int) myPaths.size() );
