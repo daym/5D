@@ -55,13 +55,13 @@ void Allocator_init(void) {
 	//xmlGcMemSetup(GCx_free, GCx_malloc, GCx_malloc_atomic, GCx_realloc, GCx_strdup);
 }
 
-
+/* allocate executable block */
 void* ealloc(size_t size, void* source) {
 	void* result;
 #if defined(WIN32)
 	result = VirtualAlloc(0, size, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 #elif defined(__linux__) || defined(__APPLE__)
-	result = mmap(NULL, size + sizeof(long), PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANON, NULL, 0);
+	result = mmap(NULL, size + sizeof(long), PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANON, -1, 0);
 	//*(long*)p = size;
 	//result = (long*)p + 1;
 #endif
