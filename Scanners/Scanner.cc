@@ -213,6 +213,7 @@ void Scanner::parse_number(int input) {
 			matchtext << ((char) input);                   
 			input = increment_position(FGETC(input_file));
 		}
+		/* Note: there should be at least one digit - we don't special-case that here, though */
 		while((input >= '0' && input <= '9') /* || input == '.'*/) {
 			matchtext << ((char) input);                   
 			input = increment_position(FGETC(input_file));

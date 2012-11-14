@@ -95,12 +95,12 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(22, I("unary-"), P);
 		cons(22, I("-"), L);  /* also set difference. TODO maybe use the special char "−" for that. */
 		cons(21, I("%"), L);
-		/* TODO excluding from set \\ */
+		/* TODO set-excludor (\\) */
 		cons(16, I("∩"), L);
 		cons(15, I("∪"), L);
 		cons(14, I("∈"), N);
 		cons(14, I("⊂"), N);
-		cons(14, I("⊃"), N);
+		cons(14, I("⊃"), N); /* could also mean "implies", then it would be right-associative */
 		cons(14, I("⊆"), N);
 		cons(14, I("⊇"), N);
 		cons(10, I("="), N);
@@ -132,6 +132,7 @@ OperatorPrecedenceList::OperatorPrecedenceList(bool bInitDefaults) {
 		cons(0, I("let"), R); // and technically define, defrec, def
 		cons(0, I("let!"), R);
 		cons(0, I("import"), R);
+		// TODO implies: RIGHT associative.
 	}
 #undef S
 #undef P
