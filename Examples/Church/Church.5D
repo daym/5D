@@ -1,0 +1,35 @@
+import [(if) (else) (#t) (#f)] from (requireModule "Logic") in 
+let (rem) := \a \b b in 
+let 0 := \s \z z in 
+let 1 := \s \z s z in 
+let succ := \v
+	\s \z v s (s z)
+in 
+let 2 := succ 1 in 
+let 3 := succ 2 in 
+let 4 := succ 3 in 
+let (+) := \a \b 
+	\s \z a s (b s z) 
+in 
+let (⋅) := \a \b 
+	\s \z a (b s) z 
+in 
+let zero? := \v 
+	v (\a #f) #t 
+in 
+let pred := \v 
+	\s \z 
+	let succ := \v\w w (v s) in 
+	let zero := \u z in 
+	v succ zero (\x x) 
+in 
+let (rec) := \f 
+	(\x f (x x)) (\x f (x x)) 
+in 
+let fac := rec\fac \v 
+	if (zero? v)
+		1 
+	else
+		v⋅(fac (pred v))
+in 
+(fac 4) (\v ('a):v) []
