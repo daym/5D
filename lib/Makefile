@@ -22,6 +22,7 @@ all:
 	$(MAKE) -C Error all
 	$(MAKE) -C LinearAlgebra all
 	$(MAKE) -C OO all
+	$(MAKE) -C Tree all
 
 clean:
 	$(MAKE) -C Arithmetic clean
@@ -41,6 +42,7 @@ clean:
 	$(MAKE) -C Error clean
 	$(MAKE) -C LinearAlgebra clean
 	$(MAKE) -C OO clean
+	$(MAKE) -C Tree clean
 
 distclean:
 	$(MAKE) -C Arithmetic distclean
@@ -60,6 +62,7 @@ distclean:
 	$(MAKE) -C Error distclean
 	$(MAKE) -C LinearAlgebra distclean
 	$(MAKE) -C OO distclean
+	$(MAKE) -C Tree distclean
 
 install:
 	$(MAKE) -C Arithmetic install
@@ -79,5 +82,6 @@ install:
 	$(MAKE) -C Error install
 	$(MAKE) -C LinearAlgebra install
 	$(MAKE) -C OO install
+	$(MAKE) -C Tree install
 
 dist:

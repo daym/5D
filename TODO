@@ -1,11 +1,12 @@
 = Macros = 
 
 list comprehensions in []
+Maybe make [] a reader macro (don't forget to provide a way to rebuild the original string, if possible) - or make it #[ instead - like all the other special reader macros
 
-= Bugs =
+= Fix Bugs =
 
 loading modules (for example the one where GetLastError! is in) causes GetLastError() to be clobbered.
-'\
+'\ (is interpreted as a lambda. Also '\\).
 
 = Builtin Types (for Values) =
 
@@ -16,7 +17,7 @@ Array literals: #(a b c)
 
 = Packaging =
 
-Split 5D core, GUI and TUI parts and add l2p dependency on the GUI part.
+add l2p dependency on the GUI part.
 
 = Packages =
 
@@ -54,6 +55,7 @@ TUI: allow multi-line entry in history (maybe just use a global history used by 
 
 = Beauty =
 
+Just make the REPL itself a module like all the other modules and remove all the damn REPL-specific stuff (just provide a Python-like #globals module which is automatically accessed in order to look up unknown variables).
 allow REPL.remove! in order to remove a (usually the last) definition.
 Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).
@@ -91,12 +93,12 @@ make an extra "]" emit a nicer error message
 
 = Correctness =
 
-newline => $ ?? What about newlines after "in" ?
+newline => $ ?? What about newlines after "in" ? Probably a bad idea, since indentation is already the same as ($) and that's enough.
 (odd? inf) is true because it's implemented as "not even" and inf is not even.
-Don't reduce in REPL_execute. Instead make sure the printer etc evaluates thunks before using them. Note that a thunk isn't just an application node since then it wouldn't know how to reduce the arguments. Hence there's a need for storing the environment and the expression to evaluate for later use.
+Don't reduce in REPL_execute. Instead make sure the printer etc evaluates thunks before using them. Note that a thunk isn't just an application node since then it wouldn't know how to reduce the arguments. Hence there's a need for storing the environment and the expression to evaluate for later use (i.e. a promise).
 Have the predicates check for non-SymbolReference non-quoted symbols or non-executed applications and if so, return "we can't do it"?
 Floats only work to 3E38, it seems. What about higher numbers? (there's no such limit for 3E-999999)
-It would be possible to make numbers like 3E3 mean 3000 and not 3000.0 - do we want that?
+It would be possible to make numerals like 3E3 mean 3000 and not 3000.0 - do we want that?
 Reintroduce FALLBACK, i.e. tail [] shouldn't reduce.
 If there are open parens, ignore indentation (note that this is the LEXER and so it technically can't distinguish between quoted or macro braces and actual braces).
 sort exports
@@ -144,7 +146,7 @@ string-upcase
 strcmp
 Messagebox custom buttons
 move all the builtins into a .so file and load them via FFI (and the REPL).
-support reloading of modules (in that case, need to use monads)
+support reloading of modules in a special debugger. Note that it is (and should be) impossible to also change existing bindings automatically, so it wouldn't be that useful.
 
 = Interop =
 
@@ -187,8 +189,8 @@ Remove unused imports / variables / ...
 
 = Optimisations =
 
-When there is some binding that isn't using the stuff in the first place, just move it further out.
-If it's already far out and swapping wouldn't help, maybe collect all bindings into one node.
+When there is some binding that isn't using things from the enclosing lexical scope in the first place, just move it further out.
+If it's already far out and swapping wouldn't help, maybe collect all bindings into one frame.
 Make sure not to shadow variables if it would change meaning.
 What to do with the non-optimised versions? Keep storing them or just store a reference to the file and position they were from?
 

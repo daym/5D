@@ -8,8 +8,20 @@ Homepage: http://www.scratchpost.org/software/5D/
 #Vcs-Git: git://git.debian.org/collab-maint/5d.git
 #Vcs-Browser: http://git.debian.org/?p=collab-maint/5d.git;a=summary
 
-Package: 5d
+Package: 5d-core
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libreadline6, libgc1c2, libffi6
+Description: 5D programming language
+ 5D is a functional programming language.
+
+Package: 5d-gui
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 5d-core (>= 0.7.2~)
+Description: 5D programming language
+ 5D is a functional programming language.
+
+Package: 5d-tui
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libreadline6, 5d-core (>= 0.7.2~)
 Description: 5D programming language
  5D is a functional programming language.

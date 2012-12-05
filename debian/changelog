@@ -1,3 +1,10 @@
+5d (0.7.2) unstable; urgency=low
+
+  * split package into 5d-core, 5d-gui and 5d-tui.
+  * add nil to REPLEnvironment by default.
+
+ -- Danny Milosavljevic <danny_milo@yahoo.com>  Sat, 25 Nov 2012 16:51:00 +0200
+
 5d (0.7.1) unstable; urgency=low
 
   * rename 'AST to 'Values .

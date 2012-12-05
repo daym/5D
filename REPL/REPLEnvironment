@@ -357,6 +357,7 @@ static void REPL_init_builtins(struct REPL* self) {
 	REPL_add_static_builtin_binding(self, Symbols::SrequireModule, &ModuleLoader);
 	REPL_add_builtin_method(self, Symbols::SBuiltins, &Evaluators::BuiltinGetter);
 	REPL_add_builtin_method(self, Symbols::Scolon, &Evaluators::Conser); // module dispatch list needs that anyway
+	REPL_add_builtin_method(self, Symbols::Snil, NULL); // module dispatch list needs that anyway
 	//REPL_add_builtin_method(self, Symbols::Sreturnexclam, get_module_entry_accessor("IO", Symbols::Sreturnexclam));
 	self->fTailUserEnvironment = self->fTailUserEnvironmentFrontier;
 	/*self->fTailUserEnvironmentFrontier = self->fTailUserEnvironmentFrontier;*/
