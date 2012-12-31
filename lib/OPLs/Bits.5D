@@ -7,7 +7,7 @@ let R := \s (s, 'right) in
 let P := \s (s, 'prefix) in 
 let N := \s (s, 'none) in 
 let S := \s (s, 'postfix) in 
-[
+let table := [
 [(L'(.))]
 [(R'(_)) (R'(^))]
 [(R'(**))]
@@ -34,4 +34,5 @@ let S := \s (s, 'postfix) in
 [(L'(=>)) (L'(;)) (L'(?;))]
 [(P'(\))]
 [(P'(let)) (P'(let!)) (P'(import))]
-]
+] in 
+(requireModule "Composition").dispatch1 #exports[table]
