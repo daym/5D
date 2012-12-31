@@ -391,7 +391,7 @@ Values::NodeT eval(Values::NodeT term, void* environment) {
 }
 /* only here for speed. Think of it as FFI. */
 #define WORLD nil
-Values::NodeT evalMonadic(Values::NodeT term, void* environment) {
+Values::NodeT execute(Values::NodeT term, void* environment) {
 	Values::NodeT r;
 	r = eval(makeApplication(term, WORLD), environment);
 	return(get_cons_head(r));

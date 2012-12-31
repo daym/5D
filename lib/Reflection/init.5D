@@ -1,3 +1,4 @@
+#!/usr/bin/5D -p OPLs/Math.5D
 let Composition := requireModule "Composition" in
 let Error := requireModule "Error" in 
 import [app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? ratio? ratioNum ratioDenom makeRatio integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE?] from Builtins in 
