@@ -171,6 +171,7 @@ NodeT Ssemicolon = symbolFromStr(";");
 NodeT SfreeVariables = symbolFromStr("freeVariables");
 NodeT SdynamicBuiltin = symbolFromStr("dynamicBuiltin");
 NodeT Swrap = symbolFromStr("wrap");
+NodeT Stable = symbolFromStr("table");
 void initSymbols2(void) {
 	Spercenteax = symbolFromStr("%eax");
 	Sright = symbolFromStr("right");
@@ -340,6 +341,7 @@ void initSymbols2(void) {
 	SfreeVariables = symbolFromStr("freeVariables");
 	SdynamicBuiltin = symbolFromStr("dynamicBuiltin");
 	Swrap = symbolFromStr("wrap");
+	Stable = symbolFromStr("table");
 }
 
 };
