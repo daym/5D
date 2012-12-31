@@ -1,0 +1,47 @@
+#ifndef __VALUES_H
+#define __VALUES_H
+#include <5D/Allocators>
+#include <string>
+#ifdef __GNUC__
+#define G_5D_GNUC_PURE __attribute__ ((pure))
+#else
+#define G_5D_GNUC_PURE
+#endif
+namespace Values {
+
+#define nil NULL
+
+struct Node : public gc {
+	//virtual std::string str(void) const;
+	virtual ~Node(void);
+};
+typedef struct Node* NodeT;
+
+struct Box : Node {
+	void* value;
+	NodeT fRepr;
+	explicit Box(void* value, NodeT repr) {
+		this->value = value;
+		this->fRepr = repr;
+	}
+	//virtual std::string str(void) const;
+};
+static inline Box* makeBox(void* value, NodeT fRepr) {
+	return new Box(value, fRepr);
+}
+
+#define DECLARE_SYMBOL(n) extern Values::NodeT S##n
+#define DEFINE_SYMBOL(n) Values::NodeT S##n = Values::symbolFromStr(""#n);
+NodeT makeCons(NodeT a, NodeT b);
+NodeT makePair(NodeT a, NodeT b);
+NodeT symbolFromStr(const char* name) G_5D_GNUC_PURE;
+NodeT makeApplication(NodeT fn, NodeT argument);
+NodeT makeAbstraction(NodeT parameter, NodeT body);
+NodeT makeOperation(NodeT operator_, NodeT operand_1, NodeT operand_2);
+NodeT makeStr(const char* text); // this must not contain pointers
+NodeT makeStrCXX(const std::string& text, bool bAtomic = false); // this can contain pointers
+NodeT makeStrRaw(char* mutableText, size_t size, bool bAtomic);
+NodeT keywordFromStr(const char* name) G_5D_GNUC_PURE;
+
+};
+#endif
