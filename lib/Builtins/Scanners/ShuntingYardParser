@@ -11,7 +11,6 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Scanners/Scanner"
 #include "Values/Values"
 #include "Values/Symbols"
-#include "Scanners/OperatorPrecedenceList"
 
 namespace Scanners {
 
@@ -25,11 +24,11 @@ inline bool macro_operator_P(Values::NodeT operator_) {
 	       operator_ == Symbols::Sletexclam ||
 	       operator_ == Symbols::Simport);
 }
-
+struct LOperatorPrecedenceList;
 class ShuntingYardParser {
 private:
 	Scanner* scanner;
-	OperatorPrecedenceList* OPL;
+	LOperatorPrecedenceList* OPL;
 	Values::NodeT bound_symbols;
 	Values::NodeT parse_abstraction_parameter(void);
 	int get_operator_precedence_and_associativity(Values::NodeT node, Values::NodeT& outAssociativity);
@@ -49,10 +48,10 @@ protected:
 	Values::NodeT parse_define_macro(Values::NodeT operator_);
 	Values::NodeT parse_macro(void);
 	Values::NodeT parse_quote_macro(void);
+	Values::NodeT parseExpression(LOperatorPrecedenceList* OPL, Values::NodeT terminator);
 public:
 	ShuntingYardParser(void);
-	Values::NodeT parseExpression(OperatorPrecedenceList* OPL, Values::NodeT terminator);
-	Values::NodeT parse(OperatorPrecedenceList* operator_precedence_list, Values::NodeT terminator);
+	Values::NodeT parse(Values::NodeT operator_precedence_list, Values::NodeT terminator);
 	Values::NodeT parseOptionalShebang(void);
 	bool any_operator_P(Values::NodeT node);
 public: 

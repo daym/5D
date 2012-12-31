@@ -54,6 +54,9 @@ static __inline Values::NodeT nodeFromNode(Values::NodeT root) {
 static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageName) {
 	return makeApplication(obj, messageName);
 }
+static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageName, const char* a0) {
+	return makeApplication(makeApplication(obj, messageName), Values::makeStr(a0));
+}
 static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageName, int a0) {
 	return makeApplication(makeApplication(obj, messageName), Numbers::internNative((Numbers::NativeInt) a0));
 }
@@ -62,6 +65,22 @@ static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageNam
 	                                                                       messageName), 
 	                                                       Values::makeBox(a0, NULL)), 
 	                                       Numbers::internNative((Numbers::NativeInt) a1)),
+	                       Values::makeStr(a2));
+}
+static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageName, void* a0, int a1, int a2, Values::NodeT a3) {
+	return makeApplication(makeApplication(makeApplication(makeApplication(makeApplication(obj, 
+	                                                                                       messageName), 
+	                                                                       Values::makeBox(a0, NULL)), 
+	                                                       Numbers::internNative((Numbers::NativeInt) a1)), 
+	                                       Numbers::internNative((Numbers::NativeInt) a2)), 
+	                       a3);
+}
+static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT arg, Values::NodeT messageName, void* a0, int a1, const char* a2) {
+	return makeApplication(makeApplication(makeApplication(makeApplication(makeApplication(obj, 
+	                                                                                       arg), 
+	                                                                       messageName), 
+	                                                       Values::makeBox(a0, NULL)), 
+	                                       Numbers::internNative((Numbers::NativeInt) a1)), 
 	                       Values::makeStr(a2));
 }
 

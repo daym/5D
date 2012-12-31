@@ -12,7 +12,6 @@ You should have received a copy of the GNU General Public License along with thi
 #include <stack>
 #include <string.h>
 #include "Scanners/SExpressionParser"
-#include "Scanners/OperatorPrecedenceList"
 #include "Values/Values"
 #include "Values/Symbols"
 #include "Evaluators/Builtins"

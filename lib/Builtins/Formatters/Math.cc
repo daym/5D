@@ -6,7 +6,7 @@
 #include "Values/Values"
 #include "Formatters/Math"
 #include "Evaluators/Evaluators"
-#include "Scanners/OperatorPrecedenceList"
+#include "Scanners/LOperatorPrecedenceList"
 #include "Evaluators/Builtins"
 #include "Numbers/Ratio"
 
@@ -75,7 +75,8 @@ static inline void maybe_print_closing_paren(std::ostream& output, int& position
 		++position, output << ')';
 	}
 }
-static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, NodeT node, int precedence_limit, bool B_paren_equal_levels) {
+void print_CXX(Scanners::LOperatorPrecedenceList* OPL, std::ostream& output, int& position, Values::NodeT node, int precedence_limit, bool B_paren_equal_levels);
+static inline void process_abstraction(Scanners::LOperatorPrecedenceList* OPL, std::ostream& output, int& position, NodeT node, int precedence_limit, bool B_paren_equal_levels) {
 	int precedence = 0;
 	bool B_parend = maybe_print_opening_paren(output, position, NULL, precedence, precedence_limit, B_paren_equal_levels);
 	NodeT parameter = get_abstraction_parameter(node);
@@ -90,7 +91,7 @@ static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, st
 #include "Formatters/GenericPrinter"
 
 BEGIN_PROC_WRAPPER(printMath, 5, symbolFromStr("printMath!"), )
-	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*) FNARG_FETCH(pointer); /* TODO replace */
+	NodeT OPL = FNARG_FETCH(node);
 	FILE* outputFile = (FILE*) FNARG_FETCH(pointer);
 	int position = FNARG_FETCH(int);
 	int indentation = FNARG_FETCH(int);

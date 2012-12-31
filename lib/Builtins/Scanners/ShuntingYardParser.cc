@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <5D/ModuleSystem>
 #include <5D/ObjectSystem>
 #include "Scanners/ShuntingYardParser"
-#include "Scanners/OperatorPrecedenceList"
+#include "Scanners/LOperatorPrecedenceList"
 #include "Values/Values"
 #include "Values/Symbols"
 #include "Evaluators/Builtins"
@@ -327,7 +327,7 @@ int ShuntingYardParser::get_operator_precedence(NodeT node) {
 		fOperators.pop(); \
 	} else \
 
-NodeT ShuntingYardParser::parseExpression(OperatorPrecedenceList* OPL, NodeT terminator) {
+NodeT ShuntingYardParser::parseExpression(LOperatorPrecedenceList* OPL, NodeT terminator) {
 	bool oldIndentationHonoring = false;
 	try {
 		oldIndentationHonoring = scanner->setHonorIndentation(true);
@@ -421,8 +421,9 @@ NodeT ShuntingYardParser::parseExpression(OperatorPrecedenceList* OPL, NodeT ter
 		throw;
 	}
 }
-NodeT ShuntingYardParser::parse(OperatorPrecedenceList* OPL, NodeT terminator) {
-	return(parseExpression(OPL, terminator));
+NodeT ShuntingYardParser::parse(NodeT OPL, NodeT terminator) {
+	LOperatorPrecedenceList* LOPL = legacyOPLFrom5DOPL(OPL);
+	return(parseExpression(LOPL, terminator));
 }
 void ShuntingYardParser::enter_abstraction(NodeT name) {
 	bound_symbols = makeCons(name, bound_symbols);
@@ -474,7 +475,7 @@ BEGIN_PROC_WRAPPER(pop, 1, symbolFromStr("pop!"), static)
 END_PROC_WRAPPER
 BEGIN_PROC_WRAPPER(parse, 3, symbolFromStr("parse!"), static)
 	Scanners::ShuntingYardParser* scanner = (Scanners::ShuntingYardParser*) FNARG_FETCH(pointer);
-	OperatorPrecedenceList* OPL = (OperatorPrecedenceList*) FNARG_FETCH(pointer); /* TODO remove */
+	NodeT OPL = FNARG_FETCH(node);
 	Values::NodeT terminator = FNARG_FETCH(node);
 	return(MONADIC(scanner->parse(OPL, terminator)));
 END_PROC_WRAPPER

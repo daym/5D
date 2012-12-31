@@ -2,6 +2,7 @@
 #include <5D/Operations>
 namespace Evaluators {
 Values::NodeT getModuleEntryAccessor(const char* filename, Values::NodeT exportKey) G_5D_GNUC_PURE;
+Values::NodeT getModule(const char* filename) G_5D_GNUC_PURE;
 }
 namespace ModuleSystem {
 using namespace Values;

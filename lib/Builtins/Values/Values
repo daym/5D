@@ -100,6 +100,9 @@ static inline NodeT get_cons_tail(NodeT cons) {
 static inline NodeT get_pair_fst(NodeT p) {
 	return(get_cons_head(p));
 }
+static inline NodeT get_pair_snd(NodeT p) {
+	return(get_cons_head(get_cons_tail(p)));
+}
 NodeT makeApplication(NodeT fn, NodeT argument);
 NodeT makeAbstraction(NodeT parameter, NodeT body);
 NodeT makeOperation(NodeT operator_, NodeT operand_1, NodeT operand_2);

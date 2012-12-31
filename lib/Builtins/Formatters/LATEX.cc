@@ -6,7 +6,7 @@
 #include "Values/Symbols"
 #include "Formatters/LATEX"
 #include "Evaluators/Evaluators"
-#include "Scanners/OperatorPrecedenceList"
+#include "Scanners/LOperatorPrecedenceList"
 #include "Evaluators/Builtins"
 #include "Formatters/UTFStateMachine"
 #include "Numbers/Ratio"
@@ -137,7 +137,8 @@ static void print_text_raw(std::ostream& output, int& visible_position, const st
 			++visible_position;
 	}
 }
-static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, NodeT node, int precedence_limit, bool B_paren_equal_levels) {
+void print_CXX(Scanners::LOperatorPrecedenceList* OPL, std::ostream& output, int& position, Values::NodeT node, int precedence_limit, bool B_paren_equal_levels);
+static inline void process_abstraction(Scanners::LOperatorPrecedenceList* OPL, std::ostream& output, int& position, NodeT node, int precedence_limit, bool B_paren_equal_levels) {
 	int precedence = 0;
 	bool B_parend = maybe_print_opening_paren(output, position, NULL, precedence, precedence_limit, B_paren_equal_levels);
 	output << "\\frac{";
@@ -159,7 +160,7 @@ static inline void process_abstraction(Scanners::OperatorPrecedenceList* OPL, st
 #include "Formatters/GenericPrinter"
 
 BEGIN_PROC_WRAPPER(printLATEX, 5, symbolFromStr("printLATEX!"), )
-	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*) FNARG_FETCH(pointer); /* TODO replace */
+	NodeT OPL = FNARG_FETCH(node);
 	FILE* outputFile = (FILE*) FNARG_FETCH(pointer);
 	int position = FNARG_FETCH(int);
 	int indentation = FNARG_FETCH(int);

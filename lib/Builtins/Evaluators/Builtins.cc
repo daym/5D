@@ -14,7 +14,6 @@
 #include "Evaluators/Builtins"
 #include "Evaluators/FFI"
 #include "Scanners/MathParser"
-#include "Scanners/OperatorPrecedenceList"
 #include "FFIs/FFIs"
 #include "Numbers/Integer"
 #include <5D/Operations>
@@ -692,7 +691,7 @@ static NodeT makeAbstractionB(NodeT options, NodeT argument) {
 }
 /* INTERNAL! */
 #define WRAP_PARSE_MATH(n, B, P) \
-static NodeT n(Scanners::OperatorPrecedenceList* OPL, FILE* inputFile, CXXArguments& arguments, CXXArguments::const_iterator& iter, const CXXArguments::const_iterator& endIter) { \
+static NodeT n(Values::NodeT OPL, FILE* inputFile, CXXArguments& arguments, CXXArguments::const_iterator& iter, const CXXArguments::const_iterator& endIter) { \
 	int position = 0; \
 	NodeT name = NULL; \
 	NodeT terminator = NULL; \
@@ -725,7 +724,7 @@ static NodeT makeFileMathParserB(NodeT options, NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	CXXArguments::const_iterator endIter = arguments.end();
-	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*)(Evaluators::pointerFromNode(iter->second));
+	NodeT OPL = Evaluators::nodeFromNode(iter->second);
 	++iter;
 	NodeT inputFile = iter->second;
 	FETCH_WORLD(iter);
@@ -735,7 +734,7 @@ static NodeT parseStrMathB(NodeT options, NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	CXXArguments::const_iterator endIter = arguments.end();
-	Scanners::OperatorPrecedenceList* OPL = (Scanners::OperatorPrecedenceList*)(Evaluators::pointerFromNode(iter->second));
+	NodeT OPL = Evaluators::nodeFromNode(iter->second);
 	++iter;
 	const char* command = Evaluators::stringFromNode(iter->second);
 	FILE* inputFile = fmemopen((void*) command, strlen(command), "r");

@@ -72,6 +72,7 @@ std::string get_shared_dir(void);
 void set_shared_dir_by_executable(const char* argv0 /* should be full path */);
 
 Values::NodeT getModuleEntryAccessor(const char* filename, Values::NodeT exportKey) G_5D_GNUC_PURE;
+Values::NodeT getModule(const char* filename) G_5D_GNUC_PURE;
 
 /* first arg is a Box with a list of [key value] */
 

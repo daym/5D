@@ -5,7 +5,6 @@
 #include "Evaluators/ModuleLoader"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
-#include "Scanners/OperatorPrecedenceList"
 #include "Values/Values"
 #include "FFIs/FFIs"
 #include "Scanners/MathParser"
@@ -23,31 +22,10 @@ using namespace Values;
 using namespace ModuleSystem;
 using namespace FFIs;
 
-static Scanners::OperatorPrecedenceList* defaultOPL;
-
-
-static Scanners::OperatorPrecedenceList* legacyOPLFrom5DOPL(NodeT source) {
-	int levelIndex = 50; /* TODO */
-	Scanners::OperatorPrecedenceList* result = new Scanners::OperatorPrecedenceList(false);
-	for(; source && levelIndex >= 0; source = get_cons_tail(source), --levelIndex) {
-		NodeT levelEntries = get_cons_head(source);
-		for(; levelEntries; levelEntries = get_cons_tail(levelEntries)) {
-			NodeT cell = get_cons_head(levelEntries);
-			NodeT operator_ = get_pair_first(cell);
-			NodeT associativity = get_pair_second(cell);
-			result->cons(levelIndex, operator_, associativity);
-			std::string s = Evaluators::str(operator_);
-			printf("beep %s\n", s.c_str());
-		}
-	}
-	return(result);
-}
 static NodeT loadModule(NodeT options, NodeT fileNameNode);
-Scanners::OperatorPrecedenceList* selectOperatorPrecedenceList(NodeT shebang) {
+NodeT selectOperatorPrecedenceList(NodeT shebang) {
 	/* shebang is either NULL or a "command line string" as is UNIX tradition. */
-	if(!defaultOPL)
-		defaultOPL = new Scanners::OperatorPrecedenceList;
-	Scanners::OperatorPrecedenceList* result = defaultOPL;
+	NodeT result = NULL;
 	char* shebangS = stringOrNilFromNode(shebang);
 	if(shebangS) {
 		/* FIXME use an actual command line parsing library (if that exists) */
@@ -58,7 +36,7 @@ Scanners::OperatorPrecedenceList* selectOperatorPrecedenceList(NodeT shebang) {
 			char* q = strchr(r, ' ');
 			if(q) 
 				*q = 0;
-			result = legacyOPLFrom5DOPL(loadModule(NULL, makeStr(r)));
+			result = loadModule(NULL, makeStr(r));
 		}
 	}
 	return(result);
@@ -187,8 +165,11 @@ static inline NodeT makeModuleBox(NodeT argument) {
 DEFINE_SIMPLE_STRICT_OPERATION(ModuleBoxMaker, makeModuleBox(argument))
 REGISTER_BUILTIN(ModuleBoxMaker, 1, 0, symbolFromStr("makeModuleBox"))
 
+Values::NodeT getModule(const char* filename) {
+	return Values::makeApplication(&ModuleLoader, Values::makeStr(filename));
+}
 Values::NodeT getModuleEntryAccessor(const char* filename, Values::NodeT exportKey) {
-	return Values::makeApplication(Values::makeApplication(&ModuleLoader, Values::makeStr(filename)), Evaluators::quote(exportKey));
+	return Values::makeApplication(getModule(filename), Evaluators::quote(exportKey));
 }
 
 };
