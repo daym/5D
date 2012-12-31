@@ -6,6 +6,7 @@ SUBDIRS2 = Arithmetic Logic Composition List OS IO UI FFI String Reflection Erro
 
 all:
 	$(MAKE) -C Builtins all
+	$(MAKE) -C OPLs all
 	$(MAKE) -C Arithmetic all
 	$(MAKE) -C Trigonometry all
 	$(MAKE) -C Logic all
@@ -32,6 +33,7 @@ all:
 
 clean:
 	$(MAKE) -C Builtins clean
+	$(MAKE) -C OPLs clean
 	$(MAKE) -C Arithmetic clean
 	$(MAKE) -C Trigonometry clean
 	$(MAKE) -C Logic clean
@@ -58,6 +60,7 @@ clean:
 
 distclean:
 	$(MAKE) -C Builtins distclean
+	$(MAKE) -C OPLs distclean
 	$(MAKE) -C Arithmetic distclean
 	$(MAKE) -C Trigonometry distclean
 	$(MAKE) -C Logic distclean
@@ -84,6 +87,7 @@ distclean:
 
 install:
 	$(MAKE) -C Builtins install
+	$(MAKE) -C OPLs install
 	$(MAKE) -C Arithmetic install
 	$(MAKE) -C Trigonometry install
 	$(MAKE) -C Logic install

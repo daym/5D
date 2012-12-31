@@ -14,16 +14,6 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace Scanners {
 
-inline bool macro_operator_P(Values::NodeT operator_) {
-	return(operator_ == Symbols::Sdefine || 
-	       operator_ == Symbols::Sdef || 
-	       operator_ == Symbols::Sdefrec || 
-	       operator_ == Symbols::Squote || 
-	       operator_ == Symbols::Sleftbracket || 
-	       operator_ == Symbols::Slet ||
-	       operator_ == Symbols::Sletexclam ||
-	       operator_ == Symbols::Simport);
-}
 struct LOperatorPrecedenceList;
 class ShuntingYardParser {
 private:
@@ -36,6 +26,7 @@ private:
 	Values::NodeT expand_macro(Values::NodeT op1, Values::NodeT suffix);
 	bool macro_standin_P(Values::NodeT op1);
 	Values::NodeT expand_simple_macro(Values::NodeT value);
+	bool simple_macro_P(Values::NodeT value) const;
 protected:
 	Values::NodeT parse_exports_macro(void);
 	Values::NodeT parse_exports_macro_body(void);

@@ -76,6 +76,16 @@ struct LOperatorPrecedenceList : Values::Node {
 	void cons(int precedence_level, Values::NodeT operator_, Values::NodeT associativity);
 	void uncons(int precedence_level, Values::NodeT operator_, Values::NodeT associativity);
 	Values::NodeT get_all_operators(int precedence_level) const; // Cons
+	bool prefix_operator_P(Values::NodeT thingie) const {
+		/* should be: '\\- unary- let let! import
+		   NOT [ */
+		if(thingie == Symbols::Sdash) {
+			return true; /* shoot me... */
+		} else {
+			Values::NodeT associativity = NULL;
+			return(get_operator_precedence_and_associativity(thingie, associativity) != -1 && associativity == Symbols::Sprefix);
+		}
+	}
 };
 
 Scanners::LOperatorPrecedenceList* legacyOPLFrom5DOPL(Values::NodeT source);

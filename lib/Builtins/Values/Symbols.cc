@@ -103,7 +103,7 @@ NodeT Sdispatch = symbolFromStr("dispatch");
 NodeT Sprefix = symbolFromStr("prefix");
 NodeT Spostfix = symbolFromStr("postfix");
 NodeT Sdot = symbolFromStr(".");
-NodeT Sunarydash = symbolFromStr("unary-");
+NodeT Sunarydash = symbolFromStr("‒"); /* I'm so sorry */
 NodeT Ssubstr = symbolFromStr("substr");
 NodeT SstrUntilZero = symbolFromStr("strUntilZero");
 NodeT Sintegral = symbolFromStr("∫");
@@ -272,7 +272,7 @@ void initSymbols2(void) {
 	Sprefix = symbolFromStr("prefix");
 	Spostfix = symbolFromStr("postfix");
 	Sdot = symbolFromStr(".");
-	Sunarydash = symbolFromStr("unary-");
+	Sunarydash = symbolFromStr("‒"); /* I'm so sorry */
 	Ssubstr = symbolFromStr("substr");
 	SstrUntilZero = symbolFromStr("strUntilZero");
 	Sintegral = symbolFromStr("∫");

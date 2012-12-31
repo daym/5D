@@ -99,7 +99,7 @@ LOperatorPrecedenceList::LOperatorPrecedenceList(bool bInitDefaults) {
 		cons(26, I("'"), P);
 		cons(23, I("++"), L);
 		cons(22, I("+"), L);
-		cons(22, I("unary-"), P);
+		cons(22, I("‒"), P); /* prefix (negation) operator */
 		cons(22, I("-"), L);  /* also set difference. TODO maybe use the special char "−" for that. */
 		cons(21, I("%"), L);
 		/* TODO set-excludor (\\) */
@@ -136,9 +136,9 @@ LOperatorPrecedenceList::LOperatorPrecedenceList(bool bInitDefaults) {
 		cons(2, I("?;"), L);
 		cons(1, I("\\"), P);
 		//cons(1, I("→"), R); // mapsto
-		cons(0, I("let"), R); // and technically define, defrec, def
-		cons(0, I("let!"), R);
-		cons(0, I("import"), R);
+		cons(0, I("let"), P); // FIXME R // and technically define, defrec, def
+		cons(0, I("let!"), P);
+		cons(0, I("import"), P);
 		// TODO implies: RIGHT associative.
 	}
 #undef S
@@ -161,7 +161,7 @@ NodeT LOperatorPrecedenceList::get_all_operators(int precedence_level) const {
 
 Scanners::LOperatorPrecedenceList* legacyOPLFrom5DOPL(NodeT source) {
 	static Scanners::LOperatorPrecedenceList* defaultOPL = NULL;
-	int levelIndex = 50; /* TODO */
+	int levelIndex = MAX_PRECEDENCE_LEVELS - 1; /* TODO dynamic? */
 	if(source == NULL) { /* => default */
 		if(!defaultOPL)
 			defaultOPL = new LOperatorPrecedenceList(true);

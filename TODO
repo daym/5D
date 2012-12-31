@@ -57,6 +57,7 @@ TUI: allow multi-line entry in history (maybe just use a global history used by 
 
 = Beauty =
 
+Right now, (‒) is used for the prefix operator. This isn't distinguishable much from (-), maybe get rid of the special case (how?)...
 Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).
 nested lists: line-break only for the second list if the first list is short enough.
@@ -94,6 +95,7 @@ make an extra "]" emit a nicer error message
 
 = Correctness =
 
+move prefix_operator_P into LOperatorPrecedenceList and make it look there "in real time".
 Builtins.nan? (Builtins.(/) 1.0 0.0) => #t (currently it's a fraction, so not detected as NaN)
 newline => $ ?? What about newlines after "in" ? Probably a bad idea, since indentation is already the same as ($) and that's enough.
 (odd? inf) is true because it's implemented as "not even" and inf is not even.

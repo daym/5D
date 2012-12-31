@@ -40,14 +40,6 @@ B. simple macros ([] is the only one so far)
 All these levels of indirection are in order to conserve stack space. Otherwise a sane person would prefer to use the old-style MathParser - but it doesn't scale.
 
 */
-// keep in sync with OperatorPrecedenceList P entries.
-bool prefix_operator_P(NodeT operator_) {
-	return(operator_ == Symbols::Squote || 
-	       operator_ == Symbols::Sbackslash || 
-	       operator_ == Symbols::Sdash ||
-	       operator_ == Symbols::Sunarydash ||
-	       (macro_operator_P(operator_) && operator_ != Symbols::Sleftbracket));
-}
 ShuntingYardParser::ShuntingYardParser(void) {
 	bound_symbols = NULL;
 	scanner = new Scanner();
@@ -74,6 +66,20 @@ NodeT ShuntingYardParser::parse_abstraction_parameter(void) {
 bool ShuntingYardParser::macro_standin_P(NodeT op1) {
 	return(!get_symbol1_name(op1));
 }
+bool ShuntingYardParser::simple_macro_P(NodeT value) const {
+	return (value == Symbols::Sleftbracket) ? true :
+	       (value == Symbols::Squote) ? true :
+	       (value == Symbols::Shashexports) ? true : 
+	       false;
+}
+NodeT ShuntingYardParser::expand_simple_macro(NodeT value) {
+	return (value == Symbols::Sleftbracket) ? parse_list_macro() :
+	       (value == Symbols::Squote) ? parse_quote_macro() :
+	       (value == Symbols::Shashexports) ? parse_exports_macro() :
+	       value;
+}
+
+/* mostly for macros */
 NodeT ShuntingYardParser::parse_value(void) {
 	if(scanner->input_value == Symbols::SlessEOFgreater) {
 		scanner->raiseError("<parameter>", "<nothing>");
@@ -88,7 +94,7 @@ NodeT ShuntingYardParser::parse_value(void) {
 		NodeT result = parseExpression(OPL, Symbols::Sautorightparen);
 		scanner->consume();
 		return(result);
-	} else if(macro_operator_P(scanner->input_value))
+	} else if(simple_macro_P(scanner->input_value))
 		return(expand_simple_macro(scanner->consume()));
 	else
 		return(parseExpression(OPL, Symbols::Sspace));
@@ -145,7 +151,7 @@ NodeT ShuntingYardParser::parse_list_macro(void) {
 }
 NodeT ShuntingYardParser::parse_exports_macro_body(void) { /* also used by parse_import_macro() */
 	if(scanner->input_value != Symbols::Srightbracket && scanner->input_value != Symbols::SlessEOFgreater) {
-		NodeT a = parse_value();
+		NodeT a = parse_value(); // symbol, should be
 		NodeT hd = makeApplication(makeApplication(Symbols::Scomma, makeApplication(Symbols::Squote, a)), a);
 		return(makeApplication(makeApplication(Symbols::Scolon, hd), parse_exports_macro_body()));
 	} else
@@ -175,14 +181,11 @@ NodeT ShuntingYardParser::parse_quote_macro(void) {
 inline bool simple_macro_P(NodeT value) {
 	return(value == Symbols::Sleftbracket || value == Symbols::Squote);
 }
-NodeT ShuntingYardParser::expand_simple_macro(NodeT value) {
-	return (value == Symbols::Sleftbracket) ? parse_list_macro() :
-	       (value == Symbols::Squote) ? parse_quote_macro() :
-	       (value == Symbols::Shashexports) ? parse_exports_macro() :
-	       value;
-}
 NodeT ShuntingYardParser::handle_unary_operator(NodeT operator_) {
 	// these will "prepare" macros by parsing the macro and representing everything but the tail (if applicable) in an AST. Later, expand_macro will fit it into the whole.
+	if(scanner->input_value == Symbols::Srightparen) { /* special case so we can quote \\ and the macro keywords */
+		return(operator_);
+	}
 	if(operator_ == Symbols::Sbackslash) {
 		NodeT parameter = parse_abstraction_parameter();
 		//std::string v = str(parameter);
@@ -344,7 +347,7 @@ NodeT ShuntingYardParser::parseExpression(LOperatorPrecedenceList* OPL, NodeT te
 		(!OPL->any_operator_P(previousValue) && 
 		 previousValue != Symbols::Sleftparen && 
 		 previousValue != Symbols::Sautoleftparen && 
-		 ((!OPL->any_operator_P(value) || (prefix_operator_P(value) && value != Symbols::Sdash) || value == Symbols::Sbackslash) &&
+		 ((!OPL->any_operator_P(value) || (OPL->prefix_operator_P(value) && value != Symbols::Sdash) || value == Symbols::Sbackslash) &&
 		   value != Symbols::Srightparen && 
 		   value != Symbols::Sautorightparen))) { // two consecutive non-operators: function application.
 			// not "x)" !
@@ -371,11 +374,11 @@ NodeT ShuntingYardParser::parseExpression(LOperatorPrecedenceList* OPL, NodeT te
 			else if(value == Symbols::Sautorightparen && fOperators.top() != Symbols::Sautoleftparen)
 				scanner->raiseError(std::string("close-") + str(fOperators.top()), str(value));
 			fOperators.pop(); // "("
-		} else if(prefix_operator_P(value) && any_operator_P(previousValue) && previousValue != Symbols::Srightparen && previousValue != Symbols::Sautorightparen) { // unary prefix operator, assumed to all be right-associative.
+		} else if(OPL->prefix_operator_P(value) && any_operator_P(previousValue) && previousValue != Symbols::Srightparen && previousValue != Symbols::Sautorightparen) { // unary prefix operator, assumed to all be right-associative.
 			if(value == Symbols::Sdash)
 				value = Symbols::Sunarydash;
 			int currentPrecedence = get_operator_precedence(value);
-			SCOPERANDS while(!fOperators.empty() && prefix_operator_P(fOperators.top()) && currentPrecedence < get_operator_precedence(fOperators.top()))
+			SCOPERANDS while(!fOperators.empty() && OPL->prefix_operator_P(fOperators.top()) && currentPrecedence < get_operator_precedence(fOperators.top()))
 				CONSUME_OPERATION
 			//printf("prefix pushop %s\n", str(value).c_str());
 			fOperators.push(handle_unary_operator(value));
