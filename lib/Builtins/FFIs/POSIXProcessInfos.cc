@@ -36,18 +36,18 @@ bool absolute_path_P(NodeT nameN) {
 		return(false);
 	return(*c == '/');
 }
-static NodeT internEnviron(const char** envp) {
+static NodeT internEnvironF(const char** envp) {
 	if(*envp) {
 		NodeT head = makeStr(*envp++);
-		return(makeCons(head, internEnviron(envp)));
+		return(makeCons(head, internEnvironF(envp)));
 	}
 	else
 		return(NULL);
 }
 static NodeT wrapInternEnviron(NodeT argument) {
-	return internEnviron((const char**) Values::pointerFromNode(argument));
+	return internEnvironF((const char**) Values::pointerFromNode(argument));
 }
-static Box* environFromList(NodeT argument) {
+static Box* environFromListF(NodeT argument) {
 	int count = 0;
 	char** result;
 	int i = 0;
@@ -61,14 +61,16 @@ static Box* environFromList(NodeT argument) {
 		result[i] = Values::stringFromNode(node->head);
 		++i;
 	}
-	return(makeBox(result, makeApplication(&EnvironFromList, listNode/* or argument*/)));
+	return(makeBox(result, makeApplication(&environFromList, listNode/* or argument*/)));
 }
-DEFINE_FULL_OPERATION(EnvironGetter, {
-	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(fn, argument);
-	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	FETCH_WORLD(iter);
-	return(CHANGED_WORLD(internEnviron((const char**) environ)));
-})
+BEGIN_PROC_WRAPPER(getEnviron, 0, symbolFromStr("getEnviron!"), )
+	return(MONADIC(internEnvironF((const char**) environ)));
+END_PROC_WRAPPER
+BEGIN_PROC_WRAPPER(listFromEnviron, 1, symbolFromStr("listFromEnviron!"), )
+	NodeT env = FNARG_FETCH(node);
+	return MONADIC(wrapInternEnviron(env));
+END_PROC_WRAPPER
+DEFINE_SIMPLE_STRICT_OPERATION(environFromList, environFromListF(argument))
 char* get_absolute_path(const char* filename) {
 	if(filename && filename[0] == '/')
 		return(GCx_strdup(filename));
@@ -97,8 +99,6 @@ static NodeT wrapGetAbsolutePath(NodeT options, NodeT argument) {
 DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 	return(wrapGetAbsolutePath(fn, argument));
 })
-DEFINE_SIMPLE_STRICT_OPERATION(EnvironInterner, wrapInternEnviron(argument))
-DEFINE_SIMPLE_STRICT_OPERATION(EnvironFromList, environFromList(argument))
 
 DEFINE_SIMPLE_STRICT_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(argument))
 DEFINE_SIMPLE_STRICT_OPERATION(AbsolutePathP, absolute_path_P(argument))
@@ -106,9 +106,7 @@ DEFINE_SIMPLE_STRICT_OPERATION(AbsolutePathP, absolute_path_P(argument))
 REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, symbolFromStr("absolutePath!"))
 REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, symbolFromStr("archDepLibName"))
 REGISTER_BUILTIN(AbsolutePathP, 1, 0, symbolFromStr("absolutePath?"))
-REGISTER_BUILTIN(EnvironGetter, 1, 0, symbolFromStr("environ!"))
-REGISTER_BUILTIN(EnvironInterner, 1, 0, symbolFromStr("listFromEnviron"))
-REGISTER_BUILTIN(EnvironFromList, 1, 0, symbolFromStr("environFromList"))
+REGISTER_BUILTIN(environFromList, 1, 0, symbolFromStr("environFromList"))
 
 }; /* end namespace FFIs */
 

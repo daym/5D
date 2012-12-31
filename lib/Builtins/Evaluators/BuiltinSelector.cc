@@ -149,9 +149,9 @@ void BuiltinSelector_init(void) {
 	add_builtin_method(self, symbolFromStr("duplicateRecord!"), &FFIs::RecordDuplicator);
 	add_builtin_method(self, symbolFromStr("archDepLibName"), &FFIs::ArchDepLibNameGetter);
 	add_builtin_method(self, symbolFromStr("getErrno!"), &Evaluators::wrapGetErrno);
-	add_builtin_method(self, symbolFromStr("environ!"), &FFIs::EnvironGetter);
-	add_builtin_method(self, symbolFromStr("listFromEnviron"), &FFIs::EnvironInterner);
-	add_builtin_method(self, symbolFromStr("environFromList"), &FFIs::EnvironFromList);
+	add_builtin_method(self, symbolFromStr("environ!"), &FFIs::getEnviron);
+	add_builtin_method(self, symbolFromStr("listFromEnviron!"), &FFIs::listFromEnviron);
+	add_builtin_method(self, symbolFromStr("environFromList"), &FFIs::environFromList);
 	add_builtin_method(self, symbolFromStr("makeApp"), &Evaluators::ApplicationMaker);
 	add_builtin_method(self, symbolFromStr("app?"), &Evaluators::ApplicationP);
 	add_builtin_method(self, symbolFromStr("appOperator"), &Evaluators::ApplicationOperatorGetter);
