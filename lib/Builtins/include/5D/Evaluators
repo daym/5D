@@ -1,0 +1,19 @@
+#ifndef __5D_EVALUATORS
+#define __5D_EVALUATORS
+#include <5D/Values>
+#include <5D/Operations>
+
+namespace Evaluators {
+Values::NodeT eval(Values::NodeT term, void* environment);
+DECLARE_SIMPLE_OPERATION(Quoter)
+DECLARE_SIMPLE_OPERATION(Reducer)
+Values::NodeT quote(Values::NodeT node);
+static inline Values::NodeT makeIOMonad(Values::NodeT result, Values::NodeT world) {
+	return(Values::makeCons(result, Values::makeCons(world, NULL)));
+}
+void Logic_init(void);
+Values::NodeT execute(Values::NodeT term, void* environment); /* monadic eval */
+
+};
+
+#endif /* ndef __5D_EVALUATORS */
