@@ -870,7 +870,7 @@ CXXArguments CXXfromArgumentsU(NodeT options, NodeT argument, int backwardsIndex
 	NodeT p;
 	int i = 1;
 	bool B_pending_value = false;
-	assert(options);
+	//assert(options); // can happen when calling manually, so commented out.
 	p = backwardsIndexOfArgumentNotToReduce == 0 ? argument : reduce(argument);
 	B_pending_value = true;
 	NodeT self;
