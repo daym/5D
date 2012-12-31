@@ -32,7 +32,7 @@ NodeT selectOperatorPrecedenceList(NodeT shebang) {
 		const char* p = strstr(shebangS, "-p");
 		if(p) {
 			p = &p[3];
-			char* r = GC_strdup(p);
+			char* r = GCx_strdup(p);
 			char* q = strchr(r, ' ');
 			if(q) {
 				*q = 0;

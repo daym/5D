@@ -47,7 +47,7 @@ NodeT makeExportsQ(const char* names, ...) {
 	NodeT result;
 	va_list ap;
 	va_start(ap, names);
-	result = makeExportsFVA("%s", GC_strdup(names), ap);
+	result = makeExportsFVA("%s", GCx_strdup(names), ap);
 	va_end(ap);
 	//result = makeCons(makePair(Sexports, makeCons(Sexports, makeReflector(result))), result); // exports are automatcially added by ModuleSystem dispatcher
 	return(result);
@@ -56,7 +56,7 @@ NodeT makeExportsFQ(const char* fmt, const char* names, ...) {
 	NodeT result;
 	va_list ap;
 	va_start(ap, names);
-	result = makeExportsFVA(fmt, GC_strdup(names), ap);
+	result = makeExportsFVA(fmt, GCx_strdup(names), ap);
 	va_end(ap);
 	//result = makeCons(makePair(Sexports, makeCons(Sexports, makeReflector(result))), result); // exports are automatcially added by ModuleSystem dispatcher
 	return(result);

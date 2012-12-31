@@ -3,9 +3,11 @@
 #include "Values/Values"
 #include "Evaluators/Evaluators"
 #include "Evaluators/FFI"
-#include "Evaluators/Builtins"
+//nclude "Evaluators/Builtins"
 #include "FFIs/ProcessInfos"
-#include "FFIs/Allocators"
+#include <5D/Allocators>
+#include <5D/Operations>
+#include <5D/FFIs>
 
 namespace FFIs {
 using namespace Values;
@@ -39,9 +41,9 @@ static NodeT internEnviron(WCHAR* envp) {
 }
 static NodeT wrapInternEnviron(NodeT argument) {
 	// TODO check whether it worked? No.
-	return internEnviron((WCHAR*) Evaluators::get_pointer(argument));
+	return internEnviron((WCHAR*) Values::pointerFromNode(argument));
 }
-static Box* environFromList(NodeT argument) {
+static Box* environFromListF(NodeT argument) {
 	int count = 0;
 	WCHAR* resultC;
 	std::vector<std::wstring> result;
@@ -62,16 +64,15 @@ static Box* environFromList(NodeT argument) {
 		i += v.length() + 1;
 	}
 	resultC[i] = 0;
-	return(makeBox(resultC, makeApplication(&EnvironFromList, listNode/* or argument*/)));
+	return(makeBox(resultC, makeApplication(&environFromList, listNode/* or argument*/)));
 }
-static NodeT wrapGetEnviron(NodeT world) {
+BEGIN_PROC_WRAPPER(getEnviron, 0, symbolFromStr("getEnviron!"), )
 	NodeT result;
 	LPWSTR env = GetEnvironmentStringsW();
-	result = CHANGED_WORLD(internEnviron(env));
+	result = MONADIC(internEnviron(env));
 	FreeEnvironmentStringsW(env);
 	return(result);
-}
-DEFINE_SIMPLE_OPERATION(EnvironGetter, wrapGetEnviron(Evaluators::reduce(argument)))
+END_PROC_WRAPPER
 char* get_absolute_path(const char* filename) {
 	if(filename == NULL || filename[0] == 0)
 		filename = ".";
@@ -93,18 +94,19 @@ static NodeT wrapGetAbsolutePath(NodeT options, NodeT argument) {
 DEFINE_FULL_OPERATION(AbsolutePathGetter, {
 	return(wrapGetAbsolutePath(fn, argument));
 })
-DEFINE_SIMPLE_OPERATION(EnvironInterner, wrapInternEnviron(Evaluators::reduce(argument)))
-DEFINE_SIMPLE_OPERATION(EnvironFromList, environFromList(argument))
+BEGIN_PROC_WRAPPER(listFromEnviron, 1, symbolFromStr("listFromEnviron!"), )
+	NodeT env = FNARG_FETCH(node);
+	return MONADIC(wrapInternEnviron(env));
+END_PROC_WRAPPER
+DEFINE_SIMPLE_STRICT_OPERATION(environFromList, environFromListF(argument))
 
-DEFINE_SIMPLE_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(Evaluators::reduce(argument)))
-DEFINE_SIMPLE_OPERATION(AbsolutePathP, absolute_path_P(Evaluators::reduce(argument)))
+DEFINE_SIMPLE_STRICT_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(argument))
+DEFINE_SIMPLE_STRICT_OPERATION(AbsolutePathP, absolute_path_P(argument))
 
 REGISTER_BUILTIN(AbsolutePathGetter, 2, 0, symbolFromStr("absolutePath!"))
 REGISTER_BUILTIN(ArchDepLibNameGetter, 1, 0, symbolFromStr("archDepLibName"))
 REGISTER_BUILTIN(AbsolutePathP, 1, 0, symbolFromStr("absolutePath?"))
-REGISTER_BUILTIN(EnvironGetter, 1, 0, symbolFromStr("environ!"))
-REGISTER_BUILTIN(EnvironInterner, 1, 0, symbolFromStr("listFromEnviron"))
-REGISTER_BUILTIN(EnvironFromList, 1, 0, symbolFromStr("environFromList"))
+REGISTER_BUILTIN(environFromList, 1, 0, symbolFromStr("environFromList"))
 
 }; /* end namespace FFIs */
 

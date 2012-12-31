@@ -14,7 +14,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Values/Values"
 #include "Evaluators/FFI"
 #include "Evaluators/Builtins"
-#include "Evaluators/Operation"
+#include <5D/Operations>
+#include <5D/FFIs>
 #include "FFIs/FFIs"
 
 namespace FFIs {
@@ -27,7 +28,7 @@ NodeT wrapAccessLibrary(NodeT options, NodeT argument) {
 	Evaluators::CXXArguments::const_iterator endIter = arguments.end();
 	assert(iter != endIter);
 	assert(iter->first == NULL);
-	void* body = Evaluators::get_pointer(iter->second);
+	void* body = Values::pointerFromNode(iter->second);
 	++iter;
 	assert(iter != endIter);
 	assert(iter->first == NULL);

@@ -302,7 +302,7 @@ void encodeVariant(NodeT both, VARIANT* value) {
 	get_tuple_with_two_elements(both, vtNum, source);
 	encodeNumber(vtNum, value->vt);
 	if(value->vt & VT_BYREF) {
-		value->byref = Evaluators::get_pointer(source);
+		value->byref = Values::pointerFromNode(source);
 		return;
 	}
 	if(value->vt & VT_ARRAY) {
@@ -319,7 +319,7 @@ void encodeVariant(NodeT both, VARIANT* value) {
 		}
 		break;
 	case VT_BOOL:
-		value->boolVal = Evaluators::get_boolean(source);
+		value->boolVal = Values::booleanFromNode(source);
 		break;
 	case VT_CY:
 		get_tuple_with_two_elements(source, a, b);
@@ -327,7 +327,7 @@ void encodeVariant(NodeT both, VARIANT* value) {
 		encodeNumber(b, value->cyVal.Hi);
 		break;
 	case VT_DATE:
-		value->date = Evaluators::get_double(source);
+		value->date = Values::doubleFromNode(source);
 		break;
 	/*case VT_VARIANT: // pointer to variant blah
 		return();
@@ -360,10 +360,10 @@ void encodeVariant(NodeT both, VARIANT* value) {
 		encodeNumber(source, value->llVal);
 		break;
 	case VT_R4:
-		value->fltVal = Evaluators::get_float(source);
+		value->fltVal = Values::floatFromNode(source);
 		break;
 	case VT_R8:
-		value->dblVal = Evaluators::get_double(source);
+		value->dblVal = Values::doubleFromNode(source);
 		break;
 	case VT_INT:
 		encodeNumber(source, value->intVal);

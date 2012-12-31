@@ -1,3 +1,6 @@
+#ifdef WIN32
+#include "stdafx.h"
+#endif
 #include <5D/Operations>
 #include <5D/Values>
 #include <5D/FFIs>

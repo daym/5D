@@ -1,13 +1,23 @@
 #include "stdafx.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <tchar.h>
 #include "FFIs/UI"
-#include "Evaluators/Operation"
-#include "Evaluators/FFI"
+#include <5D/Operations>
+#include <5D/FFIs>
 #include "Evaluators/Builtins"
 #include "Values/Values"
 namespace FFIs {
 using namespace Values;
+#ifndef MB_CANCELTRYCONTINUE
+#define MB_CANCELTRYCONTINUE 0x00000006L
+#endif
+#ifndef IDTRYAGAIN
+#define IDTRYAGAIN 10
+#endif
+#ifndef IDCONTINUE
+#define IDCONTINUE   11
+#endif
 
 static NodeT wrapMessageBox(NodeT options, NodeT argument) {
 	HWND cParentWindow = NULL;
@@ -17,7 +27,7 @@ static NodeT wrapMessageBox(NodeT options, NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	NodeT parent = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("parent:"));
 	if(parent) {
-		cParentWindow = (HWND) Evaluators::get_pointer(parent);
+		cParentWindow = (HWND) Values::pointerFromNode(parent);
 	}
 	NodeT type_ = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("type:"));
 	cType |= (type_ == symbolFromStr("ok")) ? MB_OK :
@@ -46,7 +56,7 @@ static NodeT wrapMessageBox(NodeT options, NodeT argument) {
 	cText = FromUTF8(Values::stringFromNode(iter->second));
 	FETCH_WORLD(iter);
 	NodeT caption = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("caption:"));
-	cCaption = caption ? FromUTF8(Values::stringFromNode(caption)) : _T("");
+	cCaption = caption ? FromUTF8(Values::stringFromNode(caption)) : std::wstring();
 	int cResult = MessageBoxW(cParentWindow, cText.c_str(), cCaption.c_str(), cType);
 	NodeT result;
 	result = (cResult == IDOK) ? symbolFromStr("ok") : 
