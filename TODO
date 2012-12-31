@@ -1,3 +1,5 @@
+fix Maybe for exception handling!!!
+
 = Macros = 
 
 list comprehensions in []
@@ -55,8 +57,6 @@ TUI: allow multi-line entry in history (maybe just use a global history used by 
 
 = Beauty =
 
-Just make the REPL itself a module like all the other modules and remove all the damn REPL-specific stuff (just provide a Python-like #globals module which is automatically accessed in order to look up unknown variables).
-allow REPL.remove! in order to remove a (usually the last) definition.
 Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).
 nested lists: line-break only for the second list if the first list is short enough.
@@ -69,6 +69,7 @@ amb
 
 = Performance =
 
+just remove gc_allocator from BigUnsigned (it's opaque anyway).
 just make CProcedure const.
 add reduction rule "rec e => e (rec e)"
 use hash table for dispatching FFI
@@ -93,6 +94,7 @@ make an extra "]" emit a nicer error message
 
 = Correctness =
 
+Builtins.nan? (Builtins.(/) 1.0 0.0) => #t (currently it's a fraction, so not detected as NaN)
 newline => $ ?? What about newlines after "in" ? Probably a bad idea, since indentation is already the same as ($) and that's enough.
 (odd? inf) is true because it's implemented as "not even" and inf is not even.
 Don't reduce in REPL_execute. Instead make sure the printer etc evaluates thunks before using them. Note that a thunk isn't just an application node since then it wouldn't know how to reduce the arguments. Hence there's a need for storing the environment and the expression to evaluate for later use (i.e. a promise).
@@ -122,6 +124,9 @@ Handle division by zero for ratios?
 Maybe disable macros in a 'quote.
 Don't hang on trying to optimize 1/∞
 Is that correct? (requireModule "Arithmetic").divmod 2 1.0 => [2.0 0.0]
+Maybe use tgmath.h
+standardized 'remainder: http://pubs.opengroup.org/onlinepubs/009695399/functions/remainder.html
+move the entire REPL into 5D code (self-hosted REPL). TODO: readline bindings.
 
 = Debugging Macros =
 
@@ -145,7 +150,7 @@ String.lowercase "MARY"
 string-upcase
 strcmp
 Messagebox custom buttons
-move all the builtins into a .so file and load them via FFI (and the REPL).
+move all the builtins into a .so file and load them via FFI.
 support reloading of modules in a special debugger. Note that it is (and should be) impossible to also change existing bindings automatically, so it wouldn't be that useful.
 
 = Interop =
@@ -194,3 +199,7 @@ If it's already far out and swapping wouldn't help, maybe collect all bindings i
 Make sure not to shadow variables if it would change meaning.
 What to do with the non-optimised versions? Keep storing them or just store a reference to the file and position they were from?
 
+= Clean Up =
+
+Evaluators/Builtins.cc: just use the new _PROC macros instead of hand-crafting.
+put ([) into the operator precedence list as a prefix operator? Same for (#export)? Probably not since it's magically quoting and/or changing OPL.

@@ -1,5 +1,5 @@
 let Composition := requireModule "Composition" in
 let Error := requireModule "Error" in 
-import [app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? ratio? ratioNum ratioDenom makeRatio integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE? parseMath! parseMathStr] from Builtins in 
+import [app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? ratio? ratioNum ratioDenom makeRatio integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE?] from Builtins in 
 Composition.withInterface1
-(#exports[app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE? parseMath! parseMathStr ratio? ratioNum ratioDenom makeRatio])
+(#exports[app? appOperand appOperator fn? fnBody fnParam float? int? int0 integer? integerSucc intSucc keyword? keywordFromStr makeApp makeFn symbol? symbolFromStr symbolsEqual? addrsLE? ratio? ratioNum ratioDenom makeRatio])

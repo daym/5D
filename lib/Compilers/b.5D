@@ -1,0 +1,42 @@
+let (;) := (:) in 
+let acc := 0 in 
+let spacc := 1 in 
+let binop := \asmop \a \b \tl
+	a:
+	b:
+	popReg acc:
+	popReg spacc:
+	asmop spacc acc:
+	pushReg acc:
+	tl
+in
+let (+) := binop 'addRegReg in 
+let (-) := binop 'subRegReg in 
+let (*) := binop 'mulRegReg in 
+let (/) := binop 'fdivRegReg in 
+let ( ) := binop 'callReg in
+let (\\) := binop 'frame in
+\x x
+
+call and frame are actually quite complicated.
+frame is (eventually) setting up a stack frame in order to be able to arbitrarily fetch variables whenever it wants. What it certainly has to do is fetch the argument from the stack (when needed).
+call pushes one of its arguments on the stack and calls the other argument.
+TODO tail call elimination.
+
+\x x
+	pop eax ; x
+	push eax
+	ret
+
+\x (5+) x
+	pop eax ; x
+	call (5+) eax ; push eax, ..., pop eax ; just have the result in eax 
+	ret
+
+TODO cps transform.
+
+calling convention:
+	result in eax.
+	parameter(s) on stack, in order.
+
+TODO FFI calls.

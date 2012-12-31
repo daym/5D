@@ -1,0 +1,21 @@
+#ifndef __COMPILERS_ARM_CODEGEN_H
+#define __COMPILERS_ARM_CODEGEN_H
+#include "Compilers/CodeGen"
+namespace Compilers {
+namespace ARM {
+struct CodeGen : Compilers::CodeGen {
+public:
+	virtual unsigned get_size_in_bits(AST::NodeT source);
+	virtual void gen_push(AST::NodeT source);
+	virtual void gen_pop(AST::NodeT source);
+	virtual void gen_stack_throwaway_bits(int bit_count);
+	virtual void gen_call(AST::NodeT destination);
+	virtual void gen_load_register(AST::Symbol* register_, AST::NodeT value);
+	virtual void gen_enter_frame(void);
+	virtual void gen_leave_frame(void);
+	virtual void gen_return(int bit_count);
+	
+};
+}; /* end namespace ARM */
+}; /* end namespace Compilers */
+#endif /* ndef __COMPILERS_ARM_CODEGEN_H */

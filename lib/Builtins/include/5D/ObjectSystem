@@ -1,0 +1,8 @@
+#include <5D/Values>
+#include <5D/Operations>
+namespace ObjectSystem {
+using namespace Values;
+
+#define wrap(dispatcher, obj) Evaluators::getModuleEntryAccessor("OO", Symbols::Swrap)
+
+};

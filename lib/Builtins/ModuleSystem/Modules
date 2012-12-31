@@ -1,0 +1,8 @@
+#ifndef __MODULE_SYSTEM_MODULES
+#define __MODULE_SYSTEM_MODULES
+namespace ModuleSystem {
+DECLARE_FULL_OPERATION(Module)
+DECLARE_FULL_OPERATION(ModuleDispatcher)
+Values::NodeT prepareModule(Values::NodeT input);
+};
+#endif /* ndef __MODULE_SYSTEM_MODULES */

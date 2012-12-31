@@ -1,0 +1,73 @@
+#ifndef __5D_FFI
+#define __5D_FFI
+#include <5D/Values>
+
+namespace Numbers {
+#ifdef __SIZEOF_LONG__
+#if __SIZEOF_LONG_LONG__ != __SIZEOF_LONG__
+#define INTERN_NATIVE_NEED_LONG_LONG
+Values::NodeT internNative(long long value);
+Values::NodeT internNativeU(unsigned long long value);
+typedef long int NativeInt; /* register type */
+#else
+typedef long long int NativeInt; /* register type */
+#endif
+#else
+#define INTERN_NATIVE_NEED_LONG_LONG
+typedef int NativeInt; /* register type */
+Values::NodeT internNative(long long value);
+Values::NodeT internNativeU(unsigned long long value);
+#endif
+#ifdef __SIZEOF_LONG__
+#if __SIZEOF_LONG_LONG__ != __SIZEOF_LONG__
+typedef unsigned long int NativeUInt; /* register type */
+#else
+typedef unsigned long long int NativeUInt; /* register type */
+#endif
+#else
+typedef unsigned int NativeUInt; /* register type */
+#endif
+
+Values::NodeT internNative(NativeInt value);
+Values::NodeT internNativeU(NativeUInt value);
+
+
+};
+namespace Values {
+int intFromNode(Values::NodeT root);
+int nearestIntFromNode(Values::NodeT root);
+long longFromNode(Values::NodeT root);
+long long longLongFromNode(Values::NodeT root);
+short shortFromNode(Values::NodeT root);
+void* pointerFromNode(const Values::NodeT root);
+bool booleanFromNode(Values::NodeT root); /* evaluates! */
+char* stringFromNode(Values::NodeT root);
+char* stringOrNilFromNode(Values::NodeT root);
+size_t stringSizeFromNode(Values::NodeT root);
+float floatFromNode(Values::NodeT root);
+long double longDoubleFromNode(Values::NodeT root);
+double doubleFromNode(Values::NodeT root);
+long long sizedIntFromNode(int bitCount, Values::NodeT root);
+static __inline Values::NodeT nodeFromNode(Values::NodeT root) {
+	return root;
+}
+static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageName) {
+	return makeApplication(obj, messageName);
+}
+static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageName, int a0) {
+	return makeApplication(makeApplication(obj, messageName), Numbers::internNative((Numbers::NativeInt) a0));
+}
+static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageName, void* a0, int a1, const char* a2) {
+	return makeApplication(makeApplication(makeApplication(makeApplication(obj, 
+	                                                                       messageName), 
+	                                                       Values::makeBox(a0, NULL)), 
+	                                       Numbers::internNative((Numbers::NativeInt) a1)),
+	                       Values::makeStr(a2));
+}
+
+};
+namespace Evaluators {
+Values::NodeT internNative(bool value);
+Values::NodeT evalMonadic(Values::NodeT term, void* environment);
+};
+#endif /* ndef __5D_FFI */

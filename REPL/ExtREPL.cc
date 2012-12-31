@@ -1,8 +1,8 @@
-#include "Evaluators/Operation"
-#include "Evaluators/Evaluators"
-#include "Values/Symbols"
-#include "REPL/ExtREPL"
+#include <5D/Operations>
+#include <5D/Evaluators>
 
+#include "REPL/ExtREPL"
+#include "REPL/Symbols"
 namespace REPLX {
 using namespace Values;
 DECLARE_SIMPLE_OPERATION(RImporter)
@@ -39,7 +39,7 @@ static NodeT getMethod(NodeT name) {
 	else
 		return(NULL); // TODO
 }
-DEFINE_SIMPLE_OPERATION(REPLMethodGetter, getMethod(Evaluators::reduce(argument)))
+DEFINE_SIMPLE_STRICT_OPERATION(REPLMethodGetter, getMethod(argument))
 REGISTER_BUILTIN(REPLMethodGetter, 1, 0, symbolFromStr("REPLMethods"))
 
 };

@@ -1,0 +1,7 @@
+#ifndef __TUI2_REPL
+#define __TUI2_REPL
+#include <5D/Operations>
+namespace REPLX {
+DECLARE_SIMPLE_OPERATION(makeREPL);
+}; /* end namespace */
+#endif /* ndef __TUI2_REPL */

@@ -9,7 +9,7 @@ rem "accessor for 'just part"
 rem "TODO check whether it's actually not nothing."
 let nothing := nil in 
 let nothing? := nil? in 
-let something := \m m in 
+let some := \m m in 
 let something? := \m (not (nothing? m)) in 
 let (?;) := (\m \f
 	if (something? m)
@@ -20,7 +20,8 @@ let (?;) := (\m \f
 let makeSomething := (\v
 	v
 ) in 
-let return? := (\v
-	makeSomething v
-) in 
-(#exports [something something? nothing nothing? (?;) return?])
+(#exports [some something? nothing nothing? (?;)])
+
+
+Just = \x
+	

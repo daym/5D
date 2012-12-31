@@ -1,0 +1,5 @@
+let Composition := requireModule "Composition" in
+let Error := requireModule "Error" in 
+import [parseMath! parseMathStr parseParenStr] from Builtins in 
+Composition.withInterface1
+(#exports[parseMath! parseMathStr parseParenStr])

@@ -3,8 +3,8 @@ Composition.withInterface1
 let List := requireModule "List" in 
 let Error := requireModule "Error" in 
 let Logic := requireModule "Logic" in 
-import [(rec) (|) ($) (rem)] from Composition in 
-import [head tail] from List in 
+import [(rec) (|) ($) (rem) compose] from Composition in 
+import [head tail nil?] from List in 
 import [(if) (else)] from Logic in 
 let ioValue := (\m head m) in 
 let ioWorld := (\m head (tail m)) in 
@@ -14,23 +14,23 @@ let (;) := \m \ber \world
 in 
 let liftIO! := (\v \world [v world]) in 
 let return! := liftIO! in 
-let skipUntil! := (\condition \body rec\skipUntil! 
+let skipUntil! := \condition \body rec\skipUntil! 
 	\world
 		let result := body world in 
 		if (condition (ioValue result))
 			result
 		else
 			skipUntil! (ioWorld result)
-) in 
-let skipWhile! := (\condition \body rec\skipWhile! 
+in 
+let skipWhile! := \condition \body rec\skipWhile! 
 	\world
 		let result := body world in 
 		if (condition (ioValue result))
 			skipWhile! (ioWorld result)
 		else
 			result
-) in 
-let accumrUntil! := (\condition \connector \terminator \body rec\accum!
+in 
+let accumrUntil! := \condition \connector \terminator \body rec\accum!
 	\world
 		let result := body world in 
 		let value := ioValue result in 
@@ -40,7 +40,22 @@ let accumrUntil! := (\condition \connector \terminator \body rec\accum!
 			let t := (accum! (ioWorld result)) in 
 			let value2 := ioValue t in 
 			liftIO! (connector value value2) (ioWorld t)
-) in 
+in 
+let foldl! := \f rec\foldl! \v \list
+	if (nil? list)
+		v
+	else
+		f v (head list) ;\hdr
+		foldl! hdr (tail list)
+in 
+let foldr! := \f \v rec\foldr! \list
+	rem "both (f x y) and v are supposed to be monadic."$
+	if (nil? list)
+		v
+	else
+		foldr! (tail list) ;\tlr
+		f (head list) tlr
+in 
 let defer! := \finalizer \body 
 	rem "Following tradition, this ignores the result of the finalizer."$
 	\world
@@ -58,4 +73,4 @@ in
 let with! := \obj \body
 	use! obj.open! obj.close! body
 in 
-(#exports[ioValue ioWorld liftIO! return! (;) skipUntil! skipWhile! accumrUntil! defer! use! with!])
+(#exports[ioValue ioWorld liftIO! return! (;) skipUntil! skipWhile! accumrUntil! defer! use! with! foldl! foldr!])

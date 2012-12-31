@@ -1,0 +1,36 @@
+#ifndef __FFIS_RECORD_PACKER_H
+#define __FFIS_RECORD_PACKER_H
+#include <5D/Operations>
+#include <5D/Values>
+#include <vector>
+
+namespace FFIs {
+
+enum ByteOrder {
+	MACHINE_BYTE_ORDER,
+	LITTLE_ENDIAN_BYTE_ORDER,
+	BIG_ENDIAN_BYTE_ORDER,
+	MACHINE_BYTE_ORDER_ALIGNED,
+};
+
+/* uses C packing alignment */
+void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */, size_t& offset /* in output */, Values::NodeT formatStr, Values::NodeT data, std::stringstream& sst, std::vector<size_t>& offsets);
+Values::NodeT Record_unpack(enum ByteOrder byteOrder, Values::NodeT formatStr, Values::NodeT dataStr);
+Values::NodeT Record_allocate(size_t size, bool bAtomicity);
+size_t Record_get_size(enum ByteOrder byteOrder, Values::NodeT formatStr);
+
+DECLARE_SIMPLE_OPERATION(RecordPacker)
+DECLARE_SIMPLE_OPERATION(RecordUnpacker)
+DECLARE_SIMPLE_OPERATION(RecordSizeCalculator)
+DECLARE_SIMPLE_OPERATION(RecordAllocator)
+DECLARE_SIMPLE_OPERATION(MemoryAllocator)
+DECLARE_SIMPLE_OPERATION(RecordDuplicator)
+DECLARE_BINARY_OPERATION(ListFromStrGetter)
+DECLARE_BINARY_OPERATION(StrFromListGetter)
+DECLARE_SIMPLE_OPERATION(SubstrGetter)
+DECLARE_SIMPLE_OPERATION(StrUntilZeroGetter)
+Values::NodeT /*Str**/ strUntilZero(Values::NodeT /*Box**/ value);
+
+}; /* end namespace FFIs */
+
+#endif /* ndef __FFIS_RECORD_PACKER_H */

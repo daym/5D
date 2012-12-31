@@ -1,0 +1,15 @@
+#ifndef __COMPILERS_X86_MICROSOFTTHISCALLGEN_H
+#define __COMPILERS_X86_MICROSOFTTHISCALLGEN_H
+#include "Compilers/X86/StdCallGen"
+namespace Compilers {
+namespace X86 {
+class MicrosoftThisCallGen(StdcallCallGen):
+	def add(self, source):
+		if self.argument_count == 0:
+			self.header.append("MOV", ecx, source)
+			self.argument_count += 1
+		else:
+			return(StdcallCallGen.add(self, source))
+}; /* end namespace X86 */
+}; /* end namespace X86 */
+#endif /* ndef __COMPILERS_X86_MICROSOFTTHISCALLGEN_H */

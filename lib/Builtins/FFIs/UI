@@ -1,0 +1,9 @@
+#ifndef __FFIS_UI_H
+#define __FFIS_UI_H
+#include <5D/Operations>
+namespace FFIs {
+
+DECLARE_FULL_OPERATION(MessageBoxDisplayer)
+
+};
+#endif /* ndef __FFIS_UI_H */

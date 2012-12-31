@@ -1,0 +1,22 @@
+#ifndef __COMPILERS_X86_CODEGEN_H
+#define __COMPILERS_X86_CODEGEN_H
+#include "Compilers/CodeGen"
+namespace Compilers {
+namespace X86 {
+struct CodeGen : Compilers::CodeGen {
+public:
+	virtual unsigned getSizeInBits(AST::NodeT source);
+	virtual void genPush(AST::NodeT source);
+	virtual void genPop(AST::NodeT source);
+	virtual void genStackThrowawayBits(int bitCount);
+	virtual void genCall(AST::NodeT destination);
+	virtual void genLoadRegisterFromImmediate(AST::NodeT/*Symbol*/ dest, AST::NodeT value);
+	virtual void genLoadRegisterFromRegister(AST::NodeT/*Symbol*/ dest, AST::NodeT value);
+	virtual void genEnterFrame(void);
+	virtual void genLeaveFrame(void);
+	virtual void genReturn(int bitCount);
+	
+};
+}; /* end namespace X86 */
+}; /* end namespace Compilers */
+#endif /* ndef __COMPILERS_X86_CODEGEN_H */

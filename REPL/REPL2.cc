@@ -181,7 +181,7 @@ NodeT evaluate(struct REPL* self, NodeT node) {
 	try {
 		NodeT result = input;
 		Evaluators::resetWorld();
-		result = prepare_module(REPL_close_environment(self, result)));
+		result = prepareModule(REPL_close_environment(self, result)));
 		result = Evaluators::reduce(result);
 		/*std::string v = result ? result->str() : "OK";
 		v = " => " + v + "\n";

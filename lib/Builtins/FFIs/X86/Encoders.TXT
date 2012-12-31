@@ -1,0 +1,24 @@
+
+cdecl
+	align stack to 16 bytes.
+	push arguments right to left.
+	EAX, EDX, ECX free to use within called function.
+	result is in EAX or ST0.
+	caller cleans up.
+stdcall
+	right-to-left.
+	EAX, EDX, ECX free to use within called function.
+	result is in EAX.
+	callee cleans up.
+Borland_fastcall ("register")
+	push arguments left to right, first three in EAX, EDX, ECX instead.
+Borland_safecall
+	Like stdcall, but for:
+	function function_name(a: DWORD): DWORD; safecall;
+	=> function function_name(a: DWORD; out Result: DWORD): HResult; stdcall;
+Microsoft_thiscall
+	like stdcall
+	"this" passed in ECX
+GCC_thiscall
+	like cdecl
+	as if there was a first argument "this".

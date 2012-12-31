@@ -1,3 +1,5 @@
+usr/share/5D/Builtins/lib5dbuiltins.so.1
+usr/share/5D/Builtins/lib5dbuiltins1.a
 usr/share/5D/IO/init.5D
 usr/share/5D/Logic/init.5D
 usr/share/5D/Set/init.5D
@@ -19,4 +21,13 @@ usr/share/5D/Maybe/init.5D
 usr/share/5D/Composition/init.5D
 usr/share/5D/UI/init.5D
 usr/share/5D/Tree/init.5D
+usr/share/5D/Evaluators/init.5D
+usr/share/5D/Parsers/init.5D
+usr/share/5D/OPLs/Math.5D
+usr/share/5D/OPLs/Bits.5D
+usr/share/5D/Assemblers/X86.5D
+usr/share/5D/Assemblers/X.5D
+usr/share/5D/Assemblers/AMD64.5D
+usr/share/5D/Assemblers/ARM.5D
+usr/share/5D/Assemblers/init.5D
 usr/bin/5DREPL

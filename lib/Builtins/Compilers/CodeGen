@@ -1,0 +1,19 @@
+#ifndef __COMPILERS_CODEGEN_H
+#define __COMPILERS_CODEGEN_H
+#include "Values/Values"
+namespace Compilers {
+class CodeGen {
+public:
+	virtual unsigned getSizeInBits(Values::NodeT source) = 0;
+	virtual void genPush(Values::NodeT source) = 0;
+	virtual void genPop(Values::NodeT source) = 0;
+	virtual void genStackThrowawayBits(int bit_count) = 0;
+	virtual void genCall(Values::NodeT destination) = 0;
+	virtual void genLoadRegisterFromImmediate(Values::NodeT/*Symbol*/register_, Values::NodeT value) = 0;
+	virtual void genLoadRegisterFromRegister(Values::NodeT/*Symbol*/register_, Values::NodeT/*Symbol*/ source) = 0;
+	virtual void genEnterFrame(void) = 0;
+	virtual void genLeaveFrame(void) = 0;
+	virtual void genReturn(int bit_count) = 0;
+};
+}; /* end namespace Compilers */
+#endif /* __COMPILERS_CODEGEN_H */

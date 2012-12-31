@@ -7,17 +7,7 @@
 #include <sys/errno.h>
 #include <map>
 #include <string>
-#include "Scanners/SExpressionParser"
-#include "Scanners/MathParser"
-#include "FFIs/FFIs"
-#include "Formatters/SExpression"
-#include "Evaluators/Evaluators"
-#include "Evaluators/Builtins"
 #include "REPL/REPL"
-#include "Values/Values"
-#include "Values/Symbols"
-#include "FFIs/Allocators"
-#include "Evaluators/ModuleLoader"
 
 namespace GUI {
 bool interrupted_P(void) {

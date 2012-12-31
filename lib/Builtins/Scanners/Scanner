@@ -1,0 +1,137 @@
+#ifndef __SCANNER_H
+#define __SCANNER_H
+/*
+5D programming language
+Copyright (C) 2011  Danny Milosavljevic
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#include <stdio.h>
+/* C++ has a template isxdigit which conflicts with the macro isxdigit */
+#undef isxdigit
+#include <assert.h>
+#include <sstream>
+#include <string>
+#include <list>
+#include "Values/Values"
+#include <5D/Operations>
+
+namespace Scanners {
+
+class ParseException : std::exception {
+	char* message;
+public:
+	ParseException(const char* s) throw();
+	virtual const char* what() const throw();
+};
+
+#define SCROLL_LEFT(x, n) \
+	x[0] = x[1]; \
+	x[1] = x[2]; \
+	x[2] = x[3]; \
+	x[3] = n;
+#define SCROLL_RIGHT(x) \
+	(x[4] = x[3], x[3] = x[2], x[2] = x[1], x[1] = x[0], x[4])
+
+class Scanner : public Values::Node {
+protected:
+	FILE* input_file;
+	//std::stringstream matchtext;
+	int position;
+	int previous_position;
+	int line_number;
+	int column_number;
+	char* input_name;
+	int backtracking_column_numbers[5]; /* last is dummy */
+	bool backtracking_beginning_of_line[5]; /* last is dummy */
+	bool B_honor_indentation;
+	bool B_beginning_of_line;
+	int brace_level; // non-indentation braces.
+	std::list<std::pair<int, int> > open_indentations; // line and column number.
+	void update_indentation();
+	inline int increment_position(int input) {
+		++position;
+		if(input == '\n') {
+			SCROLL_LEFT(backtracking_column_numbers, column_number)
+			SCROLL_LEFT(backtracking_beginning_of_line, B_beginning_of_line)
+			++line_number;
+			column_number = 0;
+			B_beginning_of_line = true;
+		} else if(B_beginning_of_line && (input != ' ' && input != '\t' && input != EOF && input != '\r')) {
+			B_beginning_of_line = false;
+			update_indentation();
+			++column_number;
+		} else
+			++column_number;
+		return(input);
+	}
+	inline int decrement_position(int input) {
+		--position;
+		assert(input != ' ' && input != '\t');
+		if(input == '\n') {
+			column_number = SCROLL_RIGHT(backtracking_column_numbers);
+			B_beginning_of_line = SCROLL_RIGHT(backtracking_beginning_of_line);
+			--line_number;
+		} else
+			--column_number;
+		return(input);
+	}
+	void increase_brace_level() {
+		++brace_level;
+	}
+	void decrease_brace_level() {
+		--brace_level;
+	}
+	void inject(Values::NodeT input_value);
+public:
+	Values::NodeT input_value; // read-only
+	void push(FILE* input_file, int line_number, const char* input_name);
+	void pop(void);
+	int getPosition(void) const {
+		return(previous_position);
+	}
+	int getColumnNumber(void) const {
+		return(column_number);
+	}
+	int getLineNumber(void) const {
+		return(line_number);
+	}
+	Values::NodeT getInputValue(void) const {
+		return(input_value);
+	}
+	void raiseError(const std::string& expected_text, int got_text);
+	void raiseError(const std::string& expected_text, std::string got_text);
+	Scanner(void);
+	bool EOFP(void) const;
+	void ensureEnd(void);
+	Values::NodeT consume(Values::NodeT expected_value = NULL);
+	bool setHonorIndentation(bool value) {
+		bool result = B_honor_indentation;
+		B_honor_indentation = value;
+		return(result);
+	}
+	int parseMatchingParens(int direction);
+private:
+	std::list<Values::NodeT> injected_input_values;
+	bool deinject();
+	void parseToken(void);
+	void parseOptionalWhitespace(void);
+	void parseNumeral(int input);
+	void parseUnicode(int input);
+	void parseStructural(int input);
+	void parseKeyword(int input);
+	void parseString(int input);
+	void parseSpecialCoding(int input);
+	void parseNumeralWithBase(int input, int base);
+	void parseOperator(int input);
+	void parseSymbol(int input, int special_prefix = 0, int special_prefix_2 = 0);
+	void parseShebang(int input);
+	void parseBitvector(int input);
+};
+bool symbol_char_P(int input);
+extern Values::NodeT dispatchScanner;
+DECLARE_SIMPLE_OPERATION(makeScanner)
+
+}; /* end namespace Scanners */
+#endif /* ndef __SCANNER_H */

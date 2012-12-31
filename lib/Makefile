@@ -1,10 +1,11 @@
 
-SUBDIRS2 = Arithmetic Logic Composition List OS IO UI FFI String Reflection Error Set
+SUBDIRS2 = Arithmetic Logic Composition List OS IO UI FFI String Reflection Error Set Evaluators OPLs Assemblers
 #PACKAGE = 5D
 #VERSION = $(shell head -1 debian/changelog |cut -d"(" -f2 |cut -d")" -f1)
 #DISTDIR = $(PACKAGE)-$(VERSION)
 
 all:
+	$(MAKE) -C Builtins all
 	$(MAKE) -C Arithmetic all
 	$(MAKE) -C Trigonometry all
 	$(MAKE) -C Logic all
@@ -23,8 +24,14 @@ all:
 	$(MAKE) -C LinearAlgebra all
 	$(MAKE) -C OO all
 	$(MAKE) -C Tree all
+	$(MAKE) -C Evaluators all
+	$(MAKE) -C Parsers all
+	$(MAKE) -C Assemblers all
+	$(MAKE) -C Compilers all
+	$(MAKE) -C Formatters all
 
 clean:
+	$(MAKE) -C Builtins clean
 	$(MAKE) -C Arithmetic clean
 	$(MAKE) -C Trigonometry clean
 	$(MAKE) -C Logic clean
@@ -43,8 +50,14 @@ clean:
 	$(MAKE) -C LinearAlgebra clean
 	$(MAKE) -C OO clean
 	$(MAKE) -C Tree clean
+	$(MAKE) -C Evaluators clean
+	$(MAKE) -C Parsers clean
+	$(MAKE) -C Assemblers clean
+	$(MAKE) -C Compilers clean
+	$(MAKE) -C Formatters clean
 
 distclean:
+	$(MAKE) -C Builtins distclean
 	$(MAKE) -C Arithmetic distclean
 	$(MAKE) -C Trigonometry distclean
 	$(MAKE) -C Logic distclean
@@ -63,8 +76,14 @@ distclean:
 	$(MAKE) -C LinearAlgebra distclean
 	$(MAKE) -C OO distclean
 	$(MAKE) -C Tree distclean
+	$(MAKE) -C Evaluators distclean
+	$(MAKE) -C Parsers distclean
+	$(MAKE) -C Assemblers distclean
+	$(MAKE) -C Compilers distclean
+	$(MAKE) -C Formatters distclean
 
 install:
+	$(MAKE) -C Builtins install
 	$(MAKE) -C Arithmetic install
 	$(MAKE) -C Trigonometry install
 	$(MAKE) -C Logic install
@@ -83,5 +102,10 @@ install:
 	$(MAKE) -C LinearAlgebra install
 	$(MAKE) -C OO install
 	$(MAKE) -C Tree install
+	$(MAKE) -C Evaluators install
+	$(MAKE) -C Parsers install
+	$(MAKE) -C Assemblers install
+	$(MAKE) -C Compilers install
+	$(MAKE) -C Formatters install
 
 dist:

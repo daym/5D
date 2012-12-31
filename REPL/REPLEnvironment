@@ -1,16 +1,6 @@
 #ifndef __REPL_REPLENVIRONMENT_H
 #define __REPL_REPLENVIRONMENT_H
 #include <deque>
-#include "Evaluators/FFI"
-#include "Evaluators/Builtins"
-#include "Evaluators/Evaluators"
-#include "FFIs/FFIs"
-#include "Values/Values"
-#include "FFIs/UI"
-#include "FFIs/RecordPacker"
-#include "Evaluators/ModuleLoader"
-#include "Evaluators/BuiltinSelector"
-#include "FFIs/ProcessInfos"
 #include "REPL/ExtREPL"
 
 namespace GUI {
@@ -431,7 +421,7 @@ Values::NodeT REPL_get_user_environment(struct REPL* self) {
 	return(self->fTailUserEnvironment ? envEntryGetTail(self->fTailUserEnvironment) : NULL);
 }
 Values::NodeT REPL_prepare(struct REPL* self, Values::NodeT input) {
-	return(prepare_module(REPL_close_environment(self, input)));
+	return(prepareModule(REPL_close_environment(self, input)));
 }
 
 /* TODO defrec! is

@@ -1,0 +1,13 @@
+#ifndef __COMPILERS_X86_STDCALLGEN_H
+#define __COMPILERS_X86_STDCALLGEN_H
+#include "Compilers/CallGen"
+#include "Compilers/CodeGen"
+namespace Compilers {
+namespace X86 {
+struct StdCallGen : Compilers::CallGen {
+	StdCallGen(CodeGen* code_gen);
+	virtual void build(Values::NodeT call_destination);
+};
+}; /* end namespace X86 */
+}; /* end namespace X86 */
+#endif /* ndef __COMPILERS_X86_STDCALLGEN_H */

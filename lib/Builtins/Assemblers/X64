@@ -1,0 +1,12 @@
+#ifndef __ASSEMBLERS_X64_H
+#define __ASSEMBLERS_X64_H
+#include <stdio.h>
+#include "Values/Values"
+
+namespace Assemblers {
+namespace arch {
+namespace X64 {
+int emit(Values::NodeT operator_, Values::NodeT a, Values::NodeT b, Values::NodeT c, FILE* f);
+}}};
+
+#endif /* ndef __ASSEMBLERS_X64_H */

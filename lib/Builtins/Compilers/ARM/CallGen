@@ -1,0 +1,14 @@
+#ifndef __COMPILERS_ARM_CALLGEN_H
+#define __COMPILERS_ARM_CALLGEN_H
+
+namespace Compilers {
+
+namespace ARMEL {
+class CallGen(CallGen):
+	# TODO align stack to 8 bytes.
+	def emit_call(self, destination):
+		emit bl destination
+
+}
+}
+#endif /* ndef __COMPILERS_ARM_CALLGEN_H */

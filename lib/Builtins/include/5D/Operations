@@ -1,0 +1,148 @@
+#ifndef __5D_OPERATION
+#define __5D_OPERATION
+#include <stdarg.h>
+#include <list>
+#include <string>
+#include <5D/Values>
+#include <5D/Allocators>
+
+namespace Evaluators {
+typedef std::list<std::pair<Values::NodeT /*keyword*/, Values::NodeT>, gc_allocator<std::pair<Values::NodeT, Values::NodeT> > > CXXArguments;
+
+static inline Values::NodeT internNative(Values::NodeT n) {
+	return(n);
+}
+
+/* BEGIN str() */
+
+std::string str(Values::NodeT cons);
+struct StrRegistration {
+	virtual std::string call(Values::NodeT node) const = 0;
+};
+StrRegistration* registerStr(StrRegistration* n);
+#define REGISTER_STR(typ, body) \
+struct StrRegistration##typ : Evaluators::StrRegistration { \
+	struct StrRegistration* next; \
+	StrRegistration##typ(void) { \
+		next = Evaluators::registerStr(this); \
+	} \
+	virtual std::string call(Values::NodeT xxxnode) const { \
+		typ* node; \
+		if((node = dynamic_cast<typ*>(xxxnode)) != NULL) { \
+			body \
+		} else if(next) \
+			return(next->call(xxxnode)); \
+		else \
+			return("<node>"); \
+	} \
+}; \
+static StrRegistration##typ fStrRegistration##typ;
+
+/* END str() */
+
+struct CProcedure : Values::Box {
+	int fArgumentCount; // sigh. <0: can also do keyword arguments.
+	int fReservedArgumentCount; // how many not to repr.
+	Values::NodeT /*Symbol**/ fSignature;
+        CProcedure(void* native, Values::NodeT aRepr, int aArgumentCount, int aReservedArgumentCount, Values::NodeT /*Symbol**/ aSignature);
+};
+#define DECLARE_SIMPLE_OPERATION(P) \
+extern Evaluators::CProcedure P;
+
+/* for now, builtins don't provide their own signature and so WILL be called with unevaluated arguments */
+#define REGISTER_BUILTIN(P, argumentCount, reservedCount, R) Evaluators::CProcedure P((void*) P##_execute, R, argumentCount, reservedCount, NULL);
+
+#define DEFINE_SIMPLE_LAZY_OPERATION(P, B) \
+extern Evaluators::CProcedure P; \
+static Values::NodeT P##_execute(Values::NodeT fn, Values::NodeT argument) { \
+	return(Evaluators::internNative(B)); \
+}
+
+#ifndef STRICT_BUILTINS
+#define PREPARE(x) Evaluators::eval(x, NULL)
+#else
+#define PREPARE(x) x
+#endif
+
+#define DEFINE_SIMPLE_STRICT_OPERATION(P, B) \
+extern Evaluators::CProcedure P; \
+static Values::NodeT P##_execute(Values::NodeT fn, Values::NodeT argument) { \
+	argument = Evaluators::eval(argument, NULL); \
+	return(Evaluators::internNative(B)); \
+}
+
+#define DECLARE_FULL_OPERATION(P) DECLARE_SIMPLE_OPERATION(P)
+#define DEFINE_FULL_OPERATION(P, B) \
+extern Evaluators::CProcedure P; \
+static Values::NodeT P##_execute(Values::NodeT fn, Values::NodeT argument) { \
+	B; \
+}
+#define DEFINE_FULL_OPERATION2(P, B) \
+	DEFINE_FULL_OPERATION(P, return(B(fn, argument)))
+
+#define DECLARE_BINARY_OPERATION(P) DECLARE_SIMPLE_OPERATION(P)
+#define DEFINE_BINARY_OPERATION(P, B) \
+extern Evaluators::CProcedure P; \
+static Values::NodeT P##_execute(Values::NodeT fn, Values::NodeT argument) { \
+	assert(Evaluators::curried_operation_P(fn)); \
+	return(B(Evaluators::get_curried_operation_argument(fn), argument, Evaluators::get_curried_operation_operation(fn))); \
+}
+
+/* reduces the first 2 arguments (i.e. strict in the first two arguments) */
+#define DEFINE_BINARY_STRICT2_OPERATION(P, B) \
+extern Evaluators::CProcedure P; \
+static Values::NodeT P##_execute(Values::NodeT fn, Values::NodeT argument) { \
+	assert(Evaluators::curried_operation_P(fn)); \
+	return(B(PREPARE(Evaluators::get_curried_operation_argument(fn)), PREPARE(argument), Evaluators::get_curried_operation_operation(fn))); \
+}
+
+Values::NodeT repr(Values::NodeT);
+
+/* call this only after all the other arguments have been processed. */
+#define FETCH_WORLD(iter) \
+	Values::NodeT world = (++iter)->second
+#define FETCH_WORLD1(endIter) \
+	Values::NodeT world = endIter->second
+#define CHANGED_WORLD1(world, value) \
+	Evaluators::makeIOMonad(value, world)
+#define CHANGED_WORLD(value) CHANGED_WORLD1(world, value)
+#define DECLARE_SPECIAL_FORM(P) DECLARE_SIMPLE_OPERATION(P)
+#define DEFINE_BINARY_SPECIAL_FORM(a,b) DEFINE_BINARY_OPERATION(a,b)
+#define DEFINE_SPECIAL_FORM(P,v) DEFINE_SIMPLE_OPERATION(P,v)
+#define DEFINE_FULL_SPECIAL_FORM(P,body) DEFINE_FULL_OPERATION(P,body)
+
+/* (non-strict) WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
+Evaluators::CXXArguments CXXfromArguments(Values::NodeT options, Values::NodeT argument); /* non-keyword arguments will be at the FRONT */
+
+Evaluators::CXXArguments CXXfromArgumentsU(Values::NodeT options, Values::NodeT argument, int backwardsIndexOfArgumentNotToReduce); /* non-keyword arguments will be at the FRONT */
+Values::NodeT CXXgetKeywordArgumentValue(const Evaluators::CXXArguments& list, Values::NodeT/*keyword*/ key);
+
+#define BEGIN_PROC_WRAPPER(n, argumentCount, R, prot) prot Values::NodeT n##_execute(Values::NodeT options, Values::NodeT argument); \
+prot REGISTER_BUILTIN(n, argumentCount + 1/*world*/, 0, R); \
+prot Values::NodeT n##_execute(Values::NodeT options, Values::NodeT argument) { \
+        Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument); \
+        Evaluators::CXXArguments::const_iterator iter = arguments.begin();
+#define END_PROC_WRAPPER }
+#define FNARG_FETCH(t) Values::t##FromNode(iter++->second)
+/*#define MONADIC(b) (FETCH_WORLD1(iter), CHANGED_WORLD(b))*/
+#define MONADIC(b) CHANGED_WORLD1(iter->second, b)
+#define FNRESULT_FETCHINT(b) Numbers::internNative((Numbers::NativeInt) b)
+#define FNRESULT_FETCHBOOL(b) Evaluators::internNative(b)
+
+/*
+Example:
+static BEGIN_PROC_WRAPPER(Scanner_getInputValue)
+        struct Scanner* self = (struct Scanner*) FNARG_FETCH(pointer);
+        char* text = FNARG_FETCH(stringOrNil);
+        return(MONADIC(internNative(fwrite(text ? text : "", 1, text ? strlen(text) : 0, f))));
+END_PROC_WRAPPER
+*/
+
+}; /* end namespace Evaluators */
+#include <5D/Evaluators>
+
+/* TODO declspec export for Windows */
+#define BEGIN_MODULE_WRAPPER Values::NodeT access5DModuleV1(Values::NodeT argument) {
+#define END_MODULE_WRAPPER }
+
+#endif /* ndef __5D_OPERATION */

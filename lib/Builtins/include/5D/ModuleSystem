@@ -1,0 +1,18 @@
+#include <5D/Values>
+#include <5D/Operations>
+namespace Evaluators {
+Values::NodeT getModuleEntryAccessor(const char* filename, Values::NodeT exportKey) G_5D_GNUC_PURE;
+}
+namespace ModuleSystem {
+using namespace Values;
+
+DECLARE_SIMPLE_OPERATION(HashExporter)
+
+NodeT makeExportsQ(const char* names, ...);
+NodeT makeExportsFQ(const char* fmt, const char* names, ...);
+
+#define exports(...) ModuleSystem::makeExportsQ(""#__VA_ARGS__, __VA_ARGS__)
+#define exportsf(fmt, ...) ModuleSystem::makeExportsFQ(fmt, ""#__VA_ARGS__, __VA_ARGS__)
+#define dispatch Evaluators::getModuleEntryAccessor("Composition", Symbols::Sdispatch)
+/*#define buXXXiltin(sym) Evaluators::getModuleEntryAccessor("Builtins", sym)*/
+};

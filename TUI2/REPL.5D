@@ -1,0 +1,13 @@
+#!/usr/bin/5D -p OPLs/Math.5D
+let OPL := requireModule "OPLs/Math.5D" in 
+let Readline := (requireModule "Readline6").Readline in 
+let Reflection := requireModule "Reflection" in  
+let Evaluators := requireModule "Evaluators" in 
+let Parsers := requireModule "Parsers" in 
+let List := requireModule "List" in 
+let IO := requireModule "IO" in 
+IO.skipUntil! List.nil?
+	Readline.readline! "eval $ " ;\text
+	let AST := Parsers.parseMathStr OPL text in 
+	IO.liftIO! (eval AST [])
+Parsers.parseParenStr text 1

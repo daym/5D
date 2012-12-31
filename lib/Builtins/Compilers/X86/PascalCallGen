@@ -1,0 +1,13 @@
+#ifndef __COMPILERS_X86_PASCALCALLGEN_H
+#define __COMPILERS_X86_PASCALCALLGEN_H
+#include "Values/Values"
+#include "Compilers/CallGen"
+namespace Compilers {
+namespace X86 {
+struct PascalCallGen : public CallGen {
+	PascalCallGen(CodeGen* code_gen);
+	virtual void build(Values::NodeT call_destination);
+};
+}; /* end namespace X86 */
+}; /* end namespace X86 */
+#endif /* ndef __COMPILERS_X86_PASCALCALLGEN_H */

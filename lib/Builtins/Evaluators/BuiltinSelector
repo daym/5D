@@ -1,0 +1,14 @@
+#ifndef __BUILTIN_SELECTOR_H
+#define __BUILTIN_SELECTOR_H
+#include <5D/Values>
+#include <5D/Operations>
+
+namespace Evaluators {
+Values::NodeT getBuiltinEntry(Values::NodeT sym);
+void BuiltinSelector_init(void);
+DECLARE_SIMPLE_OPERATION(BuiltinGetter)
+
+};
+
+
+#endif /* ndef __BUILTIN_SELECTOR_H */

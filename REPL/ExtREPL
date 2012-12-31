@@ -1,6 +1,6 @@
 #ifndef __REPL_EXT_REPL_H
 #define __REPL_EXT_REPL_H
-#include "Evaluators/Operation"
+#include <5D/Operations>
 
 namespace REPLX {
 DECLARE_SIMPLE_OPERATION(REPLMethodGetter)

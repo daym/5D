@@ -1,6 +1,0 @@
-#!/bin/sh
-
-# extracts the PUBLIC symbols.
-
-exec objdump -TC "$1" |grep -v "\*UND\*" |grep "\.text" |awk '{print $7}' |grep -v "^_"
-

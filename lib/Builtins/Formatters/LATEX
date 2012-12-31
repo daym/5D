@@ -1,0 +1,25 @@
+#ifndef __FORMATTERS_LATEX_H
+#define __FORMATTERS_LATEX_H
+/*
+5D programming language
+Copyright (C) 2011  Danny Milosavljevic
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#include <stdio.h>
+#include <iostream>
+#include <5D/Operations>
+#include "Values/Values"
+namespace Scanners {
+struct OperatorPrecedenceList;
+};
+namespace Formatters {
+namespace LATEX {
+void print(Scanners::OperatorPrecedenceList* OPL, FILE* output_file, int position, int indentation, Values::NodeT node);
+void print_CXX(Scanners::OperatorPrecedenceList* OPL, std::ostream& output, int& position, Values::NodeT node, int precedence_limit, bool B_brace_equal_levels);
+DECLARE_SIMPLE_OPERATION(printLATEX)
+}; // end namespace Math
+}; // end namespace Formatters
+
+#endif /* ndef __FORMATTERS_LATEX_H */

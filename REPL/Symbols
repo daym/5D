@@ -1,0 +1,21 @@
+#ifndef __SYMBOLS_H
+#define __SYMBOLS_H
+#include <5D/Values>
+namespace Symbols {
+DECLARE_SYMBOL(getOperatorPrecedenceListexclam);
+DECLARE_SYMBOL(describeexclam);
+DECLARE_SYMBOL(defineexcam);
+DECLARE_SYMBOL(importexclam);
+DECLARE_SYMBOL(purgeexclam);
+DECLARE_SYMBOL(executeexclam);
+DECLARE_SYMBOL(exports);
+DECLARE_SYMBOL(lessEOFgreater);
+DECLARE_SYMBOL(leftparen);
+DECLARE_SYMBOL(leftbracket);
+DECLARE_SYMBOL(rightparen);
+DECLARE_SYMBOL(rightbracket);
+DECLARE_SYMBOL(push);
+DECLARE_SYMBOL(consume);
+DECLARE_SYMBOL(parseMatchingParens);  
+};
+#endif

@@ -1,0 +1,80 @@
+#ifndef __5D_BUILTINS_H
+#define __5D_BUILTINS_H
+#include <sstream>
+#include <list>
+#include "Values/Values"
+#include "Numbers/Small"
+#include "Numbers/Integer"
+#include "Numbers/Real"
+#include "Evaluators/Evaluators"
+#include <5D/Operations>
+
+namespace Evaluators {
+
+Values::NodeT operator/(const Numbers::Integer& a, const Numbers::Integer& b);
+Values::NodeT operator/(const Numbers::Int& a, const Numbers::Int& b);
+Values::NodeT internNative(const char* value);
+
+void resetWorld(void);
+
+/* TODO factorize str here so it returns "(2.3⋅10**4)" or whatever: */
+Values::NodeT provide_dynamic_builtins(Values::NodeT body);
+extern Values::NodeT aFalse;
+extern Values::NodeT aTrue;
+
+DECLARE_SIMPLE_OPERATION(DynamicBuiltinGetter)
+DECLARE_SIMPLE_OPERATION(FreeVariablesGetter)
+DECLARE_BINARY_OPERATION(Conser)
+DECLARE_BINARY_OPERATION(Pairer)
+DECLARE_SIMPLE_OPERATION(ConsP)
+DECLARE_SIMPLE_OPERATION(PairP)
+DECLARE_SIMPLE_OPERATION(NilP)
+DECLARE_SIMPLE_OPERATION(HeadGetter)
+DECLARE_SIMPLE_OPERATION(TailGetter)
+DECLARE_SIMPLE_OPERATION(FstGetter)
+DECLARE_SIMPLE_OPERATION(SndGetter)
+DECLARE_BINARY_OPERATION(Adder)
+DECLARE_BINARY_OPERATION(Subtractor)
+DECLARE_BINARY_OPERATION(Multiplicator)
+DECLARE_BINARY_OPERATION(Divider)
+DECLARE_BINARY_OPERATION(QModulator2)
+DECLARE_BINARY_OPERATION(LEComparer)
+DECLARE_BINARY_OPERATION(StrP)
+DECLARE_BINARY_OPERATION(SymbolP)
+DECLARE_BINARY_OPERATION(AddrLEComparer)
+DECLARE_BINARY_OPERATION(SymbolEqualityChecker)
+DECLARE_BINARY_OPERATION(KeywordP)
+DECLARE_BINARY_OPERATION(SymbolFromStrGetter)
+DECLARE_BINARY_OPERATION(KeywordFromStrGetter)
+DECLARE_BINARY_OPERATION(KeywordStr)
+DECLARE_SIMPLE_OPERATION(IORunner)
+
+DECLARE_SIMPLE_OPERATION(ApplicationMaker)
+DECLARE_SIMPLE_OPERATION(ApplicationP)
+DECLARE_SIMPLE_OPERATION(ApplicationOperatorGetter)
+DECLARE_SIMPLE_OPERATION(ApplicationOperandGetter)
+
+DECLARE_SIMPLE_OPERATION(AbstractionMaker)
+DECLARE_SIMPLE_OPERATION(AbstractionP)
+DECLARE_SIMPLE_OPERATION(AbstractionParameterGetter)
+DECLARE_SIMPLE_OPERATION(AbstractionBodyGetter)
+
+DECLARE_SIMPLE_OPERATION(FileMathParser)
+DECLARE_SIMPLE_OPERATION(StrMathParser)
+DECLARE_SIMPLE_OPERATION(StrParenParser)
+
+DECLARE_SIMPLE_OPERATION(InfinityChecker)
+DECLARE_SIMPLE_OPERATION(NanChecker)
+
+typedef std::list<std::pair<Values::NodeT /*keyword*/, Values::NodeT>, gc_allocator<std::pair<Values::NodeT, Values::NodeT> > > CXXArguments;
+/* (non-strict) WARNING WARNING this auto-reduces all the arguments WARNING WARNING */
+CXXArguments CXXfromArguments(Values::NodeT options, Values::NodeT argument); /* non-keyword arguments will be at the FRONT */
+
+CXXArguments CXXfromArgumentsU(Values::NodeT options, Values::NodeT argument, int backwardsIndexOfArgumentNotToReduce); /* non-keyword arguments will be at the FRONT */
+Values::NodeT CXXgetKeywordArgumentValue(const CXXArguments& list, Values::NodeT/*keyword*/ key);
+Values::NodeT divideA(Values::NodeT a, Values::NodeT b, Values::NodeT fallback);
+Values::NodeT divmod0A(Values::NodeT a, Values::NodeT b, Values::NodeT fallback);
+
+};
+
+#endif /* ndef __5D_BUILTINS_H */
