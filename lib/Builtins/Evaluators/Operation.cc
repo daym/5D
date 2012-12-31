@@ -122,8 +122,18 @@ NodeT repr(NodeT node) {
 		else
 			return(makeApplication(fn, argument));
 		// TODO repr hashtable for dispatchmodule as a simple list.
+	} else if(abstraction_P(node)) {
+		NodeT parameter = get_abstraction_parameter(node);
+		NodeT body = get_abstraction_body(node);
+		NodeT new_parameter = /*repr*/(parameter);
+		NodeT new_body = repr(body);
+		if(new_parameter == parameter && new_body == body)
+			return(node);
+		else
+			return(makeAbstraction(parameter, body));
 	} else
 		return(node);
+	/* FIXME abstraction */
 }
 
 
