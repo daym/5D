@@ -1,7 +1,7 @@
 
 SUBDIRS = Config REPL Bugs WIN32 Tests FFIs Bootstrappers TUI doc lib debian GUI
 SUBDIRS2 = $(SUBDIRS) doc/building doc/installation doc/interna doc/library doc/programming doc/programming/manual doc/programming/tutorial Tests/0* lib/Arithmetic lib/Trigonometry lib/Logic lib/Composition lib/List lib/OS lib/IO lib/UI lib/FFI lib/String lib/Reflection lib/Error Examples lib/LinearAlgebra lib/OO lib/Pair lib/Maybe lib/Set lib/Testers lib/Tree
-EXECUTABLES = REPL/5DREPL GUI/5D TUI/TUI TUI/STUI Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor Values/test-Values Values/test-Symbol Scanners/test-MathParser Scanners/test-Scanner REPL/5DREPL TUI2/5D
+EXECUTABLES = REPL/5DREPL GUI/5D Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor Values/test-Values Values/test-Symbol Scanners/test-MathParser Scanners/test-Scanner REPL/5DREPL TUI2/5D
 GENERATEDS = FFIs/Trampolines FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols FFIs/Combinations
 ASSEMBLERS = Assemblers/X86.o Assemblers/X64.o Assemblers/ARM.o
 
@@ -42,9 +42,9 @@ NUMBER_OBJECTS = Numbers/Integer.o Numbers/Real.o Numbers/BigUnsigned.o Numbers/
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 
-TARGETS = REPL/5DREPL TUI/TUI TUI/STUI
+TARGETS = TUI2/5D
 
-TARGETS += $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  && echo GUI/5D )
+#TARGETS += $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  && echo GUI/5D )
 
 all: $(TARGETS)
 	$(MAKE) -C lib all
