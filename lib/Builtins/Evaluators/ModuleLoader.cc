@@ -34,8 +34,15 @@ NodeT selectOperatorPrecedenceList(NodeT shebang) {
 			p = &p[3];
 			char* r = GC_strdup(p);
 			char* q = strchr(r, ' ');
-			if(q) 
+			if(q) {
 				*q = 0;
+			}
+			if(*r == '"') { /* quoted string */
+				++r;
+				char* q = strrchr(r, '"');
+				if(q)
+					*q = 0;
+			}
 			result = loadModule(NULL, makeStr(r));
 		}
 	}
