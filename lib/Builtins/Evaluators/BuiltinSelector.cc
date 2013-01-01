@@ -199,6 +199,6 @@ void BuiltinSelector_init(void) {
 
 // FIXME error checking
 DEFINE_SIMPLE_STRICT_OPERATION(BuiltinGetter, getBuiltinEntry(argument))
-REGISTER_BUILTIN(BuiltinGetter, 1, 0, Symbols::SBuiltins)
+REGISTER_BUILTIN(BuiltinGetter, 1, 0, symbolFromStr("Builtins"))
 
 };
