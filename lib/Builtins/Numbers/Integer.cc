@@ -835,7 +835,7 @@ bool toNativeInt(NodeT node, NativeInt& result) {
 	Int* intNode;
 	Integer* integerNode;
 	result = 0;
-	node = evaluate(node);
+	//node = evaluate(node); // FIXME
 	if(node == NULL)
 		return(false);
 	else if((intNode = dynamic_cast<Int*>(node)) != NULL) {
