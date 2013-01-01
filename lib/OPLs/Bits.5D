@@ -1,7 +1,5 @@
-#!/usr/bin/5D -p OPLs/Math.5D
 #!/usr/bin/5D
-let (,) := (requireModule "Pair") '(,) in 
-import [nil (:)] from (requireModule "List") in 
+import [nil (:) (,)] from Builtins in 
 let L := \s (s, 'left) in 
 let R := \s (s, 'right) in 
 let P := \s (s, 'prefix) in 
