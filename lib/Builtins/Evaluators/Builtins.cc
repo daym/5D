@@ -691,11 +691,12 @@ static NodeT makeAbstractionB(NodeT options, NodeT argument) {
 }
 /* INTERNAL! */
 #define WRAP_PARSE_MATH(n, B, P) \
-static NodeT n(Values::NodeT OPL, FILE* inputFile, CXXArguments& arguments, CXXArguments::const_iterator& iter, const CXXArguments::const_iterator& endIter) { \
+static NodeT n(Values::NodeT OPL, FILE* inputFile, CXXArguments& arguments, CXXArguments::const_iterator& beginIter, const CXXArguments::const_iterator& endIter) { \
+	CXXArguments::const_iterator iter; \
 	int position = 0; \
 	NodeT name = NULL; \
 	NodeT terminator = NULL; \
-	for(++iter; iter != endIter; ++iter) { \
+	for(iter = beginIter; iter != endIter; ++iter) { \
 		if(iter->first) { \
 			if(iter->first == keywordFromStr("position:")) { \
 				position = Values::intFromNode(iter->second); \
@@ -718,7 +719,36 @@ static NodeT n(Values::NodeT OPL, FILE* inputFile, CXXArguments& arguments, CXXA
 	} \
 }
 WRAP_PARSE_MATH(parseMath, parser.parse(OPL, terminator), Scanners::MathParser);
-WRAP_PARSE_MATH(parseParens, FNRESULT_FETCHINT(parser.parseMatchingParens(FNARG_FETCH(int))), Scanners::Scanner);
+static NodeT parseParens(Values::NodeT OPL, FILE * inputFile, CXXArguments& arguments, CXXArguments::const_iterator & beginIter, const CXXArguments::const_iterator& endIter) {
+	CXXArguments::const_iterator iter;
+	int position = 0;
+	NodeT name = __null;
+	NodeT terminator = __null;
+	for(iter = beginIter; iter != endIter; ++iter) {
+		if(iter->first) {
+			if (iter->first == keywordFromStr("position:")) {
+				position = Values::intFromNode(iter->second);
+			} else if (iter->first == keywordFromStr("name:")) {
+				name = iter->second;
+			} else if (iter->first == keywordFromStr("terminator:")) {
+				terminator = iter->second;
+			}
+		} else
+			break;
+	}
+	try {
+		if (!terminator)
+			terminator = Symbols::SlessEOFgreater;
+		Scanners::Scanner parser;
+		parser.push(inputFile, position, name ? Evaluators::stringFromNode(name) : "");
+		int direction = Values::intFromNode(iter++->second);
+		int position = Values::intFromNode(iter++->second);
+		return (Numbers::internNative((Numbers::NativeInt) parser.parseMatchingParens(direction, position)));
+	} catch( ...) {
+		return (__null);
+	}
+}
+//AP_PARSE_MATH(parseParens, FNRESULT_FETCHINT(parser.parseMatchingParens(FNARG_FETCH(int))), Scanners::Scanner); /* just the direction! */
 
 static NodeT makeFileMathParserB(NodeT options, NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
@@ -752,7 +782,7 @@ static NodeT parseStrParensB(NodeT options, NodeT argument) {
 	CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	CXXArguments::const_iterator iter = arguments.begin();
 	CXXArguments::const_iterator endIter = arguments.end();
-	const char* command = Evaluators::stringFromNode(iter->second);
+	const char* command = Evaluators::stringFromNode(iter++->second);
 	FILE* inputFile = fmemopen((void*) command, strlen(command), "r");
 	// FIXME if !inputFile
 	try {
@@ -761,7 +791,7 @@ static NodeT parseStrParensB(NodeT options, NodeT argument) {
 		return(result);
 	} catch(...) {
 		fclose(inputFile);
-		return(NULL); // FIXME
+		return(Numbers::internNative((Numbers::NativeInt) -1));
 	}
 }
 static NodeT getFreeVariablesA(NodeT expr) {
@@ -858,7 +888,7 @@ REGISTER_BUILTIN(AbstractionParameterGetter, 1, 0, symbolFromStr("fnParam"))
 REGISTER_BUILTIN(AbstractionBodyGetter, 1, 0, symbolFromStr("fnBody"))
 REGISTER_BUILTIN(FileMathParser, (-3), 0, symbolFromStr("parseMath!"))
 REGISTER_BUILTIN(StrMathParser, (-2), 0, symbolFromStr("parseMathStr"))
-REGISTER_BUILTIN(StrParenParser, (-2), 0, symbolFromStr("parseMathStr"))
+REGISTER_BUILTIN(StrParenParser, (-3), 0, symbolFromStr("parseParenStr"))
 /* Numeric Mathematics */
 REGISTER_BUILTIN(InfinityChecker, 1, 0, symbolFromStr("infinite?"))
 REGISTER_BUILTIN(NanChecker, 1, 0, symbolFromStr("nan?"))
