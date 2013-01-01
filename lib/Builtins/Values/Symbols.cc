@@ -172,6 +172,7 @@ NodeT SfreeVariables = symbolFromStr("freeVariables");
 NodeT SdynamicBuiltin = symbolFromStr("dynamicBuiltin");
 NodeT Swrap = symbolFromStr("wrap");
 NodeT Stable = symbolFromStr("table");
+NodeT Sfilename = symbolFromStr("filename");
 void initSymbols2(void) {
 	Spercenteax = symbolFromStr("%eax");
 	Sright = symbolFromStr("right");
@@ -342,6 +343,7 @@ void initSymbols2(void) {
 	SdynamicBuiltin = symbolFromStr("dynamicBuiltin");
 	Swrap = symbolFromStr("wrap");
 	Stable = symbolFromStr("table");
+	Sfilename = symbolFromStr("filename");
 }
 
 };

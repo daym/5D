@@ -175,6 +175,7 @@ extern Values::NodeT SfreeVariables;
 extern Values::NodeT SdynamicBuiltin;
 extern Values::NodeT Swrap;
 extern Values::NodeT Stable;
+extern Values::NodeT Sfilename;
 void initSymbols2(void);
 static __inline void initSymbols(void) {
 	if(Swrap == NULL)
