@@ -16,14 +16,17 @@
 namespace ModuleSystem {
 using namespace Values;
 using namespace Evaluators;
-static __inline NodeT access_module(NodeT fn, NodeT argument) {
+static __inline NodeT accessModule(NodeT fn, NodeT argument) {
+	/* TODO do not automatically reduce? */
 	NodeT body = get_curried_operation_argument(get_curried_operation_operation(fn));
-	NodeT result = Evaluators::reduce(makeApplication(body, argument));
+	NodeT result = makeApplication(body, argument);
+	result = Evaluators::reduce(result);
 	return(result);
 }
 
 NodeT prepareModule(NodeT result) {
 	Symbols::initSymbols();
+	BuiltinSelector_init(); /* we have initialisation order problems otherwise (VERY hard to debug). */
 	result = Evaluators::close(Symbols::Squote, &Evaluators::Quoter, result); // module needs that, so provide it.
 	result = Evaluators::close(Symbols::Sdot, makeAbstraction(Symbols::Sa, makeAbstraction(Symbols::Sb, makeApplication(Symbols::Sa, Symbols::Sb))), result);
 	result = Evaluators::close(Symbols::Shashexclam, makeAbstraction(Symbols::Sa, makeAbstraction(Symbols::Sb, Symbols::Sb)), result); // rem
@@ -38,7 +41,7 @@ NodeT prepareModule(NodeT result) {
 	return(result);
 }
 DEFINE_FULL_OPERATION(Module, {
-	return(access_module(fn, argument));
+	return(accessModule(fn, argument));
 })
 REGISTER_BUILTIN(Module, 3, 1, symbolFromStr("requireModule"));
 static NodeT mapGetFst2(NodeT fallback, Cons* c) {
