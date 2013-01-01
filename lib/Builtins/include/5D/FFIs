@@ -60,6 +60,12 @@ static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageNam
 static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageName, int a0) {
 	return makeApplication(makeApplication(obj, messageName), Numbers::internNative((Numbers::NativeInt) a0));
 }
+static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageName, int a0, int a1) {
+	return makeApplication(makeApplication(makeApplication(obj, 
+	                                                       messageName), 
+	                                       Numbers::internNative((Numbers::NativeInt) a0)), 
+	                       Numbers::internNative((Numbers::NativeInt) a1));
+}
 static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageName, void* a0, int a1, const char* a2) {
 	return makeApplication(makeApplication(makeApplication(makeApplication(obj, 
 	                                                                       messageName), 
