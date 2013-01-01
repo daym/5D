@@ -50,6 +50,7 @@ struct CProcedure : Values::Box {
 extern Evaluators::CProcedure P;
 
 /* for now, builtins don't provide their own signature and so WILL be called with unevaluated arguments */
+/* do NOT use global variables as arguments. Initialization order is undefined. */
 #define REGISTER_BUILTIN(P, argumentCount, reservedCount, R) Evaluators::CProcedure P((void*) P##_execute, R, argumentCount, reservedCount, NULL);
 
 #define DEFINE_SIMPLE_LAZY_OPERATION(P, B) \
