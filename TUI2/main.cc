@@ -14,24 +14,36 @@
 /* TODO after making callbacks into 5D code work, just move this entire module into 5D code. */
 using namespace Values;
 using namespace Symbols;
-static NodeT parseParenStr = Evaluators::getModuleEntryAccessor("Parsers", symbolFromStr("parseParenStr"));
-static NodeT parseMathStr = Evaluators::getModuleEntryAccessor("Parsers", symbolFromStr("parseMathStr"));
-static NodeT printMath = Evaluators::getModuleEntryAccessor("Formatters", symbolFromStr("printMath!"));
-static NodeT OPL = Evaluators::getModule("OPLs/Math.5D");
-// static NodeT eval = Evaluators::getModuleEntryAccessor("Evaluators", symbolFromStr("eval"))
-/* Note: use eval from the runtime instead of faking it? Doesn't work because of recursivity */
+static NodeT parseParenStr;
+static NodeT parseMathStr;
+static NodeT printMath;
+static NodeT OPL;
 
-/* FIXME: remove */
+/*
 namespace Formatters {
 namespace Math {
 void print(Values::NodeT OPL, FILE* output_file, int position, int indentation, Values::NodeT node);
 }
 }
+*/
+
+void initImports(void) {
+	parseParenStr = Evaluators::getModuleEntryAccessor("Parsers", symbolFromStr("parseParenStr"));
+	parseMathStr = Evaluators::getModuleEntryAccessor("Parsers", symbolFromStr("parseMathStr"));
+	printMath = Evaluators::getModuleEntryAccessor("Formatters", symbolFromStr("printMath!"));
+	OPL = Evaluators::getModuleEntryAccessor("OPLs/Math.5D", symbolFromStr("table"));
+	//NodeT OPL2 = Evaluators::eval(OPL, NULL);
+	//Formatters::Math::print(NULL, stdout, 0, 0, OPL2);
+	//printf("END OPL\n");
+}
+// static NodeT eval = Evaluators::getModuleEntryAccessor("Evaluators", symbolFromStr("eval"))
+/* Note: use eval from the runtime instead of faking it? Doesn't work that nicely because of basis recursion property. */
+
 
 static char** completion_matches(const char* text, rl_compentry_func_t* callback) {
 	return(rl_completion_matches(text, callback));
 }
-/* will match the wrong one on purpose. */
+/* will match the "wrong" one on purpose. */
 static int lexForMatchingParen(const char* command, int commandLen, int position) {
 	int originalParen = command[position];
 	int direction = 1;
@@ -44,7 +56,11 @@ static int lexForMatchingParen(const char* command, int commandLen, int position
         FILE* inputFile = fmemopen((void*) command, commandLen, "r");
 	if(inputFile) {
 		/* TODO @name: <stdin> as keyword parameter. */
-		NodeT maybeResult = Evaluators::execute(makeCall(parseParenStr, makeStrRaw((char*) command, commandLen, true), direction), NULL);
+		NodeT call1 = makeCall(parseParenStr, makeStrRaw((char*) command, commandLen, true), direction);
+		NodeT maybeResult = Evaluators::eval(call1, NULL);
+		//printf("PRRRR\n");
+		//Formatters::Math::print(NULL, stdout, 0, 0, maybeResult);
+		//printf("END PRRR\n");
 		// FIXME proper Maybe handling.
 		return(intFromNode(maybeResult));
         }
@@ -81,11 +97,9 @@ static int handle_readline_crlf(int x, int key) {
 		++point;
 	/* TODO move across spaces */
 	if((rl_line_buffer[point] == '\n' || rl_line_buffer[point] == 0)) {
-		NodeT maybeResult = Evaluators::eval(makeCall(parseMathStr, OPL, rl_line_buffer), NULL);
+		NodeT maybeResult = rl_line_buffer[0] ? Evaluators::eval(makeCall(parseMathStr, OPL, rl_line_buffer), NULL) : NULL;
 		inputNode = maybeResult;
-		printf("PRRRR\n");
-		Formatters::Math::print(NULL, stdout, 0, 0, inputNode);
-		printf("END PRRR\n");
+		//Formatters::Math::print(NULL, stdout, 0, 0, inputNode);
 		// FIXME proper Maybe handling.
 		/* if OK, do:
 		if(strstr(e.what(), "expected <(-operands>") || strstr(e.what(), "expected ]") || strstr(e.what(), "expected <body>") || strstr(e.what(), "expected <[let") || strstr(e.what(), "expected <[import") || strstr(e.what(), "expected in")) {
@@ -122,7 +136,7 @@ static char** complete(const char* text, int start, int end) {
 	return(matches);
 }
 
-static void readline_init(void) {
+static void initReadline(void) {
 	rl_readline_name = "5D";
 	rl_attempted_completion_function = complete;
 	rl_startup_hook = startup_readline;
@@ -131,8 +145,9 @@ static void readline_init(void) {
 void REPL_run(const char* line, NodeT inputValue) {
 	NodeT result = Evaluators::eval(inputNode, NULL);
 	Evaluators::execute(makeCall(printMath, OPL, stdout, 0, 0, result), NULL);
-	std::string resultStr = Evaluators::str(result);
-	printf("ok %s\n", resultStr.c_str());
+	printf("\n");
+	//std::string resultStr = Evaluators::str(result);
+	//printf("ok %s\n", resultStr.c_str());
 }
 int run(const char* prompt) {
 	const char* line;
@@ -154,11 +169,12 @@ int main(int argc, char* argv[]) {
 	const char* prompt = "eval $ ";
 	int status;
 	setlocale(LC_ALL, "");
+	initImports();
 	Allocator_init();  
 	/*if(argc >= 1)
 		Evaluators::set_shared_dir_by_executable(argv[0]);*/
 	Evaluators::Logic_init();
-	readline_init();
+	initReadline();
 	status = run(prompt);
 	printf("\n");
 	fflush(stdout);
