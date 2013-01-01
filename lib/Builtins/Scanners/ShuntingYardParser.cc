@@ -270,7 +270,7 @@ NodeT ShuntingYardParser::expand_macro(NodeT op1, NodeT suffix) {
 		s = Evaluators::str(r);
 		return(r);
 	} else if(operator_ == Symbols::Sunarydash) {
-		return(makeOperation(Symbols::Sdash, Symbols::Szero, suffix));
+		return(makeOperation(Symbols::Sunarydash, Symbols::Szero, suffix));
 	} else {
 		scanner->raiseError("<macro-body>", str(op1));
 		return(NULL);
@@ -288,17 +288,28 @@ NodeT makeOperationDot(NodeT op, NodeT a, NodeT b) {
 	bool bUnary = macro_standin_P(op1); \
 	NodeT b = NULL; \
 	if(!bUnary) { \
-		if(fOperands.empty()) \
+		if(fOperands.empty() || fOperands.size() <= fOperandCounts.top()) { \
+			std::string op1s = Evaluators::str(op1); \
 			scanner->raiseError(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
+		} \
 		b = fOperands.top(); \
 		fOperands.pop(); \
 	} \
-	if(fOperands.empty()) \
-		scanner->raiseError(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
-	NodeT a = fOperands.top(); \
-	fOperands.pop(); \
+	NodeT a; \
+	if(fOperands.empty() || fOperands.size() <= fOperandCounts.top()) { \
+		if(op1 == Symbols::Sdash) { \
+			/* we assume that.s unary minus. While 5*(-3) works with that, 5* -3 without braces doesn't. This is a known limitation and wouldn't work with 5*-3 either, so we don't do anything to support that. Sorry. */ \
+			a = Symbols::Szero; \
+		} else \
+			scanner->raiseError(std::string("<") + str(op1) + std::string("-operands>"), "<nothing>"); \
+	} else { \
+		a = fOperands.top(); \
+		fOperands.pop(); \
+	} \
 	fOperands.push(bUnary ? expand_macro(op1, a) : makeOperationDot(op1, a, b)); \
-	fOperators.pop(); }
+	std::string t = Evaluators::str(makeOperationDot(op1, a, b)); \
+	fOperators.pop(); \
+}
 bool ShuntingYardParser::any_operator_P(NodeT node) {
 	// fake '(' and 'auto('
 	if(node == Symbols::Sleftparen || node == Symbols::Sautoleftparen || node == Symbols::Srightparen || node == Symbols::Sautorightparen)
@@ -324,8 +335,6 @@ int ShuntingYardParser::get_operator_precedence(NodeT node) {
 		NodeT operand = fOperators.top(); \
 		if(macro_standin_P(operand)) \
 			operand = macro_standin_operator(operand); \
-		if(operand == Symbols::Sunarydash) /* long standing tradition */ \
-			operand = Symbols::Sdash; \
 		fOperands.push(operand); \
 		fOperators.pop(); \
 	} else \
@@ -347,7 +356,7 @@ NodeT ShuntingYardParser::parseExpression(LOperatorPrecedenceList* OPL, NodeT te
 		(!OPL->any_operator_P(previousValue) && 
 		 previousValue != Symbols::Sleftparen && 
 		 previousValue != Symbols::Sautoleftparen && 
-		 ((!OPL->any_operator_P(value) || (OPL->prefix_operator_P(value) && value != Symbols::Sdash) || value == Symbols::Sbackslash) &&
+		 ((!OPL->any_operator_P(value) || (OPL->prefix_operator_P(value) /*&& value != Symbols::Sdash*/) || value == Symbols::Sbackslash) &&
 		   value != Symbols::Srightparen && 
 		   value != Symbols::Sautorightparen))) { // two consecutive non-operators: function application.
 			// not "x)" !
@@ -375,8 +384,8 @@ NodeT ShuntingYardParser::parseExpression(LOperatorPrecedenceList* OPL, NodeT te
 				scanner->raiseError(std::string("close-") + str(fOperators.top()), str(value));
 			fOperators.pop(); // "("
 		} else if(OPL->prefix_operator_P(value) && any_operator_P(previousValue) && previousValue != Symbols::Srightparen && previousValue != Symbols::Sautorightparen) { // unary prefix operator, assumed to all be right-associative.
-			if(value == Symbols::Sdash)
-				value = Symbols::Sunarydash;
+			//if(value == Symbols::Sdash)
+			//	value = Symbols::Sunarydash;
 			int currentPrecedence = get_operator_precedence(value);
 			SCOPERANDS while(!fOperators.empty() && OPL->prefix_operator_P(fOperators.top()) && currentPrecedence < get_operator_precedence(fOperators.top()))
 				CONSUME_OPERATION
