@@ -3,6 +3,6 @@
 namespace ModuleSystem {
 DECLARE_FULL_OPERATION(Module)
 DECLARE_FULL_OPERATION(ModuleDispatcher)
-Values::NodeT prepareModule(Values::NodeT input);
+Values::NodeT prepareModule(Values::NodeT input, const char* filename);
 };
 #endif /* ndef __MODULE_SYSTEM_MODULES */

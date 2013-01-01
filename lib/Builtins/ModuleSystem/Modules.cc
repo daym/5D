@@ -24,7 +24,7 @@ static __inline NodeT accessModule(NodeT fn, NodeT argument) {
 	return(result);
 }
 
-NodeT prepareModule(NodeT result) {
+NodeT prepareModule(NodeT result, const char* filename) {
 	Symbols::initSymbols();
 	BuiltinSelector_init(); /* we have initialisation order problems otherwise (VERY hard to debug). */
 	result = Evaluators::close(Symbols::Squote, &Evaluators::Quoter, result); // module needs that, so provide it.
@@ -35,6 +35,8 @@ NodeT prepareModule(NodeT result) {
 	result = Evaluators::close(Symbols::Snil, NULL, result); // dispatch [] needs that, so provide it.
 	result = Evaluators::close(Symbols::SrequireModule, &ModuleLoader, result); // module needs that, so provide it. // TODO maybe use Builtins.requireModule (not sure whether that's useful)
 	result = Evaluators::close(Symbols::SBuiltins, &Evaluators::BuiltinGetter, result);
+	if(filename)
+		result = Evaluators::close(Symbols::Sfilename, Values::makeStr(filename), result);
 	// ?? result = Evaluators::close(Symbols::SdispatchModule, makeAbstraction(Symbols::Sexports, makeApplication(&Evaluators::ModuleDispatcher, makeApplication(&Evaluators::ModuleBoxMaker, Symbols::Sexports))), result);
 	result = Evaluators::provide_dynamic_builtins(result);
 	result = Evaluators::annotate(result);
