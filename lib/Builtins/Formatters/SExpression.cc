@@ -30,7 +30,6 @@ static void print_indentation(std::ostream& output, int indentation) {
 }
 void print_S_Expression_CXX(std::ostream& output, int& position, int indentation, NodeT node) {
 	bool B_split_cons_items = true;
-	node = repr(node);
 	const char* symbolName;
 	if(node == NULL)
 		print_text(output, position, "nil");
@@ -111,6 +110,7 @@ void print_S_Expression_CXX(std::ostream& output, int& position, int indentation
 void print_S_Expression(FILE* output_file, int position, int indentation, NodeT node) {
 	std::stringstream sst;
 	std::string value;
+	node = repr(node);
 	print_S_Expression_CXX(sst, position, indentation, node);
 	value = sst.str();
 	fprintf(output_file, "%s", value.c_str());
