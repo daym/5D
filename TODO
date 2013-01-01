@@ -7,6 +7,8 @@ Maybe make [] a reader macro (don't forget to provide a way to rebuild the origi
 
 = Fix Bugs =
 
+2*-5
+2* -5
 loading modules (for example the one where GetLastError! is in) causes GetLastError() to be clobbered.
 '\ (is interpreted as a lambda. Also '\\).
 
@@ -57,6 +59,7 @@ TUI: allow multi-line entry in history (maybe just use a global history used by 
 
 = Beauty =
 
+In raiseMissingSymbolError, make sure to include (client) moduleFilename in the resulting message.
 Right now, (‒) is used for the prefix operator. This isn't distinguishable much from (-), maybe get rid of the special case (how?)...
 Math: indentation for 'if, 'rec, 'let, ';, ':  - don't forget nested ifs.
 pattern-match a:b:c:nil back to the [] macro (this is already done for the Cons builtin but not if the Cons has not yet been built).
