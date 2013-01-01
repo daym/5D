@@ -102,4 +102,6 @@ END_PROC_WRAPPER
 
 }; /* end namespace Math */
 }; /* end namespace Formatters */
-
+/* TODO U+2063 invisible separator or invisible comma is intended for use in index expressions and other mathematical notation where two adjacent variables form a list and are not implicitly multiplied. */
+/* non-displaying U+2061invisible times */
+/* use of U+2062 function application for an implied function dependence as in f(x + y)*/
