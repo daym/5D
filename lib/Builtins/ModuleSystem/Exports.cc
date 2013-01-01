@@ -31,7 +31,7 @@ static NodeT makeExportsFVA(const char* fmt, char* names, va_list ap) {
 			*x = 0;
 		if(snprintf(buf, 2048, fmt, names) == -1)
 			abort();
-		name = makeStr(buf);
+		name = symbolFromStr(buf); // makeStr(buf);
 		names = x;
 		void* fn = va_arg(ap, void*);
 		return(makeCons(makeEntry(name, fn), makeExportsFVA(fmt, names, ap)));
