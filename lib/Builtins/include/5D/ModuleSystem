@@ -16,4 +16,6 @@ NodeT makeExportsFQ(const char* fmt, const char* names, ...);
 #define exportsf(fmt, ...) ModuleSystem::makeExportsFQ(fmt, ""#__VA_ARGS__, __VA_ARGS__)
 #define dispatch Evaluators::getModuleEntryAccessor("Composition", symbolFromStr("dispatch"))
 /*#define buXXXiltin(sym) Evaluators::getModuleEntryAccessor("Builtins", sym)*/
+Values::NodeT prepareModule(Values::NodeT input, const char* filename);
+
 };
