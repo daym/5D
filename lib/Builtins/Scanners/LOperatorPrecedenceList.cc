@@ -11,6 +11,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include "Values/Values"
 #include "Values/Symbols"
 #include "Scanners/LOperatorPrecedenceList"
+//nclude "Formatters/SExpression"
+//nclude "Formatters/Math"
 #include <5D/Evaluators>
 #include <5D/Values>
 
@@ -50,7 +52,8 @@ void LOperatorPrecedenceList::cons(int precedence_level, NodeT operator_, NodeT 
 	if(prefix_usages[(unsigned char) opname.c_str()[0]] > 0) { /* someone has something like this in use, maybe hapless caller */
 		int level = get_operator_precedence(operator_);
 		while(level != -1) {
-			fprintf(stderr, "warning: the same operator \"%s\" previously had precedence level %d, defusing it.\n", opname.c_str(), level);
+			if(operator_ != Symbols::Sspace)
+				fprintf(stderr, "warning: the same operator \"%s\" previously had precedence level %d, defusing it.\n", opname.c_str(), level);
 			for(struct OperatorPrecedenceItem* item = levels[level]; item; item = item->next)
 				if(item->operator_ == operator_)
 					item->operator_ = NULL; // XXX
@@ -161,25 +164,37 @@ NodeT LOperatorPrecedenceList::get_all_operators(int precedence_level) const {
 
 Scanners::LOperatorPrecedenceList* legacyOPLFrom5DOPL(NodeT source) {
 	static Scanners::LOperatorPrecedenceList* defaultOPL = NULL;
-	int levelIndex = MAX_PRECEDENCE_LEVELS - 1; /* TODO dynamic? */
 	if(source == NULL) { /* => default */
 		if(!defaultOPL)
 			defaultOPL = new LOperatorPrecedenceList(true);
 		return defaultOPL;
-	}
-	Scanners::LOperatorPrecedenceList* result = new Scanners::LOperatorPrecedenceList(false);
-	for(; source && levelIndex >= 0; source = get_cons_tail(source), --levelIndex) {
-		NodeT levelEntries = get_cons_head(source);
-		for(; levelEntries; levelEntries = get_cons_tail(levelEntries)) {
-			NodeT cell = get_cons_head(levelEntries);
-			NodeT operator_ = get_pair_fst(cell);
-			NodeT associativity = get_pair_snd(cell);
-			result->cons(levelIndex, operator_, associativity);
-			std::string s = Evaluators::str(operator_);
-			printf("beep %s\n", s.c_str());
+	} else {
+		source = PREPARE(source);
+		Scanners::LOperatorPrecedenceList* result = new Scanners::LOperatorPrecedenceList(false);
+		int levelIndex = MAX_PRECEDENCE_LEVELS - 1; /* TODO dynamic? */
+		for(; source && levelIndex >= 0; source = PREPARE(get_cons_tail(source)), --levelIndex) {
+			NodeT levelEntries = PREPARE(get_cons_head(source));
+			for(; levelEntries; levelEntries = PREPARE(get_cons_tail(levelEntries))) {
+				NodeT cell = PREPARE(get_cons_head(levelEntries));
+				NodeT operator_ = get_pair_fst(cell);
+				NodeT associativity = get_pair_snd(cell);
+				result->cons(levelIndex, operator_, associativity);
+				//std::string s = Evaluators::str(operator_);
+				//printf("beep %s\n", s.c_str());
+			}
 		}
+		return(result);
 	}
-	return(result);
 }
 
 }; /* end namespace Scanners */
+/* TODO according to Unicode 3.2: the operator precedence list for plain text is:
+FF CR \
+(   [ {
+)  ]  }  |
+Space  "  . ,  =  -  +   LF   Tab
+/  *  ×  ·  •  ·  ½
+n √
+∫ ∑ ∏
+↓ ↑
+*/
