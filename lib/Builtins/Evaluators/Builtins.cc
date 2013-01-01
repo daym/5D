@@ -698,7 +698,7 @@ static NodeT n(Values::NodeT OPL, FILE* inputFile, CXXArguments& arguments, CXXA
 	for(++iter; iter != endIter; ++iter) { \
 		if(iter->first) { \
 			if(iter->first == keywordFromStr("position:")) { \
-				position = Evaluators::intFromNode(iter->second); \
+				position = Values::intFromNode(iter->second); \
 			} else if(iter->first == keywordFromStr("name:")) { \
 				name = iter->second; \
 			} else if(iter->first == keywordFromStr("terminator:")) { \
