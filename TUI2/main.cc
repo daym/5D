@@ -143,7 +143,9 @@ static void initReadline(void) {
 	//rl_sort_completion_matches = 1;
 }
 void REPL_run(const char* line, NodeT inputValue) {
-	NodeT result = Evaluators::eval(inputNode, NULL);
+	Evaluators::execute(makeCall(printMath, OPL, stdout, 0, 0, inputNode), NULL);
+	printf("\n");
+	NodeT result = Evaluators::eval(ModuleSystem::prepareModule(inputNode, "<stdin>"), NULL);
 	Evaluators::execute(makeCall(printMath, OPL, stdout, 0, 0, result), NULL);
 	printf("\n");
 	//std::string resultStr = Evaluators::str(result);
