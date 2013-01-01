@@ -2,7 +2,6 @@ void print_CXX(Scanners::LOperatorPrecedenceList* OPL, std::ostream& output, int
 	/* the easiest way to think about this is that any and each node has a precedence level. 
 	   The precedence level of the atoms is just very high. 
 	   The reason it is not explicitly programmed that way is that there are a lot of temporary variables that are used in both precedence level detection and recursion and that would be much code duplication to do two. */
-	node = repr(node);
 	if(node == NULL)
 		print_text(output, position, "[]", false);
 	else if(symbol_P(node)) {
@@ -118,6 +117,7 @@ void print_CXX(Scanners::LOperatorPrecedenceList* OPL, std::ostream& output, int
 void print(Values::NodeT OPL, FILE* output_file, int position, int indentation, Values::NodeT node) {
 	std::stringstream sst;
 	std::string value;
+	node = repr(node);
 	print_CXX(Scanners::legacyOPLFrom5DOPL(OPL), sst, position, node, 0, false);
 	value = sst.str();
 	fprintf(output_file, "%s", value.c_str());
