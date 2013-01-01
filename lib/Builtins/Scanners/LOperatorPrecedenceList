@@ -79,9 +79,9 @@ struct LOperatorPrecedenceList : Values::Node {
 	bool prefix_operator_P(Values::NodeT thingie) const {
 		/* should be: '\\- unary- let let! import
 		   NOT [ */
-		if(thingie == Symbols::Sdash) {
-			return true; /* shoot me... */
-		} else {
+		//if(thingie == Symbols::Sdash) {
+		//	return true; /* shoot me... */
+		{
 			Values::NodeT associativity = NULL;
 			return(get_operator_precedence_and_associativity(thingie, associativity) != -1 && associativity == Symbols::Sprefix);
 		}
