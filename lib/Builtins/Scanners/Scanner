@@ -111,7 +111,7 @@ public:
 		B_honor_indentation = value;
 		return(result);
 	}
-	int parseMatchingParens(int direction);
+	int parseMatchingParens(int direction, int position);
 private:
 	std::list<Values::NodeT> injected_input_values;
 	bool deinject();

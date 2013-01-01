@@ -717,7 +717,7 @@ bool Scanner::deinject() { /* on EOF, makes sure that injected parens are closed
 	} else
 		return(false);
 }
-int Scanner::parseMatchingParens(int direction) {
+int Scanner::parseMatchingParens(int direction, int position) {
 	std::stack<int> openParens;
 	while(input_value != Symbols::SlessEOFgreater) {
 		if(input_value == Symbols::Sleftparen || input_value == Symbols::Sleftbracket || input_value == symbolFromStr("{")) {
@@ -799,10 +799,11 @@ BEGIN_PROC_WRAPPER(getInputValue, 1, symbolFromStr("getInputValue!"), static)
 	Scanners::Scanner* scanner = (Scanners::Scanner*) FNARG_FETCH(pointer);
 	return(MONADIC(FNRESULT_FETCHINT(scanner->getInputValue())));
 END_PROC_WRAPPER
-BEGIN_PROC_WRAPPER(parseMatchingParens, 2, symbolFromStr("parseMatchingParens!"), static)
+BEGIN_PROC_WRAPPER(parseMatchingParens, 3, symbolFromStr("parseMatchingParens!"), static)
 	Scanners::Scanner* scanner = (Scanners::Scanner*) FNARG_FETCH(pointer);
 	int direction = FNARG_FETCH(int);
-	return(MONADIC(FNRESULT_FETCHINT(scanner->parseMatchingParens(direction))));
+	int position = FNARG_FETCH(int);
+	return(MONADIC(FNRESULT_FETCHINT(scanner->parseMatchingParens(direction, position))));
 END_PROC_WRAPPER
 
 Values::NodeT dispatchScanner = Evaluators::eval(Values::makeApplication(dispatch, exportsf("%s!", &push, &pop, &getPosition, &getColumnNumber, &getLineNumber, &raiseError, &EOFP, &ensureEnd, &consume, &setHonorIndentation, &getInputValue, &parseMatchingParens)), NULL);
