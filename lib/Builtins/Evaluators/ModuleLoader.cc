@@ -13,6 +13,7 @@
 #include "FFIs/ProcessInfos"
 #include "Evaluators/FFI"
 #include "ModuleSystem/Modules"
+#include "Formatters/Math"
 #include <5D/ModuleSystem>
 
 /* manages multiple modules */
@@ -43,7 +44,8 @@ NodeT selectOperatorPrecedenceList(NodeT shebang) {
 				if(q)
 					*q = 0;
 			}
-			result = loadModule(NULL, makeStr(r));
+			result = getModuleEntryAccessor(r, Symbols::Stable);
+			//result = loadModule(NULL, makeStr(r));
 		}
 	}
 	return(result);
@@ -65,10 +67,15 @@ static NodeT forceModuleLoad(const char* filename) {
 			NodeT result = NULL;
 			NodeT shebang = parser.parseOptionalShebang();
 			result = parser.parse(selectOperatorPrecedenceList(shebang), Symbols::SlessEOFgreater);
-			result = prepareModule(result);
+			/*fprintf(stderr, "\nbefore forceModuleLoad %s\n", filename);
+			Formatters::Math::print(NULL, stderr, 0, 0, result);*/
+			result = prepareModule(result, filename);
 			//fprintf(stderr, "before reduce_module\n");
 			result = Evaluators::reduce(result);
-			//fprintf(stderr, "after reduce_module\n");
+			/*fprintf(stderr, "\nafter forceModuleLoad\n");
+			Formatters::Math::print(NULL, stderr, 0, 0, result);
+			fprintf(stderr, "XXX\n");
+			fflush(stderr);*/
 			fclose(input_file);
 			errno = previousErrno;
 			return(result);
