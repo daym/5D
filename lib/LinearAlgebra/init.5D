@@ -1,6 +1,6 @@
 #!/usr/bin/5D -p OPLs/Math.5D
 let Composition := requireModule "Composition" in 
-Composition.withInterface1
+Composition.withInterface1 filename
 let Arithmetic := requireModule "Arithmetic" in 
 let Logic := requireModule "Logic" in 
 let List := requireModule "List" in 

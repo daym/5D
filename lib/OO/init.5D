@@ -1,6 +1,6 @@
 #!/usr/bin/5D -p OPLs/Math.5D
 let Composition := requireModule "Composition" in 
-Composition.withInterface1
+Composition.withInterface1 filename
 import [(rem)] from Composition in 
 let dispatch := Composition.dispatch in 
 let raiseMissingSymbolError := Composition.raiseMissingSymbolError in 

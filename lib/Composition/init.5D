@@ -1,5 +1,6 @@
 #!/usr/bin/5D
-let raiseMissingSymbolError := (\key ["missing symbol" key]) in
+let raiseMissingSymbolError2 := \mod \key [mod "missing symbol" key] in 
+let raiseMissingSymbolError := \key ["missing symbol" key] in
 let (|) := (\a \b b a) in 
 let ($) := (\a \b a b) in 
 let compose := (\f \g \x f (g x)) in 
@@ -15,5 +16,6 @@ let makeModuleBox := Builtins.makeModuleBox in
 let dispatchModule2 := Builtins.dispatchModule in 
 let dispatch := (\table \fallbackAction \key dispatchModule2 (makeModuleBox table) fallbackAction key) in 
 let dispatch1 := (\table dispatch table raiseMissingSymbolError) in 
-let withInterface1 := dispatch1 in 
-dispatch1 (#exports[(|) ($) compose flip id rec rem export dispatch raiseMissingSymbolError dispatch1 withInterface1])
+let withInterface1 := \filename \table dispatch table (raiseMissingSymbolError filename) in 
+dispatch (#exports[(|) ($) compose flip id rec rem export dispatch raiseMissingSymbolError raiseMissingSymbolError2 dispatch1 withInterface1])
+(raiseMissingSymbolError2 filename)
