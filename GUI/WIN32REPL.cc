@@ -10,18 +10,15 @@
 #include <tchar.h>
 #include <Commdlg.h>
 #include <Richedit.h>
+#include <5D/Operations>
+#include <5D/Values>
+#include <5D/FFIs>
+#include <5D/Allocators>
 #include "REPL/REPL"
 #include "WIN32REPL"
-#include "Scanners/MathParser"
-#include "Values/Values"
-#include "Evaluators/Evaluators"
 #include "Config/Config"
-#include "FFIs/FFIs"
-#include "Evaluators/Builtins"
 #include "GUI/WIN32Completer"
-#include "Formatters/Math"
 #include <shellapi.h>
-#include "FFIs/Allocators"
 
 namespace GUI {
 bool interrupted_P(void) {
@@ -49,9 +46,9 @@ struct REPL : Node {
 	NodeT fTailUserEnvironmentFrontier;
 	WNDPROC oldEditBoxProc;
 	struct Completer* fCompleter;
-	HashTable* fEnvironmentKeys;
+	Hashtable* fEnvironmentKeys;
 	HMENU fEnvironmentMenu;
-	HashTable* fModules;
+	Hashtable* fModules;
 	int fCursorPosition;
 	bool fBRunIO;
 };
@@ -1006,7 +1003,7 @@ void REPL_init(struct REPL* self, HWND parent) {
 	self->fBRunIO = false;
 
 	self->fEnvironmentMenu = GetSubMenu(LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDM_ENVIRONMENT)), 0); /* FIXME global? */ /* TODO DestroyMenu */
-	self->fEnvironmentKeys = new HashTable;
+	self->fEnvironmentKeys = new Hashtable;
 	self->fBSearchUpwards = true;
 	self->fBSearchCaseSensitive = true;
 	hinstance = GetModuleHandle(NULL);
