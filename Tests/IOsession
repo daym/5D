@@ -9,12 +9,11 @@ hello
 2
 runIO $ import [defer!] from (requireModule "IO") in 
 import [write! stdout flush!] from (requireModule "File") in 
-defer! (write! stdout "finished"))
-	write! stdout "not yet"
-not yet
-finished
+defer! (write! stdout "finished" ;\_ flush! stdout))
+	write! stdout "not yet "
+not yet finished
 runIO $ import [use!] from (requireModule "IO") in
 import [open! close! readline!] from (requireModule "File") in 
 use! (open! "IOsession" "r") close! \f
 	readline! f
-"runIO $ import [(-) (<) nan inf infinite? (=) (√) floor] from (requireModule \"Arithmetic\") in "
+"runIO $ import [(-) (<) nan inf infinite? (=) (√) floor] from (requireModule \"Arithmetic\") in \n"
