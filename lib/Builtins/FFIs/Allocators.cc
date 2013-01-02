@@ -55,7 +55,7 @@ void Allocator_init(void) {
 	//xmlGcMemSetup(GCx_free, GCx_malloc, GCx_malloc_atomic, GCx_realloc, GCx_strdup);
 }
 
-/* allocate executable block */
+/* allocate executable block, then (try to) make it read-only */
 void* ealloc(size_t size, void* source) {
 	size_t* result;
 #if defined(WIN32)
@@ -65,9 +65,12 @@ void* ealloc(size_t size, void* source) {
 	result = (size_t*) mmap(NULL, sizeof(size_t) + size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANON, -1, 0);
 	/* munmap needs the size, so make sure to remember it (sigh...) */
 	*result = size;
-	return result + 1;
+	++result;
 #endif
 	memcpy(result, source, size);
+#if defined(__linux__) || defined(__APPLE__)
+	(void) mprotect(result - 1, size, PROT_EXEC | PROT_READ);
+#endif
 	return(result);
 }
 
