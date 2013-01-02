@@ -13,16 +13,16 @@ You should have received a copy of the GNU General Public License along with thi
 
 namespace Values {
 
-static HashTable* keywords;
+static Hashtable* keywords;
 
 /* TODO we can also just skip the whole map business for single-character names if we just return the character code instead of fumbling around (would have to make sure actual addresses are >255 then). 
    of course, str would then have to be global and we can't use the VMT anymore. Not sure whether it would be worth it. */
 NodeT keywordFromStr(const char* name) {
 	if(keywords == NULL) {
 		GC_INIT();
-		keywords = new HashTable;
+		keywords = new Hashtable;
 	}
-	HashTable::const_iterator iter = keywords->find(name);
+	Hashtable::const_iterator iter = keywords->find(name);
 	if(iter != keywords->end()) {
 		return((Keyword*) iter->second);
 	} else {

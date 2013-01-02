@@ -128,5 +128,5 @@ void set_box_value(NodeT box, void* value);
 }; /* namespace Values */
 #include "Values/Symbol"
 #include "Values/Keyword"
-#include "Values/HashTable"
+#include "Values/Hashtable"
 #endif /* __I_VALUES_H */
