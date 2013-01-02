@@ -1,0 +1,4 @@
+fix handling of multi-line expressions (if cursor is in the middle and user presses enter, what should happen?)
+proper error handling:
+	automatically find unknown symbols in the installed modules and ask whether user wants to insert them.
+automatically start a monadic do shell, automatically tailing an REP?
