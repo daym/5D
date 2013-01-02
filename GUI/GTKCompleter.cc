@@ -11,9 +11,9 @@ namespace REPLX {
 using namespace Values;
 struct Completer {
 	GtkEntry* fEntry;
-	GHashTable* fHaystack; /* hash table's entry's value is unused */
+	GHashtable* fHaystack; /* hash table's entry's value is unused */
 	char* fEntryNeedle;
-	HashTable* fMatches;
+	Hashtable* fMatches;
 	int fEntryNeedlePos;
 	const char* fEntryText;
 };
@@ -39,15 +39,15 @@ void Completer_complete(struct Completer* self) {
 	pos = gtk_editable_get_position(GTK_EDITABLE(self->fEntry));
 	Completer_complete_internal(self, entry_text, pos);
 }
-void Completer_init(struct Completer* self, GtkEntry* entry, GHashTable* haystack) {
+void Completer_init(struct Completer* self, GtkEntry* entry, GHashtable* haystack) {
 	self->fEntry = entry;
 	self->fHaystack = haystack;
 	self->fEntryNeedle = NULL;
 	self->fMatches = NULL;
 	self->fEntryNeedlePos = 0;
-	self->fMatches = new HashTable;
+	self->fMatches = new Hashtable;
 }
-struct Completer* Completer_new(GtkEntry* entry, GHashTable* haystack) {
+struct Completer* Completer_new(GtkEntry* entry, GHashtable* haystack) {
 	struct Completer* result;
 	result = (struct Completer*) g_malloc0(sizeof(struct Completer)); // FIXME
 	Completer_init(result, entry, haystack);

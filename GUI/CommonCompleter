@@ -29,9 +29,9 @@ static void Completer_accept_match(struct Completer* self, const char* match, bo
 	strcat(new_text, &entry_text[i]);
 	Completer_accept_match_GUI(self, new_text, pos);
 }
-static bool in_all_keys_P(Values::HashTable& keys, int i, char c) {
-	Values::HashTable::const_iterator end_iter = keys.end();
-	for(Values::HashTable::const_iterator iter = keys.begin(); iter != end_iter; ++iter) {
+static bool in_all_keys_P(Values::Hashtable& keys, int i, char c) {
+	Values::Hashtable::const_iterator end_iter = keys.end();
+	for(Values::Hashtable::const_iterator iter = keys.begin(); iter != end_iter; ++iter) {
 		const char* key = iter->first;
 		if(key[i] != c)
 			return(false);
@@ -63,8 +63,8 @@ static void Completer_complete_internal(struct Completer* self, const char* entr
 	self->fEntryNeedlePos = entry_needle - entry_text;
 #ifdef _WIN32
 	{
-		Values::HashTable::const_iterator end_iter = self->fHaystack->end();
-		for(Values::HashTable::const_iterator iter = self->fHaystack->begin(); iter != end_iter; ++iter)
+		Values::Hashtable::const_iterator end_iter = self->fHaystack->end();
+		for(Values::Hashtable::const_iterator iter = self->fHaystack->begin(); iter != end_iter; ++iter)
 			match_entry(iter->first, NULL, self);
 	}
 #else

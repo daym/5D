@@ -7,8 +7,8 @@ struct Completer;
 namespace GUI {
 using namespace REPLX;
 /* note that haystack's values are unused. Only the keys are used and assumed to be AST::Symbol* */
-void Completer_init(struct Completer* self, GtkEntry* entry, GHashTable* haystack);
-struct Completer* Completer_new(GtkEntry* entry, GHashTable* haystack);
+void Completer_init(struct Completer* self, GtkEntry* entry, GHashtable* haystack);
+struct Completer* Completer_new(GtkEntry* entry, GHashtable* haystack);
 void Completer_complete(struct Completer* self);
 };
 #endif /* ndef __5D_GUI_GTKCOMPLETER_H */

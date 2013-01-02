@@ -9,11 +9,11 @@ namespace REPLX {
 using namespace Values;
 struct Completer : Node {
 	HWND fEntry;
-	HashTable* fHaystack;
+	Hashtable* fHaystack;
 	int fEntryNeedlePos;
 	char* fEntryNeedle;
 	char* fEntryText;
-	HashTable* fMatches;
+	Hashtable* fMatches;
 };
 
 };
@@ -43,12 +43,12 @@ static std::wstring GetTextCXX(HWND item) {
 }
 
 /* note that haystack's values are unused. Only the keys are used and assumed to be Symbol* */
-void Completer_init(struct Completer* self, HWND entry, HashTable* haystack) {
-	self->fMatches = new HashTable;
+void Completer_init(struct Completer* self, HWND entry, Hashtable* haystack) {
+	self->fMatches = new Hashtable;
 	self->fEntry = entry;
 	self->fHaystack = haystack;
 }
-struct Completer* Completer_new(HWND entry, HashTable* haystack) {
+struct Completer* Completer_new(HWND entry, Hashtable* haystack) {
 	struct Completer* result;
 	result = new (UseGC) Completer;
 	Completer_init(result,  entry, haystack);

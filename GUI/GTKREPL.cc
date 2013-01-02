@@ -55,7 +55,7 @@ struct REPL : Node {
 	//GtkBox* fShortcutBox;
 	GtkTreeView* fEnvironmentView;
 	GtkListStore* fEnvironmentStore2;
-	GHashTable* fEnvironmentKeys;
+	GHashtable* fEnvironmentKeys;
 	GtkButton* fEvaluateButton;
 	GtkBox* fEditorBox;
 	GtkScrolledWindow* fEnvironmentScroller;
@@ -73,7 +73,7 @@ struct REPL : Node {
 	NodeT fTailEnvironment;
 	NodeT fTailUserEnvironment /* =fTailBuiltinEnvironmentFrontier */;
 	NodeT fTailUserEnvironmentFrontier;
-	HashTable* fModules;
+	Hashtable* fModules;
 	GtkTextIter fCursorPosition;
 	bool fBRunIO;
 };
