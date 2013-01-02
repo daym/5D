@@ -72,8 +72,10 @@ REGISTER_BUILTIN(HashtableAccessor, 2, 0, symbolFromStr("FIXME"))
 
 /* this takes care of caching the table in a Hashtable and adding an 'exports key listing all the keys. */
 static NodeT dispatchModuleF(NodeT table, NodeT fallback, NodeT junk) {
+	Symbols::initSymbols();
 	Hashtable* m = new (UseGC) Hashtable;
 	table = consFromNode(table);
+	(*m)["exports"] = makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
 	for(; !nil_P(table); table = get_cons_tail(table)) {
 		NodeT entry = pairFromNode(get_cons_head(table));
 		std::string entryS = Evaluators::str(table);
@@ -84,7 +86,6 @@ static NodeT dispatchModuleF(NodeT table, NodeT fallback, NodeT junk) {
 		if(name && m->find(name) == m->end())
 			(*m)[name] = value;
 	}
-	(*m)["exports"] = makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
 	return Values::makeApplication(&HashtableAccessor, makeBox(m, NULL/*FIXME*/));
 }
 	
