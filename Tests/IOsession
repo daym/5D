@@ -1,10 +1,15 @@
 runIO $ import [(-) (<) nan inf infinite? (=) (√) floor] from (requireModule "Arithmetic") in
 import [(return!)] from (requireModule "IO") in 
 import [(if) (else) (not)] from (requireModule "Logic") in
-import [write! stdout flush] from (requireModule "File") in 
+import [write! stdout flush!] from (requireModule "File") in 
 write! stdout "hello\n" ;\_
 flush! stdout ;\_
 return! 2
 hello
 2
-runIO $ defer!
+runIO $ import [defer!] from (requireModule "IO") in 
+import [write! stdout flush!] from (requireModule "File") in 
+defer! (write! stdout "finished"))
+	write! stdout "not yet"
+not yet
+finished
