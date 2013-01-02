@@ -1,0 +1,11 @@
+Thunks (in order to wrap a closure and degrade it to a simple function pointer):
+	struct __attribute__((packed)) thunk {
+		unsigned char pushOp;
+		void* envAddr;
+		unsigned char callOp;
+		signed long callOffset;
+		unsigned char addESPOps[3];
+	};
+	struct thunk defaultThunk = {0x68, 0, 0xe8, 0, {0x83, 0xc4, 0x04}, 0xc3};
+	Note that the compiler doesn't have complete knowledge of the stack layout anymore, so if it tries to access the stack using absolute addresses or whatever it will be in a world of hurt (it probably(!) doesn't do it anyway).
+	(callOffset is &dest - &addEPSOps[0] in bytes)
