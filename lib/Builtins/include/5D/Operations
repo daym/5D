@@ -68,8 +68,13 @@ static Values::NodeT P##_execute(Values::NodeT fn, Values::NodeT argument) { \
 #define DEFINE_SIMPLE_STRICT_OPERATION(P, B) \
 extern Evaluators::CProcedure P; \
 static Values::NodeT P##_execute(Values::NodeT fn, Values::NodeT argument) { \
-	argument = Evaluators::eval(argument, NULL); \
+	argument = PREPARE(argument); \
 	return(Evaluators::internNative(B)); \
+}
+#define DEFINE_BOXED_STRICT_OPERATION(P, B) \
+extern Evaluators::CProcedure P; \
+static Values::NodeT P##_execute(Values::NodeT fn, Values::NodeT argument) { \
+	return(makeBox(B(PREPARE(argument)), Values::makeApplication(&P, argument))); \
 }
 
 #define DECLARE_FULL_OPERATION(P) DECLARE_SIMPLE_OPERATION(P)
@@ -145,5 +150,16 @@ END_PROC_WRAPPER
 /* TODO declspec export for Windows */
 #define BEGIN_MODULE_WRAPPER Values::NodeT access5DModuleV1(Values::NodeT argument) {
 #define END_MODULE_WRAPPER }
+
+#define ITERATE_LAZY_CONS_NODES(nodes, headProcessor, tailHeadProcessor, junkProcessor) \
+	NodeT vnode = nodes; \
+	headProcessor; \
+	for(vnode = dynamic_cast<Cons*>(PREPARE(get_cons_tail(node))); !nil_P(vnode); vnode = dynamic_cast<Cons*>(PREPARE(get_cons_tail(vnode)))) { \
+		if(!cons_P(vnode)) \
+			break; \
+		tailHeadProcessor; \
+	} \
+	if(!nil_P(vnode)) \
+		junkProcessor;
 
 #endif /* ndef __5D_OPERATION */

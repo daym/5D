@@ -16,7 +16,7 @@ using namespace Values;
 static NodeT get_arch_dep_path(NodeT nameNode) {
 	if(nameNode == NULL)
 		return(NULL);
-	const char* name = Values::stringFromNode(nameNode);
+	const char* name = stringFromNode(nameNode);
 	// keep that result constant and invariant.
 	std::stringstream sst;
 	//std::string name((char*) nameNode->native, nameNode->size);
@@ -31,7 +31,7 @@ static NodeT get_arch_dep_path(NodeT nameNode) {
 	return(makeStrCXX(sst.str()));
 }
 bool absolute_path_P(NodeT nameN) {
-	char* c = nameN ? Values::stringFromNode(nameN) : NULL;
+	char* c = nameN ? stringFromNode(nameN) : NULL;
 	if(!c || !*c)
 		return(false);
 	return(*c == '/');
@@ -45,23 +45,23 @@ static NodeT internEnvironF(const char** envp) {
 		return(NULL);
 }
 static NodeT wrapInternEnviron(NodeT argument) {
-	return internEnvironF((const char**) Values::pointerFromNode(argument));
+	return internEnvironF((const char**) pointerFromNode(argument));
 }
-static Box* environFromListF(NodeT argument) {
+static char** environFromListF(NodeT argument) {
 	int count = 0;
 	char** result;
 	int i = 0;
-	NodeT listNode = argument;
-	for(Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
+	argument = consFromNode(argument);
+	for(NodeT node = argument; !nil_P(node); node = get_cons_tail(node)) {
 		++count;
 		// FIXME handle overflow
 	}
 	result = (char**) GC_MALLOC(sizeof(char*) * (count + 1));
-	for(Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
-		result[i] = Values::stringFromNode(node->head);
+	for(NodeT node = argument; !nil_P(node); node = get_cons_tail(node)) {
+		result[i] = stringFromNode(get_cons_head(node));
 		++i;
 	}
-	return(makeBox(result, makeApplication(&environFromList, listNode/* or argument*/)));
+	return(result);
 }
 BEGIN_PROC_WRAPPER(getEnviron, 0, symbolFromStr("getEnviron!"), )
 	return(MONADIC(internEnvironF((const char**) environ)));
@@ -70,7 +70,7 @@ BEGIN_PROC_WRAPPER(listFromEnviron, 1, symbolFromStr("listFromEnviron!"), )
 	NodeT env = FNARG_FETCH(node);
 	return MONADIC(wrapInternEnviron(env));
 END_PROC_WRAPPER
-DEFINE_SIMPLE_STRICT_OPERATION(environFromList, environFromListF(argument))
+DEFINE_BOXED_STRICT_OPERATION(environFromList, environFromListF)
 char* get_absolute_path(const char* filename) {
 	if(filename && filename[0] == '/')
 		return(GCx_strdup(filename));
@@ -91,7 +91,7 @@ char* get_absolute_path(const char* filename) {
 static NodeT wrapGetAbsolutePath(NodeT options, NodeT argument) {
 	Evaluators::CXXArguments arguments = Evaluators::CXXfromArguments(options, argument);
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	char* text = iter->second ? Values::stringFromNode(iter->second) : NULL;
+	char* text = iter->second ? stringFromNode(iter->second) : NULL;
 	FETCH_WORLD(iter);
 	text = get_absolute_path(text);
 	return(CHANGED_WORLD(makeStr(text)));

@@ -29,33 +29,25 @@ static void print_indentation(std::ostream& output, int indentation) {
 		output << ' ';
 }
 void print_S_Expression_CXX(std::ostream& output, int& position, int indentation, NodeT node) {
-	bool B_split_cons_items = true;
+	//bool B_split_cons_items = true;
 	const char* symbolName;
 	if(node == NULL)
 		print_text(output, position, "nil");
 	else if((symbolName = get_symbol1_name(node)) != NULL)
 		print_text(output, position, symbolName);
 	else if(cons_P(node)) {
-		int index = 0;
+		//int index = 0;
 		output << '(';
 		++position;
-		for(; node; ++index, node = Evaluators::evaluateToCons(get_cons_tail(node))) {
-			print_S_Expression_CXX(output, position, indentation, get_cons_head(node));
-			if(get_cons_tail(node)) {
-				if(B_split_cons_items && index >= 1) {
-					if(index == 1) {
-						output << std::endl;
-						print_indentation(output, indentation);
-						position = indentation;
-					}
-				} else {
-					output << ' ';
-					++position;
-				}
-				if(B_split_cons_items && index == 0)
-					indentation = position;
-			}
-		}
+		ITERATE_LAZY_CONS_NODES(node, {
+			print_S_Expression_CXX(output, position, indentation, get_cons_head(vnode));
+		}, {
+			output << ' ';
+			print_S_Expression_CXX(output, position, indentation, get_cons_head(vnode));
+		}, {
+			output << '.';
+			print_S_Expression_CXX(output, position, indentation, vnode);
+		})
 		output << ')';
 		++position;
 	} else if(application_P(node)) {

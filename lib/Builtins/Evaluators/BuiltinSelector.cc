@@ -35,18 +35,18 @@
 namespace Evaluators {
 using namespace Values;
 
-static HashTable self;
+static Hashtable self;
 
-static void add_static_builtin_binding(HashTable& self, NodeT name, NodeT value) {
+static void add_static_builtin_binding(Hashtable& self, NodeT name, NodeT value) {
 	// TODO maybe dup name. Not really from the looks of it.
 	const char* n = get_symbol_name(name);
 	// TODO non-symbols?
 	self[n] = value;
 }
-static void add_builtin_method(HashTable& self, NodeT name, NodeT value) {
+static void add_builtin_method(Hashtable& self, NodeT name, NodeT value) {
 	add_static_builtin_binding(self, name, value);
 }
-static NodeT consFromKeys(HashTable::const_iterator begin, HashTable::const_iterator end) {
+static NodeT consFromKeys(Hashtable::const_iterator begin, Hashtable::const_iterator end) {
 	if(begin == end)
 		return(NULL);
 	else {
@@ -61,7 +61,7 @@ NodeT getBuiltinEntry(NodeT sym) {
 		return(NULL);
 	} else {
 		const char* name = get_symbol1_name(sym);
-		HashTable::const_iterator iter = self.find(name);
+		Hashtable::const_iterator iter = self.find(name);
 		if(iter == self.end())
 			return(NULL);
 		return(iter->second);

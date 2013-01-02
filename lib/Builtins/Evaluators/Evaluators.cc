@@ -33,7 +33,7 @@ const char* EvaluationException::what() const throw() {
 	return message; //message.c_str();
 };
 
-static void getFreeVariablesImpl(NodeT root, HashTable& boundNames, HashTable& freeNames) {
+static void getFreeVariablesImpl(NodeT root, Hashtable& boundNames, Hashtable& freeNames) {
 	const char* n;
 	if(abstraction_P(root)) {
 		NodeT parameterNode = get_abstraction_parameter(root);
@@ -54,8 +54,8 @@ static void getFreeVariablesImpl(NodeT root, HashTable& boundNames, HashTable& f
 			freeNames[n] = NULL;
 	} // else other stuff.
 }
-void getFreeVariables(NodeT root, HashTable& freeNames) {
-	HashTable boundNames;
+void getFreeVariables(NodeT root, Hashtable& freeNames) {
+	Hashtable boundNames;
 	getFreeVariablesImpl(root, boundNames, freeNames);
 }
 bool quote_P(NodeT root) {
@@ -257,7 +257,7 @@ NodeT mapTree(void* userData, replace_predicate_t* replacer, NodeT term) {/* int
 static NodeT replaceSingleNode(void* userData, NodeT node) {
 	Cons* data = (Cons*) userData;
 	if(node == data->head) {
-		return(Evaluators::evaluateToCons(data->tail)->head);
+		return(get_cons_head(get_cons_tail(data)));
 	} else
 		return(node);
 }
@@ -343,30 +343,28 @@ NodeT makeError(const char* reason) {
 bool define_P(NodeT input) {
 	return(input != NULL && application_P(input) && get_application_operator(input) == Symbols::Sdefine);
 }
-NodeT evaluate(NodeT computation) {
+NodeT getResult(NodeT computation) {
 	if(application_P(computation))
 		return(get_application_result(computation));
 	else
 		return(computation);
 }
-Cons* evaluateToCons(NodeT computation) {
-	return(dynamic_cast<Cons*>(evaluate(computation))); // TODO error check
-}
 NodeT programFromSExpression(NodeT root) {
 	if(cons_P(root)) {
 		// application or abstraction
+		root = consFromNode(root);
 		if(get_cons_head(root) == Symbols::Sbackslash) { // abstraction
 			assert(get_cons_tail(root));
-			assert(get_cons_tail(evaluateToCons(get_cons_tail(root))));
-			assert(get_cons_tail(evaluateToCons(get_cons_tail(evaluateToCons(get_cons_tail(root))))) == NULL);
-			NodeT parameter = get_cons_head(evaluateToCons(get_cons_tail(root)));
-			NodeT body = get_cons_head(evaluateToCons(get_cons_tail(evaluateToCons(get_cons_tail(root)))));
+			assert(get_cons_tail(get_cons_tail(root)));
+			assert(get_cons_tail((get_cons_tail((get_cons_tail(root))))) == NULL);
+			NodeT parameter = get_cons_head(get_cons_tail(root));
+			NodeT body = get_cons_head((get_cons_tail((get_cons_tail(root)))));
 			return(makeAbstraction(programFromSExpression(parameter), programFromSExpression(body)));
 		} else { // application
-			assert(evaluateToCons(get_cons_tail(root)));
-			assert(evaluateToCons(get_cons_tail(evaluateToCons(get_cons_tail(root)))) == NULL);
+			assert((get_cons_tail(root)));
+			assert((get_cons_tail((get_cons_tail(root)))) == NULL);
 			NodeT operator_ = get_cons_head(root);
-			NodeT operand = get_cons_head(evaluateToCons(get_cons_tail(root)));
+			NodeT operand = get_cons_head((get_cons_tail(root)));
 			return(makeApplication(programFromSExpression(operator_), programFromSExpression(operand)));
 		}
 	} else

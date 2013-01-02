@@ -68,20 +68,15 @@ void print_CXX(Scanners::LOperatorPrecedenceList* OPL, std::ostream& output, int
 	} else if(cons_P(node)) {
 		int precedence = OPL->apply_level;
 		output << "[";
-		print_CXX(OPL, output, position, Values::get_cons_head(node), precedence, true);
-		Values::NodeT vnode;
-		for(vnode = Values::get_cons_tail(node); vnode; vnode = Values::get_cons_tail(vnode)) {
-			vnode = Evaluators::evaluate(vnode);
-			if(!cons_P(vnode))
-				break;
+		ITERATE_LAZY_CONS_NODES(node, {
+			print_CXX(OPL, output, position, Values::get_cons_head(vnode), precedence, true);
+		}, {
 			print_text_raw(output, position, " ", false);
 			print_CXX(OPL, output, position, Values::get_cons_head(vnode), precedence, true);
-		}
-		// TODO certain malformed lists are possible - we kinda support them here since it's bad to lose data, but please don't use them.
-		if(!nil_P(vnode)) {
+		}, {
 			print_text_raw(output, position, ",", false);
 			print_CXX(OPL, output, position, vnode, precedence, true);
-		}
+		})
 		output << "]";
 #if 0
 	} else if(pair_P(node)) {

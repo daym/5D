@@ -233,37 +233,37 @@ NodeT ShuntingYardParser::expand_macro(NodeT op1, NodeT suffix) {
 		abort();
 	NodeT operator_ = get_cons_head(op1);
 	if(operator_ == Symbols::Sbackslash) {
-		NodeT parameter = get_cons_head(Evaluators::evaluateToCons(get_cons_tail(op1)));
+		NodeT parameter = get_cons_head(get_cons_tail(op1));
 		return(makeAbstraction(parameter, suffix));
 	} else if(operator_ == Symbols::Squote) {
 		return(makeApplication(Symbols::Squote, suffix));
 	} else if(operator_ == Symbols::Slet) {
 		assert(get_cons_tail(op1));
-		NodeT c2 = Evaluators::evaluateToCons(get_cons_tail(op1));
+		NodeT c2 = get_cons_tail(op1);
 		NodeT parameter = get_cons_head(c2);
 		assert(get_symbol1_name(parameter));
 		assert(get_cons_tail(c2));
-		NodeT c3 = Evaluators::evaluateToCons(get_cons_tail(c2));
+		NodeT c3 = get_cons_tail(c2);
 		NodeT replacement = get_cons_head(c3);
 		return(Evaluators::close(parameter, replacement, suffix));
 	} else if(operator_ == Symbols::Sletexclam) {
 		/* let! y := a in B =>
 		   (;) a (\y B) */
 		assert(get_cons_tail(op1));
-		NodeT c2 = Evaluators::evaluateToCons(get_cons_tail(op1));
+		NodeT c2 = get_cons_tail(op1);
 		NodeT parameter = get_cons_head(c2);
 		assert(get_symbol1_name(parameter));
 		assert(get_cons_tail(c2));
-		NodeT c3 = Evaluators::evaluateToCons(get_cons_tail(c2));
+		NodeT c3 = get_cons_tail(c2);
 		NodeT replacement = get_cons_head(c3);
 		return(makeOperation(Symbols::Ssemicolon, replacement, makeAbstraction(parameter, suffix))); /* NOTE variable capture... */
 	} else if(operator_ == Symbols::Simport) {
 		assert(get_cons_tail(op1));
-		NodeT c2 = Evaluators::evaluateToCons(get_cons_tail(op1));
+		NodeT c2 = get_cons_tail(op1);
 		NodeT symbols = get_cons_head(c2);
 		// TODO eval the list (using a very limited eval) assert(get_symbol1_name(parameter));
 		assert(get_cons_tail(c2));
-		NodeT c3 = Evaluators::evaluateToCons(get_cons_tail(c2));
+		NodeT c3 = get_cons_tail(c2);
 		NodeT dependency = get_cons_head(c3);
 		NodeT r = closeMany(symbols, dependency, suffix);
 		std::string s;
@@ -318,9 +318,9 @@ bool ShuntingYardParser::any_operator_P(NodeT node) {
 		return(OPL->any_operator_P(node));
 }
 int ShuntingYardParser::get_operator_precedence_and_associativity(NodeT node, NodeT& outAssociativity) {
-	Cons* c = Evaluators::evaluateToCons(node);
-	if(c) // macro-like operators have their operator symbol as the head
-		node = c->head;
+	if(cons_P(node)) { /* macro-like operators have their operator symbol as the head */
+		node = get_cons_head(node);
+	}
 	assert(get_symbol1_name(node) != NULL);
 	outAssociativity = Symbols::Sright;
 	return(OPL->get_operator_precedence_and_associativity(node, outAssociativity));
@@ -495,7 +495,7 @@ BEGIN_PROC_WRAPPER(parseOptionalShebang, 0, symbolFromStr("parseOptionalShebang!
 	Scanners::ShuntingYardParser* scanner = (Scanners::ShuntingYardParser*) FNARG_FETCH(pointer);
 	return(MONADIC(scanner->parseOptionalShebang()));
 END_PROC_WRAPPER
-Values::NodeT dispatchShuntingYardParser = Evaluators::eval(Values::makeApplication(dispatch, exportsf("%s!", &push, &pop, &parse, &parseOptionalShebang)), NULL);
+Values::NodeT dispatchShuntingYardParser = PREPARE(Values::makeApplication(dispatch, exportsf("%s!", &push, &pop, &parse, &parseOptionalShebang)));
 BEGIN_PROC_WRAPPER(makeShuntingYardParser, 0, symbolFromStr("makeMathParser!"), )
 	return(MONADIC(wrap(dispatchShuntingYardParser, new ShuntingYardParser())));
 END_PROC_WRAPPER

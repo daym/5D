@@ -48,7 +48,14 @@ float floatFromNode(Values::NodeT root);
 long double longDoubleFromNode(Values::NodeT root);
 double doubleFromNode(Values::NodeT root);
 long long sizedIntFromNode(int bitCount, Values::NodeT root);
-static __inline Values::NodeT nodeFromNode(Values::NodeT root) {
+/* this will eventually be used to force the entire lazy cons (one level) to be evaluated. Use with care (infinite lists aren't gonna like that). */
+static inline NodeT consFromNode(Values::NodeT root) {
+	return(root);
+}
+static inline NodeT pairFromNode(Values::NodeT root) {
+	return(root);
+}
+static inline Values::NodeT nodeFromNode(Values::NodeT root) {
 	return root;
 }
 static inline Values::NodeT makeCall(Values::NodeT obj, Values::NodeT messageName) {

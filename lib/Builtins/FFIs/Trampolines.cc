@@ -99,7 +99,7 @@ NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const_iter
 		char returnSig[2] = {*sig, 0};
 		NodeT rep = makeStrCXX(dataStd.substr(0, returnValueSize));
 		results = Record_unpack(FFIs::MACHINE_BYTE_ORDER_ALIGNED, makeStr(returnSig), makeBox(args[0], rep));
-		NodeT result = (pair_P(results) ? Evaluators::get_pair_first(results) : NULL);
+		NodeT result = (pair_P(results) ? Values::get_pair_fst(results) : NULL);
 		return CHANGED_WORLD(result);
 	}
 	fprintf(stderr, "warning: could not find marshaller for %s\n", sig);

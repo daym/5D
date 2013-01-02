@@ -96,11 +96,11 @@ static NodeT forceModuleLoad(const char* filename) {
 	}
 	return(makeAbstraction(symbolFromStr("name"), result));
 }
-static HashTable* fModules = new HashTable;
+static Hashtable* fModules = new Hashtable;
 /* this isn't exactly public */
 static NodeT requireModule(const char* filename, const std::string& xmoduleKey) {
 	if(fModules == NULL) { /* init order problems, sigh. */
-		fModules = new HashTable;
+		fModules = new Hashtable;
 	}
 	const char* moduleKeyC = xmoduleKey.c_str();
 	char* moduleKey = GCx_strdup(moduleKeyC);

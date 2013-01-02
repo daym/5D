@@ -107,7 +107,7 @@ static NodeT getDynamicBuiltinA(NodeT sym) {
 	else
 		return(NULL);
 }
-NodeT provide_dynamic_builtins_impl(NodeT body, HashTable::const_iterator end_iter, HashTable::const_iterator iter) {
+NodeT provide_dynamic_builtins_impl(NodeT body, Hashtable::const_iterator end_iter, Hashtable::const_iterator iter) {
 	if(iter == end_iter)
 		return(body);
 	else {
@@ -118,9 +118,9 @@ NodeT provide_dynamic_builtins_impl(NodeT body, HashTable::const_iterator end_it
 	}
 }
 NodeT provide_dynamic_builtins(NodeT body) {
-	HashTable freeNames;
+	Hashtable freeNames;
 	getFreeVariables(body, freeNames);
-	HashTable::const_iterator endIter = freeNames.end();
+	Hashtable::const_iterator endIter = freeNames.end();
 	return(provide_dynamic_builtins_impl(body, endIter, freeNames.begin()));
 }
 
@@ -210,15 +210,22 @@ static NodeT divmod0Float(const Numbers::Float& a, const Numbers::Float& b) {
 	//return(makeOperation(Symbols::Sdivmod0, toHeap(a), toHeap(b)));
 }
 
-REGISTER_STR(Cons, {
+static std::string printCons(NodeT node) {
 	std::stringstream result;
 	result << '[';
-	result << str(node->head);
-	for(Cons* vnode = Evaluators::evaluateToCons(node->tail); vnode; vnode = Evaluators::evaluateToCons(vnode->tail)) {
-		result << ' ' << str(vnode->head);
-	}
+	ITERATE_LAZY_CONS_NODES(node, {
+		result << str(get_cons_head(vnode));
+	}, {
+		result << ' ' << str(get_cons_head(vnode));
+	}, {
+		result << ',' << str(vnode);
+	});
 	result << ']';
 	return(result.str());
+}
+
+REGISTER_STR(Cons, {
+	return(printCons(node));
 })
 
 static char hexdigits[17] = "0123456789abcdef";
@@ -368,12 +375,11 @@ static inline NodeT bug(NodeT f) {
 }
 #ifndef STRICT_BUILTINS
 static NodeT fetchValueAndWorld(NodeT n) {
-	Cons* cons = Evaluators::evaluateToCons(reduce(n));
-	if(!cons)
+	n = consFromNode(n); /* will evaluate both the value and the world. */
+	if(nil_P(n))
 		return(FALLBACK); /* WTF */
-	// DO NOT REMOVE because it is possible that the monad only changes the world even though we don't care about the result.
-	Evaluators::evaluateToCons(cons->tail);
-	return(cons->head);
+	//Evaluators::evaluateToCons(cons->tail);
+	return(get_cons_head(n));
 }
 #define WORLD Numbers::internNative((Numbers::NativeInt) 42)
 DEFINE_SIMPLE_LAZY_OPERATION(IORunner, fetchValueAndWorld(makeApplication(argument, WORLD)))
@@ -402,7 +408,7 @@ NodeT operator/(const Integer& a, const Integer& b) {
 static NodeT makeACons(NodeT h, NodeT t, NodeT fallback) {
 #ifndef STRICT_BUILTINS
 	h = PREPARE(h);
-	//t = reduce(t);
+	t = PREPARE(t); // FIXME do this lazily?
 #endif
 	return(makeCons(h, t));
 }
@@ -505,7 +511,8 @@ static NodeT gcd(NodeT a, NodeT b) {
 		NodeT c = divmod0A(a, b, NULL);
 		if(!c || !cons_P(c)) /* failed */
 			throw EvaluationException("could not find greatest common divisor");
-		b = get_cons_head(Evaluators::evaluateToCons(get_cons_tail(c))); // remainder
+		b = get_cons_head(get_cons_tail(c)); /* TODO maybe force evaluating tail. Maybe not. */
+		//b = get_cons_head(Evaluators::evaluateToCons(get_cons_tail(c))); // remainder
 		a = t;
 	}
 	return a;
@@ -627,8 +634,8 @@ DEFINE_SIMPLE_STRICT_OPERATION(PairP, pair_P(argument))
 DEFINE_SIMPLE_STRICT_OPERATION(NilP, nil_P(argument))
 DEFINE_SIMPLE_STRICT_OPERATION(HeadGetter, ((cons_P(argument)) ? get_cons_head(argument) : str_P(argument) ? Numbers::internNative((Numbers::NativeInt) *((unsigned char*) Evaluators::pointerFromNode(argument))) : FALLBACK))
 DEFINE_SIMPLE_STRICT_OPERATION(TailGetter, ((cons_P(argument)) ? PREPARE(get_cons_tail(argument)) : str_P(argument) ? makeStrSlice((Str*) argument, 1) : FALLBACK))
-DEFINE_SIMPLE_STRICT_OPERATION(FstGetter, ((pair_P(argument)) ? Evaluators::get_pair_first(argument) : FALLBACK))
-DEFINE_SIMPLE_STRICT_OPERATION(SndGetter, ((pair_P(argument)) ? Evaluators::get_pair_second(argument) : FALLBACK))
+DEFINE_SIMPLE_STRICT_OPERATION(FstGetter, ((pair_P(argument)) ? Values::get_pair_fst(argument) : FALLBACK))
+DEFINE_SIMPLE_STRICT_OPERATION(SndGetter, ((pair_P(argument)) ? Values::get_pair_snd(argument) : FALLBACK))
 DEFINE_SIMPLE_STRICT_OPERATION(StrP, str_P(argument))
 DEFINE_SIMPLE_STRICT_OPERATION(KeywordP, keyword_P(argument))
 DEFINE_SIMPLE_STRICT_OPERATION(SymbolP, symbol_P(argument))
@@ -795,9 +802,9 @@ static NodeT parseStrParensB(NodeT options, NodeT argument) {
 	}
 }
 static NodeT getFreeVariablesA(NodeT expr) {
-	HashTable d;
+	Hashtable d;
 	Evaluators::getFreeVariables(expr, d);
-	return(listFromHashTable(d.begin(), d.end()));
+	return(listFromHashtable(d.begin(), d.end()));
 }
 
 #if 0

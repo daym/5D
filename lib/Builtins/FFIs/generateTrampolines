@@ -116,7 +116,7 @@ extern VARIANT variantEmpty;
 
 //typedef Values::NodeT (jumper_t)(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, Values::NodeT options, Values::NodeT world);
 
-static HashTable fMarshallers;
+static Hashtable fMarshallers;
 
 """)
 combinations = []
@@ -198,7 +198,7 @@ static Values::NodeT jumpT(Evaluators::CProcedure* proc, Values::NodeT options, 
 	assert(iter != endIter);
 	assert(iter->first == NULL);
 	--endIter; /* hide the world */
-	HashTable::const_iterator iterMarshaller = fMarshallers.find(Values::get_symbol_name(proc->fSignature)/* TODO check NULL */);
+	Hashtable::const_iterator iterMarshaller = fMarshallers.find(Values::get_symbol_name(proc->fSignature)/* TODO check NULL */);
 	if(iterMarshaller == fMarshallers.end()) {
 		return jumpFFI(proc, iter, endIter, options, world);
 	} else

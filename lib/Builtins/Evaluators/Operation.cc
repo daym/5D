@@ -19,7 +19,7 @@ using namespace Values;
 typedef NodeT (jumper_t)(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, NodeT options, NodeT world);
 NodeT jumpFFI(Evaluators::CProcedure* p2, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& end, NodeT options, NodeT world); 
 // do NOT gc_allocate the following since it seems to have a bug:
-typedef RawHashTable<const char*, jumper_t*, hashstr, eqstr> HashTable;
+typedef RawHashtable<const char*, jumper_t*, hashstr, eqstr> Hashtable;
 #ifdef WIN32
 NodeT jumpFFI(Evaluators::CProcedure* proc, Evaluators::CXXArguments::const_iterator& iter, Evaluators::CXXArguments::const_iterator& endIter, NodeT options, NodeT world) {
 	std::string v = Evaluators::str(proc->fSignature);
@@ -83,9 +83,12 @@ NodeT call_builtin(NodeT fn, NodeT argument) {
 	proc2 = dynamic_cast<CProcedure*>(proc1);
 	assert(proc2);
 	if(B_had_keyword_arguments && proc2->fArgumentCount >= 0) { /* not allowed */
-		// TODO throw Evaluators::EvaluationException("could not reduce");
-		return(makeApplication(replace(proc2, proc2->fRepr, fn), argument)); // TODO exception
+		throw Evaluators::EvaluationException("could not reduce");
+		//return(makeApplication(replace(proc2, proc2->fRepr, fn), argument)); // TODO exception
 	}
+	/* forgot to register? */
+	//if(proc2->fArgumentCount == 0)
+	//	abort();
 	if(argumentCount != proc2->fArgumentCount && argumentCount != -proc2->fArgumentCount) {
 		return Evaluators::makeCurriedOperation(fn, argument);
 	}

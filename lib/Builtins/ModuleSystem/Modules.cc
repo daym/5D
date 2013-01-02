@@ -1,6 +1,7 @@
 #ifdef WIN32
 #include "stdafx.h"
 #endif
+#include <stdio.h>
 #include <5D/Operations>
 #include <5D/Values>
 #include <5D/FFIs>
@@ -10,6 +11,7 @@
 #include "Evaluators/Builtins"
 #include "Evaluators/ModuleLoader"
 #include "Evaluators/BuiltinSelector"
+#include "Formatters/SExpression"
 
 /* note that a module can load other modules, hence this has a dependency to the ModuleLoader (only for this reason) */
 
@@ -46,84 +48,46 @@ DEFINE_FULL_OPERATION(Module, {
 	return(accessModule(fn, argument));
 })
 REGISTER_BUILTIN(Module, 3, 1, symbolFromStr("requireModule"));
-static NodeT mapGetFst2(NodeT fallback, Cons* c) {
-	if(c == NULL) {
+static NodeT mapGetFst2(NodeT fallback, NodeT c) {
+	if(nil_P(c)) {
 		NodeT tail = fallback ? reduce(makeApplication(fallback, Symbols::Sexports)) : NULL;
 		return(tail);
-	} else
-		return(makeCons(Evaluators::get_pair_first(reduce(evaluateToCons(reduce(get_cons_head(c))))), mapGetFst2(fallback, evaluateToCons(get_cons_tail(c)))));
+	} else {
+		NodeT p = pairFromNode(get_cons_head(c));
+		return(makeCons(get_pair_fst(p), mapGetFst2(fallback, get_cons_tail(c))));
+	}
 }
-
-static NodeT dispatchModule(NodeT options, NodeT argument) {
-	/* parameters: <exports> <fallback> <key> 
-	               2         1          0*/
-	CXXArguments arguments = Evaluators::CXXfromArgumentsU(options, argument, 1);
-	CXXArguments::const_iterator iter = arguments.begin();
-	/*std::stringstream buffer;
-	std::string v;
-	int position = 0;
-	Formatters::Math::print_CXX(new Scanners::OperatorPrecedenceList(), buffer, position, iter->second, 0, false);
-	v = buffer.str();
-	printf("%s\n", v.c_str());*/
-	Box* mBox = dynamic_cast<Box*>(iter->second);
-	++iter;
-	NodeT fallback = iter->second;
-	++iter;
-	NodeT key = iter->second;
-	HashTable* m;
-	if(!mBox) {
-		throw Evaluators::EvaluationException("invalid symbol table entry (*)");
-		return(NULL);
-	}
-	void* pBox = Values::pointerFromNode(mBox);
-	if(dynamic_cast<HashTable*>((NodeT) pBox) == NULL) {
-		m = new (UseGC) HashTable;
-		for(Cons* table = (Cons*) pBox; table; table = Evaluators::evaluateToCons(table->tail)) {
-			std::string irv = Evaluators::str(table->head);
-			//printf("irv %s\n", irv.c_str());
-			Cons* entry = evaluateToCons(reduce(get_cons_head(table)));
-			//std::string v = str(entry);
-			//printf("=irv> %s\n", v.c_str());
-			NodeT x_key = reduce(Evaluators::get_pair_first(entry));
-			//std::string vkey = Evaluators::str(x_key);
-			//printf("=key> %s\n", vkey.c_str());
-			NodeT value = reduce(Evaluators::get_pair_second(entry));
-			const char* name = get_symbol1_name(x_key);
-			if(name && m->find(name) == m->end())
-				(*m)[name] = value;
-		}
-		Cons* table = (Cons*) pBox;
-		set_box_value(mBox, m);
-		(*m)["exports"] = makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
-	}
-	m = (HashTable*) mBox->value;
-	//std::string vkey = Evaluators::str(key);
-	//printf("%s\n", vkey.c_str());
-	const char* name = get_symbol_name(key); 
+static NodeT accessHashtableF(NodeT box, NodeT key, NodeT junk) {
+	Hashtable* table = (Hashtable*) pointerFromNode(box);
+	const char* name = get_symbol1_name(key);
 	if(name) {
-		/*HashTable::const_iterator b = m->begin();
-		HashTable::const_iterator e = m->end();
-		for(; b != e; ++b) {
-			printf("%s<\n", b->first);
-		}
-		printf("searching \"%s\"\n", s->name);*/
-		HashTable::const_iterator iter = m->find(name);
-		if(iter != m->end())
+		Hashtable::const_iterator iter = table->find(name);
+		if(iter != table->end())
 			return(iter->second);
-		else {
-			if(fallback) { // this should always hold
-				return(reduce(makeApplication(fallback, key)));
-			} else { // this is a leftover
-				std::stringstream sst;
-				sst << "library does not contain '" << name;
-				std::string v = sst.str();
-				throw Evaluators::EvaluationException(GCx_strdup(v.c_str()));
-			}
-		}
-	} else
-		throw Evaluators::EvaluationException("not a symbol");
-	return(NULL);
+	}
+	return PREPARE(makeApplication((*table)["default"], key));
 }
-DEFINE_FULL_OPERATION2(ModuleDispatcher, dispatchModule)
-REGISTER_BUILTIN(ModuleDispatcher, (-3), 1, symbolFromStr("dispatchModule"))
+DEFINE_BINARY_STRICT2_OPERATION(HashtableAccessor, accessHashtableF)
+REGISTER_BUILTIN(HashtableAccessor, 2, 0, symbolFromStr("FIXME"))
+
+/* this takes care of caching the table in a Hashtable and adding an 'exports key listing all the keys. */
+static NodeT dispatchModuleF(NodeT table, NodeT fallback, NodeT junk) {
+	Hashtable* m = new (UseGC) Hashtable;
+	table = consFromNode(table);
+	for(; !nil_P(table); table = get_cons_tail(table)) {
+		NodeT entry = pairFromNode(get_cons_head(table));
+		std::string entryS = Evaluators::str(table);
+		//printf("ENTRY %s\n", entryS.c_str());
+		NodeT key = get_pair_fst(entry);
+		NodeT value = get_pair_snd(entry);
+		const char* name = get_symbol1_name(key);
+		if(name && m->find(name) == m->end())
+			(*m)[name] = value;
+	}
+	(*m)["exports"] = makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
+	return Values::makeApplication(&HashtableAccessor, makeBox(m, NULL/*FIXME*/));
+}
+	
+DEFINE_BINARY_STRICT2_OPERATION(ModuleDispatcher, dispatchModuleF)
+REGISTER_BUILTIN(ModuleDispatcher, 2, 0, symbolFromStr("dispatchModule"))
 };

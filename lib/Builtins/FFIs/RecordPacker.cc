@@ -10,6 +10,7 @@
 #endif
 #include <string.h>
 #include <5D/FFIs>
+#include <5D/Operations>
 #include "Evaluators/Evaluators"
 #include "FFIs/RecordPacker"
 #include "Evaluators/FFI"
@@ -306,7 +307,7 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 	size_t new_offset = 0;
 	if(formatStr == NULL)
 		return;
-	Cons* consNode = Evaluators::evaluateToCons(data);
+	NodeT consNode = consFromNode(data);
 	size_t formatSize = get_str_size(formatStr);
 	if(position > formatSize)
 		position = formatSize;
@@ -332,15 +333,15 @@ void Record_pack(enum ByteOrder byteOrder, size_t& position /* in format Str */,
 		}
 		if(consNode == NULL)
 			throw Evaluators::EvaluationException("packRecord: not enough data for format.");
-		NodeT headNode = Evaluators::reduce(consNode->head);
-		consNode = Evaluators::evaluateToCons(consNode->tail);
+		NodeT headNode = get_cons_head(consNode);
+		consNode = get_cons_tail(consNode);
 		if(formatC == '[') {
 			++position;
 			size_t subPosition;
 			subPosition = position;
-			for(Cons* consNode = Evaluators::evaluateToCons(headNode); consNode; consNode = Evaluators::evaluateToCons(Evaluators::reduce(consNode->tail))) {
+			for(NodeT consNode = consFromNode(headNode); !nil_P(consNode); consNode = get_cons_tail(consNode)) {
 				subPosition = position;
-				NodeT headNode = Evaluators::reduce(consNode->head);
+				NodeT headNode = get_cons_head(consNode);
 				Record_pack(byteOrder, subPosition, offset, formatStr, headNode, sst, offsets);
 			}
 			if(subPosition == position) { /* didn't do anything, so we have to fake the advance in the format string. */
@@ -659,8 +660,6 @@ NodeT Record_allocate(size_t size, bool bAtomicity) {
 }
 using namespace Evaluators;
 static NodeT pack(NodeT a, NodeT b, NodeT fallback) {
-	a = reduce(a);
-	b = reduce(b);
 	std::stringstream sst;
 	size_t position = 0;
 	size_t offset = 0;
@@ -669,18 +668,15 @@ static NodeT pack(NodeT a, NodeT b, NodeT fallback) {
 	std::string v = sst.str();
 	return(makeStrCXX(v));
 }
-DEFINE_BINARY_OPERATION(RecordPacker, pack)
+DEFINE_BINARY_STRICT2_OPERATION(RecordPacker, pack)
 REGISTER_BUILTIN(RecordPacker, 2, 0, symbolFromStr("packRecord"))
 static NodeT unpack(NodeT a, NodeT b, NodeT fallback) {
-	a = reduce(a);
-	b = reduce(b);
-	// TODO size
 	return(Record_unpack(MACHINE_BYTE_ORDER_ALIGNED, a, b));
 }
-DEFINE_BINARY_OPERATION(RecordUnpacker, unpack)
+DEFINE_BINARY_STRICT2_OPERATION(RecordUnpacker, unpack)
 REGISTER_BUILTIN(RecordUnpacker, 2, 0, symbolFromStr("unpackRecord"))
 
-DEFINE_SIMPLE_STRICT_OPERATION(RecordSizeCalculator, Numbers::internNative((Numbers::NativeInt) Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, argument)))
+DEFINE_SIMPLE_STRICT_OPERATION(RecordSizeCalculator, FNRESULT_FETCHINT(Record_get_size(MACHINE_BYTE_ORDER_ALIGNED, argument)))
 REGISTER_BUILTIN(RecordSizeCalculator, 1, 0, symbolFromStr("recordSize"))
 
 static NodeT wrapAllocateRecord(NodeT options, NodeT argument) {
@@ -744,7 +740,7 @@ NodeT strFromList(NodeT node) {
 	std::stringstream sst;
 	Numbers::NativeInt c;
 	// TODO more error checking
-	for(; cons_P(node); node = evaluateToCons(get_cons_tail(node))) {
+	for(; !nil_P(node); node = get_cons_tail(node)) {
 		if(!Numbers::toNativeInt(get_cons_head(node), c) || c < 0 || c > 255) // oops
 			throw Evaluators::EvaluationException("list cannot be represented as a str.");
 		sst << (char) c;

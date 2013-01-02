@@ -68,7 +68,7 @@ static NodeT buildHashExports(NodeT node) {
 	if(nil_P(node))
 		return(node);
 	NodeT head = get_cons_head(node);
-	NodeT tail = Evaluators::evaluateToCons(get_cons_tail(node));
+	NodeT tail = get_cons_tail(node);
 	NodeT result = makeApplication(makeApplication(&Evaluators::Pairer, makeApplication(&Evaluators::Quoter, head)), head);
 	return makeCons(result, buildHashExports(tail));
 }
@@ -81,7 +81,7 @@ parseExports! = (\world
 ) in 
 */
 
-DEFINE_SIMPLE_STRICT_OPERATION(HashExporter, buildHashExports(argument))
+DEFINE_SIMPLE_STRICT_OPERATION(HashExporter, buildHashExports(consFromNode(argument)))
 REGISTER_BUILTIN(HashExporter, 1, 0, symbolFromStr("#exports"))
 
 };
