@@ -1,4 +1,5 @@
 #include <locale.h>
+#include <stdlib.h>
 #include <getopt.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -19,13 +20,11 @@ static NodeT parseMathStr;
 static NodeT printMath;
 static NodeT OPL;
 
-/*
 namespace Formatters {
 namespace Math {
 void print(Values::NodeT OPL, FILE* output_file, int position, int indentation, Values::NodeT node);
 }
 }
-*/
 
 void initImports(void) {
 	parseParenStr = Evaluators::getModuleEntryAccessor("Parsers", symbolFromStr("parseParenStr"));
@@ -56,13 +55,17 @@ static int lexForMatchingParen(const char* command, int commandLen, int position
         FILE* inputFile = fmemopen((void*) command, commandLen, "r");
 	if(inputFile) {
 		/* TODO @name: <stdin> as keyword parameter. */
-		NodeT call1 = makeCall(parseParenStr, makeStrRaw((char*) command, commandLen, true), direction);
-		NodeT maybeResult = Evaluators::eval(call1, NULL);
-		//printf("PRRRR\n");
-		//Formatters::Math::print(NULL, stdout, 0, 0, maybeResult);
-		//printf("END PRRR\n");
-		// FIXME proper Maybe handling.
-		return(intFromNode(maybeResult));
+		NodeT call1 = makeCall(parseParenStr, makeStrRaw((char*) command, commandLen, true), direction, position);
+		try {
+			NodeT maybeResult = Evaluators::eval(call1, NULL);
+			// FIXME proper Maybe handling.
+			//Formatters::Math::print(NULL, stdout, 0, 0, maybeResult);
+			//fflush(stdout);
+			return(intFromNode(maybeResult));
+		} catch(...) {
+			throw;
+			return(-1);
+		}
         }
         return(result);
 }
@@ -92,6 +95,7 @@ static NodeT inputNode;
 static int handle_readline_crlf(int x, int key) {
 	/* check rl_point and rl_line_buffer[rl_point - 1] */
 	int point;
+	//system("ogg123 -q /usr/share/sounds/gnome/default/alerts/glass.ogg");
 	point = rl_point;
 	while(rl_line_buffer[point] == ' ' || rl_line_buffer[point] == '\t')
 		++point;
@@ -99,6 +103,9 @@ static int handle_readline_crlf(int x, int key) {
 	if((rl_line_buffer[point] == '\n' || rl_line_buffer[point] == 0)) {
 		NodeT maybeResult = rl_line_buffer[0] ? Evaluators::eval(makeCall(parseMathStr, OPL, rl_line_buffer), NULL) : NULL;
 		inputNode = maybeResult;
+		//printf("PRRRR\n");
+		//Formatters::Math::print(NULL, stdout, 0, 0, inputNode);
+		//printf("END PRRR\n");
 		//Formatters::Math::print(NULL, stdout, 0, 0, inputNode);
 		// FIXME proper Maybe handling.
 		/* if OK, do:
@@ -143,8 +150,8 @@ static void initReadline(void) {
 	//rl_sort_completion_matches = 1;
 }
 void REPL_run(const char* line, NodeT inputValue) {
-	Evaluators::execute(makeCall(printMath, OPL, stdout, 0, 0, inputNode), NULL);
-	printf("\n");
+	//Evaluators::execute(makeCall(printMath, OPL, stdout, 0, 0, inputNode), NULL);
+	//printf("\n");
 	NodeT result = Evaluators::eval(ModuleSystem::prepareModule(inputNode, "<stdin>"), NULL);
 	Evaluators::execute(makeCall(printMath, OPL, stdout, 0, 0, result), NULL);
 	printf("\n");
