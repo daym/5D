@@ -50,7 +50,7 @@ static WCHAR* environFromListF(NodeT argument) {
 	int i = 0;
 	NodeT listNode = Evaluators::reduce(argument);
 	for(NodeT node = argument; !nil_P(node); node = get_cons_tail(node)) {
-		std::wstring v = FromUTF8(Values::stringFromNode(node->head));
+		std::wstring v = FromUTF8(stringFromNode(get_cons_head(node)));
 		result.push_back(v);
 		count += v.length() + 1;
 		// FIXME handle overflow
