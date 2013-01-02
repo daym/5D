@@ -1,6 +1,12 @@
 #!/usr/bin/5D
-let raiseMissingSymbolError2 := \mod \key [mod "missing symbol" key] in 
-let raiseMissingSymbolError := \key ["missing symbol" key] in
+import [(if) (else) (:) nil (,)] from Builtins in 
+let raiseMissingSymbolError2 := \mod \key 
+	if(Builtins.symbolsEqual? key 'exports)
+		[]
+	else
+		[mod "missing symbol" key] 
+in 
+let raiseMissingSymbolError := raiseMissingSymbolError2 "<unknown>" in 
 let (|) := (\a \b b a) in 
 let ($) := (\a \b a b) in 
 let compose := (\f \g \x f (g x)) in 
@@ -13,8 +19,7 @@ let (rem) := \a \b b in
 rem "make sure NOT to use complicated operators here. The operator precedence lists have to be able to require this module without circular dependencies." $
 let (export) := id in 
 let makeModuleBox := Builtins.makeModuleBox in 
-let dispatchModule2 := Builtins.dispatchModule in 
-let dispatch := (\table \fallbackAction \key dispatchModule2 (makeModuleBox table) fallbackAction key) in 
+let dispatch := Builtins.dispatchModule in 
 let dispatch1 := (\table dispatch table raiseMissingSymbolError) in 
 let withInterface1 := \filename \table dispatch table (raiseMissingSymbolError filename) in 
 dispatch (#exports[(|) ($) compose flip id rec rem export dispatch raiseMissingSymbolError raiseMissingSymbolError2 dispatch1 withInterface1])
