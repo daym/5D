@@ -18,28 +18,15 @@ You should have received a copy of the GNU General Public License along with thi
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "Values/Values"
+#include <5D/Values>
+#include <5D/FFIs>
 #include "Version"
 #include "GUI/GTKREPL"
-#include "Scanners/MathParser"
-#include "Scanners/SExpressionParser"
-#include "Scanners/ShuntingYardParser"
 #include "Config/Config"
-#include "Formatters/LATEX"
-#include "Formatters/SExpression"
-#include "Formatters/Math"
 #include "GUI/UI_definition.UI"
 #include "GUI/GTKLATEXGenerator"
-#include "Evaluators/FFI"
-#include "Evaluators/Evaluators"
-#include "Evaluators/Builtins"
-#include "FFIs/FFIs"
 #include "GUI/GTKCompleter"
 #include "GUI/WindowIcon"
-#include "Scanners/OperatorPrecedenceList"
-#include "FFIs/Allocators"
-#include "FFIs/ProcessInfos"
-#include "Evaluators/ModuleLoader"
 
 #define get_action(name) (GtkAction*) gtk_builder_get_object(self->UI_builder, ""#name)
 #define add_action_handler(name) g_signal_connect_swapped(gtk_builder_get_object(self->UI_builder, ""#name), "activate", G_CALLBACK(REPL_handle_##name), self)

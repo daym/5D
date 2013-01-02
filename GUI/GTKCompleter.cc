@@ -3,10 +3,9 @@
 #include <gtk/gtk.h>
 #include <set>
 #include <stdlib.h>
-#include "Values/Values"
+#include <5D/Values>
+#include <5D/Allocators>
 #include "GUI/GTKCompleter"
-#include "Scanners/MathParser"
-#include "FFIs/Allocators"
 
 namespace REPLX {
 using namespace Values;

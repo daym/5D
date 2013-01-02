@@ -1,9 +1,8 @@
 #include <gtk/gtk.h>
-#include "Values/Values"
-#include "FFIs/UI"
-#include "Evaluators/Operation"
-#include "Evaluators/FFI"
-#include "Evaluators/Builtins"
+#include <5D/Values>
+#include <5D/Operations>
+#include <5D/FFIs>
+
 namespace FFIs {
 using namespace Values;
 

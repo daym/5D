@@ -2,10 +2,8 @@
 #include <malloc.h>
 #include <set>
 #include "GUI/WIN32Completer"
-#include "Scanners/Scanner"
-#include "Scanners/MathParser"
-#include "Values/Values"
-#include "FFIs/Allocators"
+#include <5D/Values>
+#include <5D/FFIs>
 
 namespace REPLX {
 using namespace Values;

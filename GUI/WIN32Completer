@@ -3,7 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <set>
-#include "Values/Values"
+#include <5D/Values>
 
 namespace REPLX {
 struct Completer;
