@@ -804,7 +804,7 @@ static NodeT parseStrParensB(NodeT options, NodeT argument) {
 static NodeT getFreeVariablesA(NodeT expr) {
 	Hashtable d;
 	Evaluators::getFreeVariables(expr, d);
-	return(listFromHashtable(d.begin(), d.end()));
+	return(keysOfHashtable(d.begin(), d.end()));
 }
 
 #if 0
