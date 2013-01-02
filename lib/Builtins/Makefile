@@ -30,14 +30,14 @@ Scanners/Scanner.o \
 Scanners/ShuntingYardParser.o \
 Values/Values.o \
 Values/Symbols.o \
-Values/HashTable.o \
+Values/Hashtable.o \
 Values/Keyword.o \
 Values/Symbol.o \
 BuiltinsModule.o
 
 LIBGC_LD_WRAP_CFLAGS = -D_REENTRANT -DGC_THREADS -DUSE_LD_WRAP
-CXXFLAGS += -fPIC -O3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Iinclude
-#CXXFLAGS += -fPIC -O1 -g3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Iinclude
+#CXXFLAGS += -fPIC -O3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Iinclude
+CXXFLAGS += -fPIC -O0 -g3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Iinclude
 ifdef PREFIX
 CXXFLAGS +=  -DPREFIX=\"$(PREFIX)\"
 endif
@@ -80,38 +80,47 @@ distclean: clean
 Formatters/UTF-8_to_LATEX_result.h: Formatters/UTF-8_to_LATEX.table Formatters/generate-state-machine
 	Formatters/generate-state-machine Formatters/UTF-8_to_LATEX.table >tmp4711 && mv tmp4711 Formatters/UTF-8_to_LATEX_result.h
 FFIs/TrampolineSymbols.o: FFIs/TrampolineSymbols.cc Values/Values Numbers/BigUnsigned
-FFIs/WIN32ProcessInfos.o: FFIs/WIN32ProcessInfos.cc Numbers/BigUnsigned Numbers/Real FFIs/ProcessInfos
-FFIs/POSIXProcessInfos.o: FFIs/POSIXProcessInfos.cc Numbers/Small Numbers/Integer Numbers/BigUnsigned Numbers/Real Evaluators/FFI Numbers/Small Numbers/BigUnsigned Evaluators/Builtins Numbers/Real
-Evaluators/StrictLogic.o: Evaluators/StrictLogic.cc Values/Values Values/Keyword Values/HashTable Scanners/MathParser Scanners/Scanner Values/Symbols Scanners/ShuntingYardParser FFIs/FFIs Formatters/Math
-Evaluators/StrictBuiltins.o: Evaluators/StrictBuiltins.cc Evaluators/Builtins.cc Values/Keyword Values/HashTable Scanners/MathParser Scanners/Scanner Values/Symbols Scanners/ShuntingYardParser FFIs/FFIs Formatters/Math
-Evaluators/BuiltinSelector.o: Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector include/5D/Operations FFIs/RecordPacker FFIs/UI FFIs/FFIs FFIs/ProcessInfos Numbers/Ratio Evaluators/Logic Scanners/Scanner Scanners/MathParser Formatters/SExpression Formatters/LATEX Formatters/Math
+FFIs/WIN32ProcessInfos.o: FFIs/WIN32ProcessInfos.cc Numbers/BigUnsigned Numbers/Real FFIs/ProcessInfos include/5D/FFIs
+FFIs/POSIXProcessInfos.o: FFIs/POSIXProcessInfos.cc Numbers/Small Numbers/Integer Numbers/BigUnsigned Numbers/Real Evaluators/FFI Numbers/Small Numbers/BigUnsigned Evaluators/Builtins Numbers/Real include/5D/FFIs
+Evaluators/StrictLogic.o: Evaluators/StrictLogic.cc Values/Values Values/Keyword Values/Hashtable Scanners/MathParser Scanners/Scanner Values/Symbols Scanners/ShuntingYardParser FFIs/FFIs Formatters/Math
+Evaluators/StrictBuiltins.o: Evaluators/StrictBuiltins.cc Evaluators/Builtins.cc Values/Keyword Values/Hashtable Scanners/MathParser Scanners/Scanner Values/Symbols Scanners/ShuntingYardParser FFIs/FFIs Formatters/Math
+Evaluators/Builtins.o: Evaluators/Builtins.cc Values/Keyword Values/Hashtable Scanners/MathParser Scanners/Scanner Values/Symbols Scanners/ShuntingYardParser FFIs/FFIs Formatters/Math include/5D/FFIs
+Evaluators/BuiltinSelector.o: Evaluators/BuiltinSelector.cc Evaluators/BuiltinSelector include/5D/Operations FFIs/RecordPacker FFIs/UI FFIs/FFIs FFIs/ProcessInfos Numbers/Ratio Evaluators/Logic Scanners/Scanner Scanners/MathParser Formatters/SExpression Formatters/LATEX Formatters/Math include/5D/FFIs
 Evaluators/StrictBuiltinSelector.o: Evaluators/StrictBuiltinSelector.cc Evaluators/BuiltinSelector include/5D/Operations FFIs/RecordPacker FFIs/UI FFIs/FFIs FFIs/ProcessInfos Numbers/Ratio Evaluators/Logic Numbers/Small Numbers/Integer Numbers/BigUnsigned Values/Symbols FFIs/FFIs Evaluators/FFI Scanners/MathParser Scanners/Scanner Scanners/ShuntingYardParser FFIs/ProcessInfos Evaluators/BuiltinSelector Numbers/BigUnsigned Numbers/Real Values/Symbols Scanners/MathParser Scanners/Scanner Scanners/ShuntingYardParser
 Evaluators/Backtracker.o: Evaluators/Backtracker.cc Evaluators/Backtracker Evaluators/Builtins Numbers/Small Numbers/Integer Numbers/BigUnsigned FFIs/TrampolineSymbols Evaluators/FFI
-Evaluators/StrictEvaluators.o: Evaluators/StrictEvaluators.cc Numbers/BigUnsigned Numbers/Real Values/Symbols Scanners/MathParser Scanners/Scanner Scanners/ShuntingYardParser
+Evaluators/StrictEvaluators.o: Evaluators/StrictEvaluators.cc Numbers/BigUnsigned Numbers/Real Values/Symbols Scanners/MathParser Scanners/Scanner Scanners/ShuntingYardParser include/5D/FFIs
+Evaluators/Evaluators.o: Evaluators/Evaluators.cc Numbers/BigUnsigned Numbers/Real Values/Symbols Scanners/MathParser Scanners/Scanner Scanners/ShuntingYardParser include/5D/FFIs
 Evaluators/Operation.o: Evaluators/Operation.cc include/5D/Operations Evaluators/Evaluators Values/Values Values/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser FFIs/Trampolines FFIs/RecordPacker Numbers/Ratio
 	$(CC) -fPIC -O2 -Wall -I. -fno-strict-overflow -c -o $@ $< -Iinclude 
-Numbers/BigUnsigned.o: Numbers/BigUnsigned.cc Evaluators/Evaluators Values/Keyword Values/HashTable Values/Symbols Evaluators/Builtins Numbers/Small Numbers/Integer Formatters/GenericPrinter Formatters/UTFStateMachine Formatters/UTF-8_to_LATEX_result.h Evaluators/Builtins Numbers/Small Numbers/Integer Numbers/BigUnsigned Formatters/UTFStateMachine Numbers/Ratio Formatters/GenericPrinter Evaluators/FFI Evaluators/Evaluators Evaluators/FFI Evaluators/Evaluators Evaluators/FFI Evaluators/Evaluators 
-Scanners/LOperatorPrecedenceList.o: Scanners/LOperatorPrecedenceList.cc Values/Keyword Values/HashTable Scanners/LOperatorPrecedenceList include/5D/Operations
+Numbers/BigUnsigned.o: Numbers/BigUnsigned.cc Numbers/BigUnsigned Numbers/Small include/5D/Operations
+Scanners/LOperatorPrecedenceList.o: Scanners/LOperatorPrecedenceList.cc Values/Keyword Values/Hashtable Scanners/LOperatorPrecedenceList include/5D/Operations
 Scanners/MathParser.o: Scanners/MathParser.cc
-Scanners/test-Scanner.o: Scanners/test-Scanner.cc Values/Values Values/Keyword Values/HashTable Values/Symbols Evaluators/Builtins Numbers/Small Numbers/Integer Numbers/BigUnsigned include/5D/Operations Numbers/Real Evaluators/Builtins Numbers/Small Numbers/Integer Numbers/BigUnsigned Numbers/Real Values/Keyword Values/HashTable Evaluators/Builtins Numbers/Small include/5D/Operations Numbers/Real
-Values/HashTable.o: Values/HashTable.cc Values/Values 
-Scanners/Scanner.o: Scanners/Scanner.cc Scanners/Scanner include/5D/Operations
-Formatters/Math.o: Formatters/Math.cc Formatters/Math Formatters/GenericPrinter Scanners/LOperatorPrecedenceList
-Formatters/LATEX.o: Formatters/LATEX.cc Formatters/LATEX Formatters/GenericPrinter Scanners/LOperatorPrecedenceList
-
-ModuleSystem/Exports.o: ModuleSystem/Exports.cc include/5D/Values Values/Values Values/Symbols
-ModuleSystem/Modules.o: ModuleSystem/Modules.cc ModuleSystem/Modules Evaluators/Evaluators Values/Symbols Evaluators/Builtins Evaluators/BuiltinSelector
-
+Scanners/test-Scanner.o: Scanners/test-Scanner.cc Values/Values Values/Keyword Values/Hashtable Values/Symbols Evaluators/Builtins Numbers/Small Numbers/Integer Numbers/BigUnsigned include/5D/Operations Numbers/Real Evaluators/Builtins Numbers/Small Numbers/Integer Numbers/BigUnsigned Numbers/Real Values/Keyword Values/Hashtable Evaluators/Builtins Numbers/Small include/5D/Operations Numbers/Real
+Values/Hashtable.o: Values/Hashtable.cc Values/Values 
+Scanners/Scanner.o: Scanners/Scanner.cc Scanners/Scanner include/5D/Operations include/5D/FFIs
+Scanners/ShuntingYardParser.o: Scanners/ShuntingYardParser.cc Scanners/ShuntingYardParser include/5D/FFIs
+Formatters/Math.o: Formatters/Math.cc Formatters/Math Formatters/GenericPrinter Scanners/LOperatorPrecedenceList include/5D/FFIs
+Formatters/LATEX.o: Formatters/LATEX.cc Formatters/LATEX Formatters/GenericPrinter Scanners/LOperatorPrecedenceList include/5D/FFIs
+Evaluators/ModuleLoader.o: Evaluators/ModuleLoader.cc Evaluators/ModuleLoader include/5D/FFIs
+ModuleSystem/Exports.o: ModuleSystem/Exports.cc include/5D/Values Values/Values Values/Symbols include/5D/FFIs
+ModuleSystem/Modules.o: ModuleSystem/Modules.cc ModuleSystem/Modules Evaluators/Evaluators Values/Symbols Evaluators/Builtins Evaluators/BuiltinSelector include/5D/FFIs
+Scanners/SExpressionParser.o: Scanners/SExpressionParser.cc Scanners/SExpressionParser include/5D/FFIs
+Evaluators/Logic.o: Evaluators/Logic.cc Evaluators/Logic include/5D/FFIs
+Evaluators/FFI.o: Evaluators/FFI.cc Evaluators/FFI include/5D/FFIs
 FFIs/POSIX.o: FFIs/POSIX.cc FFIs/FFIs
-
+FFIs/RecordPacker.o: FFIs/RecordPacker.cc FFIs/RecordPacker include/5D/FFIs
+Numbers/Integer.o: Numbers/Integer.cc Numbers/Integer include/5D/FFIs
+Numbers/Real.o: Numbers/Real.cc Numbers/Real include/5D/FFIs
+Numbers/Ratio.o: Numbers/Ratio.cc Numbers/Ratio include/5D/FFIs
+FFIs/Trampolines.o: FFIs/Trampolines.cc include/5D/FFIs
 Values/test-Values: Values/test-Values.o $(BUILTINS_LIB)
 	g++ -o Values/test-Values Values/test-Values.o $(LDFLAGS)
 
-Values/test-Symbol: Values/test-Symbol.o Values/Symbol.o Values/HashTable.o Values/Symbols.o Values/Values.o $(AST_UNCLEAN) $(BUILTINS_LIB)
-	g++ -o Values/test-Symbol Values/test-Symbol.o Values/HashTable.o Values/Symbol.o Values/Symbols.o Values/Values.o $(AST_UNCLEAN) $(LDFLAGS)
+Values/test-Symbol: Values/test-Symbol.o Values/Symbol.o Values/Hashtable.o Values/Symbols.o Values/Values.o $(AST_UNCLEAN) $(BUILTINS_LIB)
+	g++ -o Values/test-Symbol Values/test-Symbol.o Values/Hashtable.o Values/Symbol.o Values/Symbols.o Values/Values.o $(AST_UNCLEAN) $(LDFLAGS)
 
-Values/test-Keyword: Values/test-Keyword.o Values/Keyword.o Values/HashTable.o Values/Symbols.o Values/Symbol.o Values/Values.o $(AST_UNCLEAN) $(BUILTINS_LIB)
-	g++ -o Values/test-Keyword Values/test-Keyword.o Values/HashTable.o Values/Keyword.o Values/Symbols.o Values/Symbol.o Values/Values.o $(AST_UNCLEAN) $(LDFLAGS)
+Values/test-Keyword: Values/test-Keyword.o Values/Keyword.o Values/Hashtable.o Values/Symbols.o Values/Symbol.o Values/Values.o $(AST_UNCLEAN) $(BUILTINS_LIB)
+	g++ -o Values/test-Keyword Values/test-Keyword.o Values/Hashtable.o Values/Keyword.o Values/Symbols.o Values/Symbol.o Values/Values.o $(AST_UNCLEAN) $(LDFLAGS)
 
 FFIs/Combinations: FFIs/generateCombinations Makefile
 	# put "PC" here for Windows.
