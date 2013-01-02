@@ -73,7 +73,7 @@ bool toNativeFloat(NodeT node, NativeFloat& result) {
 	Float* floatNode;
 	Real* realNode;
 	result = 0.0;
-	node = evaluate(node);
+	//node = evaluate(node);
 	if(node == NULL)
 		return(false);
 	else if((floatNode = dynamic_cast<Float*>(node)) != NULL) {
