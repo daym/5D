@@ -43,13 +43,13 @@ static NodeT wrapInternEnviron(NodeT argument) {
 	// TODO check whether it worked? No.
 	return internEnviron((WCHAR*) Values::pointerFromNode(argument));
 }
-static Box* environFromListF(NodeT argument) {
+static WCHAR* environFromListF(NodeT argument) {
 	int count = 0;
 	WCHAR* resultC;
 	std::vector<std::wstring> result;
 	int i = 0;
 	NodeT listNode = Evaluators::reduce(argument);
-	for(Cons* node = Evaluators::evaluateToCons(listNode); node; node = Evaluators::evaluateToCons(node->tail)) {
+	for(NodeT node = argument; !nil_P(node); node = get_cons_tail(node)) {
 		std::wstring v = FromUTF8(Values::stringFromNode(node->head));
 		result.push_back(v);
 		count += v.length() + 1;
@@ -64,7 +64,7 @@ static Box* environFromListF(NodeT argument) {
 		i += v.length() + 1;
 	}
 	resultC[i] = 0;
-	return(makeBox(resultC, makeApplication(&environFromList, listNode/* or argument*/)));
+	return(resultC);
 }
 BEGIN_PROC_WRAPPER(getEnviron, 0, symbolFromStr("getEnviron!"), )
 	NodeT result;
@@ -98,7 +98,7 @@ BEGIN_PROC_WRAPPER(listFromEnviron, 1, symbolFromStr("listFromEnviron!"), )
 	NodeT env = FNARG_FETCH(node);
 	return MONADIC(wrapInternEnviron(env));
 END_PROC_WRAPPER
-DEFINE_SIMPLE_STRICT_OPERATION(environFromList, environFromListF(argument))
+DEFINE_BOXED_STRICT_OPERATION(environFromList, environFromListF)
 
 DEFINE_SIMPLE_STRICT_OPERATION(ArchDepLibNameGetter, get_arch_dep_path(argument))
 DEFINE_SIMPLE_STRICT_OPERATION(AbsolutePathP, absolute_path_P(argument))
