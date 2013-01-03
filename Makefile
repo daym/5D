@@ -1,7 +1,7 @@
 
 SUBDIRS = Config REPL Bugs WIN32 Tests FFIs Bootstrappers TUI doc lib debian GUI
 SUBDIRS2 = $(SUBDIRS) doc/building doc/installation doc/interna doc/library doc/programming doc/programming/manual doc/programming/tutorial Tests/0* lib/Arithmetic lib/Trigonometry lib/Logic lib/Composition lib/List lib/OS lib/IO lib/UI lib/FFI lib/String lib/Reflection lib/Error Examples lib/LinearAlgebra lib/OO lib/Pair lib/Maybe lib/Set lib/Testers lib/Tree
-EXECUTABLES = REPL/5DREPL GUI/5D Linear_Algebra/test-Matrix Linear_Algebra/test-Vector Linear_Algebra/test-Tensor Values/test-Values Values/test-Symbol Scanners/test-MathParser Scanners/test-Scanner REPL/5DREPL TUI2/5D
+EXECUTABLES = REPL/5DREPL GUI/5D REPL/5DREPL TUI2/5D
 GENERATEDS = FFIs/Trampolines FFIs/TrampolineSymbols.cc FFIs/TrampolineSymbols FFIs/Combinations
 ASSEMBLERS = Assemblers/X86.o Assemblers/X64.o Assemblers/ARM.o
 
@@ -29,7 +29,7 @@ LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a
 else
 LDFLAGS += -lreadline
 endif
-LDFLAGS += -ldl -lgc -lpthread `pkg-config --libs glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP) 
+LDFLAGS += -ldl -lgc -lpthread `pkg-config --libs glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_LDFLAGS) 
 #dupe -lffi
 GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
 GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
@@ -54,13 +54,6 @@ $(BUILTINS_LIB):
 
 Config/GTKConfig.o: Config/GTKConfig.cc Config/Config lib/Builtins/FFIs/Allocators lib/Builtins/Values/Values
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
-
-test: Values/test-Values Values/test-Symbol Values/test-Keyword Scanners/test-Scanner Scanners/test-MathParser
-	./Values/test-Symbol
-	./Values/test-Keyword
-	./Values/test-Values
-	./Scanners/test-Scanner
-	./Scanners/test-MathParser
 
 REPL/5DREPL: REPL/main.o REPL/REPL.o REPL/TUIModule.o $(BUILTINS_LIB)
 	g++ -o $@ $^ $(LDFLAGS)
@@ -168,3 +161,7 @@ install: $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  
 	install -m 755 FFIs/find5DExports $(DESTDIR)/usr/share/5D/find5DExports
 	install -m 755 FFIs/extractGNUSymbols $(DESTDIR)/usr/share/5D/extractGNUSymbols
 	$(MAKE) -C lib install
+test: ./TUI2/5D
+	grep "^>" Tests/session |sed 's;^>;;' |./TUI2/5D > Tests/session.result.new && mv Tests/session.result.new Tests/session.result
+	diff Tests/session.result Tests/session
+	
