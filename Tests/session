@@ -1,200 +1,202 @@
 #!/usr/bin/expect -f
-eval $ (\x x) 3
+>(\x x) 3
 3
-eval $ 5
+>5
 5
-eval $ let (+) := (requireModule "Arithmetic").(+) in 5 + 2
+>let (+) := (requireModule "Arithmetic").(+) in 5 + 2
 7
-eval $ import [(+) (*)] from (requireModule "Arithmetic") in 5 + 2*3
+>import [(+) (*)] from (requireModule "Arithmetic") in 5 + 2*3
 11
-eval $ import [(-)] from (requireModule "Arithmetic") in (-2)
+>import [(-)] from (requireModule "Arithmetic") in (-2)
 (-2)
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod (-5) 2
+>import [(-) mod] from (requireModule "Arithmetic") in mod (-5) 2
 1
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod (-5) (-2)
+>import [(-) mod] from (requireModule "Arithmetic") in mod (-5) (-2)
 (-1)
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod 5 (-2)
+>import [(-) mod] from (requireModule "Arithmetic") in mod 5 (-2)
 (-1)
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod 5 2
+>import [(-) mod] from (requireModule "Arithmetic") in mod 5 2
 1
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5) 2
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5) 2
 (-1)
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5) (-2)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5) (-2)
 (-1)
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 5 (-2)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 5 (-2)
 1
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 5 2
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 5 2
 1
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod (-455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (222222222222222222222222222222222222222222222222222222222222222222222222222222)
+>import [(-) mod] from (requireModule "Arithmetic") in mod (-455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (222222222222222222222222222222222222222222222222222222222222222222222222222222)
 222222222222222222222222222222222222222222222222222222222222222222222221766667
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod (-455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (-222222222222222222222222222222222222222222222222222222222222222222222222222222)
+>import [(-) mod] from (requireModule "Arithmetic") in mod (-455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (-222222222222222222222222222222222222222222222222222222222222222222222222222222)
 (-455555)
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod (455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (-222222222222222222222222222222222222222222222222222222222222222222222222222222)
+>import [(-) mod] from (requireModule "Arithmetic") in mod (455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (-222222222222222222222222222222222222222222222222222222222222222222222222222222)
 (-222222222222222222222222222222222222222222222222222222222222222222222221766667)
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod (455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (222222222222222222222222222222222222222222222222222222222222222222222222222222)
+>import [(-) mod] from (requireModule "Arithmetic") in mod (455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (222222222222222222222222222222222222222222222222222222222222222222222222222222)
 455555
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (222222222222222222222222222222222222222222222222222222222222222222222222222222)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (222222222222222222222222222222222222222222222222222222222222222222222222222222)
 (-455555)
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (-222222222222222222222222222222222222222222222222222222222222222222222222222222)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (-222222222222222222222222222222222222222222222222222222222222222222222222222222)
 (-455555)
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (-222222222222222222222222222222222222222222222222222222222222222222222222222222)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (-222222222222222222222222222222222222222222222222222222222222222222222222222222)
 455555
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (-222222222222222222222222222222222222222222222222222222222222222222222222222222)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (455555555555555555555555555555555555555555555555555555555555555555555555555555555555) (-222222222222222222222222222222222222222222222222222222222222222222222222222222)
 455555
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod 5 7
+>import [(-) mod0] from (requireModule "Arithmetic") in mod 5 7
 5
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod (-5) 7
+>import [(-) mod0] from (requireModule "Arithmetic") in mod (-5) 7
 2
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod 5 (-7)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod 5 (-7)
 (-2)
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod (-5) (-7)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod (-5) (-7)
 (-5)
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 5 7
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 5 7
 5
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5) 7
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5) 7
 (-5)
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-7)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-7)
 5
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5) (-7)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5) (-7)
 (-5)
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod (-5.1) 2.5
+>import [(-) mod] from (requireModule "Arithmetic") in mod (-5.1) 2.5
 2.4
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod (-5.1) (-2.6)
+>import [(-) mod] from (requireModule "Arithmetic") in mod (-5.1) (-2.6)
 (-2.5)
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod 5.1 (-2.5)
+>import [(-) mod] from (requireModule "Arithmetic") in mod 5.1 (-2.5)
 (-2.4)
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod 5.1 2.6
+>import [(-) mod] from (requireModule "Arithmetic") in mod 5.1 2.6
 2.5
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5.1) 2.6
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5.1) 2.6
 (-2.5)
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5.1) (-2.6)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5.1) (-2.6)
 (-2.5)
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 5.1 (-2.6)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 5.1 (-2.6)
 2.5
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 5.1 2.6
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 5.1 2.6
 2.5
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod 5.1 7.1
+>import [(-) mod] from (requireModule "Arithmetic") in mod 5.1 7.1
 5.1
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod (-5.1) 7.1
+>import [(-) mod] from (requireModule "Arithmetic") in mod (-5.1) 7.1
 2.0
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod 5.1 (-7.1)
+>import [(-) mod] from (requireModule "Arithmetic") in mod 5.1 (-7.1)
 (-2.0)
-eval $ import [(-) mod] from (requireModule "Arithmetic") in mod (-5.1) (-7.1)
+>import [(-) mod] from (requireModule "Arithmetic") in mod (-5.1) (-7.1)
 (-5.1)
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 5.1 7.1
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 5.1 7.1
 5.1
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5.1) 7.1
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5.1) 7.1
 (-5.1)
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 5.1 (-7.1)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 5.1 (-7.1)
 5.1
-eval $ import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5.1) (-7.1)
+>import [(-) mod0] from (requireModule "Arithmetic") in mod0 (-5.1) (-7.1)
 (-5.1)
-eval $ import [(-) zero?] from (requireModule "Arithmetic") in 
-import [(if) (else)] from (requireModule "Logic") in if (zero? 0) 'y else 'n
+>import [(-) zero?] from (requireModule "Arithmetic") in 
+>import [(if) (else)] from (requireModule "Logic") in 
+>if (zero? 0) 'y else 'n
 y
-eval $ import [(-) zero?] from (requireModule "Arithmetic") in 
-import [(if) (else)] from (requireModule "Logic") in 
-if (zero? (-0)) 'y else 'n
+>import [(-) zero?] from (requireModule "Arithmetic") in 
+>import [(if) (else)] from (requireModule "Logic") in 
+>if (zero? (-0)) 'y else 'n
 y
-eval $ import [(-) nan zero?] from (requireModule "Arithmetic") in 
-import [(if) (else) (not)] from (requireModule "Logic") in 
-if (not (zero? nan)) 'y else 'n
+>import [(-) nan zero?] from (requireModule "Arithmetic") in 
+>import [(if) (else) (not)] from (requireModule "Logic") in 
+>if (not (zero? nan)) 'y else 'n
 y
-eval $ import [(-) nan inf positive?] from (requireModule "Arithmetic") in 
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (positive? inf) 'y else 'n
+>import [(-) nan inf positive?] from (requireModule "Arithmetic") in 
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (positive? inf) 'y else 'n
 y
-eval $ import [(-) nan inf negative?] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (negative? (-inf)) 'y else 'n
+>import [(-) nan inf negative?] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (negative? (-inf)) 'y else 'n
 y
-eval $ import [(-) nan inf positive?] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (not (positive? nan)) 'y else 'n
+>import [(-) nan inf positive?] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (not (positive? nan)) 'y else 'n
 y
-eval $ import [(-) nan inf negative?] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (not (negative? nan)) 'y else 'n
+>import [(-) nan inf negative?] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (not (negative? nan)) 'y else 'n
 y
-eval $ import [(-) nan inf finite?] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (not (finite? inf)) 'y else 'n
+>import [(-) nan inf finite?] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (not (finite? inf)) 'y else 'n
 y
-eval $ import [(-) nan inf finite?] from (requireModule "Arithmetic") in  
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (finite? 5) 'y else 'n
+>import [(-) nan inf finite?] from (requireModule "Arithmetic") in  
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (finite? 5) 'y else 'n
 y
-eval $ import [(-) nan inf infinite?] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (not (infinite? 5.0)) 'y else 'n
+>import [(-) nan inf infinite?] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (not (infinite? 5.0)) 'y else 'n
 y
-eval $ import [(-) nan inf infinite?] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (infinite? inf) 'y else 'n
-eval $ import [(-) nan inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (inf = inf) 'y else 'n
+>import [(-) nan inf infinite?] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (infinite? inf) 'y else 'n
 y
-eval $ import [(-) nan inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (not ((-inf) = inf)) 'y else 'n
+>import [(-) nan inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (inf = inf) 'y else 'n
 y
-eval $ import [(-) nan inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if ((-inf) = (-inf)) 'y else 'n
+>import [(-) nan inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (not ((-inf) = inf)) 'y else 'n
 y
-eval $ import [(-) nan (<) (>) inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if ((-inf) < 5) 'y else 'n
+>import [(-) nan inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if ((-inf) = (-inf)) 'y else 'n
 y
-eval $ import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (5 < inf) 'y else 'n
+>import [(-) nan (<) (>) inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if ((-inf) < 5) 'y else 'n
 y
-eval $ import [(-) nan inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (not (nan = 5)) 'y else 'n
+>import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (5 < inf) 'y else 'n
 y
-eval $ import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (not (nan < 5)) 'y else 'n
+>import [(-) nan inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (not (nan = 5)) 'y else 'n
 y
-eval $ import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (not (nan > 5)) 'y else 'n
+>import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (not (nan < 5)) 'y else 'n
 y
-eval $ import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (not (nan = inf)) 'y else 'n
+>import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (not (nan > 5)) 'y else 'n
 y
-eval $ import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (not (nan = (-inf))) 'y else 'n
+>import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (not (nan = inf)) 'y else 'n
 y
-eval $ import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (not (nan = nan)) 'y else 'n
+>import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (not (nan = (-inf))) 'y else 'n
 y
-eval $ import [(-) nan inf infinite? (=)] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
--inf/inf
+>import [(-) (<) (>) nan inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (not (nan = nan)) 'y else 'n
+y
+>import [(-) nan inf infinite? (=)] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>(-inf)/inf
 nan
-eval $ import [(-) (<) nan inf infinite? (=) abs sin] from (requireModule "Arithmetic") in
-import [(if) (else) (not)] from (requireModule "Logic") in
-if (abs (sin 5) < 1) 'y else 'n
-eval $ import [(-) (<) nan inf infinite? (=) (√) floor] from (requireModule "Arithmetic") in
-import [(|)] from (requireModule "Composition") in 
-import [(if) (else) (not)] from (requireModule "Logic") in
-√2 | (\x x⋅1000000000) | floor
+>import [(-) (<) nan inf infinite? (=) abs sin] from (requireModule "Arithmetic") in
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>if (abs (sin 5) < 1) 'y else 'n
+y
+>import [(-) (<) nan inf infinite? (=) (√) floor] from (requireModule "Arithmetic") in
+>import [(|)] from (requireModule "Composition") in 
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>√2 | (\x x⋅1000000000) | floor
 1414213562
-eval $ import [(-) (<) nan inf infinite? (=) (√) floor] from (requireModule "Arithmetic") in
-import [(|)] from (requireModule "Composition") in 
-import [(if) (else) (not)] from (requireModule "Logic") in
-√2 | (\x x⋅10000000000) | floor
+>import [(-) (<) nan inf infinite? (=) (√) floor] from (requireModule "Arithmetic") in
+>import [(|)] from (requireModule "Composition") in 
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>√2 | (\x x⋅10000000000) | floor
 14142135623
-eval $ import [(-) (<) nan inf infinite? (=) (√) floor] from (requireModule "Arithmetic") in
-import [(|)] from (requireModule "Composition") in 
-import [(if) (else) (not)] from (requireModule "Logic") in
-√2 | (\x x⋅1000000000000000000000000000000000) | floor
+>import [(-) (<) nan inf infinite? (=) (√) floor] from (requireModule "Arithmetic") in
+>import [(|)] from (requireModule "Composition") in 
+>import [(if) (else) (not)] from (requireModule "Logic") in
+>√2 | (\x x⋅1000000000000000000000000000000000) | floor
 1414213562374689910626295578890134
-
