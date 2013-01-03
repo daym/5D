@@ -52,21 +52,17 @@ static int lexForMatchingParen(const char* command, int commandLen, int position
 	else {
 		direction = (-1);
 	}
-        FILE* inputFile = fmemopen((void*) command, commandLen, "r");
-	if(inputFile) {
-		/* TODO @name: <stdin> as keyword parameter. */
-		NodeT call1 = makeCall(parseParenStr, makeStrRaw((char*) command, commandLen, true), direction, position);
-		try {
-			NodeT maybeResult = Evaluators::eval(call1, NULL);
-			// FIXME proper Maybe handling.
-			//Formatters::Math::print(NULL, stdout, 0, 0, maybeResult);
-			//fflush(stdout);
-			return(intFromNode(maybeResult));
-		} catch(...) {
-			throw;
-			return(-1);
-		}
-        }
+	/* TODO @name: <stdin> as keyword parameter. */
+	NodeT call1 = makeCall(parseParenStr, makeStrRaw((char*) command, commandLen, true), direction, position);
+	try {
+		NodeT maybeResult = Evaluators::eval(call1, NULL);
+		// FIXME proper Maybe handling.
+		//Formatters::Math::print(NULL, stdout, 0, 0, maybeResult);
+		//fflush(stdout);
+		return(intFromNode(maybeResult));
+	} catch(...) {
+		return(-1);
+	}
         return(result);
 }
 static int handle_readline_paren(int x, int key) {
@@ -125,12 +121,14 @@ static int handle_readline_crlf(int x, int key) {
 static int startup_readline(void) {
 	rl_bind_key('\n', handle_readline_crlf);
 	rl_bind_key('\r', handle_readline_crlf);
-	rl_bind_key('(', handle_readline_paren);
-	rl_bind_key('{', handle_readline_paren);
-	rl_bind_key(')', handle_readline_paren);
-	rl_bind_key('}', handle_readline_paren);
-	rl_bind_key('[', handle_readline_paren);
-	rl_bind_key(']', handle_readline_paren);
+	if(isatty(fileno(stdin))) {
+		rl_bind_key('(', handle_readline_paren);
+		rl_bind_key('{', handle_readline_paren);
+		rl_bind_key(')', handle_readline_paren);
+		rl_bind_key('}', handle_readline_paren);
+		rl_bind_key('[', handle_readline_paren);
+		rl_bind_key(']', handle_readline_paren);
+	}
 	return(0); /* FIXME */
 }
 static char* command_generator(const char* text, int state) {
@@ -147,7 +145,7 @@ static void initReadline(void) {
 	rl_readline_name = "5D";
 	rl_attempted_completion_function = complete;
 	rl_startup_hook = startup_readline;
-	//rl_sort_completion_matches = 1;
+	rl_sort_completion_matches = 1;
 }
 void REPL_run(const char* line, NodeT inputValue) {
 	//Evaluators::execute(makeCall(printMath, OPL, stdout, 0, 0, inputNode), NULL);
