@@ -24,7 +24,7 @@ extern Values::NodeT Elser;
 #endif
 
 Values::NodeT internNative(bool value);
-void Logic_init(void);
+void initLogic(void);
 
 };
 

@@ -9,11 +9,17 @@ You should have received a copy of the GNU General Public License along with thi
 #include <stdlib.h>
 #include <iostream>
 #include <string.h>
+#include <5D/Values>
 #include "Scanners/MathParser"
-#include "Scanners/OperatorPrecedenceList"
+//#include "Scanners/OperatorPrecedenceList"
 #include "Evaluators/Builtins"
-#include "AST/Symbols"
+#include "Evaluators/Logic"
 
+namespace Evaluators {
+void BuiltinSelector_init() {
+}
+void* BuiltinGetter;
+}
 namespace GUI {
 bool interrupted_P(void) {
 	return(false);
@@ -21,6 +27,7 @@ bool interrupted_P(void) {
 };
 
 using namespace Evaluators;
+using namespace Values;
 
 void test_expression(const char* source, const char* expected_tree) {
 	const char* buf = source;
@@ -29,9 +36,9 @@ void test_expression(const char* source, const char* expected_tree) {
 	//printf("==== %s\n", source);
 	//printf("E====\n");
 	//std::cout << source << std::endl;
-	parser.push(fmemopen((void*) buf, strlen(buf), "r"), 0);
+	parser.push(fmemopen((void*) buf, strlen(buf), "r"), 0, "<stdin>");
 	try {
-		NodeT result = parser.parse(new OperatorPrecedenceList(), Symbols::SlessEOFgreater);
+		NodeT result = parser.parse(NULL/* TODO just load one */, Symbols::SlessEOFgreater);
 		if(str(result) != expected_tree) {
 			std::cerr << "error: input was " << source << "; expected " << expected_tree << " but got " << str(result) << std::endl;
 			abort();
@@ -48,9 +55,9 @@ void test_error_expression(const char* source, const char* expected_text) {
 	//printf("==== %s\n", source);
 	//printf("E====\n");
 	//std::cout << source << std::endl;
-	parser.push(fmemopen((void*) buf, strlen(buf), "r"), 0);
+	parser.push(fmemopen((void*) buf, strlen(buf), "r"), 0, "<stdin>");
 	try {
-		parser.parse(new OperatorPrecedenceList(), Symbols::SlessEOFgreater);
+		parser.parse(NULL /* TODO just load one */, Symbols::SlessEOFgreater);
 		abort();
 	} catch(Scanners::ParseException e) {
 		if(strstr(e.what(), expected_text) == NULL) {
@@ -61,6 +68,8 @@ void test_error_expression(const char* source, const char* expected_text) {
 }
 
 int main() {
+	Symbols::initSymbols();
+	Evaluators::initLogic();
 	test_expression("#xFF + #x80", "((+ 255) 128)");
 	test_expression("(-)", "-");
 	test_expression("'f + 2", "((+ (' f)) 2)");

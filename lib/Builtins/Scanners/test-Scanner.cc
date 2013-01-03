@@ -7,18 +7,7 @@ You should have received a copy of the GNU General Public License along with thi
 */
 #include "Values/Values"
 
-namespace Evaluators {
-
-struct StrRegistration;
-
-std::string str(NodeT node) {
-	return("none");
-}
-void registerStr(StrRegistration* r) {
-}
-
-};
-
 int main() {
+	/* TODO */
 	return(0);
 }

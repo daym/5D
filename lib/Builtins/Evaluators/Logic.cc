@@ -63,7 +63,7 @@ NodeT Ifer = annotate(fn(A, A));
 NodeT Elser = annotate(fn(A, A)); /* actually \a \b a b */
 NodeT Elifer = annotate(fn(A, A)); /* actually \a \b a b */
 
-void Logic_init(void) {
+void initLogic(void) {
 	Symbols::initSymbols();
 	Sequencer = annotate(fn(M, fn(BER, fn(WORLD, 
 	call(fn(R, call(call(BER, call(IO(ioValue), R)), call(IO(ioWorld), R))), 

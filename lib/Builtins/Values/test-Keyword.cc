@@ -8,7 +8,8 @@ You should have received a copy of the GNU General Public License along with thi
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "AST/Values"
+#include <5D/Values>
+#include "Values/Keyword"
 
 static void gc_test(void) {
 	int i;
@@ -16,15 +17,15 @@ static void gc_test(void) {
 		GC_MALLOC(1000);
 }
 int main() {
-	using namespace AST;
-	Keyword* hello = keywordFromStr("whitelist:");
+	using namespace Values;
+	NodeT hello = keywordFromStr("whitelist:");
 	GC_gcollect();
-	Keyword* hello2 = keywordFromStr("whitelist:");
+	NodeT hello2 = keywordFromStr("whitelist:");
 	gc_test();
 	GC_gcollect();
-	assert(dynamic_cast<Keyword*>(hello) != NULL);
-	assert(dynamic_cast<Keyword*>(hello2) != NULL);
-	assert(strcmp(hello->name, hello2->name) == 0);
+	assert(keyword_P(hello));
+	assert(keyword_P(hello2));
+	assert(strcmp(get_keyword_name(hello), get_keyword_name(hello2)) == 0);
 	if(hello != hello2)
 		abort();
 	return(0);

@@ -1,4 +1,6 @@
 #!/usr/bin/5D
+let (rem) := \a \b b in 
+rem "make sure NOT to use complicated operators here. The operator precedence lists have to be able to require this module without circular dependencies." $
 import [(if) (else) (:) nil (,)] from Builtins in 
 let raiseMissingSymbolError2 := \mod \key 
 	if(Builtins.symbolsEqual? key 'exports)
@@ -15,8 +17,6 @@ let id := (\f f) in
 let Yrec := (\f (\x f (x x)) (\x f (x x))) in 
 let Zrec := \f (\x f (\v x x v)) (\x f (\v (x x v))) in
 let (rec) := Yrec in 
-let (rem) := \a \b b in 
-rem "make sure NOT to use complicated operators here. The operator precedence lists have to be able to require this module without circular dependencies." $
 let (export) := id in 
 let makeModuleBox := Builtins.makeModuleBox in 
 let dispatch := Builtins.dispatchModule in 

@@ -35,9 +35,13 @@ Values/Keyword.o \
 Values/Symbol.o \
 BuiltinsModule.o
 
+#LIBGC_LD_WRAP_LDFLAGS = -Wl,--wrap -Wl,read -Wl,--wrap -Wl,dlopen -Wl,--wrap -Wl,pthread_create -Wl,--wrap -Wl,pthread_join -Wl,--wrap -Wl,pthread_detach -Wl,--wrap -Wl,pthread_sigmask -Wl,--wrap -Wl,sleep
 LIBGC_LD_WRAP_CFLAGS = -D_REENTRANT -DGC_THREADS -DUSE_LD_WRAP
-CXXFLAGS += -fPIC -O3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Iinclude
-#CXXFLAGS += -fPIC -O0 -g3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Iinclude
+LDFLAGS += -ldl -lgc -lpthread $(LIBGC_LD_WRAP_LDFLAGS) 
+
+LIBGC_LD_WRAP_CFLAGS = -D_REENTRANT -DGC_THREADS -DUSE_LD_WRAP
+#CXXFLAGS += -fPIC -O3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Iinclude
+CXXFLAGS += -fPIC -O0 -g3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Iinclude
 ifdef PREFIX
 CXXFLAGS +=  -DPREFIX=\"$(PREFIX)\"
 endif
@@ -91,11 +95,15 @@ Evaluators/Backtracker.o: Evaluators/Backtracker.cc Evaluators/Backtracker Evalu
 Evaluators/StrictEvaluators.o: Evaluators/StrictEvaluators.cc Numbers/BigUnsigned Numbers/Real Values/Symbols Scanners/MathParser Scanners/Scanner Scanners/ShuntingYardParser include/5D/FFIs
 Evaluators/Evaluators.o: Evaluators/Evaluators.cc Numbers/BigUnsigned Numbers/Real Values/Symbols Scanners/MathParser Scanners/Scanner Scanners/ShuntingYardParser include/5D/FFIs
 Evaluators/Operation.o: Evaluators/Operation.cc include/5D/Operations Evaluators/Evaluators Values/Values Values/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser FFIs/Trampolines FFIs/RecordPacker Numbers/Ratio
-	$(CC) -fPIC -O2 -Wall -I. -fno-strict-overflow -c -o $@ $< -Iinclude 
+	$(CXX) -fPIC -O2 -Wall -I. -fno-strict-overflow -c -o $@ $< -Iinclude 
 Numbers/BigUnsigned.o: Numbers/BigUnsigned.cc Numbers/BigUnsigned Numbers/Small include/5D/Operations
 Scanners/LOperatorPrecedenceList.o: Scanners/LOperatorPrecedenceList.cc Values/Keyword Values/Hashtable Scanners/LOperatorPrecedenceList include/5D/Operations
 Scanners/MathParser.o: Scanners/MathParser.cc
 Scanners/test-Scanner.o: Scanners/test-Scanner.cc Values/Values Values/Keyword Values/Hashtable Values/Symbols Evaluators/Builtins Numbers/Small Numbers/Integer Numbers/BigUnsigned include/5D/Operations Numbers/Real Evaluators/Builtins Numbers/Small Numbers/Integer Numbers/BigUnsigned Numbers/Real Values/Keyword Values/Hashtable Evaluators/Builtins Numbers/Small include/5D/Operations Numbers/Real
+Scanners/test-Scanner: Scanners/test-Scanner.o
+	$(CXX) -o $@ $^
+Scanners/test-MathParser: Scanners/test-MathParser.o Scanners/ShuntingYardParser.o Values/Values.o Evaluators/Operation.o Scanners/LOperatorPrecedenceList.o Evaluators/Evaluators.o Values/Symbols.o Values/Symbol.o Evaluators/Builtins.o Numbers/Integer.o Evaluators/FFI.o Numbers/BigUnsigned.o Numbers/Real.o Values/Keyword.o Numbers/Ratio.o Scanners/Scanner.o ModuleSystem/Modules.o Evaluators/ModuleLoader.o FFIs/POSIX.o ModuleSystem/Exports.o FFIs/POSIXProcessInfos.o Evaluators/Logic.o Values/Hashtable.o FFIs/Trampolines.o FFIs/RecordPacker.o
+	$(CXX) -o $@ $^ $(LDFLAGS) -lffi
 Values/Hashtable.o: Values/Hashtable.cc Values/Values 
 Scanners/Scanner.o: Scanners/Scanner.cc Scanners/Scanner include/5D/Operations include/5D/FFIs
 Scanners/ShuntingYardParser.o: Scanners/ShuntingYardParser.cc Scanners/ShuntingYardParser include/5D/FFIs
@@ -141,3 +149,10 @@ install:
 	install -m 755 -d $(DESTDIR)/usr/share/5D/Builtins
 	install -m 755 $(LIB) $(DESTDIR)/usr/share/5D/Builtins/$(LIB)
 	install -m 755 $(STATIC_LIB) $(DESTDIR)/usr/share/5D/Builtins/$(STATIC_LIB)
+
+test: Values/test-Values Values/test-Symbol Values/test-Keyword Scanners/test-Scanner Scanners/test-MathParser
+	./Values/test-Symbol
+	./Values/test-Keyword
+	./Values/test-Values
+	./Scanners/test-Scanner
+	./Scanners/test-MathParser

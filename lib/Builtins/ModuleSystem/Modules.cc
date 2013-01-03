@@ -74,6 +74,7 @@ REGISTER_BUILTIN(HashtableAccessor, 2, 0, symbolFromStr("FIXME"))
 static NodeT dispatchModuleF(NodeT table, NodeT fallback, NodeT junk) {
 	Symbols::initSymbols();
 	Hashtable* m = new (UseGC) Hashtable;
+	//printf("doing the entire thing AGAIN\n");
 	table = consFromNode(table);
 	(*m)["exports"] = makeCons(Symbols::Sexports, mapGetFst2(fallback, table));
 	for(; !nil_P(table); table = get_cons_tail(table)) {
