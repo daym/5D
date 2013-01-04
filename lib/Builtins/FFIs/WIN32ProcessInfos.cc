@@ -32,7 +32,7 @@ bool absolute_path_P(NodeT name) {
 static NodeT internEnviron(WCHAR* envp) {
 	if(*envp) {
 		int count = wcslen(envp);
-		NodeT head = makeStr(ToUTF8(envp));
+		NodeT head = makeStr(utf8FromWstring(envp));
 		envp += count + 1;
 		return(makeCons(head, internEnviron(envp)));
 	}
@@ -50,7 +50,7 @@ static WCHAR* environFromListF(NodeT argument) {
 	int i = 0;
 	NodeT listNode = Evaluators::reduce(argument);
 	for(NodeT node = argument; !nil_P(node); node = get_cons_tail(node)) {
-		std::wstring v = FromUTF8(stringFromNode(get_cons_head(node)));
+		std::wstring v = wstringFromUtf8(stringFromNode(get_cons_head(node)));
 		result.push_back(v);
 		count += v.length() + 1;
 		// FIXME handle overflow
@@ -76,10 +76,10 @@ END_PROC_WRAPPER
 char* get_absolute_path(const char* filename) {
 	if(filename == NULL || filename[0] == 0)
 		filename = ".";
-	std::wstring filenameW = FromUTF8(filename);
+	std::wstring filenameW = wstringFromUtf8(filename);
 	WCHAR buffer[2049];
 	if(GetFullPathNameW(filenameW.c_str(), 2048, buffer, NULL) != 0) {
-		return(ToUTF8(buffer));
+		return(utf8FromWstring(buffer));
 	} else
 		return(GCx_strdup(filename));
 }

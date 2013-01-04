@@ -405,7 +405,7 @@ static NodeT wrapUnpackWin32FindDataW(NodeT options, NodeT argument) {
   TCHAR    cFileName[MAX_PATH];
   TCHAR    cAlternateFileName[14];
 } WIN32_FIND_DATA, *PWIN32_FIND_DATA, *LPWIN32_FIND_DATA;*/
-		NodeT result = f ? makeCons(makeStr(ToUTF8(f->cFileName)), 
+		NodeT result = f ? makeCons(makeStr(utf8FromWstring(f->cFileName)), 
 		                    makeCons(Numbers::internNativeU((unsigned long long) f->dwReserved0),
 		                    makeCons(Numbers::internNativeU((unsigned long long) f->dwReserved1),
 		                    makeCons(Numbers::internNativeU((unsigned long long) 0U),

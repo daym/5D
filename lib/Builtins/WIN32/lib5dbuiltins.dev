@@ -862,7 +862,7 @@ CompilerSet=0
 CompilerSettings=0000000000000001000000
 
 [Unit1]
-FileName=..\Values\HashTable.cc
+FileName=..\Values\Symbols.cc
 CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
@@ -882,7 +882,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit3]
-FileName=..\Values\HashTable
+FileName=..\Values\Values
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -1665,7 +1665,7 @@ BuildCmd=
 [Project]
 FileName=lib5dbuiltins.dev
 Name=lib5dbuiltins
-UnitCount=83
+UnitCount=88
 Type=2
 Ver=1
 ObjFiles=
@@ -1674,8 +1674,8 @@ Libs=
 PrivateResource=
 ResourceIncludes=
 MakeIncludes=
-Compiler=
-CppCompiler=
+Compiler=-D_UNICODE -DUNICODE -Wno-div-by-zero_@@_
+CppCompiler=-D_UNICODE -DUNICODE_@@_
 Linker=
 IsCpp=1
 Icon=
@@ -1693,28 +1693,9 @@ SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=0000000000000001000000
 
-[Unit1]
-FileName=..\Values\HashTable.cc
-CompileCpp=1
-Folder=lib5dbuiltins
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit2]
-FileName=..\Values\Symbols.cc
+FileName=..\Values\Symbols
 CompileCpp=1
-Folder=lib5dbuiltins
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit3]
-FileName=..\Values\HashTable
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -1723,34 +1704,16 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit4]
-FileName=..\Values\Symbols
-Folder=lib5dbuiltins
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit5]
-FileName=..\Values\Values
-Folder=lib5dbuiltins
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit6]
 FileName=..\Values\Values.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit7]
+[Unit5]
 FileName=..\Values\Symbol
 Folder=lib5dbuiltins
 Compile=0
@@ -1759,7 +1722,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit8]
+[Unit6]
 FileName=..\Values\Symbol.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -1769,18 +1732,19 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit9]
+[Unit7]
 FileName=..\Values\Keyword.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit10]
+[Unit8]
 FileName=..\Values\Keyword
+CompileCpp=1
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -1788,7 +1752,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit11]
+[Unit9]
 FileName=..\Scanners\Scanner.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -1798,17 +1762,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit12]
+[Unit10]
 FileName=..\Scanners\ShuntingYardParser.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit13]
+[Unit11]
 FileName=..\Scanners\MathParser.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -1818,7 +1782,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit14]
+[Unit12]
 FileName=..\Scanners\LOperatorPrecedenceList.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -1828,35 +1792,37 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
+[Unit13]
 FileName=..\Scanners\Scanner
-Folder=lib5dbuiltins
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit16]
-FileName=..\Scanners\LOperatorPrecedenceList
-Folder=lib5dbuiltins
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit17]
-FileName=..\Scanners\SExpressionParser.cc
 CompileCpp=1
+Folder=lib5dbuiltins
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit14]
+FileName=..\Scanners\LOperatorPrecedenceList
+CompileCpp=1
+Folder=lib5dbuiltins
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit15]
+FileName=..\Scanners\SExpressionParser.cc
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit18]
+[Unit16]
 FileName=..\Scanners\ShuntingYardParser
 Folder=lib5dbuiltins
 Compile=0
@@ -1865,8 +1831,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit19]
+[Unit17]
 FileName=..\Scanners\MathParser
+CompileCpp=1
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -1874,7 +1841,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit20]
+[Unit18]
 FileName=..\Scanners\SExpressionParser
 Folder=lib5dbuiltins
 Compile=0
@@ -1883,7 +1850,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit21]
+[Unit19]
 FileName=..\Numbers\Small
 Folder=lib5dbuiltins
 Compile=0
@@ -1892,83 +1859,87 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit22]
+[Unit20]
 FileName=..\Numbers\Integer.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit21]
+FileName=..\Numbers\BigUnsigned.cc
+Folder=lib5dbuiltins
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit22]
+FileName=..\Numbers\BigUnsigned
+CompileCpp=1
+Folder=lib5dbuiltins
+Compile=0
+Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit23]
-FileName=..\Numbers\BigUnsigned.cc
+FileName=..\Numbers\Integer
 CompileCpp=1
 Folder=lib5dbuiltins
-Compile=1
-Link=1
+Compile=0
+Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit24]
-FileName=..\Numbers\BigUnsigned
-Folder=lib5dbuiltins
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit25]
-FileName=..\Numbers\Integer
-Folder=lib5dbuiltins
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit26]
 FileName=..\Numbers\Real.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit25]
+FileName=..\Numbers\Ratio.cc
+Folder=lib5dbuiltins
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit26]
+FileName=..\Numbers\Real
+CompileCpp=1
+Folder=lib5dbuiltins
+Compile=0
+Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit27]
-FileName=..\Numbers\Ratio.cc
+FileName=..\Numbers\Ratio
 CompileCpp=1
 Folder=lib5dbuiltins
-Compile=1
-Link=1
+Compile=0
+Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit28]
-FileName=..\Numbers\Real
-Folder=lib5dbuiltins
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit29]
-FileName=..\Numbers\Ratio
-Folder=lib5dbuiltins
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit30]
 FileName=..\ModuleSystem\Modules
 Folder=lib5dbuiltins
 Compile=0
@@ -1977,45 +1948,47 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit31]
+[Unit29]
 FileName=..\ModuleSystem\Modules.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit30]
+FileName=..\ModuleSystem\Exports.cc
+Folder=lib5dbuiltins
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit31]
+FileName=..\include\5D\ObjectSystem
+CompileCpp=1
+Folder=lib5dbuiltins
+Compile=0
+Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit32]
-FileName=..\ModuleSystem\Exports.cc
+FileName=..\include\5D\Operations
 CompileCpp=1
 Folder=lib5dbuiltins
-Compile=1
-Link=1
+Compile=0
+Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit33]
-FileName=..\include\5D\ObjectSystem
-Folder=lib5dbuiltins
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit34]
-FileName=..\include\5D\Operations
-Folder=lib5dbuiltins
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit35]
 FileName=..\include\5D\FFIs
 Folder=lib5dbuiltins
 Compile=0
@@ -2024,7 +1997,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit36]
+[Unit34]
 FileName=..\include\5D\ModuleSystem
 Folder=lib5dbuiltins
 Compile=0
@@ -2033,7 +2006,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit37]
+[Unit35]
 FileName=..\include\5D\Allocators
 Folder=lib5dbuiltins
 Compile=0
@@ -2042,7 +2015,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit38]
+[Unit36]
 FileName=..\Formatters\UTFStateMachine
 Folder=lib5dbuiltins
 Compile=0
@@ -2051,7 +2024,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit39]
+[Unit37]
 FileName=..\Formatters\GenericPrinter
 Folder=lib5dbuiltins
 Compile=0
@@ -2060,28 +2033,29 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit40]
+[Unit38]
 FileName=..\Formatters\LATEX.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit41]
+[Unit39]
 FileName=..\Formatters\SExpression.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit42]
+[Unit40]
 FileName=..\Formatters\UTF-8_to_LATEX.table
+CompileCpp=1
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -2089,7 +2063,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit43]
+[Unit41]
 FileName=..\Formatters\Math.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -2099,7 +2073,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit44]
+[Unit42]
 FileName=..\Formatters\generate-state-machine
 Folder=lib5dbuiltins
 Compile=0
@@ -2108,8 +2082,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit45]
+[Unit43]
 FileName=..\Formatters\LATEX
+CompileCpp=1
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -2117,7 +2092,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit46]
+[Unit44]
 FileName=..\Formatters\Math
 Folder=lib5dbuiltins
 Compile=0
@@ -2126,7 +2101,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit47]
+[Unit45]
 FileName=..\Formatters\SExpression
 Folder=lib5dbuiltins
 Compile=0
@@ -2135,27 +2110,27 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit48]
+[Unit46]
 FileName=..\Formatters\UTFStateMachine.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit49]
+[Unit47]
 FileName=..\FFIs\RecordPacker.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit50]
+[Unit48]
 FileName=..\FFIs\VariantPacker.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -2165,45 +2140,47 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit51]
+[Unit49]
 FileName=..\FFIs\generateTrampolines
+CompileCpp=1
 Folder=lib5dbuiltins
 Compile=0
 Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+
+[Unit50]
+FileName=..\FFIs\generateCombinations
+CompileCpp=1
+Folder=lib5dbuiltins
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit51]
+FileName=..\FFIs\WIN32UI.cc
+Folder=lib5dbuiltins
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
 
 [Unit52]
-FileName=..\FFIs\generateCombinations
+FileName=..\FFIs\WIN32ProcessInfos.cc
 Folder=lib5dbuiltins
-Compile=0
-Link=0
+Compile=1
+Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
 [Unit53]
-FileName=..\FFIs\WIN32UI.cc
-CompileCpp=1
-Folder=lib5dbuiltins
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit54]
-FileName=..\FFIs\WIN32ProcessInfos.cc
-CompileCpp=1
-Folder=lib5dbuiltins
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit55]
 FileName=..\FFIs\Trampolines.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -2213,7 +2190,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit56]
+[Unit54]
 FileName=..\FFIs\WIN32.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -2223,8 +2200,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit57]
+[Unit55]
 FileName=..\FFIs\VariantPacker
+CompileCpp=1
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -2232,8 +2210,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit58]
+[Unit56]
 FileName=..\FFIs\RecordPacker
+CompileCpp=1
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -2241,7 +2220,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit59]
+[Unit57]
 FileName=..\FFIs\FFIs
 Folder=lib5dbuiltins
 Compile=0
@@ -2250,7 +2229,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit60]
+[Unit58]
 FileName=..\FFIs\extractWIN32Symbols
 Folder=lib5dbuiltins
 Compile=0
@@ -2259,7 +2238,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit61]
+[Unit59]
 FileName=..\FFIs\find5DExports
 Folder=lib5dbuiltins
 Compile=0
@@ -2268,7 +2247,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit62]
+[Unit60]
 FileName=..\FFIs\generateTrampolineSymbols
 Folder=lib5dbuiltins
 Compile=0
@@ -2277,17 +2256,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit63]
+[Unit61]
 FileName=..\FFIs\COMWrapper.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit64]
+[Unit62]
 FileName=..\FFIs\ProcessInfos
 Folder=lib5dbuiltins
 Compile=0
@@ -2296,8 +2275,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit65]
+[Unit63]
 FileName=..\FFIs\COMWrapper
+CompileCpp=1
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -2305,7 +2285,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit66]
+[Unit64]
 FileName=..\FFIs\UI
 Folder=lib5dbuiltins
 Compile=0
@@ -2314,7 +2294,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit67]
+[Unit65]
 FileName=..\FFIs\extractGNUSymbols
 Folder=lib5dbuiltins
 Compile=0
@@ -2323,27 +2303,27 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit68]
+[Unit66]
 FileName=..\Evaluators\Builtins.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit69]
+[Unit67]
 FileName=..\Evaluators\FFI.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit70]
+[Unit68]
 FileName=..\Evaluators\Evaluators.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -2353,7 +2333,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit71]
+[Unit69]
 FileName=..\Evaluators\BuiltinSelector.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -2363,7 +2343,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit72]
+[Unit70]
 FileName=..\Evaluators\ModuleLoader.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -2373,7 +2353,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit73]
+[Unit71]
 FileName=..\Evaluators\Operation.cc
 CompileCpp=1
 Folder=lib5dbuiltins
@@ -2383,8 +2363,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit74]
+[Unit72]
 FileName=..\Evaluators\Evaluators
+CompileCpp=1
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -2392,8 +2373,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit75]
+[Unit73]
 FileName=..\Evaluators\Builtins
+CompileCpp=1
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -2401,7 +2383,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit76]
+[Unit74]
 FileName=..\Evaluators\ModuleLoader
 Folder=lib5dbuiltins
 Compile=0
@@ -2410,17 +2392,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit77]
+[Unit75]
 FileName=..\Evaluators\Logic.cc
-CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit78]
+[Unit76]
 FileName=..\Evaluators\FFI
 Folder=lib5dbuiltins
 Compile=0
@@ -2429,8 +2411,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit79]
+[Unit77]
 FileName=..\Evaluators\Logic
+CompileCpp=1
 Folder=lib5dbuiltins
 Compile=0
 Link=0
@@ -2438,7 +2421,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit80]
+[Unit78]
 FileName=..\Evaluators\BuiltinSelector
 Folder=lib5dbuiltins
 Compile=0
@@ -2447,7 +2430,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit81]
+[Unit79]
 FileName=..\Evaluators\Keywords
 Folder=lib5dbuiltins
 Compile=0
@@ -2455,6 +2438,26 @@ Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+
+[Unit80]
+FileName=..\FFIs\TrampolineSymbols.cc
+Folder=lib5dbuiltins
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit81]
+FileName=..\Formatters\UTF-8_to_LATEX_result.h
+Folder=lib5dbuiltins
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
 
 [VersionInfo]
 Major=0
@@ -2475,7 +2478,7 @@ ProductVersion=
 AutoIncBuildNr=0
 
 [Unit82]
-FileName=..\FFIs\TrampolineSymbols.cc
+FileName=..\Values\Hashtable.cc
 CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1
@@ -2485,7 +2488,56 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit83]
-FileName=..\Formatters\UTF-8_to_LATEX_result.h
+FileName=..\Values\Hashtable
+CompileCpp=1
+Folder=lib5dbuiltins
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit84]
+FileName=stdafx.cpp
+CompileCpp=1
+Folder=lib5dbuiltins
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit85]
+FileName=stdafx.h
+CompileCpp=1
+Folder=lib5dbuiltins
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit86]
+FileName=..\FFIs\WIN32Strings.cc
+CompileCpp=1
+Folder=lib5dbuiltins
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit87]
+FileName=..\include\5D\WIN32Strings
+Folder=lib5dbuiltins
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit88]
+FileName=..\FFIs\Allocators.cc
 CompileCpp=1
 Folder=lib5dbuiltins
 Compile=1

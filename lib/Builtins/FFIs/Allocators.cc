@@ -5,9 +5,11 @@
 #include <sys/mman.h>
 #endif
 #include <gc/gc.h>
+#ifndef WIN32
 #include <glib.h>
-#include <string.h>
 #include <libxml/xmlmemory.h>
+#endif
+#include <string.h>
 #include <5D/Allocators>
 
 extern "C" {
@@ -30,7 +32,8 @@ static void GCx_free(void* p) {
 	//memset(p, 0, GC_size(p));
 	GC_FREE(p);
 }
-void Allocator_init(void) {
+void initAllocators(void) {
+#ifndef WIN32
 	g_thread_init(NULL);
 /*
 	FIXME preload something that overrides pthread_create instead. 
@@ -53,6 +56,7 @@ void Allocator_init(void) {
 */
 	// TODO move this into 5DLibs or even into FFIs/POSIX.cc , maybe
 	//xmlGcMemSetup(GCx_free, GCx_malloc, GCx_malloc_atomic, GCx_realloc, GCx_strdup);
+#endif
 }
 
 /* allocate executable block, then (try to) make it read-only */

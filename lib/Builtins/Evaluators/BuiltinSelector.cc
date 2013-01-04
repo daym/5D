@@ -1,6 +1,4 @@
-#ifdef WIN32
 #include "stdafx.h"
-#endif
 #include <stdio.h>
 #ifdef WIN32
 #ifndef PATH_MAX

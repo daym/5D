@@ -53,10 +53,10 @@ static NodeT wrapMessageBox(NodeT options, NodeT argument) {
 		(icon == symbolFromStr("error")) ? MB_ICONERROR : 
 		0; // TODO more
 	Evaluators::CXXArguments::const_iterator iter = arguments.begin();
-	cText = FromUTF8(Values::stringFromNode(iter->second));
+	cText = wstringFromUtf8(Values::stringFromNode(iter->second));
 	FETCH_WORLD(iter);
 	NodeT caption = Evaluators::CXXgetKeywordArgumentValue(arguments, keywordFromStr("caption:"));
-	cCaption = caption ? FromUTF8(Values::stringFromNode(caption)) : std::wstring();
+	cCaption = caption ? wstringFromUtf8(Values::stringFromNode(caption)) : std::wstring();
 	int cResult = MessageBoxW(cParentWindow, cText.c_str(), cCaption.c_str(), cType);
 	NodeT result;
 	result = (cResult == IDOK) ? symbolFromStr("ok") : 

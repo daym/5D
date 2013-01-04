@@ -314,7 +314,7 @@ void encodeVariant(NodeT both, VARIANT* value) {
 	case VT_BSTR:
 		{
 			/*The string is not terminated.  Instead, the length of the string is stored as an unsigned long (four bytes) just before the first character of the string, which is not what the pointer points to! */
-			std::wstring v = FromUTF8(Values::stringFromNode(source));
+			std::wstring v = wstringFromUtf8(Values::stringFromNode(source));
 			value->bstrVal = SysAllocString(v.c_str()); // later SysFreeString
 		}
 		break;
@@ -447,7 +447,7 @@ NodeT decodeVariant(VARIANT* value) {
 	}
 	switch(value->vt) {
 	case VT_BSTR:
-		return(MAKE_VTV(makeStr(ToUTF8(std::wstring(value->bstrVal))))); // TODO support native UCS-4 strings? Probably not.
+		return(MAKE_VTV(makeStr(utf8FromWstring(std::wstring(value->bstrVal))))); // TODO support native UCS-4 strings? Probably not.
 	case VT_BOOL:
 		return(MAKE_VTV(Evaluators::internNative(value->boolVal)));
 	case VT_CY:

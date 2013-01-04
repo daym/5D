@@ -12,7 +12,7 @@
 #ifdef __cplusplus
 extern "C" 
 #endif
-void Allocator_init(void);
+void initAllocators(void);
 
 static inline char* GCx_strdup(const char* value) {
 #ifdef USE_LD_WRAP

@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <5D/Operations>
 #include <5D/FFIs>
 #include "FFIs/FFIs"
+#include <5D/WIN32Strings>
 
 namespace FFIs {
 using namespace Evaluators;
@@ -50,10 +51,10 @@ NodeT wrapAccessLibrary(NodeT options, NodeT argument) {
 }
 NodeT wrapLoadLibraryC(NodeT nameS) {
 	const char* name = Values::stringFromNode(nameS);
-	std::wstring nameW = FromUTF8(name);
+	std::wstring nameW = wstringFromUtf8(name);
 	void* clib = LoadLibraryW(nameW.c_str());
 	if(!clib) {
-		std::wstring err = GetWIN32Diagnostics();
+		std::wstring err = getWIN32Diagnostics();
 		fprintf(stderr, "(dlopen \"%s\") failed because: %s\n", name, err.c_str());
 	}
 	return(makeBox(clib, makeApplication(&SharedLibraryLoader, nameS)));

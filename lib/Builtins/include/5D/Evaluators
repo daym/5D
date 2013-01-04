@@ -11,7 +11,7 @@ Values::NodeT quote(Values::NodeT node);
 static inline Values::NodeT makeIOMonad(Values::NodeT result, Values::NodeT world) {
 	return(Values::makeCons(result, Values::makeCons(world, NULL)));
 }
-void Logic_init(void);
+void initLogic(void);
 Values::NodeT execute(Values::NodeT term, void* environment); /* monadic eval */
 
 };

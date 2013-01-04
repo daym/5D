@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #endif
 #include <stdio.h>
+#include <5D/FFIs>
 #include "Evaluators/ModuleLoader"
 #include "Evaluators/Evaluators"
 #include "Evaluators/Builtins"
@@ -9,7 +10,6 @@
 #include "FFIs/FFIs"
 #include "Scanners/MathParser"
 #include <5D/Allocators>
-#include <5D/FFIs>
 #include "FFIs/ProcessInfos"
 #include "Evaluators/FFI"
 #include "ModuleSystem/Modules"
@@ -22,6 +22,61 @@ namespace Evaluators {
 using namespace Values;
 using namespace ModuleSystem;
 using namespace FFIs;
+
+static inline std::string getModuleFileKey(const std::string& filename, std::string& outActualFilename) {
+	int previousErrno = errno;
+	outActualFilename = "";
+	std::stringstream moduleKeyStream;
+#ifdef WIN32
+#ifndef S_IFDIR
+#define S_IFDIR _S_IFDIR
+#endif
+#ifndef S_IFMT
+#define S_IFMT (S_IFDIR|S_IFCHR|S_IFREG)
+#endif
+#ifndef S_ISDIR
+#define S_ISDIR(x) (((x) & S_IFMT) == S_IFDIR)
+#endif
+	struct _stat buf;
+	std::wstring filenameW = wstringFromUtf8(filename.c_str());
+	if(_wstat(filenameW.c_str(), &buf) == -1) {
+		//perror(filename.c_str());
+		errno = previousErrno;
+		return("");
+	}
+	if(S_ISDIR(buf.st_mode)) {
+		outActualFilename = filename + "\\init.5D";
+		filenameW = wstringFromUtf8(outActualFilename.c_str());
+		if(_wstat(filenameW.c_str(), &buf) == -1) {
+			//perror(filename.c_str());
+			errno = previousErrno;
+			return("");
+		}
+	} else
+		outActualFilename = filename;
+	moduleKeyStream << filename << ":"; /* on Windows, st_ino is 0, so HACK HACK HACK */
+#else
+	struct stat buf;
+	if(stat(filename.c_str(), &buf) == -1) {
+		//perror(filename.c_str());
+		errno = previousErrno;
+		return("");
+	}
+	if(S_ISDIR(buf.st_mode)) {
+		outActualFilename = filename + "/init.5D";
+		if(stat(outActualFilename.c_str(), &buf) == -1) {
+			//perror(filename.c_str());
+			errno = previousErrno;
+			return("");
+		}
+	} else
+		outActualFilename = filename;
+#endif
+	moduleKeyStream << buf.st_dev << ":" << buf.st_ino;
+	std::string moduleKey = moduleKeyStream.str();
+	errno = previousErrno;
+	return(moduleKey);
+}
 
 static NodeT loadModule(NodeT options, NodeT fileNameNode);
 NodeT selectOperatorPrecedenceList(NodeT shebang) {

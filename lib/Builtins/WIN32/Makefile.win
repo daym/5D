@@ -5,14 +5,14 @@ CPP  = g++.exe -D__DEBUG__
 CC   = gcc.exe -D__DEBUG__
 WINDRES = windres.exe
 RES  = 
-OBJ  = ../Values/HashTable.o ../Values/Symbols.o ../Values/Values.o ../Values/Symbol.o ../Values/Keyword.o ../Scanners/Scanner.o ../Scanners/ShuntingYardParser.o ../Scanners/MathParser.o ../Scanners/LOperatorPrecedenceList.o ../Scanners/SExpressionParser.o ../Numbers/Integer.o ../Numbers/BigUnsigned.o ../Numbers/Real.o ../Numbers/Ratio.o ../ModuleSystem/Modules.o ../ModuleSystem/Exports.o ../Formatters/LATEX.o ../Formatters/SExpression.o ../Formatters/Math.o ../Formatters/UTFStateMachine.o ../FFIs/RecordPacker.o ../FFIs/VariantPacker.o ../FFIs/WIN32UI.o ../FFIs/WIN32ProcessInfos.o ../FFIs/Trampolines.o ../FFIs/WIN32.o ../FFIs/COMWrapper.o ../Evaluators/Builtins.o ../Evaluators/FFI.o ../Evaluators/Evaluators.o ../Evaluators/BuiltinSelector.o ../Evaluators/ModuleLoader.o ../Evaluators/Operation.o ../Evaluators/Logic.o ../FFIs/TrampolineSymbols.o $(RES)
-LINKOBJ  = ../Values/HashTable.o ../Values/Symbols.o ../Values/Values.o ../Values/Symbol.o ../Values/Keyword.o ../Scanners/Scanner.o ../Scanners/ShuntingYardParser.o ../Scanners/MathParser.o ../Scanners/LOperatorPrecedenceList.o ../Scanners/SExpressionParser.o ../Numbers/Integer.o ../Numbers/BigUnsigned.o ../Numbers/Real.o ../Numbers/Ratio.o ../ModuleSystem/Modules.o ../ModuleSystem/Exports.o ../Formatters/LATEX.o ../Formatters/SExpression.o ../Formatters/Math.o ../Formatters/UTFStateMachine.o ../FFIs/RecordPacker.o ../FFIs/VariantPacker.o ../FFIs/WIN32UI.o ../FFIs/WIN32ProcessInfos.o ../FFIs/Trampolines.o ../FFIs/WIN32.o ../FFIs/COMWrapper.o ../Evaluators/Builtins.o ../Evaluators/FFI.o ../Evaluators/Evaluators.o ../Evaluators/BuiltinSelector.o ../Evaluators/ModuleLoader.o ../Evaluators/Operation.o ../Evaluators/Logic.o ../FFIs/TrampolineSymbols.o $(RES)
+OBJ  = ../Values/Symbols.o ../Values/Values.o ../Values/Symbol.o ../Values/Keyword.o ../Scanners/Scanner.o ../Scanners/ShuntingYardParser.o ../Scanners/MathParser.o ../Scanners/LOperatorPrecedenceList.o ../Scanners/SExpressionParser.o ../Numbers/Integer.o ../Numbers/BigUnsigned.o ../Numbers/Real.o ../Numbers/Ratio.o ../ModuleSystem/Modules.o ../ModuleSystem/Exports.o ../Formatters/LATEX.o ../Formatters/SExpression.o ../Formatters/Math.o ../Formatters/UTFStateMachine.o ../FFIs/RecordPacker.o ../FFIs/VariantPacker.o ../FFIs/WIN32UI.o ../FFIs/WIN32ProcessInfos.o ../FFIs/Trampolines.o ../FFIs/WIN32.o ../FFIs/COMWrapper.o ../Evaluators/Builtins.o ../Evaluators/FFI.o ../Evaluators/Evaluators.o ../Evaluators/BuiltinSelector.o ../Evaluators/ModuleLoader.o ../Evaluators/Operation.o ../Evaluators/Logic.o ../FFIs/TrampolineSymbols.o ../Values/Hashtable.o stdafx.o ../FFIs/WIN32Strings.o ../FFIs/Allocators.o $(RES)
+LINKOBJ  = ../Values/Symbols.o ../Values/Values.o ../Values/Symbol.o ../Values/Keyword.o ../Scanners/Scanner.o ../Scanners/ShuntingYardParser.o ../Scanners/MathParser.o ../Scanners/LOperatorPrecedenceList.o ../Scanners/SExpressionParser.o ../Numbers/Integer.o ../Numbers/BigUnsigned.o ../Numbers/Real.o ../Numbers/Ratio.o ../ModuleSystem/Modules.o ../ModuleSystem/Exports.o ../Formatters/LATEX.o ../Formatters/SExpression.o ../Formatters/Math.o ../Formatters/UTFStateMachine.o ../FFIs/RecordPacker.o ../FFIs/VariantPacker.o ../FFIs/WIN32UI.o ../FFIs/WIN32ProcessInfos.o ../FFIs/Trampolines.o ../FFIs/WIN32.o ../FFIs/COMWrapper.o ../Evaluators/Builtins.o ../Evaluators/FFI.o ../Evaluators/Evaluators.o ../Evaluators/BuiltinSelector.o ../Evaluators/ModuleLoader.o ../Evaluators/Operation.o ../Evaluators/Logic.o ../FFIs/TrampolineSymbols.o ../Values/Hashtable.o stdafx.o ../FFIs/WIN32Strings.o ../FFIs/Allocators.o $(RES)
 LIBS =  -L"C:/Custom_Programs/Dev-Cpp/lib"  -g3 
 INCS =  -I"C:/Custom_Programs/Dev-Cpp/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/WIN32"  -I"C:/Data/playground/trunk/5D/lib/Builtins/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/gc/libgc6.5bin/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins" 
 CXXINCS =  -I"C:/Custom_Programs/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Custom_Programs/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Custom_Programs/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Custom_Programs/Dev-Cpp/include/c++/3.4.2"  -I"C:/Custom_Programs/Dev-Cpp/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/WIN32"  -I"C:/Data/playground/trunk/5D/lib/Builtins/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/gc/libgc6.5bin/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins" 
 BIN  = lib5dbuiltins.a
-CXXFLAGS = $(CXXINCS)   -g3
-CFLAGS = $(INCS)   -g3
+CXXFLAGS = $(CXXINCS) -D_UNICODE -DUNICODE   -g3
+CFLAGS = $(INCS) -D_UNICODE -DUNICODE -Wno-div-by-zero   -g3
 RM = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
@@ -26,9 +26,6 @@ clean: clean-custom
 $(BIN): $(LINKOBJ)
 	ar r $(BIN) $(LINKOBJ)
 	ranlib $(BIN)
-
-../Values/HashTable.o: ../Values/HashTable.cc
-	$(CPP) -c ../Values/HashTable.cc -o ../Values/HashTable.o $(CXXFLAGS)
 
 ../Values/Symbols.o: ../Values/Symbols.cc
 	$(CPP) -c ../Values/Symbols.cc -o ../Values/Symbols.o $(CXXFLAGS)
@@ -131,269 +128,15 @@ $(BIN): $(LINKOBJ)
 
 ../FFIs/TrampolineSymbols.o: ../FFIs/TrampolineSymbols.cc
 	$(CPP) -c ../FFIs/TrampolineSymbols.cc -o ../FFIs/TrampolineSymbols.o $(CXXFLAGS)
-# Project: lib5dbuiltins
-# Makefile created by Dev-C++ 4.9.9.2
 
-CPP  = g++.exe -D__DEBUG__
-CC   = gcc.exe -D__DEBUG__
-WINDRES = windres.exe
-RES  = 
-OBJ  = ../Values/HashTable.o ../Values/Symbols.o ../Values/Values.o ../Values/Symbol.o ../Values/Keyword.o ../Scanners/Scanner.o ../Scanners/ShuntingYardParser.o ../Scanners/MathParser.o ../Scanners/LOperatorPrecedenceList.o ../Scanners/SExpressionParser.o ../Numbers/Integer.o ../Numbers/BigUnsigned.o ../Numbers/Real.o ../Numbers/Ratio.o ../ModuleSystem/Modules.o ../ModuleSystem/Exports.o ../Formatters/LATEX.o ../Formatters/SExpression.o ../Formatters/Math.o ../Formatters/UTFStateMachine.o ../FFIs/RecordPacker.o ../FFIs/VariantPacker.o ../FFIs/WIN32UI.o ../FFIs/WIN32ProcessInfos.o ../FFIs/Trampolines.o ../FFIs/WIN32.o ../FFIs/COMWrapper.o ../Evaluators/Builtins.o ../Evaluators/FFI.o ../Evaluators/Evaluators.o ../Evaluators/BuiltinSelector.o ../Evaluators/ModuleLoader.o ../Evaluators/Operation.o ../Evaluators/Logic.o ../FFIs/TrampolineSymbols.o $(RES)
-LINKOBJ  = ../Values/HashTable.o ../Values/Symbols.o ../Values/Values.o ../Values/Symbol.o ../Values/Keyword.o ../Scanners/Scanner.o ../Scanners/ShuntingYardParser.o ../Scanners/MathParser.o ../Scanners/LOperatorPrecedenceList.o ../Scanners/SExpressionParser.o ../Numbers/Integer.o ../Numbers/BigUnsigned.o ../Numbers/Real.o ../Numbers/Ratio.o ../ModuleSystem/Modules.o ../ModuleSystem/Exports.o ../Formatters/LATEX.o ../Formatters/SExpression.o ../Formatters/Math.o ../Formatters/UTFStateMachine.o ../FFIs/RecordPacker.o ../FFIs/VariantPacker.o ../FFIs/WIN32UI.o ../FFIs/WIN32ProcessInfos.o ../FFIs/Trampolines.o ../FFIs/WIN32.o ../FFIs/COMWrapper.o ../Evaluators/Builtins.o ../Evaluators/FFI.o ../Evaluators/Evaluators.o ../Evaluators/BuiltinSelector.o ../Evaluators/ModuleLoader.o ../Evaluators/Operation.o ../Evaluators/Logic.o ../FFIs/TrampolineSymbols.o $(RES)
-LIBS =  -L"C:/Custom_Programs/Dev-Cpp/lib"  -g3 
-INCS =  -I"C:/Custom_Programs/Dev-Cpp/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/WIN32"  -I"C:/Data/playground/trunk/5D/lib/Builtins/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/gc/libgc6.5bin/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins" 
-CXXINCS =  -I"C:/Custom_Programs/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Custom_Programs/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Custom_Programs/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Custom_Programs/Dev-Cpp/include/c++/3.4.2"  -I"C:/Custom_Programs/Dev-Cpp/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/WIN32"  -I"C:/Data/playground/trunk/5D/lib/Builtins/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/gc/libgc6.5bin/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins" 
-BIN  = lib5dbuiltins.a
-CXXFLAGS = $(CXXINCS)   -g3
-CFLAGS = $(INCS)   -g3
-RM = rm -f
+../Values/Hashtable.o: ../Values/Hashtable.cc
+	$(CPP) -c ../Values/Hashtable.cc -o ../Values/Hashtable.o $(CXXFLAGS)
 
-.PHONY: all all-before all-after clean clean-custom
+stdafx.o: stdafx.cpp
+	$(CPP) -c stdafx.cpp -o stdafx.o $(CXXFLAGS)
 
-all: all-before lib5dbuiltins.a all-after
+../FFIs/WIN32Strings.o: ../FFIs/WIN32Strings.cc
+	$(CPP) -c ../FFIs/WIN32Strings.cc -o ../FFIs/WIN32Strings.o $(CXXFLAGS)
 
-
-clean: clean-custom
-	${RM} $(OBJ) $(BIN)
-
-$(BIN): $(LINKOBJ)
-	ar r $(BIN) $(LINKOBJ)
-	ranlib $(BIN)
-
-../Values/HashTable.o: ../Values/HashTable.cc
-	$(CPP) -c ../Values/HashTable.cc -o ../Values/HashTable.o $(CXXFLAGS)
-
-../Values/Symbols.o: ../Values/Symbols.cc
-	$(CPP) -c ../Values/Symbols.cc -o ../Values/Symbols.o $(CXXFLAGS)
-
-../Values/Values.o: ../Values/Values.cc
-	$(CPP) -c ../Values/Values.cc -o ../Values/Values.o $(CXXFLAGS)
-
-../Values/Symbol.o: ../Values/Symbol.cc
-	$(CPP) -c ../Values/Symbol.cc -o ../Values/Symbol.o $(CXXFLAGS)
-
-../Values/Keyword.o: ../Values/Keyword.cc
-	$(CPP) -c ../Values/Keyword.cc -o ../Values/Keyword.o $(CXXFLAGS)
-
-../Scanners/Scanner.o: ../Scanners/Scanner.cc
-	$(CPP) -c ../Scanners/Scanner.cc -o ../Scanners/Scanner.o $(CXXFLAGS)
-
-../Scanners/ShuntingYardParser.o: ../Scanners/ShuntingYardParser.cc
-	$(CPP) -c ../Scanners/ShuntingYardParser.cc -o ../Scanners/ShuntingYardParser.o $(CXXFLAGS)
-
-../Scanners/MathParser.o: ../Scanners/MathParser.cc
-	$(CPP) -c ../Scanners/MathParser.cc -o ../Scanners/MathParser.o $(CXXFLAGS)
-
-../Scanners/LOperatorPrecedenceList.o: ../Scanners/LOperatorPrecedenceList.cc
-	$(CPP) -c ../Scanners/LOperatorPrecedenceList.cc -o ../Scanners/LOperatorPrecedenceList.o $(CXXFLAGS)
-
-../Scanners/SExpressionParser.o: ../Scanners/SExpressionParser.cc
-	$(CPP) -c ../Scanners/SExpressionParser.cc -o ../Scanners/SExpressionParser.o $(CXXFLAGS)
-
-../Numbers/Integer.o: ../Numbers/Integer.cc
-	$(CPP) -c ../Numbers/Integer.cc -o ../Numbers/Integer.o $(CXXFLAGS)
-
-../Numbers/BigUnsigned.o: ../Numbers/BigUnsigned.cc
-	$(CPP) -c ../Numbers/BigUnsigned.cc -o ../Numbers/BigUnsigned.o $(CXXFLAGS)
-
-../Numbers/Real.o: ../Numbers/Real.cc
-	$(CPP) -c ../Numbers/Real.cc -o ../Numbers/Real.o $(CXXFLAGS)
-
-../Numbers/Ratio.o: ../Numbers/Ratio.cc
-	$(CPP) -c ../Numbers/Ratio.cc -o ../Numbers/Ratio.o $(CXXFLAGS)
-
-../ModuleSystem/Modules.o: ../ModuleSystem/Modules.cc
-	$(CPP) -c ../ModuleSystem/Modules.cc -o ../ModuleSystem/Modules.o $(CXXFLAGS)
-
-../ModuleSystem/Exports.o: ../ModuleSystem/Exports.cc
-	$(CPP) -c ../ModuleSystem/Exports.cc -o ../ModuleSystem/Exports.o $(CXXFLAGS)
-
-../Formatters/LATEX.o: ../Formatters/LATEX.cc
-	$(CPP) -c ../Formatters/LATEX.cc -o ../Formatters/LATEX.o $(CXXFLAGS)
-
-../Formatters/SExpression.o: ../Formatters/SExpression.cc
-	$(CPP) -c ../Formatters/SExpression.cc -o ../Formatters/SExpression.o $(CXXFLAGS)
-
-../Formatters/Math.o: ../Formatters/Math.cc
-	$(CPP) -c ../Formatters/Math.cc -o ../Formatters/Math.o $(CXXFLAGS)
-
-../Formatters/UTFStateMachine.o: ../Formatters/UTFStateMachine.cc
-	$(CPP) -c ../Formatters/UTFStateMachine.cc -o ../Formatters/UTFStateMachine.o $(CXXFLAGS)
-
-../FFIs/RecordPacker.o: ../FFIs/RecordPacker.cc
-	$(CPP) -c ../FFIs/RecordPacker.cc -o ../FFIs/RecordPacker.o $(CXXFLAGS)
-
-../FFIs/VariantPacker.o: ../FFIs/VariantPacker.cc
-	$(CPP) -c ../FFIs/VariantPacker.cc -o ../FFIs/VariantPacker.o $(CXXFLAGS)
-
-../FFIs/WIN32UI.o: ../FFIs/WIN32UI.cc
-	$(CPP) -c ../FFIs/WIN32UI.cc -o ../FFIs/WIN32UI.o $(CXXFLAGS)
-
-../FFIs/WIN32ProcessInfos.o: ../FFIs/WIN32ProcessInfos.cc
-	$(CPP) -c ../FFIs/WIN32ProcessInfos.cc -o ../FFIs/WIN32ProcessInfos.o $(CXXFLAGS)
-
-../FFIs/Trampolines.o: ../FFIs/Trampolines.cc
-	$(CPP) -c ../FFIs/Trampolines.cc -o ../FFIs/Trampolines.o $(CXXFLAGS)
-
-../FFIs/WIN32.o: ../FFIs/WIN32.cc
-	$(CPP) -c ../FFIs/WIN32.cc -o ../FFIs/WIN32.o $(CXXFLAGS)
-
-../FFIs/COMWrapper.o: ../FFIs/COMWrapper.cc
-	$(CPP) -c ../FFIs/COMWrapper.cc -o ../FFIs/COMWrapper.o $(CXXFLAGS)
-
-../Evaluators/Builtins.o: ../Evaluators/Builtins.cc
-	$(CPP) -c ../Evaluators/Builtins.cc -o ../Evaluators/Builtins.o $(CXXFLAGS)
-
-../Evaluators/FFI.o: ../Evaluators/FFI.cc
-	$(CPP) -c ../Evaluators/FFI.cc -o ../Evaluators/FFI.o $(CXXFLAGS)
-
-../Evaluators/Evaluators.o: ../Evaluators/Evaluators.cc
-	$(CPP) -c ../Evaluators/Evaluators.cc -o ../Evaluators/Evaluators.o $(CXXFLAGS)
-
-../Evaluators/BuiltinSelector.o: ../Evaluators/BuiltinSelector.cc
-	$(CPP) -c ../Evaluators/BuiltinSelector.cc -o ../Evaluators/BuiltinSelector.o $(CXXFLAGS)
-
-../Evaluators/ModuleLoader.o: ../Evaluators/ModuleLoader.cc
-	$(CPP) -c ../Evaluators/ModuleLoader.cc -o ../Evaluators/ModuleLoader.o $(CXXFLAGS)
-
-../Evaluators/Operation.o: ../Evaluators/Operation.cc
-	$(CPP) -c ../Evaluators/Operation.cc -o ../Evaluators/Operation.o $(CXXFLAGS)
-
-../Evaluators/Logic.o: ../Evaluators/Logic.cc
-	$(CPP) -c ../Evaluators/Logic.cc -o ../Evaluators/Logic.o $(CXXFLAGS)
-
-../FFIs/TrampolineSymbols.o: ../FFIs/TrampolineSymbols.cc
-	$(CPP) -c ../FFIs/TrampolineSymbols.cc -o ../FFIs/TrampolineSymbols.o $(CXXFLAGS)
-# Project: lib5dbuiltins
-# Makefile created by Dev-C++ 4.9.9.2
-
-CPP  = g++.exe -D__DEBUG__
-CC   = gcc.exe -D__DEBUG__
-WINDRES = windres.exe
-RES  = 
-OBJ  = ../Values/HashTable.o ../Values/Symbols.o ../Values/Values.o ../Values/Symbol.o ../Values/Keyword.o ../Scanners/Scanner.o ../Scanners/ShuntingYardParser.o ../Scanners/MathParser.o ../Scanners/LOperatorPrecedenceList.o ../Scanners/SExpressionParser.o ../Numbers/Integer.o ../Numbers/BigUnsigned.o ../Numbers/Real.o ../Numbers/Ratio.o ../ModuleSystem/Modules.o ../ModuleSystem/Exports.o ../Formatters/LATEX.o ../Formatters/SExpression.o ../Formatters/Math.o ../Formatters/UTFStateMachine.o ../FFIs/RecordPacker.o ../FFIs/VariantPacker.o ../FFIs/WIN32UI.o ../FFIs/WIN32ProcessInfos.o ../FFIs/Trampolines.o ../FFIs/WIN32.o ../FFIs/COMWrapper.o ../Evaluators/Builtins.o ../Evaluators/FFI.o ../Evaluators/Evaluators.o ../Evaluators/BuiltinSelector.o ../Evaluators/ModuleLoader.o ../Evaluators/Operation.o ../Evaluators/Logic.o ../FFIs/TrampolineSymbols.o $(RES)
-LINKOBJ  = ../Values/HashTable.o ../Values/Symbols.o ../Values/Values.o ../Values/Symbol.o ../Values/Keyword.o ../Scanners/Scanner.o ../Scanners/ShuntingYardParser.o ../Scanners/MathParser.o ../Scanners/LOperatorPrecedenceList.o ../Scanners/SExpressionParser.o ../Numbers/Integer.o ../Numbers/BigUnsigned.o ../Numbers/Real.o ../Numbers/Ratio.o ../ModuleSystem/Modules.o ../ModuleSystem/Exports.o ../Formatters/LATEX.o ../Formatters/SExpression.o ../Formatters/Math.o ../Formatters/UTFStateMachine.o ../FFIs/RecordPacker.o ../FFIs/VariantPacker.o ../FFIs/WIN32UI.o ../FFIs/WIN32ProcessInfos.o ../FFIs/Trampolines.o ../FFIs/WIN32.o ../FFIs/COMWrapper.o ../Evaluators/Builtins.o ../Evaluators/FFI.o ../Evaluators/Evaluators.o ../Evaluators/BuiltinSelector.o ../Evaluators/ModuleLoader.o ../Evaluators/Operation.o ../Evaluators/Logic.o ../FFIs/TrampolineSymbols.o $(RES)
-LIBS =  -L"C:/Custom_Programs/Dev-Cpp/lib"  -g3 
-INCS =  -I"C:/Custom_Programs/Dev-Cpp/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/WIN32"  -I"C:/Data/playground/trunk/5D/lib/Builtins/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/gc/libgc6.5bin/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins" 
-CXXINCS =  -I"C:/Custom_Programs/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Custom_Programs/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Custom_Programs/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Custom_Programs/Dev-Cpp/include/c++/3.4.2"  -I"C:/Custom_Programs/Dev-Cpp/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/WIN32"  -I"C:/Data/playground/trunk/5D/lib/Builtins/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins/gc/libgc6.5bin/include"  -I"C:/Data/playground/trunk/5D/lib/Builtins" 
-BIN  = lib5dbuiltins.a
-CXXFLAGS = $(CXXINCS)   -g3
-CFLAGS = $(INCS)   -g3
-RM = rm -f
-
-.PHONY: all all-before all-after clean clean-custom
-
-all: all-before lib5dbuiltins.a all-after
-
-
-clean: clean-custom
-	${RM} $(OBJ) $(BIN)
-
-$(BIN): $(LINKOBJ)
-	ar r $(BIN) $(LINKOBJ)
-	ranlib $(BIN)
-
-../Values/HashTable.o: ../Values/HashTable.cc
-	$(CPP) -c ../Values/HashTable.cc -o ../Values/HashTable.o $(CXXFLAGS)
-
-../Values/Symbols.o: ../Values/Symbols.cc
-	$(CPP) -c ../Values/Symbols.cc -o ../Values/Symbols.o $(CXXFLAGS)
-
-../Values/Values.o: ../Values/Values.cc
-	$(CPP) -c ../Values/Values.cc -o ../Values/Values.o $(CXXFLAGS)
-
-../Values/Symbol.o: ../Values/Symbol.cc
-	$(CPP) -c ../Values/Symbol.cc -o ../Values/Symbol.o $(CXXFLAGS)
-
-../Values/Keyword.o: ../Values/Keyword.cc
-	$(CPP) -c ../Values/Keyword.cc -o ../Values/Keyword.o $(CXXFLAGS)
-
-../Scanners/Scanner.o: ../Scanners/Scanner.cc
-	$(CPP) -c ../Scanners/Scanner.cc -o ../Scanners/Scanner.o $(CXXFLAGS)
-
-../Scanners/ShuntingYardParser.o: ../Scanners/ShuntingYardParser.cc
-	$(CPP) -c ../Scanners/ShuntingYardParser.cc -o ../Scanners/ShuntingYardParser.o $(CXXFLAGS)
-
-../Scanners/MathParser.o: ../Scanners/MathParser.cc
-	$(CPP) -c ../Scanners/MathParser.cc -o ../Scanners/MathParser.o $(CXXFLAGS)
-
-../Scanners/LOperatorPrecedenceList.o: ../Scanners/LOperatorPrecedenceList.cc
-	$(CPP) -c ../Scanners/LOperatorPrecedenceList.cc -o ../Scanners/LOperatorPrecedenceList.o $(CXXFLAGS)
-
-../Scanners/SExpressionParser.o: ../Scanners/SExpressionParser.cc
-	$(CPP) -c ../Scanners/SExpressionParser.cc -o ../Scanners/SExpressionParser.o $(CXXFLAGS)
-
-../Numbers/Integer.o: ../Numbers/Integer.cc
-	$(CPP) -c ../Numbers/Integer.cc -o ../Numbers/Integer.o $(CXXFLAGS)
-
-../Numbers/BigUnsigned.o: ../Numbers/BigUnsigned.cc
-	$(CPP) -c ../Numbers/BigUnsigned.cc -o ../Numbers/BigUnsigned.o $(CXXFLAGS)
-
-../Numbers/Real.o: ../Numbers/Real.cc
-	$(CPP) -c ../Numbers/Real.cc -o ../Numbers/Real.o $(CXXFLAGS)
-
-../Numbers/Ratio.o: ../Numbers/Ratio.cc
-	$(CPP) -c ../Numbers/Ratio.cc -o ../Numbers/Ratio.o $(CXXFLAGS)
-
-../ModuleSystem/Modules.o: ../ModuleSystem/Modules.cc
-	$(CPP) -c ../ModuleSystem/Modules.cc -o ../ModuleSystem/Modules.o $(CXXFLAGS)
-
-../ModuleSystem/Exports.o: ../ModuleSystem/Exports.cc
-	$(CPP) -c ../ModuleSystem/Exports.cc -o ../ModuleSystem/Exports.o $(CXXFLAGS)
-
-../Formatters/LATEX.o: ../Formatters/LATEX.cc
-	$(CPP) -c ../Formatters/LATEX.cc -o ../Formatters/LATEX.o $(CXXFLAGS)
-
-../Formatters/SExpression.o: ../Formatters/SExpression.cc
-	$(CPP) -c ../Formatters/SExpression.cc -o ../Formatters/SExpression.o $(CXXFLAGS)
-
-../Formatters/Math.o: ../Formatters/Math.cc
-	$(CPP) -c ../Formatters/Math.cc -o ../Formatters/Math.o $(CXXFLAGS)
-
-../Formatters/UTFStateMachine.o: ../Formatters/UTFStateMachine.cc
-	$(CPP) -c ../Formatters/UTFStateMachine.cc -o ../Formatters/UTFStateMachine.o $(CXXFLAGS)
-
-../FFIs/RecordPacker.o: ../FFIs/RecordPacker.cc
-	$(CPP) -c ../FFIs/RecordPacker.cc -o ../FFIs/RecordPacker.o $(CXXFLAGS)
-
-../FFIs/VariantPacker.o: ../FFIs/VariantPacker.cc
-	$(CPP) -c ../FFIs/VariantPacker.cc -o ../FFIs/VariantPacker.o $(CXXFLAGS)
-
-../FFIs/WIN32UI.o: ../FFIs/WIN32UI.cc
-	$(CPP) -c ../FFIs/WIN32UI.cc -o ../FFIs/WIN32UI.o $(CXXFLAGS)
-
-../FFIs/WIN32ProcessInfos.o: ../FFIs/WIN32ProcessInfos.cc
-	$(CPP) -c ../FFIs/WIN32ProcessInfos.cc -o ../FFIs/WIN32ProcessInfos.o $(CXXFLAGS)
-
-../FFIs/Trampolines.o: ../FFIs/Trampolines.cc
-	$(CPP) -c ../FFIs/Trampolines.cc -o ../FFIs/Trampolines.o $(CXXFLAGS)
-
-../FFIs/WIN32.o: ../FFIs/WIN32.cc
-	$(CPP) -c ../FFIs/WIN32.cc -o ../FFIs/WIN32.o $(CXXFLAGS)
-
-../FFIs/COMWrapper.o: ../FFIs/COMWrapper.cc
-	$(CPP) -c ../FFIs/COMWrapper.cc -o ../FFIs/COMWrapper.o $(CXXFLAGS)
-
-../Evaluators/Builtins.o: ../Evaluators/Builtins.cc
-	$(CPP) -c ../Evaluators/Builtins.cc -o ../Evaluators/Builtins.o $(CXXFLAGS)
-
-../Evaluators/FFI.o: ../Evaluators/FFI.cc
-	$(CPP) -c ../Evaluators/FFI.cc -o ../Evaluators/FFI.o $(CXXFLAGS)
-
-../Evaluators/Evaluators.o: ../Evaluators/Evaluators.cc
-	$(CPP) -c ../Evaluators/Evaluators.cc -o ../Evaluators/Evaluators.o $(CXXFLAGS)
-
-../Evaluators/BuiltinSelector.o: ../Evaluators/BuiltinSelector.cc
-	$(CPP) -c ../Evaluators/BuiltinSelector.cc -o ../Evaluators/BuiltinSelector.o $(CXXFLAGS)
-
-../Evaluators/ModuleLoader.o: ../Evaluators/ModuleLoader.cc
-	$(CPP) -c ../Evaluators/ModuleLoader.cc -o ../Evaluators/ModuleLoader.o $(CXXFLAGS)
-
-../Evaluators/Operation.o: ../Evaluators/Operation.cc
-	$(CPP) -c ../Evaluators/Operation.cc -o ../Evaluators/Operation.o $(CXXFLAGS)
-
-../Evaluators/Logic.o: ../Evaluators/Logic.cc
-	$(CPP) -c ../Evaluators/Logic.cc -o ../Evaluators/Logic.o $(CXXFLAGS)
-
-../FFIs/TrampolineSymbols.o: ../FFIs/TrampolineSymbols.cc
-	$(CPP) -c ../FFIs/TrampolineSymbols.cc -o ../FFIs/TrampolineSymbols.o $(CXXFLAGS)
+../FFIs/Allocators.o: ../FFIs/Allocators.cc
+	$(CPP) -c ../FFIs/Allocators.cc -o ../FFIs/Allocators.o $(CXXFLAGS)
