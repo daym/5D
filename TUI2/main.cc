@@ -177,10 +177,10 @@ int main(int argc, char* argv[]) {
 	int status;
 	setlocale(LC_ALL, "");
 	initImports();
-	Allocator_init();  
+	initAllocators();  
 	/*if(argc >= 1)
 		Evaluators::set_shared_dir_by_executable(argv[0]);*/
-	Evaluators::Logic_init();
+	Evaluators::initLogic();
 	initReadline();
 	status = run(prompt);
 	printf("\n");
