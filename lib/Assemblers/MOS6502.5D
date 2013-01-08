@@ -267,7 +267,13 @@ let dcp :=  \source \dest FIXME \tl
 		tl
 in 
 let dec :=  \dest \tl
-	if (memory? op)
+	if (X? dest)
+		#xCA,
+		tl
+	elif (Y? dest)
+		#x88,
+		tl
+	elif (memory? op)
 		#xCE,
 		uvalue16 (memory op),
 		tl
@@ -324,7 +330,13 @@ let eor :=  \op \tl
 		tl
 in 
 let inc :=  \dest \tl
-	if (memory? op)
+	if (X? dest)
+		#xE8,
+		tl
+	elif (Y? dest)
+		#xC8,
+		tl
+	elif (memory? op)
 		#xEE,
 		uvalue16 (memory op),
 		tl
@@ -360,38 +372,6 @@ let jsr :=  \op \tl
 	if (memory? op)
 		#x20,
 		uvalue16 (memory op),
-		tl
-	else
-		Error.raiseErrorWithCode "unknown mode" 500,
-		tl
-in 
-let lax :=  \op \tl
-	if (indirectX? op)
-		#xA3,
-		uvalue8 (indirectX op),
-		tl
-	elif (zeropage? op)
-		#xA7,
-		uvalue8 (zeropage op),
-		tl
-	elif (immediate? op)
-		#xAB,
-		tl
-	elif (memory? op)
-		#xAF,
-		uvalue16 (memory op),
-		tl
-	elif (indirectY? op)
-		#xB3,
-		uvalue8 (indirectY op),
-		tl
-	elif (zeropageY? op)
-		#xB7,
-		uvalue8 (zeropageY op),
-		tl
-	elif (memoryY? op)
-		#xBF,
-		uvalue16 (memoryY op),
 		tl
 	else
 		Error.raiseErrorWithCode "unknown mode" 500,
@@ -734,46 +714,6 @@ let sbc :=  \op \tl
 		Error.raiseErrorWithCode "unknown mode" 500,
 		tl
 in 
-let sre :=  \op FIXME \tl
-	if (memoryX? op)
-		#x5F,
-		uvalue16 (memoryX op),
-		tl
-	elif (memoryY? op)
-		#x5B,
-		uvalue16 (memoryY op),
-		tl
-	elif (zeropageY? op)
-		#x53,
-		uvalue8 (zeropageY op),
-		tl
-	elif (indirectY? op)
-		#x54,
-		uvalue8 (indirectY op),
-		tl
-	elif (zeropage? op)
-		#x47,
-		uvalue8 (zeropage op),
-		tl
-	elif (indirectX? op)
-		#x43,
-		uvalue8 (indirectX op),
-		tl
-	elif (accumulator? op)
-		#x4A,
-		tl
-	elif (zeropageX? op)
-		#x57,
-		uvalue8 (zeropageX op),
-		tl
-	elif (memory? op)
-		#x4F,
-		uvalue16 (memory op),
-		tl
-	else
-		Error.raiseErrorWithCode "unknown mode" 500,
-		tl
-in 
 let loadRegMem := 
 	rem "ST"$
 	let A := \op \tl
@@ -846,6 +786,110 @@ let loadRegMem :=
 	in 
 	\source \dest \tl Composition.dispatch1 #exports[A X Y] source dest tl
 in 
+rem "Note: invalid opcodes have been left out"$
+let break := \tl 
+	#x00,
+	tl
+in 
+let clearCarry := \tl 
+	#x18,
+	tl
+in 
+let clearDirection := \tl 
+	#xD8,
+	tl
+in 
+let clearInterruptDisabled := \tl 
+	#x58,
+	tl
+in 
+let clearOverflow := \tl 
+	#xB8,
+	tl
+in 
+let pushReg := 
+	let A := \tl 
+		#x48,
+		tl
+	in 
+	let P := \tl 
+		#x08,
+		tl
+	in 
+	\reg \tl #exports[A P] reg tl
+in 
+let popReg := 
+	let A := \tl
+		#x68,
+		tl
+	in
+	let P := \tl
+		#x28,
+		tl
+	in
+	\reg \tl #exports[A P] reg tl
+in 
+let rti := \tl 
+	#x40,
+	tl
+in 
+let ret := \tl 
+	#x60,
+	tl
+in 
+let setCarry := \tl 
+	#x38,
+	tl
+in 
+let setDirection := \tl 
+	#xF8,
+	tl
+in 
+let setInterruptDisabled := \tl 
+	#x78,
+	tl
+in 
+let loadRegReg := 
+	let A := \dest \tl
+		if (symbolsEqual? dest 'X)
+			#xAA,
+			tl
+		elif (symbolsEqual? dest 'Y)
+			#xA8,
+			tl
+		else
+			Error.raiseErrorWithCode "loadRegReg unknown dest register" 500,
+			tl
+	in
+	let S := \dest \tl
+		if (symbolsEqual? dest 'X)
+			#xBA,
+			tl
+		else
+			Error.raiseErrorWithCode "loadRegReg unknown dest register" 500,
+			tl
+	in 
+	let X := \dest \tl
+		if (symbolsEqual? dest 'A)
+			#x8A,
+			tl
+		elif (symbolsEqual? dest 'S)
+			#x9A,
+			tl
+		else
+			Error.raiseErrorWithCode "loadRegReg unknown dest register" 500,
+			tl
+	in 
+	let Y := \dest \tl
+		if (symbolsEqual? dest 'A)
+			#x98,
+			tl
+		else
+			Error.raiseErrorWithCode "loadRegReg unknown dest register" 500,
+			tl
+	in 
+	\source \dest \tl #exports[A S X Y] source dest tl
+in 
 #exports[
 branchRel
 adc
@@ -869,6 +913,18 @@ ora
 rol
 ror
 sbc
-sre
 loadRegMem
+break
+clearCarry
+clearDirection
+clearInterruptDisabled
+clearOverflow
+pushReg
+popReg
+rti
+ret
+setCarry
+setDirection
+setInterruptDisabled
+loadRegReg
 ]
