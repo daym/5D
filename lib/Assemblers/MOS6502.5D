@@ -232,40 +232,6 @@ let compareRegOp :=
 	in 
 	\a \b \tl Composition.dispatch1 #exports[A X Y] a b tl
 in 
-let dcp :=  \source \dest FIXME \tl
-	if (indirectX? op)
-		#xC3,
-		uvalue8 (indirectX op),
-		tl
-	elif (zeropage? op)
-		#xC7,
-		uvalue8 (zeropage op),
-		tl
-	elif (memory? op)
-		#xCF,
-		uvalue16 (memory op),
-		tl
-	elif (indirectY? op)
-		#xD3,
-		uvalue8 (indirectY op),
-		tl
-	elif (zeropageX? op)
-		#xD7,
-		uvalue8 (zeropageX op),
-		tl
-	elif (memoryY? op)
-		#xDB,
-		uvalue16 (memoryY op),
-		tl
-	elif (memoryX? op)
-		#xDF,
-		value16 source,
-		uvalue16 (memoryX op),
-		tl
-	else
-		Error.raiseErrorWithCode "unknown mode" 500,
-		tl
-in 
 let dec :=  \dest \tl
 	if (X? dest)
 		#xCA,
@@ -897,7 +863,6 @@ and
 asl
 bit
 compare
-dcp
 dec
 eor
 inc
