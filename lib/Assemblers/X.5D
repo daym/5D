@@ -63,7 +63,7 @@ let value8 := \value \tl
 	if(valueFits8? value)
 		uvalue8 (if(value < 0) #x100 + value else value) tl
 	else
-		Error.raiseErrorWithCode "value32 value out of range" 500,
+		Error.raiseErrorWithCode "value8 value out of range" 500,
 		tl
 in
 let uvalue64 := \value \tl
