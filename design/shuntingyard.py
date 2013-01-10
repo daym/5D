@@ -13,6 +13,7 @@ def parse(tokenizer, OPL, env):
 	openingParenOf = OPL(intern("openingParenOf"))
 	argcount = 0
 	# TODO check argcount and scream at the right moment if necessary
+	# TODO support two-argument prefix operators ("if", "let", "import", "\\")
 	for input in tokenizer:
 		# TODO right-associative operators, suffix operators, prefix operators
 		if operatorP(input):
@@ -108,11 +109,14 @@ if __name__ == "__main__":
 						#if inputFile.read(1) == '[':
 						print "FIXME run the entire parser"
 						return None, inputFile.read(1)
-							
+				elif c == 't':
+					return intern("#t"), inputFile.read(1)
+				elif c == 'f':
+					return intern("#f"), inputFile.read(1)
 				return (env(intern("error"))("<value>"), "")
 			return readHash
 		elif name == intern("error"):
-			return lambda *args: (intern("error"), args)
+			return lambda *args: (intern("error"), "expected \"%s\", got \"%s\"" % (args[0], args[1]))
 		else:
 			return lambda *args: (env(intern("error"))("<envitem>", name), "")
 	for val in scanner.tokenize(inputFile, env):
@@ -142,6 +146,6 @@ if __name__ == "__main__":
 	test1("2*3*4+5", ["2", "3", "*", "4", "*", "5", "+"])
 	test1("2*3*4+5-10/3", ["2", "3", "*", "4", "*", "5", "+", "10", "3", "/", "-"])
 	test1Error(")", [])
-	#for val in parse(scanner.tokenize(inputFile, env), OPL, env):
-	#	print val,
+	for val in parse(scanner.tokenize(inputFile, env), OPL, env):
+		print val,
 
