@@ -3,6 +3,14 @@ import sys
 import symbols
 from symbols import intern
 def parse(tokenizer, OPL, env):
+	"""
+	This works like the following:
+		#operators is a stack of operators. It is always kept in order of ascending precedence. 
+		(non-operator) values are just emitted.
+		An opening parenthesis would just be put on the operator stack (without popping anything off), EVEN THOUGH it is recorded with the lowest precedence ever.
+		An operator is handled like this: if we try to push a new operator with lower precedence on top, it will keep popping (and emitting) existing operators off the operator stack until the invariant is satisfied. Then the operator is pushed on the operator stack.
+		A closing parenthesis is an "operator" which is not being put on the operator stack (it would do nothing anyway), otherwise handled like any other operator.
+	"""
 	error = env(intern("error"))
 	operatorP = OPL(intern("operator?"))
 	operatorArgcount = OPL(intern("operatorArgcount"))
@@ -12,6 +20,7 @@ def parse(tokenizer, OPL, env):
 	closingParenP = OPL(intern("closingParen?"))
 	openingParenOf = OPL(intern("openingParenOf"))
 	argcount = 0
+	fillcount = 0
 	# TODO check argcount and scream at the right moment if necessary
 	# TODO support two-argument prefix operators ("if", "let", "import", "\\")
 	for input in tokenizer:
@@ -23,10 +32,15 @@ def parse(tokenizer, OPL, env):
 				while len(operators) > 0 and insideP(operators[-1]):
 					pendingOperator = operators[-1]
 					if operatorLE(input, pendingOperator):
+						argcount = operatorArgcount(pendingOperator)
+						if fillcount < argcount:
+							yield error("<%s-operands>" % (operators[-1],), "<too-little>")
+							return
+						fillcount -= argcount - 1 # 1 is the result slot
 						yield operators.pop()
 					else:
 						break
-				if bClosingParen:
+				if bClosingParen: # TODO (5*)
 					if len(operators) > 0 and (operators[-1] is openingParenOf(input)):
 						operators.pop()
 					else: # unbalanced paren, wrong paren
@@ -39,15 +53,17 @@ def parse(tokenizer, OPL, env):
 			argcount = operatorArgcount(input)
 		else:
 			yield input
+			fillcount += 1
 	while len(operators) > 0:
+		argcount = operatorArgcount(operators[-1])
+		if fillcount < argcount:
+			yield error("<%s-operands>" % (operators[-1],), "<too-little>")
+			return
+		fillcount -= argcount - 1 # 1 is the result slot
 		yield operators.pop()
-
 if __name__ == "__main__":
 	import scanner
 	import StringIO as io
-	#inputFile = io.StringIO("2+2")
-	inputFile = open(sys.argv[1], "r")
-	co = 31
 	def str1(val):
 		if isinstance(val, str):
 			return "%r" % val
@@ -119,14 +135,6 @@ if __name__ == "__main__":
 			return lambda *args: (intern("error"), "expected \"%s\", got \"%s\"" % (args[0], args[1]))
 		else:
 			return lambda *args: (env(intern("error"))("<envitem>", name), "")
-	for val in scanner.tokenize(inputFile, env):
-		sys.stdout.write("\033[%dm" % co)
-		co = 32 if co == 31 else 31
-		sys.stdout.write(str1(val) + " ")
-		if(str(val) == "<LF>"):
-			sys.stdout.write("\n")
-	sys.stdout.write("\033[m")
-	inputFile.seek(0)
 	print "---"
 	def errorP(node):
 		return isinstance(node, tuple) and len(node) > 0 and node[0] is intern("error")
@@ -143,9 +151,22 @@ if __name__ == "__main__":
 	test1("2+3*5", ["2", "3", "5", "*", "+"])
 	test1("2*3+5", ["2", "3", "*", "5", "+"])
 	test1("2*(3+5)", ["2", "3", "5", "+", "*"])
+	test1("2*(3+(5+4)+2)", ["2", "3", "5", "4", "+", "+", "2", "+", "*"])
 	test1("2*3*4+5", ["2", "3", "*", "4", "*", "5", "+"])
 	test1("2*3*4+5-10/3", ["2", "3", "*", "4", "*", "5", "+", "10", "3", "/", "-"])
 	test1Error(")", [])
+	test1Error("3*", [])
+	#inputFile = io.StringIO("2+2")
+	co = 31
+	inputFile = open(sys.argv[1], "r")
+	for val in scanner.tokenize(inputFile, env):
+		sys.stdout.write("\033[%dm" % co)
+		co = 32 if co == 31 else 31
+		sys.stdout.write(str1(val) + " ")
+		if(str(val) == "<LF>"):
+			sys.stdout.write("\n")
+	sys.stdout.write("\033[m")
+	inputFile.seek(0)
 	for val in parse(scanner.tokenize(inputFile, env), OPL, env):
 		print val,
 
