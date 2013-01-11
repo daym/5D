@@ -23,6 +23,7 @@ def parse(tokenizer, env):
 	openingParenP = OPL(intern("openingParen?"))
 	closingParenP = OPL(intern("closingParen?"))
 	openingParenOf = OPL(intern("openingParenOf"))
+	macroStarterP = OPL(intern("macroStarter?"))
 	argcount = 0
 	# TODO check argcount and scream at the right moment if necessary
 	# TODO support two-argument prefix operators ("if", "let", "import", "\\")
@@ -50,6 +51,8 @@ def parse(tokenizer, env):
 						return
 			elif argcount == -1:
 				bUnary = True
+			if macroStarterP(input):
+				yield input
 			# else (quasi-)binary, postfix
 			bClosingParen = closingParenP(input)
 			insideP = (lambda o, bUnary=bUnary: not openingParenP(o) and (not bUnary or unaryP(o))) if bClosingParen else (lambda o, bUnary=bUnary: not bUnary or unaryP(o))
@@ -164,6 +167,8 @@ if __name__ == "__main__":
 			       env(intern("error"))("<prefix-operator>", str1(node))
 		def operatorP(node):
 			return node in level.keys() # is intern("+") or node is intern("-") or node is intern("*") or node is intern("/")
+		def macroStarterP(node):
+			return node is intern("let")
 		def operatorArgcount(node): # positive, > 1: left assoc, negative: right assoc. = 1: prefix, = -1: suffix
 			R = -2
 			N = 2 # FIXME
@@ -199,6 +204,7 @@ if __name__ == "__main__":
 			       P if node is intern("let!") else \
 			       P if node is intern("import") else \
 			       S if node is intern("!") else \
+		               P if macroStarterP(node) else \
 			       2
 		def operatorLE(a,b):
 			return level[a] < level[b] or (level[a] == level[b] and operatorArgcount(b) > 0) # latter: leave right-associative operators on stack if in doubt.
@@ -248,6 +254,8 @@ if __name__ == "__main__":
 			return lambda *args: (intern("error"), "expected \"%s\", got \"%s\"" % (args[0], args[1]))
 		elif name is intern("error?"):
 			return errorP
+		elif name is intern("macroStarter?"):
+			return macroStarterP
 		else:
 			#return env(intern("error"))("<envitem>", name)
 			return lambda *args: (env(intern("error"))("<envitem>", name), "")
@@ -310,7 +318,7 @@ if __name__ == "__main__":
 	test1("2*3*4+5-10/3", ["2", "3", "*", "4", "*", "5", "+", "10", "3", "/", "-"])
 	test1("-3", ["0", "3", "-"])
 	test1("2** -3", ["2", "0", "3", "-", "**"])
-	test1("let x = 5", ["x", "5", "=", "let"])
+	test1("let x = 5", ["let", "x", "5", "=", "let"])
 	test1("f x", ["f", "x", " "])
 	test1("f x y", ["f", "x", "y", " ", " "])
 	test1("3 + f x y", ["3", "f", "x", "y", " ", " ", "+"])
