@@ -36,7 +36,6 @@ def parse(tokenizer, env):
 		else:
 			return argcount == 1 or argcount == -1
 	for input in tokenizer:
-		# TODO right-associative operators, suffix operators, prefix operators
 		if openingParenP(input):
 			operators.append(input)
 		elif operatorP(input):
