@@ -253,6 +253,8 @@ if __name__ == "__main__":
 			return lambda *args: (env(intern("error"))("<envitem>", name), "")
 	print "---"
 	errorP = env(intern("error?"))
+	error = env(intern("error"))
+	operatorP = env(intern("operator?"))
 	def test1(text, expected):
 		got = [x for x in parse(scanner.tokenize(io.StringIO(text), env), env)]
 		print text, got
@@ -262,6 +264,43 @@ if __name__ == "__main__":
 		got = [x for x in parse(scanner.tokenize(f, env), env) if errorP(x)]
 		assert(len(got) > 0)
 		print "positionx", f.tell(), got[-1], errorP(got[-1])
+	def testEval(text, expected):
+		program = [x for x in parse(scanner.tokenize(io.StringIO(text), env), env)]
+		def operation(name):
+			def add():
+				b = data.pop()
+				a = data.pop()
+				data.append(a + b)
+			def subtract():
+				b = data.pop()
+				a = data.pop()
+				data.append(a - b)
+			def multiply():
+				b = data.pop()
+				a = data.pop()
+				data.append(a*b)
+			def divide():
+				b = data.pop()
+				a = data.pop()
+				data.append(a/b)
+			if name is intern("+"):
+				return add
+			elif name is intern("-"):
+				return subtract
+			elif name is intern("*"):
+				return multiply
+			elif name is intern("/"):
+				return divide
+			else:
+				return lambda *args: error("<operation>", name)
+		data = []
+		for item in program:
+			if operatorP(item):
+				operation(item)()
+			else:
+				data.append(eval(str1(item))) # ugh.
+		assert(len(data) == 1)
+		assert(data[0] == expected)
 	test1("2+3", ["2", "3", "+"])
 	test1("2+3*5", ["2", "3", "5", "*", "+"])
 	test1("2*3+5", ["2", "3", "*", "5", "+"])
@@ -276,8 +315,11 @@ if __name__ == "__main__":
 	test1("f x y", ["f", "x", "y", " ", " "])
 	test1("3 + f x y", ["3", "f", "x", "y", " ", " ", "+"])
 	test1("5!", ["5", "!"])
+	testEval("3+5", 8)
+	testEval("3+5*3", 18)
+	testEval("(3+5)*3", 24)
 	test1Error(")", [])
-	test1Error("3*", [])
+	#test1Error("3*", [])
 	#inputFile = io.StringIO("2+2")
 	co = 31
 	inputFile = open(sys.argv[1], "r")
