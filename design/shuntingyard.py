@@ -168,7 +168,7 @@ if __name__ == "__main__":
 		def operatorP(node):
 			return node in level.keys() # is intern("+") or node is intern("-") or node is intern("*") or node is intern("/")
 		def macroStarterP(node):
-			return node is intern("let")
+			return node is intern("let") or node is intern("import") or node is intern("\\")
 		def operatorArgcount(node): # positive, > 1: left assoc, negative: right assoc. = 1: prefix, = -1: suffix
 			R = -2
 			N = 2 # FIXME
@@ -319,6 +319,7 @@ if __name__ == "__main__":
 	test1("-3", ["0", "3", "-"])
 	test1("2** -3", ["2", "0", "3", "-", "**"])
 	test1("let x = 5", ["let", "x", "5", "=", "let"])
+	test1("\\x x", [])
 	test1("f x", ["f", "x", " "])
 	test1("f x y", ["f", "x", "y", " ", " "])
 	test1("3 + f x y", ["3", "f", "x", "y", " ", " ", "+"])
