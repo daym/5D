@@ -50,7 +50,7 @@ def parse(tokenizer, env):
 						return
 			elif argcount == -1:
 				bUnary = True
-			# else binary, postfix
+			# else (quasi-)binary, postfix
 			bClosingParen = closingParenP(input)
 			insideP = (lambda o, bUnary=bUnary: not openingParenP(o) and (not bUnary or unaryP(o))) if bClosingParen else (lambda o, bUnary=bUnary: not bUnary or unaryP(o))
 			while len(operators) > 0 and insideP(operators[-1]):
