@@ -28,29 +28,30 @@ def parse(tokenizer, env):
 	# TODO support two-argument prefix operators ("if", "let", "import", "\\")
 	# TODO in principle, there would also be non-associative operators like relational operators. We handle them as left-associative.
 	prevInput = intern("(")
+	def unaryP(input):
+		argcount = operatorArgcount(input)
+		if argcount > 1:
+			neutral = operatorPrefixNeutral(input)
+			return not errorP(neutral)
+		else:
+			return argcount == 1 or argcount == -1
 	for input in tokenizer:
 		# TODO right-associative operators, suffix operators, prefix operators
 		if openingParenP(input):
 			operators.append(input)
 		elif operatorP(input):
-			def unaryPrefixP(input):
-				argcount = operatorArgcount(input)
-				if argcount > 1:
-					neutral = operatorPrefixNeutral(input)
-					return not errorP(neutral)
-				else:
-					return argcount == 1
 			bUnary = False
+			argcount = operatorArgcount(input)
 			if operatorP(prevInput): # special-case prefix operators
 				bUnary = True
-				if operatorArgcount(input) > 1:
+				if argcount > 1:
 					neutral = operatorPrefixNeutral(input)
 					yield neutral
 					if errorP(neutral):
 						return
 			# else binary, postfix
 			bClosingParen = closingParenP(input)
-			insideP = (lambda o, bUnary=bUnary: not openingParenP(o) and (not bUnary or unaryPrefixP(o))) if bClosingParen else (lambda o, bUnary=bUnary: not bUnary or unaryPrefixP(o))
+			insideP = (lambda o, bUnary=bUnary: not openingParenP(o) and (not bUnary or unaryP(o))) if bClosingParen else (lambda o, bUnary=bUnary: not bUnary or unaryP(o))
 			while len(operators) > 0 and insideP(operators[-1]):
 				pendingOperator = operators[-1]
 				if operatorLE(input, pendingOperator):
@@ -67,9 +68,23 @@ def parse(tokenizer, env):
 				operators.append(input)
 			argcount = operatorArgcount(input)
 		else:
-			yield input
-			if not operatorP(prevInput):
-				yield intern(" ")
+			if operatorP(prevInput): # normal value
+				yield input
+			else: # application, keep in sync with above.
+				o = input
+				yield input
+				input = intern(" ")
+				# binary
+				insideP = lambda o: True
+				while len(operators) > 0 and insideP(operators[-1]):
+					pendingOperator = operators[-1]
+					if operatorLE(input, pendingOperator):
+						yield operators.pop()
+					else:
+						break
+				operators.append(input)
+				argcount = operatorArgcount(input)
+				input = o
 		prevInput = input if not closingParenP(input) else None
 	while len(operators) > 0:
 		yield operators.pop()
@@ -253,7 +268,10 @@ if __name__ == "__main__":
 	test1("2*3*4+5-10/3", ["2", "3", "*", "4", "*", "5", "+", "10", "3", "/", "-"])
 	test1("-3", ["0", "3", "-"])
 	test1("2** -3", ["2", "0", "3", "-", "**"])
-	test1("let x = 5", ["x", "let"])
+	test1("let x = 5", ["x", "5", "=", "let"])
+	test1("f x", ["f", "x", " "])
+	test1("f x y", ["f", "x", "y", " ", " "])
+	test1("3 + f x y", ["3", "f", "x", "y", " ", " ", "+"])
 	test1Error(")", [])
 	test1Error("3*", [])
 	#inputFile = io.StringIO("2+2")
