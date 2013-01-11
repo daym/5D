@@ -49,6 +49,8 @@ def parse(tokenizer, env):
 					yield neutral
 					if errorP(neutral):
 						return
+			elif argcount == -1:
+				bUnary = True
 			# else binary, postfix
 			bClosingParen = closingParenP(input)
 			insideP = (lambda o, bUnary=bUnary: not openingParenP(o) and (not bUnary or unaryP(o))) if bClosingParen else (lambda o, bUnary=bUnary: not bUnary or unaryP(o))
@@ -102,9 +104,10 @@ if __name__ == "__main__":
 			intern("("): -1,
 			intern("{"): -1,
 			intern("["): -1,
-			intern("."): 32,
-			intern("_"): 31,
-			intern("^"): 31,
+			intern("."): 33,
+			intern("_"): 32,
+			intern("^"): 32,
+			intern("!"): 31,
 			intern("**"): 30,
 			intern("*"): 29,
 			intern("⋅"): 29,
@@ -196,6 +199,7 @@ if __name__ == "__main__":
 			       P if node is intern("let") else \
 			       P if node is intern("let!") else \
 			       P if node is intern("import") else \
+			       S if node is intern("!") else \
 			       2
 		def operatorLE(a,b):
 			return level[a] < level[b] or (level[a] == level[b] and operatorArgcount(b) > 0) # latter: leave right-associative operators on stack if in doubt.
@@ -272,6 +276,7 @@ if __name__ == "__main__":
 	test1("f x", ["f", "x", " "])
 	test1("f x y", ["f", "x", "y", " ", " "])
 	test1("3 + f x y", ["3", "f", "x", "y", " ", " ", "+"])
+	test1("5!", ["5", "!"])
 	test1Error(")", [])
 	test1Error("3*", [])
 	#inputFile = io.StringIO("2+2")
