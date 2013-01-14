@@ -3,8 +3,10 @@
 import sys
 import symbols
 from symbols import intern
-import StringIO as io
-
+try:
+	import StringIO as io
+except ImportError:
+	import io
 mathUnicodeRanges = [
 	(0x2200, 0x2300),
 	(0x27C0, 0x27F0),
@@ -248,7 +250,7 @@ if __name__ == "__main__":
 		if c == 'e': # exports, probably.
 			if inputFile.read(len("xports")) == "xports":
 				#if inputFile.read(1) == '[':
-				print "FIXME run the entire parser"
+				print("FIXME run the entire parser")
 				return None, inputFile.read(1)
 					
 		return (env("error")("<value>"), "")

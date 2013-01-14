@@ -56,7 +56,7 @@ def parse(tokenizer, env):
 			# else (quasi-)binary, postfix
 			bClosingParen = closingParenP(input)
 			insideP = (lambda o, bUnary=bUnary: not openingParenP(o) and (not bUnary or unaryP(o))) if bClosingParen else (lambda o, bUnary=bUnary: not bUnary or unaryP(o))
-			while len(operators) > 0 and insideP(operators[-1]):
+			while len(operators) > 0 and insideP(operators[-1]): # keep in sync with below
 				pendingOperator = operators[-1]
 				if operatorLE(input, pendingOperator):
 					yield operators.pop()
@@ -95,7 +95,10 @@ def parse(tokenizer, env):
 	# TODO check that in the end there is exactly one item on the result stack
 if __name__ == "__main__":
 	import scanner
-	import StringIO as io
+	try:
+		import StringIO as io
+	except ImportError:
+		import io
 	def str1(val):
 		if isinstance(val, str):
 			return "%r" % val
@@ -242,7 +245,7 @@ if __name__ == "__main__":
 				if c == 'e': # exports, probably.
 					if inputFile.read(len("xports")) == "xports":
 						#if inputFile.read(1) == '[':
-						print "FIXME run the entire parser"
+						print("FIXME run the entire parser")
 						return None, inputFile.read(1)
 				elif c == 't':
 					return intern("#t"), inputFile.read(1)
@@ -259,19 +262,19 @@ if __name__ == "__main__":
 		else:
 			#return env(intern("error"))("<envitem>", name)
 			return lambda *args: (env(intern("error"))("<envitem>", name), "")
-	print "---"
+	print("---")
 	errorP = env(intern("error?"))
 	error = env(intern("error"))
 	operatorP = env(intern("operator?"))
 	def test1(text, expected):
 		got = [x for x in parse(scanner.tokenize(io.StringIO(text), env), env)]
-		print text, got
+		print(text, got)
 		assert got == map(intern, expected)
 	def test1Error(text, expected):
 		f = io.StringIO(text)
 		got = [x for x in parse(scanner.tokenize(f, env), env) if errorP(x)]
 		assert(len(got) > 0)
-		print "positionx", f.tell(), got[-1], errorP(got[-1])
+		print("positionx", f.tell(), got[-1], errorP(got[-1]))
 	def testEval(text, expected):
 		program = [x for x in parse(scanner.tokenize(io.StringIO(text), env), env)]
 		def operation(name):
@@ -321,10 +324,12 @@ if __name__ == "__main__":
 	test1("let x = 5", ["let", "x", "5", "=", "let"])
 	test1("\\x 5", ["\\", "x", "5", " ", "\\"])
 	test1("(\\x 5) 3", ["\\", "x", "5", " ", "\\", "3", " "])
+	test1("(\\(x) 5) 3", ["\\", "x", "5", " ", "\\", "3", " "])
 	test1("f x", ["f", "x", " "])
 	test1("f x y", ["f", "x", "y", " ", " "])
 	test1("3 + f x y", ["3", "f", "x", "y", " ", " ", "+"])
 	test1("5!", ["5", "!"])
+	test1("foo (+)", ["foo", "-", " "])
 	testEval("3+5", 8)
 	testEval("3+5*3", 18)
 	testEval("(3+5)*3", 24)
@@ -342,5 +347,4 @@ if __name__ == "__main__":
 	sys.stdout.write("\033[m")
 	inputFile.seek(0)
 	for val in parse(scanner.tokenize(inputFile, env), env):
-		print val,
-
+		sys.stdout.write("%s " % (val, ))
