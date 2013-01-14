@@ -268,8 +268,8 @@ if __name__ == "__main__":
 	operatorP = env(intern("operator?"))
 	def test1(text, expected):
 		got = [x for x in parse(scanner.tokenize(io.StringIO(text), env), env)]
-		print(text, got)
-		assert got == map(intern, expected)
+		print(text, got, [x for x in map(intern, expected)])
+		assert got == [x for x in map(intern, expected)]
 	def test1Error(text, expected):
 		f = io.StringIO(text)
 		got = [x for x in parse(scanner.tokenize(f, env), env) if errorP(x)]
