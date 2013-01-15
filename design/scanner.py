@@ -73,6 +73,18 @@ def operatorCharP(input):
 	return input and input in "$%&*+,-./:;<=>@\\^_`|~"
 def braceCharP(input):
 	return input and input in "()[]{}"
+def shebangBodyCharP(input):
+	return input and input != '\n'
+def octalBodyCharP(input):
+	return input and input in "01234567"
+def hexadecimalBodyCharP(input):
+	return input and input.lower() in "0123456789abcdef"
+def binaryBodyCharP(input):
+	return input and input in "01"
+def stringBodyCharP(input):
+	return input and input != '"' # FIXME escape
+def raryBodyCharP(digits):
+	return lambda input: input and input.lower() in digits
 def tokenize(inputFile, env):
 	error = env(intern("error"))
 	def collect(c, condition, text = ""):
@@ -149,23 +161,23 @@ def tokenize(inputFile, env):
 					yield None, c
 					return
 	def readShebang():
-		val, c = collect1(lambda input: input != '\n')
+		val, c = collect1(shebangBodyCharP)
 		return val, c
 	def collectSpecialCoding(c):
 		c = inputFile.read(1)
 		if c == 'o':
-			return collect2(lambda input: input and input in "0123456789")
+			return collect2(octalBodyCharP)
 		elif c == 'x':
-			return collect2(lambda input: input and input.lower() in "0123456789abcdef")
+			return collect2(hexadecimalBodyCharP )
 		elif c == '*':
-			return collect2(lambda input: input and input in "01")
+			return collect2(binaryBodyCharP)
 		elif c == 'b':
-			return collect2(lambda input: input and input in "01")
+			return collect2(binaryBodyCharP)
 		elif digitCharP(c): # r
 			basis, c = collect(c, digitCharP)
-			if c == 'r':
+			if c == 'r' and basis >= 2 and basis <= 36:
 				digits = manydigits[:basis]
-				return collect2(lambda input, digits=digits: input and input in digits)
+				return collect2(raryBodyCharP(digits))
 			else:
 				return error("<special-coding>"), c
 		elif c == '!':
@@ -176,7 +188,7 @@ def tokenize(inputFile, env):
 			val, c = env(intern("#"))(inputFile, c)
 			return val, c
 	def collectString(c):
-		val, c = collect1(lambda input: input and input != '"') # FIXME quote
+		val, c = collect1(stringBodyCharP) # FIXME quote
 		if c == '"':
 			c = inputFile.read(1)
 			return val, c
