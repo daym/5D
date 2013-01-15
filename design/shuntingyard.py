@@ -109,6 +109,7 @@ if __name__ == "__main__":
 			intern("("): -1,
 			intern("{"): -1,
 			intern("["): -1,
+			intern("<indent>"): -1,
 			intern("."): 33,
 			intern("_"): 32,
 			intern("^"): 32,
@@ -162,6 +163,7 @@ if __name__ == "__main__":
 			intern(")"): -1,
 			intern("}"): -1,
 			intern("]"): -1,
+			intern("<dedent>"): -1,
 		}
 		def errorP(node):
 			return isinstance(node, tuple) and len(node) > 0 and node[0] is intern("error")
@@ -212,11 +214,11 @@ if __name__ == "__main__":
 		def operatorLE(a,b):
 			return level[a] < level[b] or (level[a] == level[b] and operatorArgcount(b) > 0) # latter: leave right-associative operators on stack if in doubt.
 		def openingParenP(node):
-			return node is intern("(") or node is intern("{") or node is intern("[")
+			return node is intern("(") or node is intern("{") or node is intern("[") or node is intern("<indent>")
 		def closingParenP(node):
-			return node is intern(")") or node is intern("}") or node is intern("]")
+			return node is intern(")") or node is intern("}") or node is intern("]") or node is intern("<dedent>")
 		def openingParenOf(node):
-			return intern("(") if node is intern(")") else intern("{") if node is intern("}") else intern("[") if node is intern("]") else intern("<none>")
+			return intern("(") if node is intern(")") else intern("{") if node is intern("}") else intern("[") if node is intern("]") else intern("<indent>") if node is intern("<dedent>") else intern("<none>")
 		#def closingParenOfP(node):
 		def shebang(v):
 			return None
