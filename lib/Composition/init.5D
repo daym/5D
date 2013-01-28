@@ -22,5 +22,5 @@ let makeModuleBox := Builtins.makeModuleBox in
 let dispatch := Builtins.dispatchModule in 
 let dispatch1 := (\table dispatch table raiseMissingSymbolError) in 
 let withInterface1 := \filename \table dispatch table (raiseMissingSymbolError filename) in 
-dispatch (#exports[(|) ($) compose flip id rec rem export dispatch raiseMissingSymbolError raiseMissingSymbolError2 dispatch1 withInterface1])
+dispatch (#exports[(|) ($) compose flip id (rec) (rem) (export) dispatch raiseMissingSymbolError raiseMissingSymbolError2 dispatch1 withInterface1])
 (raiseMissingSymbolError2 filename)
