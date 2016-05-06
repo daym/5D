@@ -1,5 +1,6 @@
 #!/usr/bin/5D
 let (rem) := \a \b b in 
+let ($) := (\a \b a b) in 
 rem "make sure NOT to use complicated operators here. The operator precedence lists have to be able to require this module without circular dependencies." $
 import [(if) (else) (:) nil (,)] from Builtins in 
 let raiseMissingSymbolError2 := \mod \key 
@@ -10,7 +11,6 @@ let raiseMissingSymbolError2 := \mod \key
 in 
 let raiseMissingSymbolError := raiseMissingSymbolError2 "<unknown>" in 
 let (|) := (\a \b b a) in 
-let ($) := (\a \b a b) in 
 let compose := (\f \g \x f (g x)) in 
 let flip := (\f \a \b f b a) in 
 let id := (\f f) in 
