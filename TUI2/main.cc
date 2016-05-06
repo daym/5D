@@ -1,6 +1,8 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <stdio.h>
+#include <unistd.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <5D/Allocators>
@@ -150,9 +152,14 @@ static void initReadline(void) {
 void REPL_run(const char* line, NodeT inputValue) {
 	//Evaluators::execute(makeCall(printMath, OPL, stdout, 0, 0, inputNode), NULL);
 	//printf("\n");
-	NodeT result = Evaluators::eval(ModuleSystem::prepareModule(inputNode, "<stdin>"), NULL);
-	Evaluators::execute(makeCall(printMath, OPL, stdout, 0, 0, result), NULL);
-	printf("\n");
+	try {
+		NodeT result = Evaluators::eval(ModuleSystem::prepareModule(inputNode, "<stdin>"), NULL);
+		Evaluators::execute(makeCall(printMath, OPL, stdout, 0, 0, result), NULL);
+		printf("\n");
+	} catch (std::exception& e) {
+		std::string s = e.what();
+		fprintf(stderr, "error: %s\n", s.c_str()); /* FIXME print classname */
+	}
 	//std::string resultStr = Evaluators::str(result);
 	//printf("ok %s\n", resultStr.c_str());
 }
