@@ -32,8 +32,10 @@ Values/Values.o \
 Values/Symbols.o \
 Values/Hashtable.o \
 Values/Keyword.o \
-Values/Symbol.o \
-BuiltinsModule.o
+Values/Symbol.o
+
+# \
+#BuiltinsModule.o
 
 #LIBGC_LD_WRAP_LDFLAGS = -Wl,--wrap -Wl,read -Wl,--wrap -Wl,dlopen -Wl,--wrap -Wl,pthread_create -Wl,--wrap -Wl,pthread_join -Wl,--wrap -Wl,pthread_detach -Wl,--wrap -Wl,pthread_sigmask -Wl,--wrap -Wl,sleep
 LIBGC_LD_WRAP_CFLAGS = -D_REENTRANT -DGC_THREADS -DUSE_LD_WRAP
@@ -83,6 +85,7 @@ distclean: clean
 	rm -f $(LIB) $(STATIC_LIB)
 Formatters/UTF-8_to_LATEX_result.h: Formatters/UTF-8_to_LATEX.table Formatters/generate-state-machine
 	Formatters/generate-state-machine Formatters/UTF-8_to_LATEX.table >tmp4711 && mv tmp4711 Formatters/UTF-8_to_LATEX_result.h
+Formatters/UTFStateMachine.o: Formatters/UTFStateMachine.cc Formatters/UTF-8_to_LATEX_result.h
 FFIs/TrampolineSymbols.o: FFIs/TrampolineSymbols.cc Values/Values Numbers/BigUnsigned
 FFIs/WIN32ProcessInfos.o: FFIs/WIN32ProcessInfos.cc Numbers/BigUnsigned Numbers/Real FFIs/ProcessInfos include/5D/FFIs
 FFIs/POSIXProcessInfos.o: FFIs/POSIXProcessInfos.cc Numbers/Small Numbers/Integer Numbers/BigUnsigned Numbers/Real Evaluators/FFI Numbers/Small Numbers/BigUnsigned Evaluators/Builtins Numbers/Real include/5D/FFIs
@@ -143,7 +146,7 @@ FFIs/TrampolineSymbols.cc: FFIs/generateTrampolineSymbols FFIs/Combinations
 FFIs/TrampolineSymbols: FFIs/TrampolineSymbols.cc Makefile FFIs/generateTrampolineSymbols
 	(echo "#ifndef __TRAMPOLINE_SYMBOLS_H" ; echo "#define __TRAMPOLINE_SYMBOLS_H" ; cat FFIs/TrampolineSymbols.cc | sed 's@^\(.*\) = .*$$@extern \1;@' ; echo "#endif")  > FFIs/TrampolineSymbols.new && mv FFIs/TrampolineSymbols.new FFIs/TrampolineSymbols
 	
-BuiltinsModule.o: BuiltinsModule.cc include/5D/Operations include/5D/Values
+#BuiltinsModule.o: BuiltinsModule.cc include/5D/Operations include/5D/Values
 
 install:
 	install -m 755 -d $(DESTDIR)/usr/share/5D/Builtins
