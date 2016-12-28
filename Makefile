@@ -151,15 +151,15 @@ installgui:
 install: $(shell pkg-config --cflags --libs gtk+-2.0 2>/dev/null |grep -q -- -  && echo installgui )
 	install -m 755 -d $(DESTDIR)/usr
 	install -m 755 -d $(DESTDIR)/usr/bin
-	install -m 755 TUI/TUI $(DESTDIR)/usr/bin/T5D
-	install -m 755 TUI/STUI $(DESTDIR)/usr/bin/ST5D
+	install -m 755 TUI2/5D $(DESTDIR)/usr/bin/T5D
+	#install -m 755 TUI2/STUI $(DESTDIR)/usr/bin/ST5D
 	strip $(DESTDIR)/usr/bin/T5D
-	install -m 755 REPL/5DREPL $(DESTDIR)/usr/bin/5DREPL
-	strip $(DESTDIR)/usr/bin/5DREPL
+	#install -m 755 REPL/5DREPL $(DESTDIR)/usr/bin/5DREPL
+	#strip $(DESTDIR)/usr/bin/5DREPL
 	install -m 755 -d $(DESTDIR)/usr/share
 	install -m 755 -d $(DESTDIR)/usr/share/5D
-	install -m 755 FFIs/find5DExports $(DESTDIR)/usr/share/5D/find5DExports
-	install -m 755 FFIs/extractGNUSymbols $(DESTDIR)/usr/share/5D/extractGNUSymbols
+	install -m 755 ./lib/Builtins/FFIs/find5DExports $(DESTDIR)/usr/share/5D/find5DExports
+	install -m 755 ./lib/Builtins/FFIs/extractGNUSymbols $(DESTDIR)/usr/share/5D/extractGNUSymbols
 	$(MAKE) -C lib install
 test: ./TUI2/5D
 	grep "^>" Tests/session |sed 's;^>;;' |./TUI2/5D > Tests/session.result.new && mv Tests/session.result.new Tests/session.result
