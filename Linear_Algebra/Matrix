@@ -1,0 +1,65 @@
+#ifndef __MATRIX_H
+#define __MATRIX_H
+
+namespace Linear_Algebra {
+
+template<typename T, int RowCount, int ColumnCount>
+struct Matrix {
+	T items[RowCount][ColumnCount];
+};
+
+template<typename T, int RowCount, int ColumnCount>
+Matrix<T, RowCount, ColumnCount> operator+(const Matrix<T,RowCount,ColumnCount>& a, const Matrix<T,RowCount,ColumnCount>& b) {
+	Matrix<T,RowCount,ColumnCount> result;
+	for(int i = 0; i < RowCount; ++i)
+		for(int j = 0; j < ColumnCount; ++j)
+			result.items[i][j] = a.items[i][j] + b.items[i][j];
+	return(result);
+}
+
+template<typename T, int RowCount, int ColumnCount>
+Matrix<T,RowCount,ColumnCount> operator-(const Matrix<T,RowCount,ColumnCount>& a, const Matrix<T,RowCount,ColumnCount>& b) {
+	Matrix<T,RowCount,ColumnCount> result;
+	for(int i = 0; i < RowCount; ++i)
+		for(int j = 0; j < ColumnCount; ++j)
+			result.items[i][j] = a.items[i][j] - b.items[i][j];
+	return(result);
+}
+
+template<typename T, int RowCount, int ColumnCount>
+Matrix<T,RowCount,ColumnCount> operator-(const Matrix<T,RowCount,ColumnCount>& b) {
+	Matrix<T,RowCount,ColumnCount> result;
+	for(int i = 0; i < RowCount; ++i)
+		for(int j = 0; j < ColumnCount; ++j)
+			result.items[i][j] = - b.items[i][j];
+	return(result);
+}
+
+template<typename T, int RowCount, int ColumnCount>
+Matrix<T,RowCount,ColumnCount> transpose(const Matrix<T,ColumnCount,RowCount>& a) {
+	Matrix<T,RowCount,ColumnCount> result;
+	for(int i = 0; i < RowCount; ++i)
+		for(int j = 0; j < ColumnCount; ++j)
+			result.items[i][j] = a.items[j][i];
+	return(result);
+}
+
+template<typename T, int RowCount, int ColumnCount, int CommonCount>
+Matrix<T,RowCount,ColumnCount> operator*(const Matrix<T,RowCount,CommonCount>& a, const Matrix<T,CommonCount,ColumnCount>& b) {
+	Matrix<T,RowCount,ColumnCount> result;
+	for(int i = 0; i < RowCount; ++i)
+		for(int j = 0; j < ColumnCount; ++j) {
+			T value; /* TODO neutral initializer */
+			for(int k = 0; k < CommonCount; ++k)
+				value += a.items[i][k] * b.items[k][j];
+			result.items[i][j] = value;
+		}
+	return(result);
+}
+
+/* TODO Determinant,
+        Gauß elimination */
+
+}; /* namespace Linear_Algebra; */
+
+#endif /*ndef __MATRIX_H*/

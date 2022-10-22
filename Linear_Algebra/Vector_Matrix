@@ -1,0 +1,35 @@
+#ifndef __VECTOR_MATRIX_H
+#define __VECTOR_MATRIX_H
+#include "vector"
+#include "matrix"
+
+template<typename T>
+Matrix<T,4,1> Matrix(const Vector<T>& a) {
+	Matrix<T,4,1> result;
+	result.items[0][0] = a.ct;
+	result.items[1][0] = a.x;
+	result.items[2][0] = a.y;
+	result.items[3][0] = a.z;
+	return(result);
+}
+
+template<typename T>
+T dot(const Matrix<T,4,1>& a, const Matrix<T,4,1>& b) {
+	return(a.transpose() * b);
+}
+
+template<typename T>
+T dot(const Vector<T>& a, const Vector<T>& b) {
+	return(dot(Matrix(a), Matrix(b)));
+}
+
+static float sqrt(int a) { /* protect me from silliness */
+	return(sqrtf((float) a));
+}
+
+template<typename T>
+T length(const Vector<T>& a) const {
+	return(sqrt(dot(a,a)));
+}
+
+#endif /* ndef __VECTOR_MATRIX_H */

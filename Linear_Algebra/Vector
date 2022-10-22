@@ -1,0 +1,47 @@
+#ifndef __VECTOR_H
+#define __VECTOR_H
+
+namespace Linear_Algebra {
+
+template<typename T>
+struct Vector {
+	union {
+		struct {
+			T ct;
+			T x;
+			T y;
+			T z;
+		};
+		T items[4];
+	};
+	Vector(void) {
+		//this->ct = this->x = this->y = this->z = 0;
+	}
+	Vector(T ct, T x, T y, T z) {
+		this->ct = ct;
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	}
+};
+
+template<typename T>
+Vector<T> operator+(const Vector<T>& a, const Vector<T>& b) {
+	Vector<T> result(a.ct + b.ct, a.x + b.x, a.y + b.y, a.z + b.z);
+	return(result);
+}
+
+template<typename T>
+Vector<T> operator-(const Vector<T>& a, const Vector<T>& b) {
+	Vector<T> result(a.ct - b.ct, a.x - b.x, a.y - b.y, a.z - b.z);
+	return(result);
+}
+template<typename T>
+Vector<T> operator-(const Vector<T>& a) {
+	Vector<T> result(-a.ct, -a.x, -a.y, -a.z);
+	return(result);
+}
+
+}; /* end namespace Linear_Algebra */
+
+#endif /*ndef __VECTOR_H*/

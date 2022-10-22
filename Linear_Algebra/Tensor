@@ -1,0 +1,33 @@
+#ifndef __TENSOR_H
+#define __TENSOR_H
+
+namespace Linear_Algebra {
+
+template<typename T, int Dimension, int Order>
+struct Tensor {
+	//T items[Dimension][...];
+};
+
+template<typename T, int Dimension>
+struct Tensor<T, Dimension, 1> {
+	T items[Dimension];
+};
+
+template<typename T, int Dimension>
+struct Tensor<T, Dimension, 2> {
+	T items[Dimension][Dimension];
+};
+
+template<typename T, int Dimension, int Order>
+int dimension(const Tensor<T, Dimension, Order>& a) {
+	return(Dimension);
+}
+
+template<typename T, int Dimension, int Order>
+int order(const Tensor<T, Dimension, Order>& a) {
+	return(Order);
+}
+
+}; /* end namespace Linear_Algebra */
+
+#endif /* __TENSOR_H */

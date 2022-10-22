@@ -1,0 +1,21 @@
+#ifndef __AST_H
+#define __AST_H
+
+namespace AST {
+
+struct Node {
+};
+
+struct Cons : Node {
+	Node* head;
+	Cons* tail;
+};
+
+struct Literal : Node {
+	const char* text;
+};
+
+Cons* cons(Node* head, Cons* tail);
+Literal* literal(const char* text);
+}; /* namespace AST */
+#endif /* __AST_H */

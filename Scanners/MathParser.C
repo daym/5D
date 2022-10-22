@@ -1,0 +1,276 @@
+#include <iostream>
+#include <string.h>
+#include "Scanners/MathParser"
+#include "AST/Symbol"
+#include "AST/AST"
+
+
+namespace Scanners {
+using namespace AST;
+
+void MathParser::parse_structural(int input) {
+	switch(input) {
+	case '(':
+		input_value = input_token = intern("(");
+		return;
+	case ')':
+		input_value = input_token = intern(")");
+		return;
+	/* TODO other kind of braces? */
+	default:
+		raise_error("<expression>", input);	
+	}
+}
+
+void MathParser::parse_operator(int input) {
+	using namespace AST;
+	switch(input) {
+	case '+':
+		input_value = input_token = intern("+");
+		break;
+	case '-':
+		input_value = input_token = intern("-");
+		break;
+	case '*':
+		input = fgetc(input_file);
+		if(input == '*')
+			input_value = input_token = intern("**");
+		else {
+			ungetc(input, input_file);
+			input_value = input_token = intern("*");
+		}
+		break;
+	case '/':
+		input_value = input_token = intern("/");
+		break;
+	case '%':
+		input_value = input_token = intern("/");
+		break;
+	case '=':
+		input_value = input_token = intern("=");
+		break;
+	case '<':
+		input = fgetc(input_file);
+		if(input == '=')
+			input_value = input_token = intern("<=");
+		else {
+			ungetc(input, input_file);
+			input_value = input_token = intern("<");
+		}
+		break;
+	case '>':
+		input = fgetc(input_file);
+		if(input == '=')
+			input_value = input_token = intern(">=");
+		else {
+			ungetc(input, input_file);
+			input_value = input_token = intern(">");
+		}
+		break;
+	case '&':
+		input_value = input_token = intern("&");
+		break;
+	case '|':
+		input_value = input_token = intern("|");
+		break;
+	default:
+		raise_error("<operator>", input);
+	}
+}
+
+void MathParser::parse_star(int input) {
+	// TODO exponentiation.
+	parse_operator('*');
+}
+void MathParser::parse_anglebracket(int input) {
+	parse_operator(input);
+}
+void MathParser::parse_number(int input) {
+	using namespace AST;
+	std::stringstream matchtext;
+	while((input >= '0' && input <= '9') || input == '.') {
+		matchtext << ((char) input);
+		input = fgetc(input_file);
+	}
+	ungetc(input, input_file);
+	input_token = intern("<number>");
+	input_value = literal(strdup(matchtext.str().c_str()));
+}
+void MathParser::parse_unicode(int input) {
+	using namespace AST;
+	if(input != 0xE2) {
+		raise_error("<expression>", input);
+		return;
+	}
+	input = fgetc(input_file);
+	if(input != 0x89) {
+		if(input == 0x8B) {
+			input = fgetc(input_file);
+			switch(input) {
+			case 0x85: /* dot */
+				input_value = input_token = intern("*");
+				return;
+			}
+		} else if(input == 0xA8) {
+			input = fgetc(input_file);
+			switch(input) {
+			case 0xAF: /* ⨯ */
+				input_value = input_token = intern("⨯");
+				return;
+			}
+		}
+		raise_error("<expression>", input);
+		return;
+	}
+	switch(input) {
+	case 0xA0:
+		input_token = intern("≠");
+		input_value = input_token;
+		return;
+	case 0xA4:
+		input_token = intern("<=");
+		input_value = intern("≤");
+		return;
+	case 0xA5:
+		input_token = intern(">=");
+		input_value = intern("≥");
+		return;
+	default:
+		raise_error("<operator>", input);
+		return;
+	}
+}
+void MathParser::parse_token(void) {
+	int input;
+	input = fgetc(input_file);
+	switch(input) {
+	case 0xE2: /* part of "≠" */
+		parse_unicode(input);
+		break;
+	case '0':
+		parse_number(input);
+		break;
+	case '*':
+		parse_star(input);
+		break;
+	case '<':
+	case '>':
+		parse_anglebracket(input);
+		break;
+	case '+':
+	case '-':
+	case '/':
+	case '%':
+	case '=':
+		parse_operator(input);
+		break;
+	case '(':
+	case ')':
+		parse_structural(input);
+		break;
+	case EOF:
+		input_value = input_token = NULL;
+		break;
+	default:
+		parse_symbol(input);
+		break;
+	}
+	// skip whitespace...
+	while(input = fgetc(input_file), input == ' ' || input == '\t' || input == '\n') {
+	}
+	ungetc(input, input_file);
+}
+static bool symbol1_char_P(int input) {
+	return (input >= '@' && input <= 'Z')
+	    || (input >= 'a' && input <= 'z')
+	    || (input >= 128 && input != 0xE2 /* operators */);
+}
+static bool symbol_char_P(int input) {
+	return symbol1_char_P(input) 
+	    || (input >= '0' && input <= '9') 
+	    || input == '_'
+	    || input == '^';
+}
+void MathParser::parse_symbol(int input) {
+	std::stringstream matchtext;
+	if(!symbol1_char_P(input)) {
+		raise_error("<expression>", input);
+		return;
+	}
+	while(symbol_char_P(input)) {
+		matchtext << (char) input;
+		input = fgetc(input_file);
+	}
+	input_token = intern("<symbol>");
+	input_value = intern(matchtext.str().c_str());
+}
+
+/* returns the PREVIOUS value */
+AST::Node* MathParser::consume(AST::Symbol* expected_token) {
+	AST::Node* previous_value;
+	previous_value = input_value;
+	if(expected_token && expected_token != input_token)
+		raise_error(expected_token->name, input_token ? input_token->name : "<nothing>");
+	parse_token();
+	return(previous_value);
+}
+
+AST::Node* MathParser::parse_value(void) {
+	/* handle all the unary things manually */
+	// TODO function_call
+	// TODO []
+	// TODO .
+	// TODO unary +
+	// TODO unary -
+	// TODO ~ (not)
+	return(consume());
+}
+
+using namespace AST;
+static Symbol* operator_precedence[][7] = {
+	{intern("**")},
+	{intern("*"), intern("%"), intern("/")},
+	{intern("⨯")},
+	{intern("+"), intern("-")},
+	{intern("="), intern("≠")},
+	{intern("<"), intern("<="), intern(">"), intern(">=") /*, intern("≤"), intern("≥")*/},
+	{intern("&")},
+	//{intern("^")}
+	{intern("|")},
+};
+
+static bool matching_operator_P(int precedence_level, AST::Symbol* input_token) {
+	for(int i = 0; operator_precedence[precedence_level][i]; ++i)
+		if(operator_precedence[precedence_level][i] == input_token)
+			return(true);
+	return(false);
+}
+
+static AST::Cons* operation(AST::Node* operator_, AST::Node* operand_1, AST::Node* operand_2) {
+	return(cons(operator_, cons(operand_1, cons(operand_2, NULL))));
+}
+
+AST::Node* MathParser::parse_binary_operation(int precedence_level) {
+	if(precedence_level < 0)
+		return(parse_value());
+	AST::Node* result = parse_binary_operation(precedence_level - 1);
+	while(matching_operator_P(precedence_level, input_token)) {
+		consume(); /* operator */
+		result = operation(input_token, result, parse_binary_operation(precedence_level - 1));
+	}
+	return(result);
+}
+
+AST::Node* MathParser::parse_expression(void) {
+	return parse_binary_operation(sizeof(operator_precedence)/sizeof(operator_precedence[0]) - 1);
+}
+
+AST::Node* MathParser::parse(FILE* input_file) {
+	push(input_file);
+	consume();
+	AST::Node* result = parse_expression();
+	pop();
+	return(result);
+}
+
+};
