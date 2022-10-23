@@ -56,7 +56,7 @@ entry_size = max([len(state) for state in states_sorted_by_number])
 print("""
 struct State {
 	unsigned int choice_count;
-	unsigned char inputs[%d];
+	unsigned short inputs[%d];
 	const char* result;
 	unsigned int new_states[%d];
 };
