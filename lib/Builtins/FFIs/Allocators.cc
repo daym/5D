@@ -60,7 +60,7 @@ void initAllocators(void) {
 }
 
 /* allocate executable block, then (try to) make it read-only */
-void* ealloc(size_t size, void* source) {
+extern "C" void* ealloc(size_t size, void* source) {
 	size_t* result;
 #if defined(WIN32)
 	result = (size_t*) VirtualAlloc(0, size, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
@@ -78,7 +78,7 @@ void* ealloc(size_t size, void* source) {
 	return(result);
 }
 
-void efree(void* address) {
+extern "C" void efree(void* address) {
 #if defined(WIN32)
 	VirtualFree(address, 0, MEM_RELEASE);
 #elif defined(__linux__) || defined(__APPLE__)

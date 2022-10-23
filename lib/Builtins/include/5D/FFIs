@@ -1,7 +1,7 @@
 #ifndef __5D_FFI
 #define __5D_FFI
 #include <5D/Values>
-#include <5D/WIN32Strings>
+//#include <5D/WIN32Strings>
 
 namespace Numbers {
 #ifdef __SIZEOF_LONG__

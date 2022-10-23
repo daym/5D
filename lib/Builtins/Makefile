@@ -39,11 +39,11 @@ Values/Symbol.o
 
 #LIBGC_LD_WRAP_LDFLAGS = -Wl,--wrap -Wl,read -Wl,--wrap -Wl,dlopen -Wl,--wrap -Wl,pthread_create -Wl,--wrap -Wl,pthread_join -Wl,--wrap -Wl,pthread_detach -Wl,--wrap -Wl,pthread_sigmask -Wl,--wrap -Wl,sleep
 LIBGC_LD_WRAP_CFLAGS = -D_REENTRANT -DGC_THREADS -DUSE_LD_WRAP
-LDFLAGS += -ldl -lgc -lpthread $(LIBGC_LD_WRAP_LDFLAGS) 
+LDFLAGS += -ldl -lgc -lpthread $(LIBGC_LD_WRAP_LDFLAGS) `pkg-config --libs bdw-gc`
 
 LIBGC_LD_WRAP_CFLAGS = -D_REENTRANT -DGC_THREADS -DUSE_LD_WRAP
 #CXXFLAGS += -fPIC -O3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Iinclude
-CXXFLAGS += -fPIC -O0 -g3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Iinclude
+CXXFLAGS += -fPIC -O0 -g3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi bdw-gc` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Iinclude
 ifdef PREFIX
 CXXFLAGS +=  -DPREFIX=\"$(PREFIX)\"
 endif
@@ -51,10 +51,10 @@ endif
 LIB = lib5dbuiltins.so.1
 STATIC_LIB = lib5dbuiltins1.a
 .SUFFIXES:            # Delete the default suffixes
+all: $(LIB) $(STATIC_LIB)
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-all: $(LIB) $(STATIC_LIB)
 $(LIB): $(OBJECTS)
 	$(CXX) -shared -o $(LIB) $(OBJECTS) $(LDFLAGS)
 $(STATIC_LIB): $(OBJECTS)
@@ -98,7 +98,7 @@ Evaluators/Backtracker.o: Evaluators/Backtracker.cc Evaluators/Backtracker Evalu
 Evaluators/StrictEvaluators.o: Evaluators/StrictEvaluators.cc Numbers/BigUnsigned Numbers/Real Values/Symbols Scanners/MathParser Scanners/Scanner Scanners/ShuntingYardParser include/5D/FFIs
 Evaluators/Evaluators.o: Evaluators/Evaluators.cc Numbers/BigUnsigned Numbers/Real Values/Symbols Scanners/MathParser Scanners/Scanner Scanners/ShuntingYardParser include/5D/FFIs
 Evaluators/Operation.o: Evaluators/Operation.cc include/5D/Operations Evaluators/Evaluators Values/Values Values/Symbol Evaluators/Builtins Numbers/Integer Numbers/Real Scanners/MathParser FFIs/Trampolines FFIs/RecordPacker Numbers/Ratio
-	$(CXX) -fPIC -O2 -Wall -I. -fno-strict-overflow -c -o $@ $< -Iinclude 
+	$(CXX) -fPIC -O2 -Wall -I. -fno-strict-overflow -c -o $@ $< -Iinclude $(CXXFLAGS)
 Numbers/BigUnsigned.o: Numbers/BigUnsigned.cc Numbers/BigUnsigned Numbers/Small include/5D/Operations
 Scanners/LOperatorPrecedenceList.o: Scanners/LOperatorPrecedenceList.cc Values/Keyword Values/Hashtable Scanners/LOperatorPrecedenceList include/5D/Operations
 Scanners/MathParser.o: Scanners/MathParser.cc

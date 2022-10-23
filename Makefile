@@ -10,7 +10,7 @@ ASSEMBLERS = Assemblers/X86.o Assemblers/X64.o Assemblers/ARM.o
 #LIBGC_LD_WRAP_LDFLAGS = -Wl,--wrap -Wl,read -Wl,--wrap -Wl,dlopen -Wl,--wrap -Wl,pthread_create -Wl,--wrap -Wl,pthread_join -Wl,--wrap -Wl,pthread_detach -Wl,--wrap -Wl,pthread_sigmask -Wl,--wrap -Wl,sleep
 LIBGC_LD_WRAP_CFLAGS = -D_REENTRANT -DGC_THREADS -DUSE_LD_WRAP
 #CXXFLAGS += -O3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Ilib/Builtins/include
-CXXFLAGS += -O1 -g3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Ilib/Builtins/include
+CXXFLAGS += -O1 -g3 -Wall -I. -fno-strict-overflow -Wno-deprecated -Wno-div-by-zero `pkg-config --cflags glib-2.0 gthread-2.0 libxml-2.0 libffi readline bdw-gc` $(LIBGC_LD_WRAP_CFLAGS) -D_FILE_OFFSET_BITS=64 -Wno-unused-function -Ilib/Builtins/include
 ifdef PREFIX
 CXXFLAGS +=  -DPREFIX=\"$(PREFIX)\"
 endif
@@ -25,11 +25,11 @@ BUILTINS_HEADERS = lib/Builtins/include/5D/Allocators lib/Builtins/include/5D/Ev
 #-Werror=strict-overflow
 
 ifeq ($(shell ls -1 /usr/lib/libreadline.a 2>/dev/null),/usr/lib/libreadline.a)
-LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a 
+LDFLAGS += /usr/lib/libreadline.a /usr/lib/libtinfo.a
 else
 LDFLAGS += -lreadline
 endif
-LDFLAGS += -ldl -lgc -lpthread `pkg-config --libs glib-2.0 gthread-2.0 libxml-2.0 libffi` $(LIBGC_LD_WRAP_LDFLAGS) 
+LDFLAGS += -ldl -lgc -lpthread `pkg-config --libs glib-2.0 gthread-2.0 libxml-2.0 libffi readline bdw-gc` $(LIBGC_LD_WRAP_LDFLAGS) -lgccpp
 #dupe -lffi
 GUI_CXXFLAGS = $(CXXFLAGS) `pkg-config --cflags gtk+-2.0`
 GUI_LDFLAGS = $(LDFLAGS) `pkg-config --libs gtk+-2.0`
@@ -50,7 +50,7 @@ all: $(TARGETS)
 	$(MAKE) -C lib all
 
 $(BUILTINS_LIB):
-	$(MAKE) -C lib Builtins
+	$(MAKE) -C lib/Builtins
 
 Config/GTKConfig.o: Config/GTKConfig.cc Config/Config lib/Builtins/FFIs/Allocators lib/Builtins/Values/Values
 	$(CXX) $(GUI_CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
@@ -124,6 +124,8 @@ clean:
 	rm -f Numbers/*.o
 	rm -f TUI/*.o
 	rm -f Config/*.o
+	rm -f lib/Builtins/*/*.o
+	rm -f TUI2/*.o
 	
 distclean: clean
 	rm -f $(EXECUTABLES)

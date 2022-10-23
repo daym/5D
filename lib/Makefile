@@ -1,4 +1,6 @@
 
+.PHONY: Builtins
+
 SUBDIRS2 = Arithmetic Logic Composition List OS IO UI FFI String Reflection Error Set Evaluators OPLs Assemblers
 #PACKAGE = 5D
 #VERSION = $(shell head -1 debian/changelog |cut -d"(" -f2 |cut -d")" -f1)

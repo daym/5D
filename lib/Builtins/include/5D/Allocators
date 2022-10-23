@@ -27,9 +27,16 @@ static inline char* GCx_strdup(const char* value) {
 	return(result);
 #endif
 #endif
-/* Executable Memory */
-void* ealloc(size_t size, void* source);
-void efree(void* beginning);
 }
+
+/* Executable Memory */
+#ifdef __cplusplus
+extern "C"
+#endif
+void* ealloc(size_t size, void* source);
+#ifdef __cplusplus
+extern "C"
+#endif
+void efree(void* beginning);
 
 #endif /* ndef __5D_ALLOCATOR_H */
