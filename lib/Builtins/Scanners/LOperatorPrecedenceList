@@ -62,8 +62,6 @@ struct LOperatorPrecedenceList : Values::Node {
 		return(NULL);
 	}
 	bool any_operator_P(Values::NodeT thingie) const {
-		if(!this) // if we don't have LOperatorPrecedenceList, no point in checking it
-			return(false);
 		return(symbol_P(thingie) && get_operator_precedence(thingie) != -1);
 	}
 	int next_precedence_level(int precedence_level) const {
