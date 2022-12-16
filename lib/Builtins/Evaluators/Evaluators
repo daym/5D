@@ -16,6 +16,8 @@ public:
 };
 
 static inline Values::NodeT throwFallback(const char* text) {
+	char*p = NULL;
+	*p = 2;
 	throw Evaluators::EvaluationException(text);
 	return(NULL);
 }
@@ -56,8 +58,6 @@ Values::NodeT quote(Values::NodeT node);
 int increaseGeneration(void);
 
 Values::NodeT replace(Values::NodeT needle /* not Symbol */, Values::NodeT replacement, Values::NodeT haystack);/* intended for builtins only */
-typedef Values::NodeT (replace_predicate_t)(void* userData, Values::NodeT node);
-Values::NodeT mapTree(void* userData, replace_predicate_t* replacer, Values::NodeT term);
 
 DECLARE_SIMPLE_OPERATION(Reducer)
 DECLARE_SIMPLE_OPERATION(Quoter)
