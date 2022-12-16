@@ -211,8 +211,8 @@ static NodeT ensureApplication(NodeT term, NodeT fn, NodeT argument) {
 	else
 		return(makeApplication(fn, argument));
 }
-typedef NodeT (replace_predicate_t)(void* userData, NodeT node);
-NodeT mapTree(void* userData, replace_predicate_t* replacer, NodeT term) {/* intended for builtins only */
+typedef NodeT (replace_t)(void* userData, NodeT node);
+NodeT mapTree(void* userData, replace_t* replacer, NodeT term) {/* intended for builtins only */
 	// TODO CurriedOperation ? 
 	if(term)
 		term = replacer(userData, term);
