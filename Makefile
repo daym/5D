@@ -126,10 +126,12 @@ clean:
 	rm -f Config/*.o
 	rm -f lib/Builtins/*/*.o
 	rm -f TUI2/*.o
-	
+	$(MAKE) -C lib clean
+
 distclean: clean
 	rm -f $(EXECUTABLES)
 	rm -f $(GENERATEDS)
+	$(MAKE) -C lib distclean
 
 dist: all
 	rm -rf "$(DISTDIR)"
