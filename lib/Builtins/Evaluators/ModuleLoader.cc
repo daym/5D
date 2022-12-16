@@ -197,6 +197,15 @@ static NodeT loadModule(NodeT options, NodeT fileNameNode) {
 			break;
 	}
 	if(moduleKey.length() == 0 || realFilename.length() == 0) {
+		std::cerr << "could not find module \"" << Values::stringFromNode(fileNameNode) << "\" in ";
+		bool first = true;
+		for (const auto& path : searchPaths) {
+			if (!first)
+				std::cerr << ", ";
+			first = false;
+			std::cerr << '"' << path << '"';
+		}
+		std::cerr << std::endl;
 		return(FALLBACK);
 	}
 	char* actualFilename = FFIs::get_absolute_path(realFilename.c_str());
