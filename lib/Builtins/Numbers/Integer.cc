@@ -844,7 +844,7 @@ bool toNativeInt(NodeT node, NativeInt& result) {
 	} else if((integerNode = dynamic_cast<Integer*>(node)) != NULL) {
 		try {
 			result = integerNode->toNativeInt();
-		} catch(EvaluationException exception) { /* too big etc */
+		} catch (const EvaluationException& exception) { /* too big etc */
 			return(false);
 		}
 		return(true);
@@ -864,7 +864,7 @@ bool toNearestNativeInt(NodeT node, NativeInt& result) {
 	} else if((integerNode = dynamic_cast<Integer*>(node)) != NULL) {
 		try {
 			result = integerNode->toNativeInt();
-		} catch(EvaluationException exception) { /* too big etc */
+		} catch(const EvaluationException& exception) { /* too big etc */
 			switch(integerNode->getSign()) {
 			case Integer::negative:
 				result = std::numeric_limits<NativeInt>::min();

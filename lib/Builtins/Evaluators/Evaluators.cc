@@ -319,7 +319,7 @@ NodeT reduce1(NodeT term) {
 #if 0
 		try {
 			new_body = reduce1(body);
-		} catch (Evaluators::EvaluationException e) {
+		} catch (const Evaluators::EvaluationException& e) {
 			/* recursion too deep etc */
 			/* FIXME this is WAY slow, so remove it again? */
 			new_body = body;

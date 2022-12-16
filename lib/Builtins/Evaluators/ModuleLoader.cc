@@ -139,12 +139,12 @@ static NodeT forceModuleLoad(const char* filename) {
 			errno = previousErrno;
 			throw;
 		}
-	} catch(Evaluators::EvaluationException e) {
+	} catch(const Evaluators::EvaluationException& e) {
 		std::string v = e.what() ? e.what() : "error";
 		v = " => " + v + "\n";
 		fprintf(stderr, "%s\n", v.c_str());
 		throw;
-	} catch(Scanners::ParseException& e) {
+	} catch(const Scanners::ParseException& e) {
 		std::string v = e.what() ? e.what() : "error";
 		fprintf(stderr, "%s\n", v.c_str());
 		throw;

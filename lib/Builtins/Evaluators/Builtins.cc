@@ -535,7 +535,7 @@ static NodeT simplifyRatio(NodeT r) {
 				return(r);
 			try {
 				g = gcd(a, b);
-			} catch(EvaluationException e) {
+			} catch (const EvaluationException& e) {
 				return(r);
 			}
 			if(Evaluators::booleanFromNode(leqA(g, &int01, NULL)) && Evaluators::booleanFromNode(leqA(&intM01, g, NULL))) {
