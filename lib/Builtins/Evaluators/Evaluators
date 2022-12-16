@@ -26,7 +26,7 @@ static inline Values::NodeT throwFallback(const char* text) {
 
 void getFreeVariables(Values::NodeT root, Values::Hashtable& freeNames);
 Values::NodeT annotate(Values::NodeT root);
-extern int fGeneration;
+extern unsigned fGeneration;
 static inline bool application_result_P(Values::NodeT app) {
 	return(((Values::Application*) app)->resultGeneration == fGeneration);
 }

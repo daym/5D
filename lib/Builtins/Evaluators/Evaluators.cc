@@ -179,7 +179,7 @@ static inline bool wants_its_argument_reduced_P(NodeT fn) {
 int recursionLevel = 0; /* anti-endless-loop */
 
 // caching results.
-int fGeneration = 1;
+unsigned fGeneration = 1;
 #ifdef STRICT_EVAL
 static inline NodeT remember(NodeT app, NodeT result) {
 	return(result);

@@ -23,7 +23,7 @@ struct Application : Node {
 	NodeT operator_;
 	NodeT operand;
 	NodeT result;
-	int resultGeneration;
+	unsigned resultGeneration;
 	//virtual std::string str(void) const;
 };
 struct Abstraction : Node {
