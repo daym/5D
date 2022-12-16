@@ -198,13 +198,14 @@ static NodeT loadModule(NodeT options, NodeT fileNameNode) {
 			break;
 	}
 	if(moduleKey.length() == 0 || realFilename.length() == 0) {
-		std::cerr << "could not find module \"" << Values::stringFromNode(fileNameNode) << "\" in ";
+		std::string n = Values::stringFromNode(fileNameNode);
+		fprintf(stderr, "could not find module \"%s\" in ", n.c_str());
 		bool first = true;
 		for (const auto& path : searchPaths) {
 			if (!first)
-				std::cerr << ", ";
+				fprintf(stderr, ", ");
 			first = false;
-			std::cerr << '"' << path << '"';
+			fprintf(stderr, "\"%s\"", path.c_str());
 		}
 		std::cerr << std::endl;
 		return(FALLBACK);
