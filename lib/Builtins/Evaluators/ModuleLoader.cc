@@ -172,6 +172,7 @@ static std::vector<std::string> get_module_search_path(void) {
 	result.push_back(get_shared_dir());
 #else
 	result.push_back("");
+	result.push_back("lib/");
 	result.push_back(get_shared_dir());
 #endif
 	return(result);
